@@ -1,0 +1,39 @@
+<div id="ComponentWrapper" class="component-wrapper">
+    <div id="ComponentPlaceholder" class="component_placeholder component_placeholder_data_view">
+        <div id="ComponentFeedback"></div>
+    </div>
+    <div id="ComponentContent" class="component-content" style="display:none">
+        <div class="container-fluid container-no-gutters">
+            <form class="needs-validation" novalidate>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Type:</label>
+                        <select name="Type" id="Type" class="custom-select">
+                            <option value="">Other</option>
+                            <option value="Email Address">Email Address</option>
+                            <option value="Contact Number">Contact Number</option>
+                            <option value="Facebook">Facebook</option>
+                            <option value="Twitter">Twitter</option>
+                            <option value="Instagram">Instagram</option>
+                        </select>
+                        <label>Custom Label:</label>
+                        <input name="Label" id="Label" type="text" class="form-control"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label>Value:</label>
+                        <textarea name="Value" id="Value" rows="5" class="form-control"/>
+                    </div>
+                    <div class="col-md-6"></div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-6"></div>
+                            <div class="col-md-6">
+                                <button id="btnSave" type="button" class="btn btn-primary fullwidth mt-1">Add</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

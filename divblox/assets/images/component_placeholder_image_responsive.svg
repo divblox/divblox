@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" width="1024" height="350" viewBox="0, 0, 1024, 350">
+  <g id="Layer_1">
+    <path d="M-0,0 L1024,0 L1024,350 L-0,350 L-0,0 z" fill="#868E96"/>
+    <text transform="matrix(1, 0, 0, 1, 512, 175)">
+      <tspan x="-166.439" y="8" font-family="Avenir-Book" font-size="41" fill="#FFFFFF">Responsive Image</tspan>
+    </text>
+  </g>
+</svg>

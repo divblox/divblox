@@ -1,0 +1,139 @@
+<div id="ComponentWrapper" class="component-wrapper">
+    <div id="ComponentPlaceholder" class="component_placeholder component_placeholder_data_view">
+        <div id="ComponentFeedback"></div>
+    </div>
+    <div id="ComponentContent" class="component-content" style="display:none">
+        <div class="container-fluid container-no-gutters">
+            <form class="needs-validation" novalidate>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label>First Name:</label>
+                        <input name="FirstName" id="FirstName" type="text" class="form-control"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Middle Names:</label>
+                        <input name="MiddleNames" id="MiddleNames" type="text" class="form-control"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Last Name:</label>
+                        <input name="LastName" id="LastName" type="text" class="form-control"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Email Address:</label>
+                        <input name="EmailAddress" id="EmailAddress" type="text" class="form-control" required/>
+                        <div id="EmailAddressInvalidFeedback" class="invalid-feedback">
+                            Please provide an email address
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Username:</label>
+                        <input name="Username" id="Username" type="text" class="form-control" required/>
+                        <div id="UsernameInvalidFeedback" class="invalid-feedback">
+                            Please provide a username
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Password:</label>
+                        <input name="Password" id="Password" type="text" class="form-control"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label>User Role:</label>
+                        <select name="UserRole" id="UserRole" class="custom-select">
+                            <option value="">-Please Select-</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Gender:</label>
+                        <select name="Gender" id="Gender" class="custom-select">
+                            <option value="">-Please Select-</option>
+                            <option value="Not Specified">Not Specified</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Maiden Name:</label>
+                        <input name="MaidenName" id="MaidenName" type="text" class="form-control"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Main Contact Number:</label>
+                        <input name="MainContactNumber" id="MainContactNumber" type="text" class="form-control"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Title:</label>
+                        <input name="Title" id="Title" type="text" class="form-control"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Date Of Birth:</label>
+                        <input name="DateOfBirth" id="DateOfBirth" type="date" class="form-control"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Physical Address Line One:</label>
+                        <input name="PhysicalAddressLineOne" id="PhysicalAddressLineOne" type="text" class="form-control"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Physical Address Line Two:</label>
+                        <input name="PhysicalAddressLineTwo" id="PhysicalAddressLineTwo" type="text" class="form-control"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Physical Address Postal Code:</label>
+                        <input name="PhysicalAddressPostalCode" id="PhysicalAddressPostalCode" type="text" class="form-control"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Physical Address Country:</label>
+                        <input name="PhysicalAddressCountry" id="PhysicalAddressCountry" type="text" class="form-control"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Postal Address Line One:</label>
+                        <input name="PostalAddressLineOne" id="PostalAddressLineOne" type="text" class="form-control"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Postal Address Line Two:</label>
+                        <input name="PostalAddressLineTwo" id="PostalAddressLineTwo" type="text" class="form-control"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Postal Address Postal Code:</label>
+                        <input name="PostalAddressPostalCode" id="PostalAddressPostalCode" type="text" class="form-control"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Postal Address Country:</label>
+                        <input name="PostalAddressCountry" id="PostalAddressCountry" type="text" class="form-control"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Identification Number:</label>
+                        <input name="IdentificationNumber" id="IdentificationNumber" type="text" class="form-control"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Nickname:</label>
+                        <input name="Nickname" id="Nickname" type="text" class="form-control"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Status:</label>
+                        <input name="Status" id="Status" type="text" class="form-control"/>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check mt-3">
+                            <input class="form-check-input" type="checkbox" name="AccessBlocked" id="AccessBlocked">
+                            <label class="form-check-label">
+                                Access Blocked
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Blocked Reason:</label>
+                        <textarea name="BlockedReason" id="BlockedReason" rows="5" class="form-control"/>
+                    </div>
+                    <div class="col-md-6"></div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-6"></div>
+                            <div class="col-md-6">
+                                <button id="btnSave" type="button" class="btn btn-primary fullwidth mt-1">Create</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

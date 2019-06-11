@@ -1,0 +1,14 @@
+.navbar {
+    height:50px;
+    padding: .1rem 1rem !important;
+}
+.navbar-bottom-decoration {
+    margin:50px 0 0;
+}
+.component-wrapper-top-navbar {
+    padding-top:55px;
+    margin:0 !important;
+}
+.nav-profile-picture {
+    max-height:30px;
+}

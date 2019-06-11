@@ -1,0 +1,14 @@
+<database index="[index]">
+            <className prefix="" suffix=""/>
+            <associatedObjectName prefix="" suffix=""/>
+            <typeTableIdentifier suffix="_type"/>
+            <associationTableIdentifier suffix="_assn"/>
+            <stripFromTableName prefix=""/>
+            <excludeTables pattern="" list=""/>
+            <includeTables pattern="" list=""/>
+            <manualQuery support="false"/>
+            <columnCommentForMetaControl delimiter="" />
+            <relationships><![CDATA[
+                ]]></relationships>
+            <relationshipsScript filepath="" format="sql"/>
+        </database>

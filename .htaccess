@@ -1,0 +1,11 @@
+Options +FollowSymlinks
+
+#Uncomment the following 2 lines to force https
+#RewriteCond %{HTTPS} !=on
+#RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+RewriteEngine on
+RewriteCond %{REQUEST_URI} !(/$|\.)
+RewriteRule ^api/([a-z_0-9]+)/(.*) project/api/$1.php/$2 [NC,L]
+RewriteRule ^api/([a-z_0-9]+) project/api/$1.php [NC,L]
+RewriteRule ^api project/api/index.php [NC,L]

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<codegen>
+    <name application="divblox"/>
+    <templateEscape begin="&lt;%" end="%&gt;"/>
+    <dataSources>
+        <database index="1">
+            <className prefix="" suffix=""/>
+            <associatedObjectName prefix="" suffix=""/>
+            <typeTableIdentifier suffix="_type"/>
+            <associationTableIdentifier suffix="_assn"/>
+            <stripFromTableName prefix=""/>
+            <excludeTables pattern="" list=""/>
+            <includeTables pattern="" list=""/>
+            <manualQuery support="false"/>
+            <columnCommentForMetaControl delimiter="" />
+            <relationships><![CDATA[
+                ]]></relationships>
+            <relationshipsScript filepath="" format="sql"/>
+        </database>
+        
+    </dataSources>
+</codegen>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!--<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no user-scalable=no">
+    <link rel="stylesheet" href="divblox/assets/css/bootstrap/4.3.1/bootstrap.min.css">
+    <link rel="stylesheet" href="divblox/assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="project/assets/css/project.css">
+    <link rel="icon" href="project/assets/images/divblox_favicon.ico" />
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="project/assets/images/dx-icon-192.jpg">
+    <link rel="apple-touch-icon" sizes="152x152" href="project/assets/images/dx-icon-192.jpg">
+    <link rel="apple-touch-icon" sizes="180x180" href="project/assets/images/dx-icon-192.jpg">
+    <link rel="apple-touch-icon" sizes="167x167" href="project/assets/images/dx-icon-192.jpg">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link href="project/assets/images/apple_splash_2048.jpeg" sizes="2048x2732" rel="apple-touch-startup-image" />
+    <link href="project/assets/images/apple_splash_1668.jpeg" sizes="1668x2224" rel="apple-touch-startup-image" />
+    <link href="project/assets/images/apple_splash_1536.jpeg" sizes="1536x2048" rel="apple-touch-startup-image" />
+    <link href="project/assets/images/apple_splash_1125.jpeg" sizes="1125x2436" rel="apple-touch-startup-image" />
+    <link href="project/assets/images/apple_splash_1242.jpeg" sizes="1242x2208" rel="apple-touch-startup-image" />
+    <link href="project/assets/images/apple_splash_750.jpeg" sizes="750x1334" rel="apple-touch-startup-image" />
+    <link href="project/assets/images/apple_splash_640.jpeg" sizes="640x1136" rel="apple-touch-startup-image" />
+    <title>dx Loading...</title>
+</head>
+<body>
+<!-- Main component is loaded here-->
+<script type="text/javascript" src="divblox/assets/js/jquery/3.4.1/jquery.min.js"></script>
+<script type="text/javascript" src="divblox/assets/js/divblox.js"></script>
+<script>
+	function on_divblox_ready () {
+		if (window.location.search.length > 0) {
+			preparePageInputs(window.location.search);
+		} else {
+			processPageInputs();
+		}
+	}
+	initDx();
+</script>
+<div id="AppUpdateWrapper">A new version of the app is available.
+    <a href="#" id="AppReloadButton">Refresh</a>
+    <a href="#" id="AppReloadDismissButton"><i class="fa fa-times" aria-hidden="true"></i></a>
+</div>
+</body>
+</html>

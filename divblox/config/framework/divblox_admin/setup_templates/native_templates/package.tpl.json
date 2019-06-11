@@ -1,0 +1,47 @@
+{
+  "name": "[native_app_name]",
+  "displayName": "[native_app_display_name]",
+  "version": "[version_number]",
+  "description": "[native_app_description]",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ecosystem:cordova"
+  ],
+  "author": "[author_name]",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "cordova-android": "^8.0.0",
+    "cordova-browser": "^6.0.0",
+    "cordova-ios": "^5.0.1",
+    "cordova-plugin-camera": "^4.0.3",
+    "cordova-plugin-device": "^2.0.2",
+    "cordova-plugin-file": "^6.0.1",
+    "cordova-plugin-inappbrowser": "^3.0.0",
+    "cordova-plugin-keyboard": "^1.2.0",
+    "cordova-plugin-network-information": "^2.0.1",
+    "cordova-plugin-splashscreen": "^5.0.2",
+    "cordova-plugin-statusbar": "git+https://github.com/apache/cordova-plugin-statusbar.git"
+  },
+  "devDependencies": {
+    "cordova-plugin-whitelist": "^1.3.3"
+  },
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-splashscreen": {},
+      "cordova-plugin-network-information": {},
+      "cordova-plugin-device": {},
+      "cordova-plugin-inappbrowser": {},
+      "cordova-plugin-file": {},
+      "cordova-plugin-statusbar": {},
+      "cordova-plugin-keyboard": {},
+      "cordova-plugin-camera": {}
+    },
+    "platforms": [
+      "browser"
+    ]
+  }
+}

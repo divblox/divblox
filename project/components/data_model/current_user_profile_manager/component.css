@@ -1,0 +1,54 @@
+.profile-page-profile-picture:hover {
+    cursor: pointer;
+}
+
+.profile-page-profile-picture {
+    height:200px;
+    width:200px;
+}
+
+.img-caption {
+    position: relative;
+    padding: 0;
+    margin: auto;
+    text-align: center;
+    height: 200px;
+    width: 200px;
+}
+.img-caption img {
+    display: block;
+    width:200px;
+    height: 200px;
+    margin: auto;
+}
+.img-caption-text {
+    opacity: 0;
+    position: absolute;
+    width: 200px;
+    color: #fff;
+    height: 200px;
+    border-radius: 50%;
+    bottom: 0;
+    padding: 75px 1em;
+    font-weight: 700;
+    z-index: 2;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    background-color: rgba(0,0,0,.7);
+    -webkit-transition: opacity .3s ease-in-out;
+    transition: opacity .3s ease-in-out;
+}
+.img-caption:hover .img-caption-text {
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+@media (max-width: 1024px) {
+    .profile-page-profile-picture, .img-caption, .img-caption img, .img-caption-text {
+        height:150px;
+        width:150px;
+    }
+    .img-caption-text {
+        padding: 50px 1em;
+    }
+}

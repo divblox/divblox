@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" width="400" height="300" viewBox="0, 0, 400, 300">
+  <g id="Layer_1">
+    <path d="M-6,-6 L408,-6 L408,310.667 L-6,310.667 L-6,-6 z" fill="#868E96"/>
+    <text transform="matrix(1, 0, 0, 1, 200, 152.5)">
+      <tspan x="-38.18" y="5.5" font-family="Avenir-Book" font-size="20" fill="#FFFFFF">400x300</tspan>
+    </text>
+  </g>
+</svg>

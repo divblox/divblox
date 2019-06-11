@@ -1,0 +1,36 @@
+{
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {}
+  },
+  "installed_plugins": {
+    "cordova-plugin-whitelist": {
+      "PACKAGE_NAME": "io.cordova.hellocordova"
+    },
+    "cordova-plugin-splashscreen": {
+      "PACKAGE_NAME": "io.cordova.hellocordova"
+    },
+    "cordova-plugin-network-information": {
+      "PACKAGE_NAME": "com.deploydx.demo"
+    },
+    "cordova-plugin-device": {
+      "PACKAGE_NAME": "com.deploydx.demo"
+    },
+    "cordova-plugin-inappbrowser": {
+      "PACKAGE_NAME": "com.deploydx.demo"
+    },
+    "cordova-plugin-file": {
+      "PACKAGE_NAME": "com.deploydx.demo"
+    },
+    "cordova-plugin-statusbar": {
+      "PACKAGE_NAME": "com.deploydx.demo"
+    },
+    "cordova-plugin-keyboard": {
+      "PACKAGE_NAME": "com.deploydx.demo"
+    }
+  },
+  "dependent_plugins": {}
+}

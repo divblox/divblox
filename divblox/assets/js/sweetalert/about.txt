@@ -1,0 +1,41 @@
+Plugin information:
+https://sweetalert.js.org/
+
+Basic usage documentation:
+
+Basic alert:
+swal("Hello world!");
+
+Basic alert with title:
+swal("Here's the title!", "...and here's the text!");
+
+Basic alert with icon:
+With a third argument, you can add an icon to your alert! There are 4 predefined ones: "warning", "error", "success" and "info".
+
+swal("Good job!", "You clicked the button!", "success");
+
+Confirmation example:
+swal({
+  title: "Are you sure?",
+  text: "Once deleted, you will not be able to recover this imaginary file!",
+  icon: "warning",
+  buttons: true,
+  dangerMode: true,
+})
+.then((willDelete) => {
+  if (willDelete) {
+    swal("Poof! Your imaginary file has been deleted!", {
+      icon: "success",
+    });
+  } else {
+    swal("Your imaginary file is safe!");
+  }
+});
+
+Customizing buttons:
+swal("Are you sure you want to do this?", {
+  buttons: ["Oh noez!", "Aww yiss!"],
+});
+
+Closing a sweetalert:
+swal.close();

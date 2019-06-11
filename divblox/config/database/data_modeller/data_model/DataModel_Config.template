@@ -1,0 +1,20 @@
+<?php
+/**
+ * GENERATED FILE. DO NOT MODIFY.
+ * This file contains the date of last update for each server instance that has ever been synchronized by the divblox Data Modeller
+ * and is used to determine if a database synchronization for a specific instance is required.
+ */
+abstract class DataModelConfig {
+	[TEMPLATE_START]public static $Config = array("divblox_base" => "[unix_timestamp]");[TEMPLATE_END]
+	public static function getLastModifiedDate() {
+        $CurrentDirectory = dirname(__FILE__);
+        chdir(__DIR__);
+        $LastUpdated = time();
+        if (file_exists("DataModel_Data.inc.php")) {
+            $LastUpdated = filemtime("DataModel_Data.inc.php");
+        }
+        chdir($CurrentDirectory);
+        return $LastUpdated;
+    }
+}
+?>
