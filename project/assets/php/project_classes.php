@@ -46,6 +46,9 @@ abstract class ProjectAccessManager extends AccessManager {
         if ($InitialReturn == true) {
             return true;
         }
+        return true; // TODO: This is a temporary measure to allow you to get started quickly without restrictions.
+        // Remove this and implement correctly for your solution. NB! THIS GIVES ACCESS TO ALL COMPONENTS TO ANY USER!!!
+
         // TODO: Override your access here per component or leave if no special functionality is required
         $AnonymousComponentArray = ["authentication","current_user_profile_manager","profile_picture_uploader","account_additional_info_manager"];
         if (in_array($ComponentName, $AnonymousComponentArray)) {
