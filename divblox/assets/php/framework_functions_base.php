@@ -292,6 +292,7 @@ abstract class FrameworkFunctions_base {
                 $objConfigArray['database'] = constant($strConstantPrefix."_DATABASE_NAME_STR");
                 $objConfigArray['username'] = constant($strConstantPrefix."_DATABASE_USER_STR");
                 $objConfigArray['password'] = constant($strConstantPrefix."_DATABASE_PASSWORD_STR");
+                $objConfigArray['cert_path'] = constant($strConstantPrefix."_DATABASE_SERVER_SSL_CERT_STR");
                 $objConfigArray['profiling'] = false;
                 $objConfigArray['dateformat'] = null;
                 $objConfigArray['caching'] = false;

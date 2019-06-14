@@ -27,7 +27,8 @@ $EnvironmentArray = array(
             'port' => null,
             'database' => '[not defined]',
             'username' => '[not defined]',
-            'password' => '[not defined]'
+            'password' => '[not defined]',
+            'ssl_cert_path' => ''
             )
         )
     )

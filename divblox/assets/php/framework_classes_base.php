@@ -916,6 +916,7 @@ abstract class dxString {
  * @property-read string $Host
  * @property-read string $Username
  * @property-read string $Password
+ * @property-read string $cert_path
  * @property-read boolean $Caching if true objects loaded from this database will be kept in cache (assuming a cache provider is also configured)
  * @property-read string $DateFormat
  * @property-read boolean $OnlyFullGroupBy database adapter sub-classes can override and set this property to true
@@ -1156,7 +1157,7 @@ abstract class dxDatabaseBase extends dxBaseClass {
             case 'Service':
             case 'Protocol':
             case 'Host':
-
+            case 'cert_path':
             case 'Username':
             case 'Password':
                 return $this->objConfigArray[strtolower($strName)];
@@ -1709,7 +1710,10 @@ class dxMySqliDatabase extends dxDatabaseBase {
 
     public function Connect() {
         // Connect to the Database Server
-        $this->objMySqli = new MySqli($this->Server, $this->Username, $this->Password, $this->Database, $this->Port);
+        $this->objMySqli = mysqli_init();
+        mysqli_ssl_set($this->objMySqli, NULL, NULL, $this->cert_path, NULL, NULL);
+        mysqli_real_connect($this->objMySqli, $this->Server, $this->Username, $this->Password, $this->Database, $this->Port);
+        //$this->objMySqli = new MySqli($this->Server, $this->Username, $this->Password, $this->Database, $this->Port);
 
         if (!$this->objMySqli)
             throw new dxMySqliDatabaseException("Unable to connect to Database", -1, null);

@@ -62,6 +62,11 @@ foreach($CurrentEnvironment["DATABASES"] as $Database=>$Settings) {
     define(strtoupper($Database)."_DATABASE_NAME_STR",$Settings["database"]);
     define(strtoupper($Database)."_DATABASE_USER_STR",$Settings["username"]);
     define(strtoupper($Database)."_DATABASE_PASSWORD_STR",$Settings["password"]);
+    if (strlen($Settings['ssl_cert_path']) > 0) {
+        define(strtoupper($Database)."_DATABASE_SERVER_SSL_CERT_STR",DOCUMENT_ROOT_STR.SUBDIRECTORY_STR.$Settings['ssl_cert_path']);
+    } else {
+        define(strtoupper($Database)."_DATABASE_SERVER_SSL_CERT_STR",NULL);
+    }
 }
 define("MYSQL_DUMP_LOCATION_OVERRIDE_STR","/Applications/MAMP/Library/bin/mysqldump");
 if ((function_exists('date_default_timezone_set')) && (!ini_get('date.timezone'))) {

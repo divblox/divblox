@@ -3,5 +3,6 @@
                 'port' => [Port],
                 'database' => '[DatabaseName]',
                 'username' => '[Username]',
-                'password' => '[Password]'
+                'password' => '[Password]',
+                'ssl_cert_path' => '[ssl_cert_path]'
             ),
