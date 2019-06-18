@@ -105,7 +105,7 @@ if (typeof(on_system_default_rich_text_editor_ready) === "undefined") {
 				},
 				function(data_obj) {
 					throw new Error(data_obj.Message);
-				});
+				},false,false);
 			trumbowyg_obj.on('tbwchange', function() {
 				let current_data = trumbowyg_obj.html();
 				setTimeout(function() {
@@ -118,7 +118,7 @@ if (typeof(on_system_default_rich_text_editor_ready) === "undefined") {
 							},
 							function(data_obj) {
 								throw new Error(data_obj.Message);
-							});
+							},false,false);
 					}
 				},1000);
 			});
