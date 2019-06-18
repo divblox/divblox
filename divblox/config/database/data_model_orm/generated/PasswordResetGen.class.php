@@ -44,7 +44,7 @@ class PasswordResetGen extends dxBaseClass implements IteratorAggregate {
      * @var string strToken
      */
     protected $strToken;
-    const TokenMaxLength = 200;
+    const TokenMaxLength = 50;
     const TokenDefault = null;
 
 

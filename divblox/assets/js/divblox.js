@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // divblox initialization
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "0.5.6";
+let dx_version = "0.5.7";
 let bootstrap_version = "4.3.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.2";
@@ -164,6 +164,10 @@ function checkFrameworkReady() {
 	let config_cookie = getValueFromAppState('divblox_config');
 	if (config_cookie === null) {
 		dxGetScript(getRootPath()+"divblox/config/framework/check_config.php", function( data ) {
+			if (!isJsonString(data)) {
+				window.open(getRootPath()+'divblox/config/framework/divblox_admin/initialization_wizard/');
+				return;
+			}
 			let config_data_obj = JSON.parse(data);
 			if (config_data_obj.Success) {
 				updateAppState('divblox_config','success');
@@ -244,7 +248,9 @@ function checkFrameworkReady() {
 	}
 	if (debug_mode && !isNative()) {
 		setTimeout(function() {
-			if (typeof override_console_check === "undefined") {
+			// JGL: Disabling this for now since component builder cache settings seem to fix the problem we are trying
+			// to address with this code. This code will be removed in future dx releases
+			/*if (typeof override_console_check === "undefined") {
 				let t = performance.now();
 				for (i = 0; i < 100; i++) {
 					console.warn("DEBUG MODE: Checking console open...");
@@ -255,7 +261,7 @@ function checkFrameworkReady() {
 						" recommended to always have the browser console opened with cache disabled to avoid caching" +
 						" issues.");
 				}
-			}
+			}*/
 		},3000);
 	}
 }
@@ -491,9 +497,12 @@ function loadComponent(component_name,parent_uid,parent_element_id,load_argument
 			load_arguments["uid"] = load_arguments["component_name"]+"_" + load_arguments["dom_index"];
 			
 		}
-		
 		// JGL: Load the component html
-		dxGetScript(load_arguments["component_path"]+"/component.html", function(html) {
+		let component_html_load_path = load_arguments["component_path"]+"/component.html";
+		if (debug_mode) {
+			component_html_load_path = load_arguments["component_path"]+"/component.html"+getRandomFilePostFix();
+		}
+		dxGetScript(component_html_load_path, function(html) {
 			let final_html = getComponentFinalHtml(load_arguments["uid"].replace("#",""),html);
 			if (component_builder_active) {
 				final_html = final_html.replace(/col-/g,'component-builder-column col-');
@@ -525,12 +534,15 @@ function loadComponent(component_name,parent_uid,parent_element_id,load_argument
 }
 function loadComponentCss(component_path) {
 	let url = component_path+'/component.css';
+	if (debug_mode) {
+		url = component_path+'/component.css'+getRandomFilePostFix();
+	}
 	if (cache_scripts_requested.indexOf(url) > -1) {
 		return;
 	} else {
 		cache_scripts_requested.push(url);
 	}
-	$('head').append('<link rel="stylesheet" href="'+component_path+'/component.css" type="text/css" />');
+	$('head').append('<link rel="stylesheet" href="'+url+'" type="text/css" />');
 }
 function loadComponentJs(component_path,load_arguments,callback) {
 	let function_name = "on_"+load_arguments["component_name"]+"_ready";
@@ -543,7 +555,11 @@ function loadComponentJs(component_path,load_arguments,callback) {
 		updateAppState('page',getUrlInputParameter("view"));
 		callback(component);
 	} else {
-		dxGetScript(component_path+"/component.js", function(data) {
+		let full_component_path = component_path+"/component.js";
+		if (debug_mode) {
+			full_component_path = component_path+'/component.js'+getRandomFilePostFix();
+		}
+		dxGetScript(full_component_path, function(data) {
 			// JGL: Execute the on_[component_name]_ready function
 			let component = new window[function_name](load_arguments);
 			registerComponent(component,component.dom_component_obj.uid);
@@ -583,6 +599,26 @@ function loadPageComponent(component_name,load_arguments,callback) {
 	}
 	setUrlInputParameter("view",component_name);
 	loadComponent("pages/"+component_name,null,'body',final_load_arguments,true,undefined,callback);
+	if (debug_mode) {
+		setTimeout(function() {
+			dxPostExternal(getServerRootPath()+"divblox/config/framework/check_divblox_admin_logged_in.php",{},
+				function(data) {
+					dxLog("No Error: "+data);
+					let data_obj = JSON.parse(data);
+					if (data_obj.Result == "Success") {
+						let admin_links_html = '<a target="_blank" href="'+getServerRootPath()+'divblox/config/framework/divblox_admin/setup.php" ' +
+							'style="position: fixed;bottom: 10px;right: 10px;">' +
+							'<img src="'+getRootPath()+'divblox/assets/images/divblox_logo.svg" style="max-height:30px;"/></a>' +
+							'<a target="_blank" href="'+getRootPath()+'component_builder.php?component=pages/'+component_name+'" ' +
+							'class="btn btn-outline-primary btn-sm" style="position: fixed;bottom: 10px;right: 105px;"><i class="fa fa-wrench" aria-hidden="true"></i> Component Builder</a>';
+						$('body').append(admin_links_html);
+					}
+				},
+				function(data) {
+				dxLog("Error: "+data);
+				});
+		},1000)
+	}
 }
 function getComponentFinalHtml(uid,initial_html) {
 	let final_html = initial_html.replace(/id="/g,'id="'+uid+'_');
@@ -700,20 +736,30 @@ function processPageInputs() {
 	} else {
 		loadComponent(view,null,'body',{"uid":page_uid},false);
 	}
-	dxPostExternal(getServerRootPath()+"divblox/config/framework/check_divblox_admin_logged_in.php",{},
-		function(data) {
-			let data_obj = JSON.parse(data);
-			if (data_obj.Result == "Success") {
-				let admin_links_html = '<a target="_blank" href="'+getServerRootPath()+'divblox/config/framework/divblox_admin/setup.php" ' +
-					'style="position: fixed;bottom: 10px;right: 10px;">' +
-					'<img src="'+getRootPath()+'divblox/assets/images/divblox_logo.svg" style="max-height:30px;"/></a>' +
-					'<a target="_blank" href="'+getRootPath()+'component_builder.php?component='+view+'" ' +
-					'class="btn btn-outline-primary btn-sm" style="position: fixed;bottom: 10px;right: 105px;"><i class="fa fa-wrench" aria-hidden="true"></i> Component Builder</a>';
-				$('body').append(admin_links_html);
-			}
-		},
-		function(data) {});
+	if (debug_mode) {
+		dxPostExternal(getServerRootPath()+"divblox/config/framework/check_divblox_admin_logged_in.php",{},
+			function(data) {
+				let data_obj = JSON.parse(data);
+				if (data_obj.Result == "Success") {
+					let admin_links_html = '<a target="_blank" href="'+getServerRootPath()+'divblox/config/framework/divblox_admin/setup.php" ' +
+						'style="position: fixed;bottom: 10px;right: 10px;">' +
+						'<img src="'+getRootPath()+'divblox/assets/images/divblox_logo.svg" style="max-height:30px;"/></a>' +
+						'<a target="_blank" href="'+getRootPath()+'component_builder.php?component='+view+'" ' +
+						'class="btn btn-outline-primary btn-sm" style="position: fixed;bottom: 10px;right: 105px;"><i class="fa fa-wrench" aria-hidden="true"></i> Component Builder</a>';
+					$('body').append(admin_links_html);
+				}
+			},
+			function(data) {});
+	}
 	loadCurrentUserProfilePicture();
+}
+function getRandomFilePostFix() {
+	let postfix_candidate = '';
+	let possible_characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	for (let i = 0; i < 5; i++) {
+		postfix_candidate += possible_characters.charAt(Math.floor(Math.random() * possible_characters.length));
+	}
+	return '?v='+postfix_candidate;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -737,11 +783,17 @@ function dxLog(Message,show_stack_trace) {
 function addTriggerElementToLoadingElementArray(element,loading_text) {
 	let trigger_element_id = -1;
 	let focused = $(':focus');
-	if (typeof element === "undefined") {
-		if (focused !== "undefined") {
-			element = focused;
+	if (element === false) {
+		// This means the developer intentionally does not want an element to be disabled
+		element = undefined;
+	} else {
+		if (typeof element === "undefined") {
+			if (focused !== "undefined") {
+				element = focused;
+			}
 		}
 	}
+	
 	if (typeof element !== "undefined") {
 		if (typeof loading_text === "undefined") {
 			loading_text = "Loading...";
@@ -953,6 +1005,10 @@ function dxPostExternal(url,parameters,on_success,on_fail) {
 	}
 	$.post(url,parameters)
 		.done(function(data) {
+			if (!isJsonString(data)) {
+				on_fail(data);
+				return;
+			}
 			let data_obj = JSON.parse(data);
 			if (typeof data_obj.AuthenticationToken !== "undefined") {
 				authentication_token = data_obj.AuthenticationToken;
