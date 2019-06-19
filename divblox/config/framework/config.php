@@ -13,17 +13,28 @@ if (!isset($EnvironmentArray)) {
 $CurrentDocumentRoot = $_SERVER["DOCUMENT_ROOT"];
 $CurrentEnvironment = null;
 $CurrentEnvironmentInstanceName = 'default';
+$CurrentPath = str_replace('\\','/',dirname(__FILE__));
+$CurrentSubdirectory = str_replace("/divblox/config/framework", "", $CurrentPath);
+$CurrentSubdirectory = str_replace($CurrentDocumentRoot, "", $CurrentSubdirectory);
 foreach($EnvironmentArray as $EnvironmentInstance => $Environment) {
     if (array_key_exists("DOCUMENT_ROOT", $Environment)) {
         if ($Environment["DOCUMENT_ROOT"] == $CurrentDocumentRoot) {
-            $CurrentPath = str_replace('\\','/',dirname(__FILE__));
-            $CurrentSubdirectory = str_replace("/divblox/config/framework", "", $CurrentPath);
-            $CurrentSubdirectory = str_replace($CurrentDocumentRoot, "", $CurrentSubdirectory);
             if ($CurrentSubdirectory == $Environment["SUBDIRECTORY"]) {
                 $CurrentEnvironment = $Environment;
                 $CurrentEnvironmentInstanceName = $EnvironmentInstance;
             }
         }
+    }
+}
+if (is_null($CurrentEnvironment)) {
+    foreach($EnvironmentArray as $EnvironmentInstance => $Environment) {
+        $CurrentEnvironment = $Environment;
+        $CurrentEnvironmentInstanceName = $EnvironmentInstance;
+        break;
+    }
+    if (!is_null($CurrentEnvironment)) {
+        $CurrentEnvironment["DOCUMENT_ROOT"] = $CurrentDocumentRoot;
+        $CurrentEnvironment["SUBDIRECTORY"] = $CurrentSubdirectory;
     }
 }
 if (is_null($CurrentEnvironment)) {

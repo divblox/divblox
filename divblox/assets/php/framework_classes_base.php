@@ -5806,11 +5806,17 @@ class ComponentController_base {
             $this->InputParameterArray[$key] = $HTMLPurifierObj->purify($value);
         }
     }
-    public function getInputValue($Value = null) {
+    public function getInputValue($Value = null,$ForceNumeric = false) {
         if (is_null($Value)) {
+            if ($ForceNumeric) {
+                return -1;
+            }
             return null;
         }
         if (!isset($this->InputParameterArray[$Value])) {
+            if ($ForceNumeric) {
+                return -1;
+            }
             return null;
         }
         return $this->InputParameterArray[$Value];

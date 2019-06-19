@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // divblox initialization
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "0.5.7";
+let dx_version = "0.6.0";
 let bootstrap_version = "4.3.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.2";
@@ -365,6 +365,11 @@ function DivbloxDOMComponent(arguments,supports_native,requires_native) {
 	if (typeof requires_native !== "undefined") {
 		this.requires_native = requires_native;
 	}
+	this.resetSubComponents = function() {
+		this.sub_component_uid_array.forEach(function(uid) {
+			getRegisteredComponent(uid).reset();
+		}.bind(this));
+	}.bind(this);
 	this.getReadyState = function() {
 		return this.component_success;
 	}.bind(this);
@@ -1499,6 +1504,31 @@ function getGlobalVariable(name) {
 		return '';
 	}
 	return global_vars[name];
+}
+function setGlobalConstrainById(entity,constraining_id) {
+	if (typeof entity === "undefined") {
+		return false
+	}
+	if (typeof constraining_id === "undefined") {
+		constraining_id = -1;
+	}
+	setGlobalVariable('Constraining'+entity+'Id',constraining_id);
+}
+function getGlobalConstrainById(entity) {
+	if (typeof entity === "undefined") {
+		return -1
+	}
+	let return_value = getGlobalVariable('Constraining'+entity+'Id');
+	if (return_value === '') {
+		return -1;
+	}
+	if (typeof return_value === "undefined") {
+		return -1
+	}
+	if (return_value === null) {
+		return -1;
+	}
+	return return_value;
 }
 function setIsNative() {
 	is_native = true;
