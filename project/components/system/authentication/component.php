@@ -49,6 +49,7 @@ class AuthenticationController extends ProjectComponentController {
                 $UserRole = $AccountObj->UserRoleObject->Role;
             }
             $this->setReturnValue("UserRole",$UserRole);
+            $this->setReturnValue("AccountId",$AccountObj->Id);
             $this->presentOutput();
         } catch (dxCallerException $e) {
 

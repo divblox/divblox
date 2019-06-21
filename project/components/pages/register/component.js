@@ -50,8 +50,7 @@ if (typeof(on_pages_register_ready) === "undefined") {
 		}.bind(this);
 		// Sub component config start
         this.sub_components =
-            {"0":{"component_load_path":"ungrouped/imageviewer","parent_element":"LogoWrapper","loading_arguments":{"image_path":"http://localhost/divblox_local/divblox/assets/images/divblox_logo.svg","url_parameters":{"component":"pages/register"},
-            "component_name":"ungrouped_imageviewer","component_load_name":"ungrouped/imageviewer","parent_element":"#main_page_LogoWrapper","parent_uid":"main_page","component_path":"http://localhost/divblox_local/project/components/ungrouped/imageviewer","dom_index":1,"uid":"ungrouped_imageviewer_1"}},
+            {"0":{"component_load_path":"ungrouped/imageviewer","parent_element":"LogoWrapper","loading_arguments":{"image_path":"project/assets/images/divblox_logo.svg"}},
             "1":{"component_load_path":"system/account_registration","parent_element":"RegistrationComponent","loading_arguments":{"uid":"system_account_registration_1"}}};
         // Sub component config end
 		// Custom functions and declarations to be added below

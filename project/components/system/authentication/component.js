@@ -54,6 +54,7 @@ if (typeof(on_system_authentication_ready) === "undefined") {
 				Username:getComponentElementById(this,"InputUsername").val(),
 				Password:getComponentElementById(this,"InputPassword").val()},
 				function(data_obj) {
+					setGlobalConstrainById("Account",data_obj.AccountId);
 					pageEventTriggered("authenticated",data_obj);
 				},
 				function(data_obj) {

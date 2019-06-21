@@ -101,7 +101,7 @@ foreach($Options as $Key => $Value) {
 getComponentElementById(this,"[element_id]_single_button").on("click", function() {
 	// Add the trigger element to the loading element array. This shows a loading animation on the trigger
     // element while it waits for a response or function return
-    let element_id = addTriggerElementToLoadingElementArray($(this),"Nice Loading text");
+    let element_id = addTriggerElementToLoadingElementArray($(this).attr("id"),"Nice Loading text");
     // Example: once your function has executed, call removeTriggerElementFromLoadingElementArray to remove
     // loading animation
     setTimeout(function() {
@@ -111,7 +111,7 @@ getComponentElementById(this,"[element_id]_single_button").on("click", function(
 getComponentElementById(this,"[element_id]_another_action").on("click", function() {
 	// Add the trigger element to the loading element array. This shows a loading animation on the trigger
     // element while it waits for a response or function return
-    let element_id = addTriggerElementToLoadingElementArray($(this),"Nice Loading text");
+    let element_id = addTriggerElementToLoadingElementArray($(this).attr("id"),"Nice Loading text");
     // Example: once your function has executed, call removeTriggerElementFromLoadingElementArray to remove
     // loading animation
     setTimeout(function() {
@@ -121,7 +121,7 @@ getComponentElementById(this,"[element_id]_another_action").on("click", function
 getComponentElementById(this,"[element_id]_something_else").on("click", function() {
 	// Add the trigger element to the loading element array. This shows a loading animation on the trigger
     // element while it waits for a response or function return
-    let element_id = addTriggerElementToLoadingElementArray($(this),"Nice Loading text");
+    let element_id = addTriggerElementToLoadingElementArray($(this).attr("id"),"Nice Loading text");
     // Example: once your function has executed, call removeTriggerElementFromLoadingElementArray to remove
     // loading animation
     setTimeout(function() {
@@ -131,7 +131,7 @@ getComponentElementById(this,"[element_id]_something_else").on("click", function
 getComponentElementById(this,"[element_id]_separated_link").on("click", function() {
 	// Add the trigger element to the loading element array. This shows a loading animation on the trigger
     // element while it waits for a response or function return
-    let element_id = addTriggerElementToLoadingElementArray($(this),"Nice Loading text");
+    let element_id = addTriggerElementToLoadingElementArray($(this).attr("id"),"Nice Loading text");
     // Example: once your function has executed, call removeTriggerElementFromLoadingElementArray to remove
     // loading animation
     setTimeout(function() {

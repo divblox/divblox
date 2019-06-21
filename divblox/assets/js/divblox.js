@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // divblox initialization
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "0.6.1";
+let dx_version = "0.6.2";
 let bootstrap_version = "4.3.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.2";
@@ -595,6 +595,7 @@ function loadPageComponent(component_name,load_arguments,callback) {
 		return;
 	}
 	registered_component_array = {};
+	$(document).off();
 	let final_load_arguments = {"uid":page_uid};
 	if (typeof load_arguments === "object") {
 		let load_argument_keys = Object.keys(load_arguments);
@@ -608,7 +609,6 @@ function loadPageComponent(component_name,load_arguments,callback) {
 		setTimeout(function() {
 			dxPostExternal(getServerRootPath()+"divblox/config/framework/check_divblox_admin_logged_in.php",{},
 				function(data) {
-					dxLog("No Error: "+data);
 					let data_obj = JSON.parse(data);
 					if (data_obj.Result == "Success") {
 						let admin_links_html = '<a target="_blank" href="'+getServerRootPath()+'divblox/config/framework/divblox_admin/setup.php" ' +
