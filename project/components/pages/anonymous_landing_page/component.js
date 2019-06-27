@@ -12,8 +12,22 @@ if (typeof component_classes['pages_anonymous_landing_page'] === "undefined") {
 			});
 		}
 		reset(inputs) {
-			setActivePage("page_component_name","Page Title");
+			setActivePage("","dx Home");
 		}
-	}
+		subComponentLoadedCallBack(component) {
+            super.subComponentLoadedCallBack(component);
+            if (component.getComponentName() === "ungrouped_imageviewer") {
+                component.updateImage("project/assets/images/divblox_logo.svg");
+            }
+        }
+	    initCustomFunctions() {
+	        // L3Oms_button Related functionality
+	        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	        getComponentElementById(this,"L3Oms_btn").on("click", function() {
+	            loadPageComponent("register");
+	        }.bind(this));
+	        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        }
+   	}
 	component_classes['pages_anonymous_landing_page'] = pages_anonymous_landing_page;
 }

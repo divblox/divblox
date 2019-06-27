@@ -401,7 +401,7 @@ class DivbloxDomBaseComponent {
 				let sub_component_definition_keys = Object.keys(this.sub_component_definitions);
 				sub_component_definition_keys.forEach(function(sub_component_definition_key) {
 					let sub_component_definition = this.sub_component_definitions[sub_component_definition_key];
-					loadComponent(sub_component_definition.component_load_path,this.uid,sub_component_definition.parent_element,sub_component_definition.loading_arguments,false,false,this.subComponentLoadedCallBack.bind(this));
+					loadComponent(sub_component_definition.component_load_path,this.uid,sub_component_definition.parent_element,sub_component_definition.arguments,false,false,this.subComponentLoadedCallBack.bind(this));
 				}.bind(this));
 				this.reset();
 			}.bind(this));

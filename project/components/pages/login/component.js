@@ -38,6 +38,12 @@ if (typeof component_classes['pages_login'] === "undefined") {
 					dxLog("Event triggered: "+event_name+": "+JSON.stringify(parameters_obj));
 			}
 		}
+		subComponentLoadedCallBack(component) {
+			super.subComponentLoadedCallBack(component);
+			if (component.getComponentName() === "ungrouped_imageviewer") {
+				component.updateImage("project/assets/images/divblox_logo.svg");
+			}
+		}
 	}
 	component_classes['pages_login'] = pages_login;
 }

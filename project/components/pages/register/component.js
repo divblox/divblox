@@ -38,6 +38,12 @@ if (typeof component_classes['pages_register'] === "undefined") {
 				}
 			});
 		}
+		subComponentLoadedCallBack(component) {
+			super.subComponentLoadedCallBack(component);
+			if (component.getComponentName() === "ungrouped_imageviewer") {
+				component.updateImage("project/assets/images/divblox_logo.svg");
+			}
+		}
 	}
 	component_classes['pages_register'] = pages_register;
 }
