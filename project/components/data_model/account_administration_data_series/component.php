@@ -57,14 +57,14 @@ class AccountDataTableController extends ProjectComponentController {
                 !is_null($AccountObj->UserRoleObject->Role)) {
                 $UserRoleStr = $AccountObj->UserRoleObject->Role;
             }
-            
+
             array_push($AccountReturnArray,
                 array("Id" => $AccountObj->Id,
                     "FullName" => $AccountObj->FullName,
                     "EmailAddress" => $AccountObj->EmailAddress,
                     "AccessBlocked" => $AccountObj->AccessBlocked,
                     "UserRole" => $UserRoleStr,
-                    ));
+                ));
         }
         $this->setReturnValue("Result","Success");
         $this->setReturnValue("Message","");

@@ -1,66 +1,31 @@
-if (typeof(on_system_native_camera_ready) === "undefined") {
-	function on_system_native_camera_ready(load_arguments) {
-		// This is required for any component to be registered to the DOM as a divblox component
-		this.dom_component_obj = new DivbloxDOMComponent(load_arguments,true,true);
-		this.handleComponentError = function(ErrorMessage) {
-			this.dom_component_obj.handleComponentError(this,ErrorMessage);
-		}.bind(this);
-		this.handleComponentSuccess = function() {
-			this.dom_component_obj.handleComponentSuccess(this);
-		}.bind(this);
-		this.reset = function(inputs) {
+if (typeof component_classes['system_native_camera'] === "undefined") {
+	class system_native_camera extends DivbloxDomBaseComponent {
+		constructor(inputs,supports_native,requires_native) {
+			super(inputs,supports_native,requires_native);
+			// Sub component config start
+			this.sub_component_definitions = [];
+			// Sub component config end
+			this.upload_button_element_id = -1;
+			this.last_uploaded_picture_path = '';
+			this.display_picture_after_upload = true;
+			this.camera_options = {quality:80};
+		}
+		reset(inputs) {
 			this.initCameraOptions();
-		}.bind(this);
-		this.on_component_loaded = function() {
-			this.dom_component_obj.on_component_loaded(this);
-		}.bind(this);
-		this.subComponentLoadedCallBack = function(component) {
-			// Implement additional required functionality for sub components after load here
-			// dxLog("Sub component loaded: "+JSON.stringify(component));
-		}.bind(this);
-		this.getSubComponents = function() {
-			return this.dom_component_obj.getSubComponents(this);
-		}.bind(this);
-		this.getUid = function() {
-			return this.dom_component_obj.getUid();
-		}.bind(this);
-		// Component specific code below
-		// Empty array means ANY user role has access. NB! This is merely for UX purposes.
-		// Do not rely on this as a security measure. User role security MUST be managed on the server's side
-		this.allowedAccessArray = [];
-		this.eventTriggered = function(event_name,parameters_obj) {
-			// Handle specific events here. This is useful if the component needs to update because one of its
-			// sub-components did something
-			switch(event_name) {
-				case '[event_name]':
-				default:
-			dxLog("Event triggered: "+event_name+": "+JSON.stringify(parameters_obj));
-			}
-			// Let's pass the event to all sub components
-			this.dom_component_obj.propagateEventTriggered(event_name,parameters_obj);
-		}.bind(this);
-		// Sub component config start
-		this.sub_components = {};
-		// Sub component config end
-		// Custom functions and declarations to be added below
-		// More info: https://cordova.apache.org/docs/en/latest/reference/cordova-plugin-camera/index.html
-		this.upload_button_element_id = -1;
-		this.last_uploaded_picture_path = '';
-		this.display_picture_after_upload = true;
-		this.camera_options = {quality:80};
-	    this.cameraSuccess = function(imageData) {
-		    this.getFileEntry(imageData);
-	    }.bind(this);
-		this.cameraError = function(message) {
+		}
+		cameraSuccess(imageData) {
+			this.getFileEntry(imageData);
+		}
+		cameraError(message) {
 			// JGL: You can uncomment the line above if you need to display a message to the user when something
 			// fails natively
 			//showAlert("Error processing picture: "+message,"error","OK",false);
 			removeTriggerElementFromLoadingElementArray(this.upload_button_element_id);
-		}.bind(this);
-		this.updateCameraOption = function(option_to_modify,value) {
+		}
+		updateCameraOption(option_to_modify,value) {
 			this.camera_options[option_to_modify] = value;
-		}.bind(this);
-		this.initCameraOptions = function() {
+		}
+		initCameraOptions() {
 			if (typeof Camera !== "undefined") {
 				this.camera_options = {quality:80,
 					destinationType:Camera.DestinationType.FILE_URI,
@@ -75,8 +40,8 @@ if (typeof(on_system_native_camera_ready) === "undefined") {
 					saveToPhotoAlbum:false,
 					cameraDirection:Camera.Direction.BACK};
 			}
-		}.bind(this);
-		this.getFileEntry = function(fileUri) {
+		}
+		getFileEntry(fileUri) {
 			let this_component = this;
 			window.resolveLocalFileSystemURL(fileUri, function success(fileEntry) {
 				fileEntry.file(function (file) {
@@ -128,34 +93,32 @@ if (typeof(on_system_native_camera_ready) === "undefined") {
 				showAlert("Error processing picture: Cannot get FileEntry","error","OK",false);
 				removeTriggerElementFromLoadingElementArray(this_component.upload_button_element_id);
 			});
-		}.bind(this);
-		this.updateUploadedPicture = function(img_url) {
+		}
+		updateUploadedPicture(img_url) {
 			if (this.display_picture_after_upload) {
 				getComponentElementById(this,'native_image').attr('src',img_url).show();
 			} else {
 				getComponentElementById(this,'native_image').hide();
 			}
-		}.bind(this);
-		this.setDisplayPictureAfterUpload = function(display_picture) {
+		}
+		setDisplayPictureAfterUpload(display_picture) {
 			if (typeof display_picture === "undefined") {
 				display_picture = true;
 			}
 			this.display_picture_after_upload = display_picture;
-		}.bind(this);
-        // 2ATYF_button Related functionality
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        getComponentElementById(this,"2ATYF_btn").on("click", function() {
-        	if (!isNative()) {
-        		showAlert("Only allowed when native","error","OK",false);
-	        }
-            // Get the current component uid
-            let uid = getUidFromComponentElementId($(this).attr("id"),"2ATYF_btn");
-            // Get the current component from its uid in order to access its functions
-        	let this_component = getRegisteredComponent(uid);
-	        navigator.camera.getPicture(this_component.cameraSuccess, this_component.cameraError, this_component.camera_options);
-	        this_component.upload_button_element_id = addTriggerElementToLoadingElementArray($(this),"Processing");
-        });
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
+		}
+		registerDomEvents() {
+			// 2ATYF_button Related functionality
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			getComponentElementById(this,"2ATYF_btn").on("click", function() {
+				if (!isNative()) {
+					showAlert("Only allowed when native","error","OK",false);
+				}
+				navigator.camera.getPicture(this.cameraSuccess, this.cameraError, this.camera_options);
+				this.upload_button_element_id = addTriggerElementToLoadingElementArray(this.uid+"_2ATYF_btn","Processing");
+			}.bind(this));
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		}
 	}
+	component_classes['system_native_camera'] = system_native_camera;
 }

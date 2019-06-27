@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // divblox initialization
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "0.6.2";
+let dx_version = "1.0.0";
 let bootstrap_version = "4.3.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.2";
@@ -36,10 +36,12 @@ let cache_scripts_requested = [];
 let cache_scripts_loaded = [];
 let url_input_parameters = null;
 let is_native = false;
+let registered_event_handlers = [];
 if(window.jQuery === undefined) {
 	// JGL: We assume that we have jquery available here...
 	throw new Error("jQuery has not been loaded. Please ensure that jQuery is loaded before divblox");
 }
+let component_classes = [];
 
 // JGL: Load all divblox dependencies
 let dependency_array = [
@@ -340,102 +342,129 @@ function getValueFromAppState(item_key) {
 let dom_component_index_map = {};
 // JGL: Let's initialize the object that will contain relevant DOM info for our components that are rendered on the page
 let registered_component_array = {};
-// JGL: this object will be in the form:
-// {"[uid]"/*The unique id of the component*/:{"component":"[The name of the
-// component]","dom_index":"[The DOM index]", "component_object":{}//The Object,
-// "element_mapping":{"object_attribute":"dom_element_id",etc}}}
-
-function DivbloxDOMComponent(arguments,supports_native,requires_native) {
-	this.arguments = arguments;
-	if (typeof(arguments["uid"]) !== "undefined") {
-		this.uid = arguments["uid"];
-	} else {
-		this.uid = this.arguments["component_name"]+"_" + this.arguments["dom_index"];
-	}
-	this.component_success = false;
-	this.component_object = {};
-	this.calling_component = null;
-	this.element_mapping = {};
-	this.sub_component_uid_array = [];
-	this.supports_native = true;
-	this.requires_native = false;
-	if (typeof supports_native !== "undefined") {
-		this.supports_native = supports_native;
-	}
-	if (typeof requires_native !== "undefined") {
-		this.requires_native = requires_native;
-	}
-	this.resetSubComponents = function() {
-		this.sub_component_uid_array.forEach(function(uid) {
-			getRegisteredComponent(uid).reset();
-		}.bind(this));
-	}.bind(this);
-	this.getReadyState = function() {
-		return this.component_success;
-	}.bind(this);
-	this.handleComponentSuccess = function(calling_component,additional_input) {
-		if (this.component_success === true) {
-			return;
+/*DivbloxDomBaseComponent is the base class that manages the component javascript for every component*/
+class DivbloxDomBaseComponent {
+	constructor(inputs,supports_native,requires_native) {
+		this.arguments = inputs;
+		if (typeof supports_native === "undefined") {
+			supports_native = true;
 		}
-		on_divblox_component_success(calling_component);
-	}.bind(this);
-	this.handleComponentError = function(calling_component,ErrorMessage) {
-		on_divblox_component_error(calling_component,ErrorMessage);
-	}.bind(this);
-	this.on_component_loaded = function(calling_component,confirm_success) {
+		if (typeof requires_native === "undefined") {
+			requires_native = false;
+		}
+		this.supports_native = supports_native;
+		this.requires_native = requires_native;
+		if (typeof(this.arguments["uid"]) !== "undefined") {
+			this.uid = this.arguments["uid"];
+		} else {
+			this.uid = this.arguments["component_name"] + "_" + this.arguments["dom_index"];
+		}
+		this.component_success = false;
+		this.sub_component_definitions = {};
+		this.sub_component_objects = [];
+		this.allowed_access_array = [];
+	}
+	loadPrerequisites(success_callback,fail_callback) {
+		if (typeof success_callback !== "function") {
+			success_callback = function(){};
+		}
+		if (typeof fail_callback !== "function") {
+			fail_callback = function(){};
+		}
+		success_callback();
+	}
+	on_component_loaded(confirm_success) {
 		if (isNative()) {
 			if (!this.supports_native) {
-				calling_component.handleComponentError("Component "+this.getUid()+" does not support native.");
+				this.handleComponentError("Component "+this.uid+" does not support native.");
 				return;
 			}
 		} else {
 			if (this.requires_native) {
-				calling_component.handleComponentError("Component "+this.getUid()+" requires a native implementation.");
+				this.handleComponentError("Component "+this.uid+" requires a native implementation.");
 				return;
 			}
 		}
 		if (typeof confirm_success === "undefined") {
 			confirm_success = true;
 		}
-		this.calling_component = calling_component;
-		let this_dom_component = this;
-		let uid = this.getUid();
-		dxCheckCurrentUserRole(calling_component.allowedAccessArray,function() {
-			calling_component.handleComponentError("Access denied");
-		}, function() {});
-		if (confirm_success) {
-			calling_component.handleComponentSuccess();
+		this.loadPrerequisites(function() {
+			dxCheckCurrentUserRole(this.allowed_access_array,function() {
+				this.handleComponentError("Access denied");
+			}.bind(this), function() {
+				if (confirm_success) {
+					this.handleComponentSuccess();
+				}
+				this.registerDomEvents();
+				this.initCustomFunctions();
+				// Load additional components here
+				let sub_component_definition_keys = Object.keys(this.sub_component_definitions);
+				sub_component_definition_keys.forEach(function(sub_component_definition_key) {
+					let sub_component_definition = this.sub_component_definitions[sub_component_definition_key];
+					loadComponent(sub_component_definition.component_load_path,this.uid,sub_component_definition.parent_element,sub_component_definition.loading_arguments,false,false,this.subComponentLoadedCallBack.bind(this));
+				}.bind(this));
+				this.reset();
+			}.bind(this));
+		}.bind(this),function () {
+			this.handleComponentError("Error loading component dependencies");
+		}.bind(this));
+	}
+	reset(inputs) {
+		dxLog("Reset for "+this.getComponentName()+" not implemented");
+	}
+	resetSubComponents() {
+		this.sub_component_objects.forEach(function(component) {
+			component.reset();
+		}.bind(this));
+	}
+	getReadyState() {
+		return this.component_success;
+	}
+	handleComponentSuccess(additional_input) {
+		if (this.component_success === true) {
+			return;
 		}
-		calling_component.reset();
-		// Load additional components here
-		let sub_component_keys = Object.keys(calling_component.getSubComponents());
-		sub_component_keys.forEach(function(sub_component_key) {
-			let sub_component_obj = calling_component.getSubComponents()[sub_component_key];
-			loadComponent(sub_component_obj.component_load_path,uid,sub_component_obj.parent_element,sub_component_obj.loading_arguments,false,false,this_dom_component.subComponentLoadedCallBack);
-		});
-	}.bind(this);
-	this.subComponentLoadedCallBack = function(component) {
-		this.sub_component_uid_array.push(component.dom_component_obj.uid);
-		this.calling_component.subComponentLoadedCallBack(component);
-	}.bind(this);
-	this.getSubComponents = function(calling_component) {
-		if (typeof calling_component.sub_components !== "undefined") {
-			return calling_component.sub_components;
+		this.component_success = true;
+		$("#"+this.uid+"_ComponentContent").show();
+		$("#"+this.uid+"_ComponentPlaceholder").hide();
+		if (typeof cb_active !== "undefined") {
+			if (cb_active) {
+				on_divblox_component_success(this);
+			}
 		}
-		return {};
-	}.bind(this);
-	this.getUid = function(calling_component) {
+	}
+	handleComponentError(ErrorMessage) {
+		this.component_success = false;
+		$("#"+this.uid+"_ComponentContent").hide();
+		$("#"+this.uid+"_ComponentPlaceholder").show();
+		$("#"+this.uid+"_ComponentFeedback").html('<div class="alert alert-danger alert-danger-component"><strong><i' +
+			' class="fa fa-exclamation-triangle ComponentErrorExclamation" aria-hidden="true"></i>' +
+			' </strong><br>'+ErrorMessage+'</div>');
+		if (typeof cb_active !== "undefined") {
+			if (cb_active) {
+				on_divblox_component_error(this);
+			}
+		}
+	}
+	registerDomEvents() {/*To be overridden in sub class as needed*/}
+	initCustomFunctions() {/*To be overridden in sub class as needed*/}
+	subComponentLoadedCallBack(component) {
+		this.sub_component_objects.push(component);
+		// JGL: Override as needed
+	}
+	getSubComponents() {
+		return this.sub_component_objects;
+	}
+	getSubComponentDefinitions() {
+		return this.sub_component_definitions;
+	}
+	getUid() {
 		return this.uid;
-	}.bind(this);
-	this.propagateEventTriggered = function(event_name,parameters_obj) {
-		this.sub_component_uid_array.forEach(function(uid) {
-			getRegisteredComponent(uid).eventTriggered(event_name,parameters_obj);
-		});
-	}.bind(this);
-	this.getComponentName = function() {
+	}
+	getComponentName() {
 		return this.arguments['component_name'];
-	}.bind(this);
-	this.getLoadArgument = function(argument) {
+	}
+	getLoadArgument(argument) {
 		if (typeof this.arguments[argument] !== "undefined") {
 			return this.arguments[argument];
 		}
@@ -445,7 +474,21 @@ function DivbloxDOMComponent(arguments,supports_native,requires_native) {
 			}
 		}
 		return null;
-	}.bind(this);
+	}
+	eventTriggered(event_name,parameters_obj) {
+		switch(event_name) {
+			case '[event_name]':
+			default:
+				dxLog("Event triggered: "+event_name+": "+JSON.stringify(parameters_obj));
+		}
+		// Let's pass the event to all sub components
+		this.propagateEventTriggered(event_name,parameters_obj);
+	}
+	propagateEventTriggered(event_name,parameters_obj) {
+		this.sub_component_objects.forEach(function(component) {
+			component.eventTriggered(event_name,parameters_obj);
+		});
+	}
 }
 function on_divblox_component_success(component) {
 	let uid = component.getUid();
@@ -550,10 +593,10 @@ function loadComponentCss(component_path) {
 	$('head').append('<link rel="stylesheet" href="'+url+'" type="text/css" />');
 }
 function loadComponentJs(component_path,load_arguments,callback) {
-	let function_name = "on_"+load_arguments["component_name"]+"_ready";
-	if (typeof window[function_name] === "function") {
-		let component = new window[function_name](load_arguments);
-		registerComponent(component,component.dom_component_obj.uid);
+	let class_name = ""+load_arguments["component_name"];
+	if (typeof component_classes[class_name] === "function") {
+		let component = new component_classes[class_name](load_arguments);
+		registerComponent(component,component.uid);
 		if (typeof(component.on_component_loaded) !== "undefined") {
 			component.on_component_loaded();
 		}
@@ -566,8 +609,8 @@ function loadComponentJs(component_path,load_arguments,callback) {
 		}
 		dxGetScript(full_component_path, function(data) {
 			// JGL: Execute the on_[component_name]_ready function
-			let component = new window[function_name](load_arguments);
-			registerComponent(component,component.dom_component_obj.uid);
+			let component = new component_classes[class_name](load_arguments);
+			registerComponent(component,component.uid);
 			if (typeof(component.on_component_loaded) !== "undefined") {
 				component.on_component_loaded();
 			}
@@ -595,7 +638,7 @@ function loadPageComponent(component_name,load_arguments,callback) {
 		return;
 	}
 	registered_component_array = {};
-	$(document).off();
+	unRegisterEventHandlers();
 	let final_load_arguments = {"uid":page_uid};
 	if (typeof load_arguments === "object") {
 		let load_argument_keys = Object.keys(load_arguments);
@@ -652,13 +695,13 @@ function getRegisteredComponent(uid) {
 	return registered_component_array[uid]
 }
 function getComponentName(component) {
-	return component.dom_component_obj.getComponentName();
+	return component.getComponentName();
 }
 function getPageMainComponent() {
 	return getRegisteredComponent(page_uid);
 }
 function getComponentElementById(component,element_id) {
-	return $("#"+component.dom_component_obj.uid+"_"+element_id);
+	return $("#"+component.uid+"_"+element_id);
 }
 function getUidFromComponentElementId(component_element_id,element_id) {
 	return component_element_id.replace("_"+element_id,"");
@@ -668,9 +711,9 @@ function pageEventTriggered(event_name,parameters_obj) {
 }
 function getComponentControllerPath(component) {
 	if (isNative()) {
-		return server_final_url+component.dom_component_obj.arguments["component_path"]+"/component.php";
+		return server_final_url+component.arguments["component_path"]+"/component.php";
 	}
-	return component.dom_component_obj.arguments["component_path"]+"/component.php";
+	return component.arguments["component_path"]+"/component.php";
 }
 function loadComponentHtmlAsDOMObject(component_path,callback) {
 	dxGetScript(component_path+"/component.html", function(html) {
@@ -765,6 +808,29 @@ function getRandomFilePostFix() {
 		postfix_candidate += possible_characters.charAt(Math.floor(Math.random() * possible_characters.length));
 	}
 	return '?v='+postfix_candidate;
+}
+function registerEventHandler(dom_node,event,dom_id,dom_class) {
+	if (typeof dom_node === "undefined"){return;}
+	if (typeof event === "undefined"){return;}
+	let event_obj = {dom_node:dom_node,event:event,id:dom_id,class:dom_class};
+	if (typeof registered_event_handlers !== "object") {
+		registered_event_handlers = [];
+	}
+	registered_event_handlers.push(event_obj);
+}
+function unRegisterEventHandlers() {
+	let event_keys = Object.keys(registered_event_handlers);
+	event_keys.forEach(function(key) {
+		let event_obj = registered_event_handlers[key];
+		if (typeof event_obj.id !== "undefined") {
+			$(event_obj.dom_node).off(event_obj.event,"#"+event_obj.id);
+		} else if (typeof event_obj.class !== "undefined") {
+			$(event_obj.dom_node).off(event_obj.event,"."+event_obj.class);
+		} else {
+			$(event_obj.dom_node).off(event_obj.event);
+		}
+	});
+	registered_event_handlers = [];
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

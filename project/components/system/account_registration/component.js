@@ -1,170 +1,127 @@
-if (typeof(on_system_account_registration_ready) === "undefined") {
-	function on_system_account_registration_ready(load_arguments) {
-		// This is required for any component to be registered to the DOM as a divblox component
-		this.dom_component_obj = new DivbloxDOMComponent(load_arguments);
-		this.handleComponentError = function(ErrorMessage) {
-			this.dom_component_obj.handleComponentError(this,ErrorMessage);
-		}.bind(this);
-		this.handleComponentSuccess = function() {
-			this.dom_component_obj.handleComponentSuccess(this);
-		}.bind(this);
-		this.reset = function(inputs) {
+if (typeof component_classes['system_account_registration_this_too'] === "undefined") {
+	class system_account_registration extends DivbloxDomBaseComponent {
+		constructor(inputs,supports_native,requires_native) {
+			super(inputs,supports_native,requires_native);
+			// Sub component config start
+			this.sub_component_definitions = [];
+			// Sub component config end
+			this.data_validation_array = [];
+			this.custom_validation_array = ['EmailAddress'];
+			this.required_validation_array = ['FirstName','LastName','Password'].concat(this.data_validation_array).concat(this.custom_validation_array);
+		}
+		reset(inputs) {
 			this.loadAccount();
-		}.bind(this);
-		this.on_component_loaded = function() {
-			this.dom_component_obj.on_component_loaded(this);
-		}.bind(this);
-		this.subComponentLoadedCallBack = function(component) {
-			// Implement additional required functionality for sub components after load here
-			// dxLog("Sub component loaded: "+JSON.stringify(component));
-		}.bind(this);
-		this.getSubComponents = function() {
-			return this.dom_component_obj.getSubComponents(this);
-		}.bind(this);
-		this.getUid = function() {
-			return this.dom_component_obj.getUid();
-		}.bind(this);
-		// Component specific code below
-		// Empty array means ANY user role has access. NB! This is merely for UX purposes.
-		// Do not rely on this as a security measure. User role security MUST be managed on the server's side
-		this.allowedAccessArray = [];
-		this.eventTriggered = function(event_name,parameters_obj) {
-			// Handle specific events here. This is useful if the component needs to update because one of its
-			// sub-components did something
-			switch(event_name) {
-				case '[event_name]':
-				default:
-				dxLog("Event triggered: "+event_name+": "+JSON.stringify(parameters_obj));
-			}
-			// Let's pass the event to all sub components
-			this.dom_component_obj.propagateEventTriggered(event_name,parameters_obj);
-		}.bind(this);
-		// Sub component config start
-		this.sub_components = {};
-		// Sub component config end
-		// Custom functions and declarations to be added below
-		this.data_validation_array = [];
-		this.custom_validation_array = ['EmailAddress'];
-		this.required_validation_array = ['FirstName','LastName','Password'].concat(this.data_validation_array).concat(this.custom_validation_array);
-		
-		getComponentElementById(this,"btnSave").on("click", function() {
-			this.saveAccount();
-		}.bind(this));
-		this.loadAccount = function() {
-			let this_component = this;
-			let uid = this_component.getUid();
+		}
+		registerDomEvents() {
+			getComponentElementById(this,"btnSave").on("click", function() {
+				this.saveAccount();
+			}.bind(this));
+		}
+		loadAccount() {
 			dxRequestInternal(getComponentControllerPath(this),{f:"getObjectData"}, function(data_obj) {
-				this_component.dom_component_obj.component_obj = {
+				this.component_obj = {
 					"FirstName":"",
-                    "LastName":"",
-                    "EmailAddress":"",
-                    "Password":"",
-                    };
-				this_component.dom_component_obj.element_mapping = {
-					"FirstName":"#"+uid+"_FirstName",
-                    "LastName":"#"+uid+"_LastName",
-                    "EmailAddress":"#"+uid+"_EmailAddress",
-                    "Password":"#"+uid+"_Password",
-                    };
+					"LastName":"",
+					"EmailAddress":"",
+					"Password":"",
+				};
+				this.element_mapping = {
+					"FirstName":"#"+this.uid+"_FirstName",
+					"LastName":"#"+this.uid+"_LastName",
+					"EmailAddress":"#"+this.uid+"_EmailAddress",
+					"Password":"#"+this.uid+"_Password",
+				};
 				
-				this_component.setValues();
-			}, function(data_obj) {
-				this_component.handleComponentError(data_obj.Message);
-			});
-		}.bind(this);
-		this.setValues = function() {
-			let this_component = this;
-			let uid = this_component.getUid();
-			getComponentElementById(this_component,"FirstName").val("");
-            getComponentElementById(this_component,"LastName").val("");
-            getComponentElementById(this_component,"EmailAddress").val("");
-            getComponentElementById(this_component,"Password").val("");
-            
-			
-		}.bind(this);
-		this.updateValues = function() {
-			let this_component = this;
-			let keys = Object.keys(this_component.dom_component_obj.element_mapping);
+				this.setValues();
+			}.bind(this), function(data_obj) {
+				this.handleComponentError(data_obj.Message);
+			}.bind(this));
+		}
+		setValues() {
+			getComponentElementById(this,"FirstName").val("");
+			getComponentElementById(this,"LastName").val("");
+			getComponentElementById(this,"EmailAddress").val("");
+			getComponentElementById(this,"Password").val("");
+		}
+		updateValues() {
+			let keys = Object.keys(this.element_mapping);
 			keys.forEach(function(item) {
-				if ($(this_component.dom_component_obj.element_mapping[item]).attr("type") == "checkbox") {
-					this_component.dom_component_obj.component_obj[item] = $(this_component.dom_component_obj.element_mapping[item]).is(':checked') ? 1: 0;
+				if ($(this.element_mapping[item]).attr("type") == "checkbox") {
+					this.component_obj[item] = $(this.element_mapping[item]).is(':checked') ? 1: 0;
 				} else {
-					this_component.dom_component_obj.component_obj[item] = $(this_component.dom_component_obj.element_mapping[item]).val();
+					this.component_obj[item] = $(this.element_mapping[item]).val();
 				}
-			});
-			return this_component.dom_component_obj.component_obj;
-		}.bind(this);
-		this.saveAccount = function() {
-			let this_component = this;
-			let current_component_obj = this_component.updateValues();
-			this_component.resetValidation();
-			if (!this_component.validateAccount()) {
+			}.bind(this));
+			return this.component_obj;
+		}
+		saveAccount() {
+			let current_component_obj = this.updateValues();
+			this.resetValidation();
+			if (!this.validateAccount()) {
 				return;
 			}
 			dxRequestInternal(getComponentControllerPath(this),{f:"saveObjectData",ObjectData:JSON.stringify(current_component_obj)}, function(data_obj) {
 				pageEventTriggered("account_registered",{"account_id":data_obj.Id});
-				this_component.loadAccount();
-				this_component.resetValidation();
-			}, function(data_obj) {
+				this.loadAccount();
+				this.resetValidation();
+			}.bind(this), function(data_obj) {
 				showAlert("Error saving account: "+data_obj.Message,"error","OK",false);
 			});
-		}.bind(this);
-		this.validateAccount = function() {
-			let this_component = this;
+		}
+		validateAccount() {
 			let validation_succeeded = true;
-			this_component.required_validation_array.forEach(function(item) {
-				if (getComponentElementById(this_component,item).attr("type") !== "checkbox") {
-					if (getComponentElementById(this_component,item).val() == "") {
+			this.required_validation_array.forEach(function(item) {
+				if (getComponentElementById(this,item).attr("type") !== "checkbox") {
+					if (getComponentElementById(this,item).val() == "") {
 						validation_succeeded = false;
-						toggleValidationState(this_component,item,"",false);
+						toggleValidationState(this,item,"",false);
 					} else {
-						toggleValidationState(this_component,item,"",true);
+						toggleValidationState(this,item,"",true);
 					}
 				}
-			});
-			this_component.data_validation_array.forEach(function(item) {
-				if (!getComponentElementById(this_component,item).hasClass("is-invalid")) {
-					if (getComponentElementById(this_component,item).hasClass("validate-number")) {
-						if (isNaN(getComponentElementById(this_component,item).val())) {
+			}.bind(this));
+			this.data_validation_array.forEach(function(item) {
+				if (!getComponentElementById(this,item).hasClass("is-invalid")) {
+					if (getComponentElementById(this,item).hasClass("validate-number")) {
+						if (isNaN(getComponentElementById(this,item).val())) {
 							validation_succeeded = false;
-							toggleValidationState(this_component,item,"",false);
+							toggleValidationState(this,item,"",false);
 						} else {
-							toggleValidationState(this_component,item,"",true);
+							toggleValidationState(this,item,"",true);
 						}
 					}
 				}
-			});
-			this_component.custom_validation_array.forEach(function(item) {
-				if (checkValidationState(this_component,item)) {
-					validation_succeeded &= this_component.doCustomValidation(item);
+			}.bind(this));
+			this.custom_validation_array.forEach(function(item) {
+				if (checkValidationState(this,item)) {
+					validation_succeeded &= this.doCustomValidation(item);
 				}
-			});
-			if (getComponentElementById(this_component,'Password').val() != getComponentElementById(this_component,'PasswordConfirm').val()) {
-				toggleValidationState(this_component,'PasswordConfirm',"Passwords do not match",false);
+			}.bind(this));
+			if (getComponentElementById(this,'Password').val() != getComponentElementById(this,'PasswordConfirm').val()) {
+				toggleValidationState(this,'PasswordConfirm',"Passwords do not match",false);
 				validation_succeeded = false;
 			} else {
-				toggleValidationState(this_component,'PasswordConfirm',"",true);
+				toggleValidationState(this,'PasswordConfirm',"",true);
 			}
 			return validation_succeeded;
-		}.bind(this);
-		this.doCustomValidation = function(attribute) {
-			let this_component = this;
+		}
+		doCustomValidation(attribute) {
 			switch (attribute) {
-				case 'EmailAddress': let valid = validateEmail(getComponentElementById(this_component,'EmailAddress').val());
-					toggleValidationState(this_component,'EmailAddress',"Please" +
-					" provide a" +
-					" valid email address",valid);
+				case 'EmailAddress': let valid = validateEmail(getComponentElementById(this,'EmailAddress').val());
+					toggleValidationState(this,'EmailAddress',"Please" +
+						" provide a" +
+						" valid email address",valid);
 					return valid;
 					break;
 				default:
 					break;
 			}
-		}.bind(this);
-		this.resetValidation = function() {
-			let this_component = this;
-			this_component.required_validation_array.forEach(function(item) {
-				toggleValidationState(this_component,item,"",true,true);
-			});
-		}.bind(this);
+		}
+		resetValidation() {
+			this.required_validation_array.forEach(function(item) {
+				toggleValidationState(this,item,"",true,true);
+			}.bind(this));
+		}
 	}
+	component_classes['system_account_registration'] = system_account_registration;
 }

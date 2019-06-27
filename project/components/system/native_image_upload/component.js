@@ -1,56 +1,20 @@
-if (typeof(on_system_native_image_upload_ready) === "undefined") {
-	function on_system_native_image_upload_ready(load_arguments) {
-		// This is required for any component to be registered to the DOM as a divblox component
-		this.dom_component_obj = new DivbloxDOMComponent(load_arguments);
-		this.handleComponentError = function(ErrorMessage) {
-			this.dom_component_obj.handleComponentError(this,ErrorMessage);
-		}.bind(this);
-		this.handleComponentSuccess = function() {
-			this.dom_component_obj.handleComponentSuccess(this);
-		}.bind(this);
-		this.reset = function(inputs) {
-			dxLog("Reset for default_image_upload not implemented");
-		}.bind(this);
-		this.on_component_loaded = function() {
-			this.dom_component_obj.on_component_loaded(this);
-			let this_component = this;
-			let uid = this_component.getUid();
+if (typeof component_classes['system_native_image_upload'] === "undefined") {
+	class system_native_image_upload extends DivbloxDomBaseComponent {
+		constructor(inputs,supports_native,requires_native) {
+			super(inputs,supports_native,requires_native);
+			// Sub component config start
+			this.sub_component_definitions = [];
+			// Sub component config end
+			this.file_upload_array = [];
+		}
+		loadPrerequisites(success_callback,fail_callback) {
 			dxGetScript(getRootPath()+"project/assets/js/jquery_fileuploader/jquery.fileuploader.min.js", function( data, textStatus, jqxhr ) {
-				this_component.initFileUploader();
-			},function() {},false);
-		}.bind(this);
-		this.subComponentLoadedCallBack = function(component) {
-			// Implement additional required functionality for sub components after load here
-			// dxLog("Sub component loaded: "+JSON.stringify(component));
-		}.bind(this);
-		this.getSubComponents = function() {
-			return this.dom_component_obj.getSubComponents(this);
-		}.bind(this);
-		this.getUid = function() {
-			return this.dom_component_obj.getUid();
-		}.bind(this);
-		// Component specific code below
-		// Empty array means ANY user role has access. NB! This is merely for UX purposes.
-		// Do not rely on this as a security measure. User role security MUST be managed on the server's side
-		this.allowedAccessArray = [];
-		this.eventTriggered = function(event_name,parameters_obj) {
-			// Handle specific events here. This is useful if the component needs to update because one of its
-			// sub-components did something
-			switch(event_name) {
-				case '[event_name]':
-				default:
-					dxLog("Event triggered: "+event_name+": "+JSON.stringify(parameters_obj));
-			}
-			// Let's pass the event to all sub components
-			this.dom_component_obj.propagateEventTriggered(event_name,parameters_obj);
-		}.bind(this);
-		// Sub component config start
-		this.sub_components = {};
-		// Sub component config end
-		// Custom functions and declarations to be added below
-		this.file_upload_array = [];
-		this.saveEditedImage = function(item) {
-			let uid = this.getUid();
+				this.initFileUploader();
+				success_callback();
+			}.bind(this));
+		}
+		saveEditedImage(item) {
+			let uid = this.uid;
 			let this_component = this;
 			// if still uploading
 			// pend and exit
@@ -86,27 +50,27 @@ if (typeof(on_system_native_image_upload_ready) === "undefined") {
 					item.reader.read(function() {
 						delete item.imageIsUploading;
 						item.html.find('.fileuploader-action-popup').show();
-						
 						item.popup.html = item.popup.editor = item.editor.crop = item.editor.rotation = null;
 						item.renderThumbnail();
 						pageEventTriggered("ImageEdited",data_obj);
 					}, null, true);
 				},function(data_obj) {});
 			}
-		}.bind(this);
-		this.resetFileUploader = function() {
-			let uid = this.getUid();
-			let file_uploader_instance = $.fileuploader.getInstance('#'+uid+'_file_uploader');
+		}
+		resetFileUploader () {
+			let file_uploader_instance = $.fileuploader.getInstance('#'+this.uid+'_file_uploader');
 			file_uploader_instance.reset();
-		}.bind(this);
-		this.initFileUploader = function() {
-			let uid = this.getUid();
+		}
+		initFileUploader() {
+			let uid = this.uid;
 			let this_component = this;
 			$('#'+uid+'_file_uploader').fileuploader({
 				extensions: ['jpg', 'jpeg', 'png', 'gif'],
 				changeInput: '<div class="fileuploader-input">' +
 					'<div class="fileuploader-input-inner">' +
 					'<div class="fileuploader-main-icon"></div>' +
+					'<h3 class="fileuploader-input-caption"><span>${captions.feedback}</span></h3>' +
+					'<p>${captions.or}</p>' +
 					'<div class="fileuploader-input-button"><span>${captions.button}</span></div>' +
 					'</div>' +
 					'</div>',
@@ -132,7 +96,7 @@ if (typeof(on_system_native_image_upload_ready) === "undefined") {
 				},
 				upload: {
 					url: getComponentControllerPath(this_component),
-					data: {f:"handleFilePost",AuthenticationToken:authentication_token,is_native:1},
+					data: {f:"handleFilePost"},
 					type: 'POST',
 					enctype: 'multipart/form-data',
 					start: false,
@@ -172,10 +136,6 @@ if (typeof(on_system_native_image_upload_ready) === "undefined") {
 								showAlert("Error uploading file: "+data.ComponentFriendlyMessage,"error","OK",false);
 								return;
 							}
-						}
-						if (typeof data.AuthenticationToken !== "undefined") {
-							authentication_token = data.AuthenticationToken;
-							updateAppState('dxAuthenticationToken',authentication_token);
 						}
 						// if success
 						if (data.isSuccess && data.files[0]) {
@@ -252,6 +212,7 @@ if (typeof(on_system_native_image_upload_ready) === "undefined") {
 				},
 				enableApi: true
 			});
-		}.bind(this);
+		}
 	}
+	component_classes['system_native_image_upload'] = system_native_image_upload;
 }
