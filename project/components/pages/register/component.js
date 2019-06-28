@@ -19,6 +19,7 @@ if (typeof component_classes['pages_register'] === "undefined") {
 					}
 				}
 			}.bind(this));
+			super.reset(inputs);
 		}
 		eventTriggered(event_name,parameters_obj) {
 			// Handle specific events here. This is useful if the component needs to update because one of its

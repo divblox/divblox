@@ -8,6 +8,7 @@ if (typeof component_classes['pages_blank_page'] === "undefined") {
 		}
 		reset(inputs) {
 			setActivePage("page_component_name","Page Title");
+			super.reset(inputs);
 		}
 	}
 	component_classes['pages_blank_page'] = pages_blank_page;

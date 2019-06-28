@@ -10,8 +10,8 @@ if (typeof component_classes['data_model_account_administration'] === "undefined
 			// Sub component config end
 		}
 		reset(inputs) {
-			this.resetSubComponents();
 			this.toggleSubView("data_series_wrapper");
+			super.reset(inputs);
 		}
 		eventTriggered(event_name,parameters_obj) {
 			// Handle specific events here. This is useful if the component needs to update because one of its

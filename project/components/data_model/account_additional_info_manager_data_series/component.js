@@ -14,6 +14,7 @@ if (typeof component_classes['data_model_account_additional_info_manager_data_se
 		reset(inputs) {
 			getComponentElementById(this,"DataList").html("");
 			this.loadPage();
+			super.reset(inputs);
 		}
 		registerDomEvents() {
 			getComponentElementById(this,"DataListSearchInput").on("keyup", function() {

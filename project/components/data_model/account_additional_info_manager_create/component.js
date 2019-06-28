@@ -16,6 +16,7 @@ if (typeof component_classes['data_model_account_additional_info_manager_create'
 		}
 		reset(inputs) {
 			this.loadAdditionalAccountInformation();
+			super.reset(inputs);
 		}
 		loadAdditionalAccountInformation() {
 			dxRequestInternal(getComponentControllerPath(this),{f:"getObjectData"}, function(data_obj) {

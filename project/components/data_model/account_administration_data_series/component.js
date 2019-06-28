@@ -42,6 +42,7 @@ if (typeof component_classes['data_model_account_administration_data_series'] ==
 		}
 		reset(inputs) {
 			this.loadPage();
+			super.reset(inputs);
 		}
 		loadPrerequisites(success_callback,fail_callback) {
 			dxGetScript(getRootPath()+'project/assets/js/tableexport/xlsx.core.min.js',function() {

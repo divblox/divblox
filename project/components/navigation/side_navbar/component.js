@@ -11,6 +11,7 @@ if (typeof component_classes['navigation_side_navbar'] === "undefined") {
 				$(".component-wrapper-compact-sidebar").removeClass("sidebar_compact_left_visible");
 				$(".sidebar-left").css("margin-left","-100px").addClass("slide-left");
 			}
+			super.reset(inputs);
 		}
 		registerDomEvents() {
 			$(".sidebar_toggle_left").on("click", function() {

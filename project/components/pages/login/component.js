@@ -19,6 +19,7 @@ if (typeof component_classes['pages_login'] === "undefined") {
 					}
 				}
 			}.bind(this));
+			super.reset(inputs);
 		}
 		registerDomEvents() {
 			getComponentElementById(this,"AuthenticationComponent").keypress(function( event ) {

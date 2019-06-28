@@ -9,13 +9,14 @@ if (typeof component_classes['data_model_account_administration_update'] === "un
 			this.custom_validation_array = [];
 			this.required_validation_array = [].concat(this.data_validation_array).concat(this.custom_validation_array);
 			this.user_role_list = {};
-        
+   
 		}
 		reset(inputs) {
 			if (typeof inputs !== "undefined") {
 				this.setAccountId(inputs);
 				this.loadAccount();
 			}
+			super.reset(inputs);
 		}
 		registerDomEvents() {
 			getComponentElementById(this,"btnSave").on("click", function() {
@@ -63,7 +64,7 @@ if (typeof component_classes['data_model_account_administration_update'] === "un
                     "UserRole":"#"+this.uid+"_UserRole",
                     };
 				this.user_role_list = data_obj.UserRoleList;
-                
+    
 				this.setValues();
 			}.bind(this), function(data_obj) {
 				this.handleComponentError(data_obj.Message);

@@ -17,6 +17,7 @@ if (typeof component_classes['data_model_account_additional_info_manager_update'
 				this.setAdditionalAccountInformationId(inputs);
 				this.loadAdditionalAccountInformation();
 			}
+			super.reset(inputs);
 		}
 		registerDomEvents() {
 			getComponentElementById(this,"btnSave").on("click", function() {

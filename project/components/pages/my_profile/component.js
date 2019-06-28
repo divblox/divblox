@@ -10,6 +10,7 @@ if (typeof component_classes['pages_my_profile'] === "undefined") {
 		}
 		reset(inputs) {
 			setActivePage("profile","My Profile");
+			super.reset(inputs);
 		}
 	}
 	component_classes['pages_my_profile'] = pages_my_profile;

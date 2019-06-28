@@ -13,6 +13,7 @@ if (typeof component_classes['pages_anonymous_landing_page'] === "undefined") {
 		}
 		reset(inputs) {
 			setActivePage("","dx Home");
+			super.reset(inputs);
 		}
 		subComponentLoadedCallBack(component) {
             super.subComponentLoadedCallBack(component);

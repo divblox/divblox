@@ -9,8 +9,9 @@ if (typeof component_classes['data_model_account_additional_info_manager'] === "
 				{"component_load_path":"data_model/account_additional_info_manager_create","parent_element":"data_create","loading_arguments":{"uid":"account_additional_info_manager_create_component"}}];
 			// Sub component config end
 		}
-		reset() {
+		reset(inputs) {
 			this.toggleSubView('data_series_wrapper');
+			super.reset(inputs);
 		}
 		eventTriggered(event_name,parameters_obj) {
 			// Handle specific events here. This is useful if the component needs to update because one of its

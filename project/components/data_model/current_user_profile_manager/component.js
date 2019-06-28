@@ -11,7 +11,7 @@ if (typeof component_classes['data_model_current_user_profile_manager'] === "und
 			this.custom_validation_array = [];
 			this.required_validation_array = ['EmailAddress','Username',].concat(this.data_validation_array).concat(this.custom_validation_array);
 		}
-		reset() {
+		reset(inputs) {
 			dxRequestInternal(getRootPath()+'project/assets/php/global_request_handler.php',{f:"getCurrentAccountId"},
 				function(data_obj) {
 					if (typeof data_obj.CurrentAccountId === "undefined") {
@@ -26,6 +26,7 @@ if (typeof component_classes['data_model_current_user_profile_manager'] === "und
 				function(data_obj) {
 					loadPageComponent("login");
 				}.bind(this));
+			super.reset(inputs);
 		}
 		eventTriggered(event_name,parameters_obj) {
 			// Handle specific events here. This is useful if the component needs to update because one of its

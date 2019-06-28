@@ -10,6 +10,7 @@ if (typeof component_classes['ungrouped_imageviewer'] === "undefined") {
 			if (typeof(this.getImagePath()) !== "undefined") {
 				$("#"+this.uid+"_image").attr("src",this.getImagePath());
 			}
+			super.reset(inputs);
 		}
 		getImagePath() {
 			return this.arguments["image_path"];

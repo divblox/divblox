@@ -11,6 +11,7 @@ if (typeof component_classes['system_account_registration_this_too'] === "undefi
 		}
 		reset(inputs) {
 			this.loadAccount();
+			super.reset(inputs);
 		}
 		registerDomEvents() {
 			getComponentElementById(this,"btnSave").on("click", function() {

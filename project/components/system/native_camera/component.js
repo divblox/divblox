@@ -12,6 +12,7 @@ if (typeof component_classes['system_native_camera'] === "undefined") {
 		}
 		reset(inputs) {
 			this.initCameraOptions();
+			super.reset(inputs);
 		}
 		cameraSuccess(imageData) {
 			this.getFileEntry(imageData);

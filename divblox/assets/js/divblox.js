@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // divblox initialization
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "1.0.0";
+let dx_version = "1.0.1";
 let bootstrap_version = "4.3.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.2";
@@ -410,11 +410,11 @@ class DivbloxDomBaseComponent {
 		}.bind(this));
 	}
 	reset(inputs) {
-		dxLog("Reset for "+this.getComponentName()+" not implemented");
+		this.resetSubComponents(inputs);
 	}
-	resetSubComponents() {
+	resetSubComponents(inputs) {
 		this.sub_component_objects.forEach(function(component) {
-			component.reset();
+			component.reset(inputs);
 		}.bind(this));
 	}
 	getReadyState() {
@@ -738,7 +738,7 @@ function getComponentByWrapperId(wrapper_div_id) {
 	let component_to_return = null;
 	uids.forEach(function(uid) {
 		let component = getRegisteredComponent(uid);
-		if (component.dom_component_obj.arguments['parent_element'] == wrapper_id_str) {
+		if (component.arguments['parent_element'] == wrapper_id_str) {
 			component_to_return = component;
 		}
 	});
