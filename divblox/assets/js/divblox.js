@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // divblox initialization
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "1.0.2";
+let dx_version = "1.0.3";
 let bootstrap_version = "4.3.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.2";
@@ -727,8 +727,11 @@ function loadComponentHtmlAsDOMObject(component_path,callback) {
 	
 	},false/*We need to return the html from the request here*/);
 }
-function getComponentByWrapperId(wrapper_div_id) {
-	let wrapper_id_str = "#"+wrapper_div_id;
+function getComponentByWrapperId(wrapper_div_id,parent_uid) {
+	if (typeof parent_uid === "undefined") {
+		parent_uid = page_uid;
+	}
+	let wrapper_id_str = "#"+parent_uid+"_"+wrapper_div_id;
 	let wrapper_element = $(wrapper_id_str);
 	if (wrapper_element.length < 1) {
 		return null;
@@ -738,7 +741,7 @@ function getComponentByWrapperId(wrapper_div_id) {
 	let component_to_return = null;
 	uids.forEach(function(uid) {
 		let component = getRegisteredComponent(uid);
-		if (component.arguments['parent_element'] == wrapper_id_str) {
+		if (component.arguments['parent_element'] === wrapper_id_str) {
 			component_to_return = component;
 		}
 	});
