@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // divblox initialization
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "1.0.3";
+let dx_version = "1.0.4";
 let bootstrap_version = "4.3.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.2";
@@ -41,7 +41,7 @@ if(window.jQuery === undefined) {
 	// JGL: We assume that we have jquery available here...
 	throw new Error("jQuery has not been loaded. Please ensure that jQuery is loaded before divblox");
 }
-let component_classes = [];
+let component_classes = {};
 
 // JGL: Load all divblox dependencies
 let dependency_array = [
@@ -362,6 +362,7 @@ class DivbloxDomBaseComponent {
 		this.component_success = false;
 		this.sub_component_definitions = {};
 		this.sub_component_objects = [];
+		this.sub_component_loaded_count = 0;
 		this.allowed_access_array = [];
 	}
 	loadPrerequisites(success_callback,fail_callback) {
@@ -398,12 +399,12 @@ class DivbloxDomBaseComponent {
 				this.registerDomEvents();
 				this.initCustomFunctions();
 				// Load additional components here
-				let sub_component_definition_keys = Object.keys(this.sub_component_definitions);
-				sub_component_definition_keys.forEach(function(sub_component_definition_key) {
-					let sub_component_definition = this.sub_component_definitions[sub_component_definition_key];
-					loadComponent(sub_component_definition.component_load_path,this.uid,sub_component_definition.parent_element,sub_component_definition.arguments,false,false,this.subComponentLoadedCallBack.bind(this));
-				}.bind(this));
-				this.reset();
+				this.loadSubComponent();
+//				let sub_component_definition_keys = Object.keys(this.sub_component_definitions);
+//				sub_component_definition_keys.forEach(function(sub_component_definition_key) {
+//					let sub_component_definition = this.sub_component_definitions[sub_component_definition_key];
+//					loadComponent(sub_component_definition.component_load_path,this.uid,sub_component_definition.parent_element,sub_component_definition.arguments,false,false,this.subComponentLoadedCallBack.bind(this));
+//				}.bind(this));
 			}.bind(this));
 		}.bind(this),function () {
 			this.handleComponentError("Error loading component dependencies");
@@ -450,7 +451,17 @@ class DivbloxDomBaseComponent {
 	initCustomFunctions() {/*To be overridden in sub class as needed*/}
 	subComponentLoadedCallBack(component) {
 		this.sub_component_objects.push(component);
+		this.sub_component_loaded_count++;
+		this.loadSubComponent();
 		// JGL: Override as needed
+	}
+	loadSubComponent() {
+		if (typeof this.sub_component_definitions[this.sub_component_loaded_count] !== "undefined") {
+			let sub_component_definition = this.sub_component_definitions[this.sub_component_loaded_count];
+			loadComponent(sub_component_definition.component_load_path,this.uid,sub_component_definition.parent_element,sub_component_definition.arguments,false,false,this.subComponentLoadedCallBack.bind(this));
+		} else {
+			this.reset();
+		}
 	}
 	getSubComponents() {
 		return this.sub_component_objects;
@@ -506,6 +517,11 @@ function on_divblox_component_error(component,message) {
 		' class="fa fa-exclamation-triangle ComponentErrorExclamation" aria-hidden="true"></i>' +
 		' </strong><br>'+message+'</div>');
 }
+function checkComponentBuilderActive() {
+	if (typeof cb_active !== "undefined") {
+		return cb_active;
+	}
+}
 function loadComponent(component_name,parent_uid,parent_element_id,load_arguments,replace_parent_content,component_builder_active,callback) {
 	// JGL: Views are simply components that are used as a collection of components, so this function is also used
 	// to load views. arguments is an optional parameter that will be in the form of objects
@@ -547,7 +563,7 @@ function loadComponent(component_name,parent_uid,parent_element_id,load_argument
 		}
 		// JGL: Load the component html
 		let component_html_load_path = load_arguments["component_path"]+"/component.html";
-		if (debug_mode) {
+		if (debug_mode || checkComponentBuilderActive()) {
 			component_html_load_path = load_arguments["component_path"]+"/component.html"+getRandomFilePostFix();
 		}
 		dxGetScript(component_html_load_path, function(html) {
@@ -582,7 +598,7 @@ function loadComponent(component_name,parent_uid,parent_element_id,load_argument
 }
 function loadComponentCss(component_path) {
 	let url = component_path+'/component.css';
-	if (debug_mode) {
+	if (debug_mode || checkComponentBuilderActive()) {
 		url = component_path+'/component.css'+getRandomFilePostFix();
 	}
 	if (cache_scripts_requested.indexOf(url) > -1) {
@@ -594,7 +610,7 @@ function loadComponentCss(component_path) {
 }
 function loadComponentJs(component_path,load_arguments,callback) {
 	let class_name = ""+load_arguments["component_name"];
-	if (typeof component_classes[class_name] === "function") {
+	if (typeof component_classes[class_name] !== "undefined") {
 		let component = new component_classes[class_name](load_arguments);
 		registerComponent(component,component.uid);
 		if (typeof(component.on_component_loaded) !== "undefined") {
@@ -604,7 +620,7 @@ function loadComponentJs(component_path,load_arguments,callback) {
 		callback(component);
 	} else {
 		let full_component_path = component_path+"/component.js";
-		if (debug_mode) {
+		if (debug_mode || checkComponentBuilderActive()) {
 			full_component_path = component_path+'/component.js'+getRandomFilePostFix();
 		}
 		dxGetScript(full_component_path, function(data) {
@@ -716,7 +732,7 @@ function getComponentControllerPath(component) {
 	return component.arguments["component_path"]+"/component.php";
 }
 function loadComponentHtmlAsDOMObject(component_path,callback) {
-	dxGetScript(component_path+"/component.html", function(html) {
+	dxGetScript(component_path+"/component.html"+getRandomFilePostFix(), function(html) {
 		let doctype = document.implementation.createDocumentType('html', '', '');
 		let component_dom = document.implementation.createDocument('', 'html', doctype);
 		let jq_dom = jQuery(component_dom);
@@ -844,7 +860,7 @@ function dxLog(Message,show_stack_trace) {
 	if (typeof show_stack_trace === "undefined") {
 		show_stack_trace = true;
 	}
-	if (debug_mode) {
+	if (debug_mode || checkComponentBuilderActive()) {
 		if (show_stack_trace) {
 			let stack = new Error().stack;
 			let stack_array = stack.split("\n");
@@ -1001,23 +1017,36 @@ function dxGetScript(url,on_success,on_fail,force_cache) {
 		}
 	}
 	if ((isNative() && (url.indexOf(".html") === -1))) {
-		let script_element = document.createElement('script');
-		document.getElementsByTagName('head')[0].appendChild(script_element);
-		script_element.onload = function() {
-			if (force_cache) {
-				cache_scripts_loaded.push(url);
-			}
-			on_success();
-		};
-		script_element.onreadystatechange = function() {
-			if (script_element.readyState == 4 || script_element.readyState == "complete") {
+		let len = $('script').filter(function () {
+			return ($(this).attr('src') == url);
+		}).length;
+		
+		if (len === 0) {
+			console.log("script tag for "+url+" not yet in scope");
+			let script_element = document.createElement('script');
+			document.getElementsByTagName('head')[0].appendChild(script_element);
+			script_element.src = url;
+			script_element.onreadystatechange = function() {
+				if (script_element.readyState == 4 || script_element.readyState == "complete") {
+					if (force_cache) {
+						cache_scripts_loaded.push(url);
+					}
+					on_success();
+				}
+			};
+			script_element.onload = function() {
 				if (force_cache) {
 					cache_scripts_loaded.push(url);
 				}
 				on_success();
+			};
+		} else {
+			console.log("script tag for "+url+" ALREADY in scope");
+			if (force_cache) {
+				cache_scripts_loaded.push(url);
 			}
-		};
-		script_element.src = url;
+			on_success();
+		}
 	} else {
 		$.get(url, function(data, status) {
 			if (status != "success") {
