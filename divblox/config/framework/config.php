@@ -60,6 +60,7 @@ define("FRAMEWORK_CONFIG_STR", FRAMEWORK_ROOT_STR."/config");
 define("DATA_MODELLER_PATH_STR", FRAMEWORK_CONFIG_STR."/database/data_modeller");
 define("DATA_MODEL_CLASS_PATH_STR", DATA_MODELLER_PATH_STR."/data_model/DataModel.class.php");
 define("DATA_MODEL_ORM_PATH_STR", FRAMEWORK_CONFIG_STR."/database/data_model_orm");
+define("DISABLE_DATA_MODEL_BACKUP_BOOL", true); //JGL: If this is true, the data model sync action will not attempt a backup before sync
 define("PROJECT_ROOT_STR",DOCUMENT_ROOT_STR.SUBDIRECTORY_STR."/project");
 define("MAINTENANCE_PASSWORD_STR",$CurrentEnvironment["MAINTENANCE_PASSWORD"]);
 define("DX_API_KEY_STR",$dxApiKey);

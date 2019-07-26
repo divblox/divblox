@@ -11,11 +11,12 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // divblox initialization
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "1.0.5";
+let dx_version = "1.0.6";
 let bootstrap_version = "4.3.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.2";
 let debug_mode = true;
+let allow_feedback = true;
 let allowable_divblox_paths = ["divblox","project"];
 let allowable_divblox_sub_paths = ["assets","config","components"];
 let document_root = "";
@@ -43,7 +44,9 @@ if(window.jQuery === undefined) {
 }
 let component_classes = {};
 
-// JGL: Load all divblox dependencies
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// divblox initialization related functions
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 let dependency_array = [
 	"divblox/assets/js/bootstrap/4.3.1/bootstrap.bundle.min.js",
 	"divblox/assets/js/sweetalert/sweetalert.min.js",
@@ -154,6 +157,9 @@ function callInstallPrompt() {
 function checkFrameworkReady() {
 	// Check if the framework is installed and configured.
 	// After that we call a generic "on_divblox_ready()" function
+	setTimeout(function() {
+		initFeedbackCapture();
+	},2000);
 	if (isNative()) {
 		on_divblox_ready();
 		return;
@@ -163,6 +169,7 @@ function checkFrameworkReady() {
 		installPromptEvent = event;
 	});
 	debug_mode = local_config.debug_mode;
+	allow_feedback = local_config.allow_feedback;
 	let config_cookie = getValueFromAppState('divblox_config');
 	if (config_cookie === null) {
 		dxGetScript(getRootPath()+"divblox/config/framework/check_config.php", function( data ) {
@@ -374,7 +381,7 @@ class DivbloxDomBaseComponent {
 		}
 		success_callback();
 	}
-	on_component_loaded(confirm_success) {
+	on_component_loaded(confirm_success,callback) {
 		if (isNative()) {
 			if (!this.supports_native) {
 				this.handleComponentError("Component "+this.uid+" does not support native.");
@@ -389,9 +396,13 @@ class DivbloxDomBaseComponent {
 		if (typeof confirm_success === "undefined") {
 			confirm_success = true;
 		}
+		if (typeof callback !== "function") {
+			callback = function(){};
+		}
 		this.loadPrerequisites(function() {
+			callback();
 			dxCheckCurrentUserRole(this.allowed_access_array,function() {
-				this.handleComponentError("Access denied");
+				this.handleComponentAccessError("Access denied");
 			}.bind(this), function() {
 				if (confirm_success) {
 					this.handleComponentSuccess();
@@ -400,11 +411,6 @@ class DivbloxDomBaseComponent {
 				this.initCustomFunctions();
 				// Load additional components here
 				this.loadSubComponent();
-//				let sub_component_definition_keys = Object.keys(this.sub_component_definitions);
-//				sub_component_definition_keys.forEach(function(sub_component_definition_key) {
-//					let sub_component_definition = this.sub_component_definitions[sub_component_definition_key];
-//					loadComponent(sub_component_definition.component_load_path,this.uid,sub_component_definition.parent_element,sub_component_definition.arguments,false,false,this.subComponentLoadedCallBack.bind(this));
-//				}.bind(this));
 			}.bind(this));
 		}.bind(this),function () {
 			this.handleComponentError("Error loading component dependencies");
@@ -446,6 +452,9 @@ class DivbloxDomBaseComponent {
 				on_divblox_component_error(this);
 			}
 		}
+	}
+	handleComponentAccessError(ErrorMessage) {
+		this.handleComponentError(ErrorMessage);
 	}
 	registerDomEvents() {/*To be overridden in sub class as needed*/}
 	initCustomFunctions() {/*To be overridden in sub class as needed*/}
@@ -614,10 +623,11 @@ function loadComponentJs(component_path,load_arguments,callback) {
 		let component = new component_classes[class_name](load_arguments);
 		registerComponent(component,component.uid);
 		if (typeof(component.on_component_loaded) !== "undefined") {
-			component.on_component_loaded();
+			component.on_component_loaded(true,function() {
+				updateAppState('page',getUrlInputParameter("view"));
+				callback(component);
+			});
 		}
-		updateAppState('page',getUrlInputParameter("view"));
-		callback(component);
 	} else {
 		let full_component_path = component_path+"/component.js";
 		if (debug_mode || checkComponentBuilderActive()) {
@@ -628,10 +638,11 @@ function loadComponentJs(component_path,load_arguments,callback) {
 			let component = new component_classes[class_name](load_arguments);
 			registerComponent(component,component.uid);
 			if (typeof(component.on_component_loaded) !== "undefined") {
-				component.on_component_loaded();
+				component.on_component_loaded(true,function() {
+					updateAppState('page',getUrlInputParameter("view"));
+					callback(component);
+				});
 			}
-			updateAppState('page',getUrlInputParameter("view"));
-			callback(component);
 		}, function(data) {
 			throw new Error("Invalid component: Components must be grouped in folders with all relevant scripts");
 		},false);
@@ -663,6 +674,7 @@ function loadPageComponent(component_name,load_arguments,callback) {
 		});
 	}
 	setUrlInputParameter("view",component_name);
+	updateAppState("CurrentPage",component_name);
 	loadComponent("pages/"+component_name,null,'body',final_load_arguments,true,undefined,callback);
 	if (debug_mode) {
 		setTimeout(function() {
@@ -798,6 +810,7 @@ function processPageInputs() {
 		return;
 	}
 	let view = "pages/"+url_input_parameters.get("view");
+	updateAppState("CurrentPage",view);
 	if ((typeof url_input_parameters.get("view") === "undefined") || (url_input_parameters.get("view") == null)) {
 		throw new Error("Invalid component name provided. Click here to visit the setup page: "+getServerRootPath()+"divblox/config/framework/divblox_admin/setup.php");
 	} else {
@@ -850,6 +863,115 @@ function unRegisterEventHandlers() {
 		}
 	});
 	registered_event_handlers = [];
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// divblox issue tracking related functions
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function logNewComponentFeedback(type,title,description,component_name,component_uid,on_success,on_fail) {
+	//JGL: This function will automatically detect the current page component from which the feedback is captured
+	//JGL: Also, if a user is logged in, we will automatically capture their details on the feedback as well
+	if (typeof on_success !== "function") {
+		on_success = function(){}
+	}
+	if (typeof on_fail !== "function") {
+		on_fail = function(message){}
+	}
+	dxRequestSystem(getRootPath()+'divblox/config/framework/issue_tracking/issue_request_handler.php?f=newIssue',
+		{type:type,
+			title:title,
+			description:description,
+			component_name:component_name,
+			component_uid:component_uid,
+			capture_page:getValueFromAppState('CurrentPage')},
+		function(data_str) {
+			on_success(data_str);
+		},
+		function(data_obj) {
+			on_fail(data_obj.Message);
+		});
+}
+function initFeedbackCapture() {
+	if (!allow_feedback) {return;}
+	let button_html = '<button id="dxGlobalFeedbackButton" type="button" class="btn btn-dark" data-toggle="modal"' +
+		' data-target="#dxGlobalFeedbackModal">Feedback</button>';
+	let modal_html = '<div class="modal fade" id="dxGlobalFeedbackModal" tabindex="-1" role="dialog"' +
+		' aria-labelledby="FeedbackModal" aria-hidden="true">\n' +
+		'    <div class="modal-dialog" role="document">\n' +
+		'        <div class="modal-content">\n' +
+		'            <div class="modal-header">\n' +
+		'                <h5 class="modal-title">Provide feedback for this page</h5>\n' +
+		'                <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n' +
+		'                    <span aria-hidden="true"><i class="fa fa-times" aria-hidden="true"> </i></span>\n' +
+		'                </button>\n' +
+		'            </div>\n' +
+		'            <div class="modal-body">\n' +
+		'                <div class="row mt-n4">\n' +
+		'                    <div class="col-12">\n' +
+		'<label class="small">Feedback Type</label>' +
+		'                        <select id="dxGlobalFeedbackType" class="form-control">' +
+		'<option value="ISSUE">Bug</option>' +
+		'<option value="FEATURE">Feature Request</option>' +
+		'                       </select>'+
+		'<label class="mt-2 small">Feedback Title</label>' +
+		'                        <input type="text" id="dxGlobalFeedbackTitle" class="form-control"' +
+		' placeholder="Title"/>' +
+		'<label class="mt-2 small">Feedback Description (Optional)</label>' +
+		'                        <textarea id="dxGlobalFeedbackDescription" class="form-control"' +
+		' placeholder="Describe your issue or feature here..." rows="5"/>' +
+		'<div id="dxGlobalFeedbackTechnicalWrapper">'+
+		'<label class="mt-2 small">Component (Optional)</label>' +
+		'                        <select id="dxGlobalFeedbackComponent" class="form-control">' +
+		'<option value="-1">-Select Component-</option>' +
+		'                       </select>' +
+		'</div>'+
+		'                    </div>\n' +
+		'                </div>\n' +
+		'            </div>\n' +
+		'            <div class="modal-footer">\n' +
+		'                <button type="button" id="dxGlobalFeedbackSubmitButton" class="btn btn-primary">Submit' +
+		' Feedback</button>\n' +
+		'            </div>\n' +
+		'        </div>\n' +
+		'    </div>\n' +
+		'</div>';
+	$('body').append(button_html).append(modal_html);
+	$("#dxGlobalFeedbackSubmitButton").on("click", function() {
+		if ($("#dxGlobalFeedbackTitle").val() === "") {
+			showAlert("Title is required...","error","OK",false);
+			return;
+		}
+		logNewComponentFeedback($("#dxGlobalFeedbackType").val(),$("#dxGlobalFeedbackTitle").val(),$("#dxGlobalFeedbackDescription").val(),$("#dxGlobalFeedbackComponent").val(),undefined,
+			function() {
+				showAlert("Feedback captured!","success");
+				if (checkComponentBuilderActive()) {
+					setTimeout(function() {
+						window.location.reload(true);
+					},1000)
+				}
+				$("#dxGlobalFeedbackModal").modal('hide');
+			},
+			function(message) {
+				showAlert("Error saving feedback: "+message,"warning","OK");
+			})
+	});
+	if (!checkComponentBuilderActive()) {
+		$("#dxGlobalFeedbackTechnicalWrapper").hide();
+		return; //JGL: We only want to give the following options when the user is working on the component builder
+	}
+	$("#dxGlobalFeedbackTechnicalWrapper").show();
+	let current_component = getRegisteredComponent(page_uid);
+	let sub_components = current_component.getSubComponents();
+	let sub_component_names = [];
+	sub_components.forEach(function(sub_component) {
+		if (sub_component_names.indexOf(sub_component.arguments.component_name) === -1) {
+			sub_component_names.push(sub_component.arguments.component_name);
+		}
+	});
+	sub_component_names.forEach(function(sub_component_name) {
+		$("#dxGlobalFeedbackComponent").append('<option value="'+sub_component_name+'">'+sub_component_name+'</option>');
+	})
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
