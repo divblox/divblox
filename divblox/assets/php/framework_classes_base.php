@@ -5652,17 +5652,17 @@ class ComponentController_base {
     }
     protected function processAuthenticationToken() {
         $this->CurrentClientAuthenticationToken = $this->getInputValue("AuthenticationToken");
-        if (is_null($this->CurrentClientAuthenticationToken)) {
-            $this->CurrentClientAuthenticationToken = $this->checkAuthenticationTokenInSession();
-        } else {
-            $_SESSION["AuthenticationToken"] = $this->CurrentClientAuthenticationToken;
-        }
+//        if (is_null($this->CurrentClientAuthenticationToken)) {
+//            $this->CurrentClientAuthenticationToken = $this->checkAuthenticationTokenInSession();
+//        } else {
+//            $_SESSION["AuthenticationToken"] = $this->CurrentClientAuthenticationToken;
+//        }
         if (is_null($this->CurrentClientAuthenticationToken)) {
             $this->initializeNewAuthenticationToken();
             return;
         }
-        $ClientAuthenticationTokenObj = ClientAuthenticationToken::LoadByToken($this->CurrentClientAuthenticationToken);
-        if (is_null($ClientAuthenticationTokenObj)) {
+        $ClientAuthenticationTokenObj = ProjectFunctions::getCurrentAuthTokenObject($this->CurrentClientAuthenticationToken);
+            if (is_null($ClientAuthenticationTokenObj)) {
             $this->initializeNewAuthenticationToken();
         } else {
             $this->checkValidAuthenticationToken($ClientAuthenticationTokenObj);
@@ -5743,6 +5743,7 @@ class ComponentController_base {
             $this->initializeNewAuthenticationToken();
             return;
         }
+        $ClientAuthenticationTokenObj->ExpiredToken = $ClientAuthenticationTokenObj->Token;
         $ClientAuthenticationTokenObj->Token = ProjectFunctions::generateUniqueClientAuthenticationToken();
         $ClientAuthenticationTokenObj->UpdateDateTime = dxDateTime::Now();
         $ClientConnectionObj = $ClientAuthenticationTokenObj->ClientConnectionObject;

@@ -18,6 +18,7 @@
  * @property-read integer $Id the value for intId (Read-Only PK)
  * @property string $Token the value for strToken (Unique)
  * @property dxDateTime $UpdateDateTime the value for dttUpdateDateTime 
+ * @property string $ExpiredToken the value for strExpiredToken (Unique)
  * @property integer $ClientConnection the value for intClientConnection 
  * @property string $SearchMetaInfo the value for strSearchMetaInfo 
  * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
@@ -56,6 +57,15 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
      */
     protected $dttUpdateDateTime;
     const UpdateDateTimeDefault = null;
+
+
+    /**
+     * Protected member variable that maps to the database column ClientAuthenticationToken.ExpiredToken
+     * @var string strExpiredToken
+     */
+    protected $strExpiredToken;
+    const ExpiredTokenMaxLength = 50;
+    const ExpiredTokenDefault = null;
 
 
     /**
@@ -143,6 +153,7 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
         $this->intId = ClientAuthenticationToken::IdDefault;
         $this->strToken = ClientAuthenticationToken::TokenDefault;
         $this->dttUpdateDateTime = (ClientAuthenticationToken::UpdateDateTimeDefault === null)?null:new dxDateTime(ClientAuthenticationToken::UpdateDateTimeDefault);
+        $this->strExpiredToken = ClientAuthenticationToken::ExpiredTokenDefault;
         $this->intClientConnection = ClientAuthenticationToken::ClientConnectionDefault;
         $this->strSearchMetaInfo = ClientAuthenticationToken::SearchMetaInfoDefault;
         $this->strLastUpdated = ClientAuthenticationToken::LastUpdatedDefault;
@@ -486,6 +497,7 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
             $objBuilder->AddSelectItem($strTableName, 'Id', $strAliasPrefix . 'Id');
             $objBuilder->AddSelectItem($strTableName, 'Token', $strAliasPrefix . 'Token');
             $objBuilder->AddSelectItem($strTableName, 'UpdateDateTime', $strAliasPrefix . 'UpdateDateTime');
+            $objBuilder->AddSelectItem($strTableName, 'ExpiredToken', $strAliasPrefix . 'ExpiredToken');
             $objBuilder->AddSelectItem($strTableName, 'ClientConnection', $strAliasPrefix . 'ClientConnection');
             $objBuilder->AddSelectItem($strTableName, 'SearchMetaInfo', $strAliasPrefix . 'SearchMetaInfo');
             $objBuilder->AddSelectItem($strTableName, 'LastUpdated', $strAliasPrefix . 'LastUpdated');
@@ -620,6 +632,9 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
         $strAlias = $strAliasPrefix . 'UpdateDateTime';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->dttUpdateDateTime = $objDbRow->GetColumn($strAliasName, 'DateTime');
+        $strAlias = $strAliasPrefix . 'ExpiredToken';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->strExpiredToken = $objDbRow->GetColumn($strAliasName, 'VarChar');
         $strAlias = $strAliasPrefix . 'ClientConnection';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intClientConnection = $objDbRow->GetColumn($strAliasName, 'Integer');
@@ -793,6 +808,22 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
     }
 
     /**
+     * Load a single ClientAuthenticationToken object,
+     * by ExpiredToken Index(es)
+     * @param string $strExpiredToken
+     * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
+     * @return ClientAuthenticationToken
+    */
+    public static function LoadByExpiredToken($strExpiredToken, $objOptionalClauses = null) {
+        return ClientAuthenticationToken::QuerySingle(
+            dxQuery::AndCondition(
+                dxQuery::Equal(dxQueryN::ClientAuthenticationToken()->ExpiredToken, $strExpiredToken)
+            ),
+            $objOptionalClauses
+        );
+    }
+
+    /**
      * Load an array of ClientAuthenticationToken objects,
      * by ClientConnection Index(es)
      * @param integer $intClientConnection
@@ -858,6 +889,7 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
             $ChangedArray = array_merge($ChangedArray,array("Id" => $this->intId));
             $ChangedArray = array_merge($ChangedArray,array("Token" => $this->strToken));
             $ChangedArray = array_merge($ChangedArray,array("UpdateDateTime" => $this->dttUpdateDateTime));
+            $ChangedArray = array_merge($ChangedArray,array("ExpiredToken" => $this->strExpiredToken));
             $ChangedArray = array_merge($ChangedArray,array("ClientConnection" => $this->intClientConnection));
             $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
             $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
@@ -888,6 +920,14 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
             if ($ExistingObj->UpdateDateTime != $this->dttUpdateDateTime) {
                 $ChangedArray = array_merge($ChangedArray,array("UpdateDateTime" => array("Before" => $ExistingValueStr,"After" => $this->dttUpdateDateTime)));
                 //$ChangedArray = array_merge($ChangedArray,array("UpdateDateTime" => "From: ".$ExistingValueStr." to: ".$this->dttUpdateDateTime));
+            }
+            $ExistingValueStr = "NULL";
+            if (!is_null($ExistingObj->ExpiredToken)) {
+                $ExistingValueStr = $ExistingObj->ExpiredToken;
+            }
+            if ($ExistingObj->ExpiredToken != $this->strExpiredToken) {
+                $ChangedArray = array_merge($ChangedArray,array("ExpiredToken" => array("Before" => $ExistingValueStr,"After" => $this->strExpiredToken)));
+                //$ChangedArray = array_merge($ChangedArray,array("ExpiredToken" => "From: ".$ExistingValueStr." to: ".$this->strExpiredToken));
             }
             $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->ClientConnection)) {
@@ -934,12 +974,14 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
                 INSERT INTO `ClientAuthenticationToken` (
 							`Token`,
 							`UpdateDateTime`,
+							`ExpiredToken`,
 							`ClientConnection`,
 							`SearchMetaInfo`,
 							`ObjectOwner`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->strToken) . ',
 							' . $objDatabase->SqlVariable($this->dttUpdateDateTime) . ',
+							' . $objDatabase->SqlVariable($this->strExpiredToken) . ',
 							' . $objDatabase->SqlVariable($this->intClientConnection) . ',
 							' . $objDatabase->SqlVariable($this->strSearchMetaInfo) . ',
 							' . $objDatabase->SqlVariable($this->intObjectOwner) . '
@@ -970,6 +1012,7 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
             UPDATE `ClientAuthenticationToken` SET
 							`Token` = ' . $objDatabase->SqlVariable($this->strToken) . ',
 							`UpdateDateTime` = ' . $objDatabase->SqlVariable($this->dttUpdateDateTime) . ',
+							`ExpiredToken` = ' . $objDatabase->SqlVariable($this->strExpiredToken) . ',
 							`ClientConnection` = ' . $objDatabase->SqlVariable($this->intClientConnection) . ',
 							`SearchMetaInfo` = ' . $objDatabase->SqlVariable($this->strSearchMetaInfo) . ',
 							`ObjectOwner` = ' . $objDatabase->SqlVariable($this->intObjectOwner) . '
@@ -1029,6 +1072,7 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
         $ChangedArray = array_merge($ChangedArray,array("Id" => $this->intId));
         $ChangedArray = array_merge($ChangedArray,array("Token" => $this->strToken));
         $ChangedArray = array_merge($ChangedArray,array("UpdateDateTime" => $this->dttUpdateDateTime));
+        $ChangedArray = array_merge($ChangedArray,array("ExpiredToken" => $this->strExpiredToken));
         $ChangedArray = array_merge($ChangedArray,array("ClientConnection" => $this->intClientConnection));
         $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
         $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
@@ -1112,6 +1156,7 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
         // Update $this's local variables to match
         $this->strToken = $objReloaded->strToken;
         $this->dttUpdateDateTime = $objReloaded->dttUpdateDateTime;
+        $this->strExpiredToken = $objReloaded->strExpiredToken;
         $this->ClientConnection = $objReloaded->ClientConnection;
         $this->strSearchMetaInfo = $objReloaded->strSearchMetaInfo;
         $this->strLastUpdated = $objReloaded->strLastUpdated;
@@ -1153,6 +1198,13 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
                  * @return dxDateTime
                  */
                 return $this->dttUpdateDateTime;
+
+            case 'ExpiredToken':
+                /**
+                 * Gets the value for strExpiredToken (Unique)
+                 * @return string
+                 */
+                return $this->strExpiredToken;
 
             case 'ClientConnection':
                 /**
@@ -1269,6 +1321,19 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
                  */
                 try {
                     return ($this->dttUpdateDateTime = dxType::Cast($mixValue, dxType::DateTime));
+                } catch (dxCallerException $objExc) {
+                    $objExc->IncrementOffset();
+                    throw $objExc;
+                }
+
+            case 'ExpiredToken':
+                /**
+                 * Sets the value for strExpiredToken (Unique)
+                 * @param string $mixValue
+                 * @return string
+                 */
+                try {
+                    return ($this->strExpiredToken = dxType::Cast($mixValue, dxType::String));
                 } catch (dxCallerException $objExc) {
                     $objExc->IncrementOffset();
                     throw $objExc;
@@ -1566,6 +1631,7 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
         $strToReturn .= '<element name="Id" type="xsd:int"/>';
         $strToReturn .= '<element name="Token" type="xsd:string"/>';
         $strToReturn .= '<element name="UpdateDateTime" type="xsd:dateTime"/>';
+        $strToReturn .= '<element name="ExpiredToken" type="xsd:string"/>';
         $strToReturn .= '<element name="ClientConnectionObject" type="xsd1:ClientConnection"/>';
         $strToReturn .= '<element name="SearchMetaInfo" type="xsd:string"/>';
         $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
@@ -1599,6 +1665,8 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
             $objToReturn->strToken = $objSoapObject->Token;
         if (property_exists($objSoapObject, 'UpdateDateTime'))
             $objToReturn->dttUpdateDateTime = new dxDateTime($objSoapObject->UpdateDateTime);
+        if (property_exists($objSoapObject, 'ExpiredToken'))
+            $objToReturn->strExpiredToken = $objSoapObject->ExpiredToken;
         if ((property_exists($objSoapObject, 'ClientConnectionObject')) &&
             ($objSoapObject->ClientConnectionObject))
             $objToReturn->ClientConnectionObject = ClientConnection::GetObjectFromSoapObject($objSoapObject->ClientConnectionObject);
@@ -1649,6 +1717,7 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
         $iArray['Id'] = $this->intId;
         $iArray['Token'] = $this->strToken;
         $iArray['UpdateDateTime'] = $this->dttUpdateDateTime;
+        $iArray['ExpiredToken'] = $this->strExpiredToken;
         $iArray['ClientConnection'] = $this->intClientConnection;
         $iArray['SearchMetaInfo'] = $this->strSearchMetaInfo;
         $iArray['LastUpdated'] = $this->strLastUpdated;
@@ -1690,6 +1759,7 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
      * @property-read dxQueryNode $Id
      * @property-read dxQueryNode $Token
      * @property-read dxQueryNode $UpdateDateTime
+     * @property-read dxQueryNode $ExpiredToken
      * @property-read dxQueryNode $ClientConnection
      * @property-read dxQueryNodeClientConnection $ClientConnectionObject
      * @property-read dxQueryNode $SearchMetaInfo
@@ -1713,6 +1783,8 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
 					return new dxQueryNode('Token', 'Token', 'VarChar', $this);
 				case 'UpdateDateTime':
 					return new dxQueryNode('UpdateDateTime', 'UpdateDateTime', 'DateTime', $this);
+				case 'ExpiredToken':
+					return new dxQueryNode('ExpiredToken', 'ExpiredToken', 'VarChar', $this);
 				case 'ClientConnection':
 					return new dxQueryNode('ClientConnection', 'ClientConnection', 'Integer', $this);
 				case 'ClientConnectionObject':
@@ -1743,6 +1815,7 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
      * @property-read dxQueryNode $Id
      * @property-read dxQueryNode $Token
      * @property-read dxQueryNode $UpdateDateTime
+     * @property-read dxQueryNode $ExpiredToken
      * @property-read dxQueryNode $ClientConnection
      * @property-read dxQueryNodeClientConnection $ClientConnectionObject
      * @property-read dxQueryNode $SearchMetaInfo
@@ -1766,6 +1839,8 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
 					return new dxQueryNode('Token', 'Token', 'string', $this);
 				case 'UpdateDateTime':
 					return new dxQueryNode('UpdateDateTime', 'UpdateDateTime', 'dxDateTime', $this);
+				case 'ExpiredToken':
+					return new dxQueryNode('ExpiredToken', 'ExpiredToken', 'string', $this);
 				case 'ClientConnection':
 					return new dxQueryNode('ClientConnection', 'ClientConnection', 'integer', $this);
 				case 'ClientConnectionObject':

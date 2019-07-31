@@ -31,8 +31,10 @@ function getCurrentAccountAttribute() {
         return null;
     }
     if ($_POST['attribute'] == "ProfilePicturePath") {
-        if (!file_exists(DOCUMENT_ROOT_STR.SUBDIRECTORY_STR.$Candidate)) {
-            return null;
+        if (strtolower($Candidate) != 'anonymous') {
+            if (!file_exists(DOCUMENT_ROOT_STR.SUBDIRECTORY_STR.$Candidate)) {
+                return null;
+            }
         }
     }
     return $Candidate;

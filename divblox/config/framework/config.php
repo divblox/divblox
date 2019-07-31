@@ -45,7 +45,7 @@ if (is_null($ModuleArray)) {
     error_log("Modules are not configured in environments.php");
     die(json_encode(array("Error" => 'Modules are not configured in environments.php. For a quick fix, delete the file environments.php')));
 }
-define("PHP_MIN_VERSION_REQUIRED","7.1");
+define("PHP_MIN_VERSION_REQUIRED","7.2");
 define("MARIADB_MIN_VERSION_REQUIRED","10.2");
 define("MYSQL_MIN_VERSION_REQUIRED","5.6.38");
 define("DIVBLOX_ADMIN_PASSWORD_STR","1");
@@ -64,8 +64,8 @@ define("DISABLE_DATA_MODEL_BACKUP_BOOL", true); //JGL: If this is true, the data
 define("PROJECT_ROOT_STR",DOCUMENT_ROOT_STR.SUBDIRECTORY_STR."/project");
 define("MAINTENANCE_PASSWORD_STR",$CurrentEnvironment["MAINTENANCE_PASSWORD"]);
 define("DX_API_KEY_STR",$dxApiKey);
-define("AUTHENTICATION_TIMEOUT_INT",60); //Minutes
-define("AUTHENTICATION_REGENERATION_INT",5); //Minutes
+define("AUTHENTICATION_TIMEOUT_INT",1440); //1440 Minutes = 24 Hours. This means that a user will be logged out after 24 hours since last auth key update
+define("AUTHENTICATION_REGENERATION_INT",20); //Minutes
 define("APP_MODULES_STR",json_encode($ModuleArray));
 define("APP_MODULES_COLORS_STR",json_encode($ModuleColorArray));
 foreach($CurrentEnvironment["DATABASES"] as $Database=>$Settings) {

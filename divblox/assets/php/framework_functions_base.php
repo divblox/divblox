@@ -443,6 +443,13 @@ abstract class FrameworkFunctions_base {
         }
         return null;
     }
+    public static function getCurrentAuthTokenObject($TokenStr = '') {
+        $ClientAuthenticationTokenObj = ClientAuthenticationToken::LoadByToken($TokenStr);
+        if (is_null($ClientAuthenticationTokenObj)) {
+            $ClientAuthenticationTokenObj = ClientAuthenticationToken::LoadByExpiredToken($TokenStr);
+        }
+        return $ClientAuthenticationTokenObj;
+    }
     /**
      * @param string $attr The attribute you would like to receive
      * @return string
@@ -451,7 +458,7 @@ abstract class FrameworkFunctions_base {
         $CurrentAccountObj = null;
         $CurrentAuthenticationToken = self::getCurrentAuthenticationToken();
         if (!is_null($CurrentAuthenticationToken)) {
-            $ClientAuthenticationTokenObj = ClientAuthenticationToken::LoadByToken($CurrentAuthenticationToken);
+            $ClientAuthenticationTokenObj = self::getCurrentAuthTokenObject($CurrentAuthenticationToken);
             if (is_null($ClientAuthenticationTokenObj) ||
                 is_null($ClientAuthenticationTokenObj->ClientConnectionObject) ||
                 is_null($ClientAuthenticationTokenObj->ClientConnectionObject->AccountObject)) {
@@ -488,7 +495,7 @@ abstract class FrameworkFunctions_base {
     public static function logoutCurrentAccount() {
         $CurrentAuthenticationToken = self::getCurrentAuthenticationToken();
         if (!is_null($CurrentAuthenticationToken)) {
-            $ClientAuthenticationTokenObj = ClientAuthenticationToken::LoadByToken($CurrentAuthenticationToken);
+            $ClientAuthenticationTokenObj = self::getCurrentAuthTokenObject($CurrentAuthenticationToken);
             if (is_null($ClientAuthenticationTokenObj) ||
                 is_null($ClientAuthenticationTokenObj->ClientConnectionObject) ||
                 is_null($ClientAuthenticationTokenObj->ClientConnectionObject->AccountObject)) {
@@ -557,7 +564,7 @@ abstract class FrameworkFunctions_base {
         $Done = false;
         while (!$Done) {
             $TokenCandidate = md5(dxDateTime::Now()->getTimestamp().ProjectFunctions::generateRandomString(20));
-            $ExistingTokenObj = ClientAuthenticationToken::LoadByToken($TokenCandidate);
+            $ExistingTokenObj = self::getCurrentAuthTokenObject($TokenCandidate);
             if (is_null($ExistingTokenObj)) {
                 $Done = true;
             }
@@ -619,7 +626,7 @@ abstract class FrameworkFunctions_base {
         if (is_null($AuthenticationToken)) {
             array_push($ErrorInfo,"No authentication token provided");
         } else {
-            $ClientAuthenticationTokenObj = ClientAuthenticationToken::LoadByToken($AuthenticationToken);
+            $ClientAuthenticationTokenObj = self::getCurrentAuthTokenObject($AuthenticationToken);
             if (!is_null($ClientAuthenticationTokenObj)) {
                 $PushRegistrationObj->ClientAuthenticationTokenObject = $ClientAuthenticationTokenObj;
                 if (!is_null($ClientAuthenticationTokenObj->ClientConnectionObject)) {

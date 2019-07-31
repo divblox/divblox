@@ -124,7 +124,8 @@ class DataModel_Base {
             "UpdateDateTime"),
         "ClientAuthenticationToken" => array(
             "Token",
-            "UpdateDateTime"),
+            "UpdateDateTime",
+            "ExpiredToken"),
         "PushRegistration" => array(
             "RegistrationId",
             "DeviceUuid",
@@ -221,7 +222,8 @@ class DataModel_Base {
             "DATETIME"),
         "ClientAuthenticationToken" => array(
             "VARCHAR(50) UNIQUE NOT NULL",
-            "DATETIME"),
+            "DATETIME",
+            "VARCHAR(50) UNIQUE"),
         "PushRegistration" => array(
             "TEXT",
             "VARCHAR(150)",

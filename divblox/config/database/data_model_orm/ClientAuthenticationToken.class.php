@@ -61,6 +61,7 @@ class ClientAuthenticationToken extends ClientAuthenticationTokenGen {
             $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
             $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
             $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
+            $ChangedArray = array_merge($ChangedArray,array("ExpiredToken" => $this->strExpiredToken));
             $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         } else {
             $newAuditLogEntry->ModificationType = 'Update';
@@ -120,6 +121,10 @@ class ClientAuthenticationToken extends ClientAuthenticationTokenGen {
                 $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => array("Before" => $ExistingValueStr,"After" => $this->intObjectOwner)));
                 //$ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => "From: ".$ExistingValueStr." to: ".$this->intObjectOwner));
             }
+            if ($ExistingObj->ExpiredToken != $this->strExpiredToken) {
+                $ChangedArray = array_merge($ChangedArray,array("ExpiredToken" => array("Before" => $ExistingValueStr,"After" => $this->strExpiredToken)));
+                //$ChangedArray = array_merge($ChangedArray,array("ExpiredToken" => "From: ".$ExistingValueStr." to: ".$this->strExpiredToken));
+            }
             $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         }
         try {
@@ -137,13 +142,15 @@ class ClientAuthenticationToken extends ClientAuthenticationTokenGen {
 							`UpdateDateTime`,
 							`ClientConnection`,
 							`SearchMetaInfo`,
-							`ObjectOwner`
+							`ObjectOwner`,
+							`ExpiredToken`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->strToken) . ',
 							' . $objDatabase->SqlVariable($this->dttUpdateDateTime) . ',
 							' . $objDatabase->SqlVariable($this->intClientConnection) . ',
 							' . $objDatabase->SqlVariable($this->strSearchMetaInfo) . ',
-							' . $objDatabase->SqlVariable($this->intObjectOwner) . '
+							' . $objDatabase->SqlVariable($this->intObjectOwner) . ',
+							' . $objDatabase->SqlVariable($this->strExpiredToken) . '
 						)
                 ');
                 // Update Identity column and return its value
@@ -176,7 +183,8 @@ class ClientAuthenticationToken extends ClientAuthenticationTokenGen {
 							`UpdateDateTime` = ' . $objDatabase->SqlVariable($this->dttUpdateDateTime) . ',
 							`ClientConnection` = ' . $objDatabase->SqlVariable($this->intClientConnection) . ',
 							`SearchMetaInfo` = ' . $objDatabase->SqlVariable($this->strSearchMetaInfo) . ',
-							`ObjectOwner` = ' . $objDatabase->SqlVariable($this->intObjectOwner) . '
+							`ObjectOwner` = ' . $objDatabase->SqlVariable($this->intObjectOwner) . ',
+							`ExpiredToken` = ' . $objDatabase->SqlVariable($this->strExpiredToken) . '
             WHERE
 							`Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
             }
