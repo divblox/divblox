@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // divblox initialization
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "1.0.8";
+let dx_version = "1.0.9";
 let bootstrap_version = "4.3.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.2";
@@ -291,7 +291,11 @@ function getServerRootPath() {
 	if (isNative()) {
 		return server_final_url;
 	}
-	let root_path = window.location.protocol+"//"+window.location.hostname;
+	let port_number_str = window.location.port;
+	if (port_number_str.length > 0) {
+		port_number_str = ":"+port_number_str;
+	}
+	let root_path = window.location.protocol+"//"+window.location.hostname+port_number_str;
 	if (document_root.length > 0) {
 		root_path += "/"+document_root+"/";
 	}
@@ -691,7 +695,7 @@ function loadPageComponent(component_name,load_arguments,callback) {
 					}
 				},
 				function(data) {
-				dxLog("Error: "+data);
+					dxLog("Error: "+data);
 				});
 		},1000)
 	}
