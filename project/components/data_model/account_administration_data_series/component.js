@@ -34,6 +34,8 @@ if (typeof component_classes['data_model_account_administration_data_series'] ==
 			this.column_name_obj = {
 				"FullName":"Full Name",
             "EmailAddress":"Email Address",
+            "Username":"Username",
+            "ProfilePicturePath":"Profile Picture Path",
             "AccessBlocked":"Access Blocked",
             "UserRole":"User Role"};
 			this.column_name_array = Object.keys(this.column_name_obj);
@@ -147,24 +149,25 @@ if (typeof component_classes['data_model_account_administration_data_series'] ==
 				this.loadPage();
 			}.bind(this));
 			getComponentElementById(this,"MultiSelectAll").on("click", function() {
-				let uid = this.getUid();
+				let uid = $(this).attr("id").replace("_MultiSelectAll","");
+				let this_component = getRegisteredComponent(uid);
 				if ($(this).is(":checked")) {
-					this.selected_items_array = [];
+					this_component.selected_items_array = [];
 					$('.select_item_'+uid).each(function () {
 						let id_start = $(this).attr("id").indexOf("_select_item_");
 						let object_id = $(this).attr("id").substring(id_start+13);
-						this.selected_items_array.push(object_id);
+						this_component.selected_items_array.push(object_id);
 						$(this).prop("checked",true);
-					}.bind(this));
-					getComponentElementById(this,"MultiSelectOptionsButton").show().addClass("d-inline-flex");
+					});
+					getComponentElementById(this_component,"MultiSelectOptionsButton").show().addClass("d-inline-flex");
 				} else {
-					this.selected_items_array = [];
+					this_component.selected_items_array = [];
 					$('.select_item_'+uid).each(function () {
 						$(this).prop("checked",false);
 					});
-					getComponentElementById(this,"MultiSelectOptionsButton").hide().removeClass("d-inline-flex");
+					getComponentElementById(this_component,"MultiSelectOptionsButton").hide().removeClass("d-inline-flex");
 				}
-			}.bind(this));
+			});
 			getComponentElementById(this,"BulkActionDelete").on("click", function() {
 				showAlert("Are you sure?","warning",["Cancel","Delete"],false,0,this.deleteSelected.bind(this),this.doNothing);
 			}.bind(this));
@@ -249,7 +252,7 @@ if (typeof component_classes['data_model_account_administration_data_series'] ==
 		loadPage = function() {
 			let uid = this.getUid();
 			let search_text = getComponentElementById(this,"DataTableSearchInput").val();
-			getComponentElementById(this,"DataTableBody").html('<tr id="'+uid+'_DataTableLoading"><td colspan="5"' +
+			getComponentElementById(this,"DataTableBody").html('<tr id="'+uid+'_DataTableLoading"><td colspan="7"' +
 				'><div class="dx-loading"></div></td></tr>');
 			dxRequestInternal(getComponentControllerPath(this),
 				{f:"getPage",
@@ -268,7 +271,7 @@ if (typeof component_classes['data_model_account_administration_data_series'] ==
 					if (this.current_page_array.length > 0) {
 						getComponentElementById(this,"DataTableLoading").hide();
 					} else {
-						getComponentElementById(this,"DataTableBody").html('<tr id="#'+uid+'_DataTableLoading"><td colspan="5"' +
+						getComponentElementById(this,"DataTableBody").html('<tr id="#'+uid+'_DataTableLoading"><td colspan="7"' +
 							' style="text-align: center;">No results</td></tr>');
 					}
 					if (this.current_page == 1) {

@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // divblox initialization
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "1.0.9";
+let dx_version = "1.0.10";
 let bootstrap_version = "4.3.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.2";
@@ -423,6 +423,15 @@ class DivbloxDomBaseComponent {
 	reset(inputs) {
 		this.resetSubComponents(inputs);
 	}
+	setLoadingState() {
+		$("#"+this.uid+"_ComponentContent").hide();
+		$("#"+this.uid+"_ComponentPlaceholder").show();
+		$("#"+this.uid+"_ComponentFeedback").html('');
+	}
+	removeLoadingState() {
+		$("#"+this.uid+"_ComponentContent").show();
+		$("#"+this.uid+"_ComponentPlaceholder").hide();
+	}
 	resetSubComponents(inputs) {
 		this.sub_component_objects.forEach(function(component) {
 			component.reset(inputs);
@@ -602,8 +611,7 @@ function loadComponent(component_name,parent_uid,parent_element_id,load_argument
 			loadComponentCss(load_arguments["component_path"]);
 			loadComponentJs(load_arguments["component_path"],load_arguments,callback);
 		},function() {
-			throw new Error("Invalid component: Components must be grouped in folders with all relevant scripts." +
-				" Click here to visit the setup page: "+getServerRootPath()+"divblox/config/framework/divblox_admin/setup.php");
+			handleLoadComponentError();
 		},false/*We need to return the html from the request here*/);
 	} else {
 		throw new Error("No component name provided");
@@ -648,7 +656,7 @@ function loadComponentJs(component_path,load_arguments,callback) {
 				});
 			}
 		}, function(data) {
-			throw new Error("Invalid component: Components must be grouped in folders with all relevant scripts");
+			handleLoadComponentError();
 		},false);
 	}
 }
@@ -695,10 +703,18 @@ function loadPageComponent(component_name,load_arguments,callback) {
 					}
 				},
 				function(data) {
-					dxLog("Error: "+data);
+				dxLog("Error: "+data);
 				});
 		},1000)
 	}
+}
+function handleLoadComponentError() {
+	setTimeout(function() {
+		loadPageComponent('login');
+	},2000);
+	throw new Error("Invalid component: Components must be grouped in folders with all relevant scripts." +
+		" Click here to visit the setup page: "+getServerRootPath()+"divblox/config/framework/divblox_admin/setup.php" +
+		"Will redirect to login page in 2s");
 }
 function getComponentFinalHtml(uid,initial_html) {
 	let final_html = initial_html.replace(/id="/g,'id="'+uid+'_');
@@ -1122,14 +1138,10 @@ function dxProcessRequestQueue() {
 }
 function dxGetScript(url,on_success,on_fail,force_cache) {
 	if (typeof on_success !== "function") {
-		on_success = function() {
-		
-		}
+		on_success = function() {}
 	}
 	if (typeof on_fail !== "function") {
-		on_fail = function() {
-		
-		}
+		on_fail = function() {}
 	}
 	if (typeof force_cache === "undefined") {
 		force_cache = true;
@@ -1183,6 +1195,8 @@ function dxGetScript(url,on_success,on_fail,force_cache) {
 				}
 				on_success(data);
 			}
+		}).done(function() {}).fail(function() {
+			on_fail();
 		});
 	}
 }

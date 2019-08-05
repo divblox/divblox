@@ -3,16 +3,15 @@ if (typeof component_classes['data_model_account_additional_info_manager_update'
 		constructor(inputs,supports_native,requires_native) {
 			super(inputs,supports_native,requires_native);
 			// Sub component config start
-			this.sub_component_definitions = {};
+			this.sub_component_definitions = [];
 			// Sub component config end
 			this.data_validation_array = [];
 			this.custom_validation_array = [];
-			this.required_validation_array = [].concat(this.data_validation_array).concat(this.custom_validation_array);
+			this.required_validation_array = ['Value',].concat(this.data_validation_array).concat(this.custom_validation_array);
+			
 		}
 		reset(inputs) {
-			if (!this.getReadyState()) {
-				this.handleComponentSuccess(inputs);
-			}
+			this.setLoadingState();
 			if (typeof inputs !== "undefined") {
 				this.setAdditionalAccountInformationId(inputs);
 				this.loadAdditionalAccountInformation();
@@ -24,7 +23,7 @@ if (typeof component_classes['data_model_account_additional_info_manager_update'
 				this.saveAdditionalAccountInformation();
 			}.bind(this));
 			getComponentElementById(this,"btnDelete").on("click", function() {
-				showAlert("Are you sure?","warning",["Cancel","Delete"],false,0,this.deleteAdditionalAccountInformation.bind(this),this.doNothing.bind(this));
+				showAlert("Are you sure?","warning",["Cancel","Delete"],false,0,this.deleteAdditionalAccountInformation.bind(this),this.doNothing);
 			}.bind(this));
 		}
 		setAdditionalAccountInformationId(additional_account_information_id) {
@@ -35,12 +34,14 @@ if (typeof component_classes['data_model_account_additional_info_manager_update'
 		}
 		loadAdditionalAccountInformation() {
 			dxRequestInternal(getComponentControllerPath(this),{f:"getObjectData",Id:this.getAdditionalAccountInformationId()}, function(data_obj) {
+				this.removeLoadingState();
 				this.component_obj = data_obj.Object;
 				this.element_mapping = {
 					"Type":"#"+this.uid+"_Type",
-					"Label":"#"+this.uid+"_Label",
-					"Value":"#"+this.uid+"_Value",
-				};
+                    "Label":"#"+this.uid+"_Label",
+                    "Value":"#"+this.uid+"_Value",
+                    };
+				
 				this.setValues();
 			}.bind(this), function(data_obj) {
 				this.handleComponentError(data_obj.Message);
@@ -49,8 +50,10 @@ if (typeof component_classes['data_model_account_additional_info_manager_update'
 		setValues() {
 			let AdditionalAccountInformationObj = this.component_obj;
 			getComponentElementById(this,"Type").val(getDataModelAttributeValue(AdditionalAccountInformationObj.Type));
-			getComponentElementById(this,"Label").val(getDataModelAttributeValue(AdditionalAccountInformationObj.Label));
-			getComponentElementById(this,"Value").val(getDataModelAttributeValue(AdditionalAccountInformationObj.Value));
+            getComponentElementById(this,"Label").val(getDataModelAttributeValue(AdditionalAccountInformationObj.Label));
+            getComponentElementById(this,"Value").val(getDataModelAttributeValue(AdditionalAccountInformationObj.Value));
+            
+			
 		}
 		updateValues() {
 			let keys = Object.keys(this.element_mapping);
@@ -69,14 +72,17 @@ if (typeof component_classes['data_model_account_additional_info_manager_update'
 			if (!this.validateAdditionalAccountInformation()) {
 				return;
 			}
-			dxRequestInternal(getComponentControllerPath(this),
-				{f:"saveObjectData",ObjectData:JSON.stringify(current_component_obj),Id:this.arguments["additional_account_information_id"]}, function(data_obj) {
-				showAlert("Updated!");
-				pageEventTriggered("additional_account_information_updated");
-				this.resetValidation();
-			}.bind(this), function(data_obj) {
-				showAlert("Error saving additional_account_information: "+data_obj.Message,"error","OK",false);
-			}.bind(this));
+			dxRequestInternal(
+				getComponentControllerPath(this),
+				{f:"saveObjectData",
+					ObjectData:JSON.stringify(current_component_obj),
+					Id:this.arguments["additional_account_information_id"]}, function(data_obj) {
+					showAlert("Updated!");
+					pageEventTriggered("additional_account_information_updated");
+					this.resetValidation();
+				}.bind(this), function(data_obj) {
+					showAlert("Error saving additional_account_information: "+data_obj.Message,"error","OK",false);
+				}.bind(this));
 		}
 		deleteAdditionalAccountInformation() {
 			dxRequestInternal(getComponentControllerPath(this),{f:"deleteObjectData",Id:this.arguments["additional_account_information_id"]}, function(data_obj) {
@@ -85,7 +91,7 @@ if (typeof component_classes['data_model_account_additional_info_manager_update'
 				pageEventTriggered("additional_account_information_deleted");
 			}.bind(this), function (data_obj) {
 				showAlert("Error deleting additional_account_information: "+data_obj.Message,"error","OK",false);
-			});
+			}.bind(this));
 		}
 		validateAdditionalAccountInformation() {
 			let validation_succeeded = true;
@@ -119,7 +125,11 @@ if (typeof component_classes['data_model_account_additional_info_manager_update'
 			return validation_succeeded;
 		}
 		doCustomValidation(attribute) {
-			return true;
+			switch (attribute) {
+				
+				default:
+					break;
+			}
 		}
 		resetValidation() {
 			this.required_validation_array.forEach(function(item) {
@@ -128,7 +138,7 @@ if (typeof component_classes['data_model_account_additional_info_manager_update'
 		}
 		doNothing() {
 			// Just a helper function to reference on cancel of confirmation
-		};
+		}
 	}
 	component_classes['data_model_account_additional_info_manager_update'] = data_model_account_additional_info_manager_update;
 }

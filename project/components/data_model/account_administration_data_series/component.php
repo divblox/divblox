@@ -23,13 +23,17 @@ class AccountDataTableController extends ProjectComponentController {
         }
         $Offset = ($this->getInputValue("CurrentPage") - 1) * $this->getInputValue("ItemsPerPage");
         $QueryCondition = dxQ::All();
+        
         if (!is_null($this->getInputValue("SearchText"))) {
             if (strlen($this->getInputValue("SearchText")) > 0) {
-                $QueryCondition = dxQ::OrCondition(
-                    dxQ::Like(dxQueryN::Account()->FullName, "%".$this->getInputValue("SearchText")."%"),
+                $QueryCondition = dxQ::AndCondition(
+                    $QueryCondition,
+                    dxQ::OrCondition(dxQ::Like(dxQueryN::Account()->FullName, "%".$this->getInputValue("SearchText")."%"),
                     dxQ::Like(dxQueryN::Account()->EmailAddress, "%".$this->getInputValue("SearchText")."%"),
+                    dxQ::Like(dxQueryN::Account()->Username, "%".$this->getInputValue("SearchText")."%"),
+                    dxQ::Like(dxQueryN::Account()->ProfilePicturePath, "%".$this->getInputValue("SearchText")."%"),
                     dxQ::Like(dxQueryN::Account()->AccessBlocked, "%".$this->getInputValue("SearchText")."%"),
-                    dxQ::Like(dxQueryN::Account()->UserRoleObject->Role, "%".$this->getInputValue("SearchText")."%"));
+                    dxQ::Like(dxQueryN::Account()->UserRoleObject->Role, "%".$this->getInputValue("SearchText")."%")));
             }
         }
         $OrderByClause = dxQ::OrderBy(dxQueryN::Account()->FullName);
@@ -57,14 +61,16 @@ class AccountDataTableController extends ProjectComponentController {
                 !is_null($AccountObj->UserRoleObject->Role)) {
                 $UserRoleStr = $AccountObj->UserRoleObject->Role;
             }
-
+            
             array_push($AccountReturnArray,
                 array("Id" => $AccountObj->Id,
-                    "FullName" => $AccountObj->FullName,
-                    "EmailAddress" => $AccountObj->EmailAddress,
-                    "AccessBlocked" => $AccountObj->AccessBlocked,
+                    "FullName" => is_null($AccountObj->FullName)? 'N/A':$AccountObj->FullName,
+                    "EmailAddress" => is_null($AccountObj->EmailAddress)? 'N/A':$AccountObj->EmailAddress,
+                    "Username" => is_null($AccountObj->Username)? 'N/A':$AccountObj->Username,
+                    "ProfilePicturePath" => is_null($AccountObj->ProfilePicturePath)? 'N/A':$AccountObj->ProfilePicturePath,
+                    "AccessBlocked" => is_null($AccountObj->AccessBlocked)? 'N/A':$AccountObj->AccessBlocked,
                     "UserRole" => $UserRoleStr,
-                ));
+                    ));
         }
         $this->setReturnValue("Result","Success");
         $this->setReturnValue("Message","");

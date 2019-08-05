@@ -4,14 +4,14 @@ if (typeof component_classes['data_model_account_administration'] === "undefined
 			super(inputs,supports_native,requires_native);
 			// Sub component config start
 			this.sub_component_definitions = [
-				{"component_load_path":"data_model/account_administration_data_series","parent_element":"data_series","loading_arguments":{"uid":this.getUid()+"_account_administration_data_series_component"}},
-				{"component_load_path":"data_model/account_administration_update","parent_element":"data_update","loading_arguments":{"uid":this.getUid()+"_account_administration_update_component"}},
-				{"component_load_path":"data_model/account_administration_create","parent_element":"data_create","loading_arguments":{"uid":this.getUid()+"_account_administration_create_component"}}];
+				{"component_load_path":"data_model/account_administration_data_series","parent_element":"data_series","arguments":{"uid":this.getUid()+"_account_administration_data_series_component"}},
+				{"component_load_path":"data_model/account_administration_update","parent_element":"data_update","arguments":{"uid":this.getUid()+"_account_administration_update_component"}},
+				{"component_load_path":"data_model/account_administration_create","parent_element":"data_create","arguments":{"uid":this.getUid()+"_account_administration_create_component"}}];
 			// Sub component config end
 		}
 		reset(inputs) {
-			this.toggleSubView("data_series_wrapper");
 			super.reset(inputs);
+			this.toggleSubView("data_series_wrapper");
 		}
 		eventTriggered(event_name,parameters_obj) {
 			// Handle specific events here. This is useful if the component needs to update because one of its

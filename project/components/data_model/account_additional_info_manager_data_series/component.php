@@ -22,13 +22,16 @@ class AdditionalAccountInformationDataListController extends ProjectComponentCon
             $this->presentOutput();
         }
         $Offset = $this->getInputValue("CurrentOffset");
-        $QueryCondition = dxQ::Equal(dxQueryN::AdditionalAccountInformation()->AccountObject->Id,ProjectFunctions::getCurrentAccountId());
+        $QueryCondition = dxQ::All();
+        $QueryCondition = dxQ::AndCondition($QueryCondition,dxQ::Equal(dxQN::AdditionalAccountInformation()->AccountObject->Id, $this->getInputValue("ConstrainingAccountId",true)));
+            
         if (!is_null($this->getInputValue("SearchText"))) {
             if (strlen($this->getInputValue("SearchText")) > 0) {
-                $QueryCondition = dxQ::OrCondition(
-                    dxQ::Like(dxQueryN::AdditionalAccountInformation()->Type, "%".$this->getInputValue("SearchText")."%"),
+                $QueryCondition = dxQ::AndCondition(
+                    $QueryCondition,
+                    dxQ::OrCondition(dxQ::Like(dxQueryN::AdditionalAccountInformation()->Type, "%".$this->getInputValue("SearchText")."%"),
                     dxQ::Like(dxQueryN::AdditionalAccountInformation()->Label, "%".$this->getInputValue("SearchText")."%"),
-                    dxQ::Like(dxQueryN::AdditionalAccountInformation()->Value, "%".$this->getInputValue("SearchText")."%"));
+                    dxQ::Like(dxQueryN::AdditionalAccountInformation()->Value, "%".$this->getInputValue("SearchText")."%")));
             }
         }
         $OrderByClause = dxQ::OrderBy(dxQueryN::AdditionalAccountInformation()->Type);
@@ -51,12 +54,12 @@ class AdditionalAccountInformationDataListController extends ProjectComponentCon
             ));
         $AdditionalAccountInformationReturnArray = [];
         foreach($AdditionalAccountInformationArray as $AdditionalAccountInformationObj) {
-
+            
             array_push($AdditionalAccountInformationReturnArray,
                 array("Id" => $AdditionalAccountInformationObj->Id,
-                    "Type" => $AdditionalAccountInformationObj->Type,
-                    "Label" => $AdditionalAccountInformationObj->Label,
-                    "Value" => $AdditionalAccountInformationObj->Value,
+                    "Type" => is_null($AdditionalAccountInformationObj->Type)? 'N/A':$AdditionalAccountInformationObj->Type,
+                    "Label" => is_null($AdditionalAccountInformationObj->Label)? 'N/A':$AdditionalAccountInformationObj->Label,
+                    "Value" => is_null($AdditionalAccountInformationObj->Value)? 'N/A':$AdditionalAccountInformationObj->Value,
                     ));
         }
         $this->setReturnValue("Result","Success");

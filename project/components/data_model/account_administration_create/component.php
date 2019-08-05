@@ -4,7 +4,7 @@ require(FRAMEWORK_ROOT_STR.'/assets/php/database_helper.class.php');
 require_once(DATA_MODEL_CLASS_PATH_STR);
 class AccountController extends ProjectComponentController {
     protected $DataModelObj;
-    protected $RequiredAttributeArray = ['EmailAddress','Username'];
+    protected $RequiredAttributeArray = ['FirstName','EmailAddress','Username',];
     protected $NumberValidationAttributeArray = [];
     public function __construct($ComponentNameStr = 'Component') {
         $this->DataModelObj = new DataModel();
@@ -53,7 +53,7 @@ class AccountController extends ProjectComponentController {
                     }
                 }
                 if (in_array($this->DataModelObj->getEntityAttributeType("Account", $Attribute),["DATE","DATETIME"])) {
-                    if (strlen($AccountObj[$Attribute]) > 2) {
+                    if (is_string($AccountObj[$Attribute])) {
                         $DateObj = new dxDateTime($AccountObj[$Attribute]);
                         $AccountToCreateObj->$Attribute = $DateObj;
                     }

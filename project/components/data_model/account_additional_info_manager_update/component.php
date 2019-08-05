@@ -4,7 +4,7 @@ require(FRAMEWORK_ROOT_STR.'/assets/php/database_helper.class.php');
 require_once(DATA_MODEL_CLASS_PATH_STR);
 class AdditionalAccountInformationController extends ProjectComponentController {
     protected $DataModelObj;
-    protected $RequiredAttributeArray = [];
+    protected $RequiredAttributeArray = ['Value',];
     protected $NumberValidationAttributeArray = [];
     public function __construct($ComponentNameStr = 'Component') {
         $this->DataModelObj = new DataModel();
@@ -61,8 +61,10 @@ class AdditionalAccountInformationController extends ProjectComponentController 
                     }
                 }
                 if (in_array($this->DataModelObj->getEntityAttributeType("AdditionalAccountInformation", $Attribute),["DATE","DATETIME"])) {
-                    $DateObj = new dxDateTime($AdditionalAccountInformationObj[$Attribute]);
-                    $AdditionalAccountInformationToUpdateObj->$Attribute = $DateObj;
+                    if (is_string($AdditionalAccountInformationObj[$Attribute])) {
+                        $DateObj = new dxDateTime($AdditionalAccountInformationObj[$Attribute]);
+                        $AdditionalAccountInformationToUpdateObj->$Attribute = $DateObj;
+                    }
                 } else {
                     $AdditionalAccountInformationToUpdateObj->$Attribute = $AdditionalAccountInformationObj[$Attribute];
                 }

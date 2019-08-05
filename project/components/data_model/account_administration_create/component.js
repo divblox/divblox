@@ -7,11 +7,12 @@ if (typeof component_classes['data_model_account_administration_create'] === "un
 			// Sub component config end
 			this.data_validation_array = [];
 			this.custom_validation_array = [];
-			this.required_validation_array = [].concat(this.data_validation_array).concat(this.custom_validation_array);
+			this.required_validation_array = ['FirstName','EmailAddress','Username',].concat(this.data_validation_array).concat(this.custom_validation_array);
 			this.user_role_list = {};
-   
+        
 		}
 		reset(inputs) {
+			this.setLoadingState();
 			this.loadAccount();
 			super.reset(inputs);
 		}
@@ -22,6 +23,7 @@ if (typeof component_classes['data_model_account_administration_create'] === "un
 		}
 		loadAccount() {
 			dxRequestInternal(getComponentControllerPath(this),{f:"getObjectData"}, function(data_obj) {
+				this.removeLoadingState();
 				this.component_obj = {
 					"FirstName":"",
                     "MiddleNames":"",
@@ -79,7 +81,7 @@ if (typeof component_classes['data_model_account_administration_create'] === "un
                     "UserRole":"#"+this.uid+"_UserRole",
                     };
 				this.user_role_list = data_obj.UserRoleList;
-    
+                
 				this.setValues();
 			}.bind(this), function(data_obj) {
 				this.handleComponentError(data_obj.Message);
