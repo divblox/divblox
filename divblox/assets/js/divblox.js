@@ -11,12 +11,12 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // divblox initialization
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "1.0.10";
+let dx_version = "1.0.11";
 let bootstrap_version = "4.3.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.2";
 let debug_mode = true;
-let allow_feedback = true;
+let allow_feedback = false;
 let allowable_divblox_paths = ["divblox","project"];
 let allowable_divblox_sub_paths = ["assets","config","components"];
 let document_root = "";
@@ -161,6 +161,7 @@ function checkFrameworkReady() {
 		initFeedbackCapture();
 	},2000);
 	if (isNative()) {
+		allow_feedback = local_config.allow_feedback;
 		on_divblox_ready();
 		return;
 	}
