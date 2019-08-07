@@ -96,7 +96,7 @@ if (typeof component_classes['system_default_image_upload'] === "undefined") {
 				},
 				upload: {
 					url: getComponentControllerPath(this_component),
-					data: {f:"handleFilePost"},
+					data: {f:"handleFilePost",AuthenticationToken:getValueFromAppState('dxAuthenticationToken')},
 					type: 'POST',
 					enctype: 'multipart/form-data',
 					start: false,

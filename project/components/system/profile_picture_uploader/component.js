@@ -98,7 +98,7 @@ if (typeof component_classes['system_profile_picture_uploader'] === "undefined")
 				},
 				upload: {
 					url: getComponentControllerPath(this_component),
-					data: {f:"handleFilePost"},
+					data: {f:"handleFilePost",AuthenticationToken:getValueFromAppState('dxAuthenticationToken')},
 					type: 'POST',
 					enctype: 'multipart/form-data',
 					start: false,
