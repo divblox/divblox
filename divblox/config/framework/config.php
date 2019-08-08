@@ -89,6 +89,7 @@ define ('DATE_TIME_FORMAT_PHP_STR','d M Y');
 define ('DATE_TIME_FORMAT_HTML_STR','DD-MMM-YYYY');
 
 define("AUTHENTICATION_TOKEN_STR","auth_token_".str_replace(" ", "_", strtolower(APP_NAME_STR)));
+define("COMPONENT_BUILDER_EDITOR_THEME_STR","LIGHT");// Options are LIGHT or DARK
 
 require_once(DATA_MODELLER_PATH_STR.'/data_model/DataModel_Config.inc.php');
 require_once(DATA_MODELLER_PATH_STR.'/data_model/DataModel.class.php');

@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // divblox initialization
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "1.1.0";
+let dx_version = "1.1.2";
 let bootstrap_version = "4.3.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.2";
@@ -157,9 +157,6 @@ function callInstallPrompt() {
 function checkFrameworkReady() {
 	// Check if the framework is installed and configured.
 	// After that we call a generic "on_divblox_ready()" function
-	setTimeout(function() {
-		initFeedbackCapture();
-	},2000);
 	if (isNative()) {
 		allow_feedback = local_config.allow_feedback;
 		on_divblox_ready();
@@ -708,6 +705,7 @@ function loadPageComponent(component_name,load_arguments,callback) {
 				});
 		},1000)
 	}
+	doPostPageLoadActions();
 }
 function handleLoadComponentError() {
 	setTimeout(function() {
@@ -852,7 +850,7 @@ function processPageInputs() {
 			},
 			function(data) {});
 	}
-	loadCurrentUserProfilePicture();
+	doPostPageLoadActions();
 }
 function getRandomFilePostFix() {
 	let postfix_candidate = '';

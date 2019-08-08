@@ -21,6 +21,7 @@ let UserRoleArray = [];
 let ModuleArray = [];
 let ModuleColorsObject = {};
 let EntityModulesObject = {};
+let isEditing = false;
 let paper = new joint.dia.Paper({
     el: $('#paper'),
     width: window.innerWidth,
@@ -44,6 +45,7 @@ paper.on('cell:pointerup blank:pointerup', function(cellView, x, y) {
 });
 paper.on('blank:pointerdblclick', function(event, x, y) {
 	CurrentEntityCoords = {x:x,y:y};
+	isEditing = false;
 	openEntityModal('');
 });
 $("#paper").mousemove(function(event) {
@@ -145,6 +147,7 @@ function refreshDataModel() {
 }
 function restoreClickHandlers() {
 	$('.joint-cell').dblclick(function() {
+		isEditing = true;
 		openEntityModal($(this).attr("model-id"));
 		$('#RemoveEntityBtn').show();
 	});

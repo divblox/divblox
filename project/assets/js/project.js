@@ -5,7 +5,7 @@
 let local_config = {
 	service_worker_enabled:false,
 	debug_mode:true,
-	allow_feedback:false,
+	allow_feedback:true,
 	app_name:'divblox'
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -153,4 +153,10 @@ function createPushRegistration(registration_id,success_callback,failure_callbac
 		function(data_obj) {
 			failure_callback(data_obj.Message);
 		});
+}
+function doPostPageLoadActions() {
+	setTimeout(function() {
+		initFeedbackCapture();
+		loadCurrentUserProfilePicture();
+	},1000); //JGL: We set a delay here to ensure everything else on the page has completed
 }

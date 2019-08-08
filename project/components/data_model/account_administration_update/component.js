@@ -9,7 +9,7 @@ if (typeof component_classes['data_model_account_administration_update'] === "un
 			this.custom_validation_array = [];
 			this.required_validation_array = ['FirstName','EmailAddress','Username',].concat(this.data_validation_array).concat(this.custom_validation_array);
 			this.user_role_list = {};
-        
+   
 		}
 		reset(inputs) {
 			this.setLoadingState();
@@ -66,7 +66,7 @@ if (typeof component_classes['data_model_account_administration_update'] === "un
                     "UserRole":"#"+this.uid+"_UserRole",
                     };
 				this.user_role_list = data_obj.UserRoleList;
-                
+    
 				this.setValues();
 			}.bind(this), function(data_obj) {
 				this.handleComponentError(data_obj.Message);
@@ -97,7 +97,7 @@ if (typeof component_classes['data_model_account_administration_update'] === "un
             getComponentElementById(this,"Nickname").val(getDataModelAttributeValue(AccountObj.Nickname));
             getComponentElementById(this,"Status").val(getDataModelAttributeValue(AccountObj.Status));
             getComponentElementById(this,"Gender").val(getDataModelAttributeValue(AccountObj.Gender));
-            getComponentElementById(this,"AccessBlocked").attr("checked",getDataModelAttributeValue(AccountObj.AccessBlocked));
+            getComponentElementById(this,"AccessBlocked").prop("checked",getDataModelAttributeValue(AccountObj.AccessBlocked));
             getComponentElementById(this,"BlockedReason").val(getDataModelAttributeValue(AccountObj.BlockedReason));
             
 			getComponentElementById(this,"UserRole").html('<option value="">-Please Select-</option>');
