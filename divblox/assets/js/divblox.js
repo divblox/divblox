@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // divblox initialization
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "1.1.2";
+let dx_version = "1.1.3";
 let bootstrap_version = "4.3.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.2";
@@ -897,13 +897,17 @@ function logNewComponentFeedback(type,title,description,component_name,component
 	if (typeof on_fail !== "function") {
 		on_fail = function(message){}
 	}
+	let capture_page = getValueFromAppState('CurrentPage');
+	if (capture_page.indexOf("pages") === -1) {
+		capture_page = "pages/"+capture_page;
+	}
 	dxRequestSystem(getRootPath()+'divblox/config/framework/issue_tracking/issue_request_handler.php?f=newIssue',
 		{type:type,
 			title:title,
 			description:description,
 			component_name:component_name,
 			component_uid:component_uid,
-			capture_page:getValueFromAppState('CurrentPage')},
+			capture_page:capture_page},
 		function(data_str) {
 			on_success(data_str);
 		},
@@ -1612,7 +1616,7 @@ function showToast(title,toast_message,position,icon_path,toast_time_stamp,auto_
 		position.y = "middle";
 	}
 	if (typeof icon_path === "undefined") {
-		icon_path = getRootPath()+'divblox/assets/images/divblox_favicon.ico';
+		icon_path = getRootPath()+'project/assets/images/favicon.ico';
 	}
 	if (typeof toast_time_stamp === "undefined") {
 		toast_time_stamp = moment();

@@ -41,7 +41,7 @@ function registerServiceWorker() {
 	}
 }
 function getAppLogoUrl() {
-	return getRootPath()+'divblox/assets/images/divblox_logo.svg';
+	return getRootPath()+'project/assets/images/app_logo.png';
 }
 function presentOfflineRequestQueuedMessage() {
 	return "You are offline. Your request has been queued and will be processed as soon as you are connected again.";

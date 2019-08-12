@@ -1,5 +1,11 @@
 <?php
+/*
+ * This file is used throughout your project and is loaded by default by divblox.
+ * When making changes to this file, keep in mind that every back-end process that
+ * your project will run will load this file
+ * */
 include(FRAMEWORK_ROOT_STR."/assets/php/framework_classes.php");
+//region Project Access related
 abstract class ProjectAccessManager extends AccessManager {
     public static function getObjectAccess($AccountId = -1, $ObjectType = null, $ObjectId = -1) {
         $ReturnArray = parent::getObjectAccess($AccountId,$ObjectType,$ObjectId);
@@ -81,6 +87,8 @@ abstract class ProjectAccessManager extends AccessManager {
         return $InitialReturn;
     }
 }
+//endregion
+
 //region Component controller related
 class ProjectComponentController extends ComponentController {
     public function __construct($ComponentNameStr = 'Component') {
@@ -96,7 +104,6 @@ class ProjectComponentController extends ComponentController {
 #  Author:    innostudio.de
 #  Website:   http://innostudio.de/fileuploader/
 #  Version:   2.1
-#  License:   https://innostudio.de/fileuploader/documentation/#license
 #  Date:      26-Nov-2018
 #  Purpose:   Validate, Remove, Upload, Sort files and Resize images on server.
 #  Information: Don't forget to check the options file_uploads, upload_max_filesize, max_file_uploads and post_max_size in the php.ini
@@ -583,7 +590,6 @@ class FileUploader {
         $listInput = $this->field['listInput'];
         $uploadDir = str_replace(getcwd() . '/', '', $this->options['uploadDir']);
         $chunk = isset($_POST['_chunkedd']) && count($this->field['input']['name']) == 1 ? json_decode($_POST['_chunkedd'], true) : false;
-
         if ($this->field['input']) {
             // validate ini settings and some generally options
             $validate = $this->validate();

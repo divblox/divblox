@@ -25,7 +25,7 @@ if (!ALLOW_WIZARD_ACCESS) {
     <link rel="stylesheet" href="../../../../assets/css/bootstrap/4.3.1/bootstrap.min.css">
     <link rel="stylesheet" href="../../../../assets/css/font-awesome.min.css">
     <link rel="stylesheet" href="../../../../../project/assets/css/project.css">
-    <link rel="icon" href="../../../../../project/assets/images/divblox_favicon.ico" />
+    <link rel="icon" href="../../../../../divblox/assets/images/divblox_favicon.ico" />
     <title>dx Setup Wizard</title>
 </head>
 <body>

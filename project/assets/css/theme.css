@@ -1,0 +1,159 @@
+/* ---------------------------------------------Custom Global Styles--------------------------------------------------*/
+/* Custom styles go here */
+/* -------------------------------------------------------------------------------------------------------------------*/
+
+/* ---------------------------------------------Styles for sidebars---------------------------------------------------*/
+.sidebar-dark {
+    background-color: #263b42;
+    box-shadow: 0px 0px 12px 0px #00000042;
+    color: #b5b5b5;
+}
+.sidebar-light {
+    background-color: #eaeaea;
+    box-shadow: 0px 0px 12px 0px #00000042;
+    color: #5b5b5b;
+}
+.nav-link {
+    display: block;
+    padding: .5rem 1rem;
+}
+.sidebar-dark .nav-link-important {
+    background-color: #263b42;
+    z-index: 1030;
+}
+.sidebar-light .nav-link-important {
+    background-color: #eaeaea;
+    z-index: 1030;
+}
+.nav-link >.fa {
+    font-size:20px;
+}
+.sidebar-dark .nav-link {
+    font-weight: 100;
+    color: #b5b5b5;
+    font-size: 0.8rem;
+    padding: .8rem 0.1rem !important;
+}
+.sidebar-dark .nav-link .feather {
+    margin-right: 4px;
+    color: #999;
+}
+.sidebar-dark .nav-link.active {
+    color: #ffffff;
+    background-color: #475A62;
+}
+.sidebar-dark .nav-link:hover {
+    color: #ffffff;
+    background-color: #3f484c;
+}
+.sidebar-dark .nav-link:hover .feather,
+.sidebar-dark .nav-link.active .feather {
+    color: inherit;
+    background-color: #475A62;
+}
+.sidebar-light .nav-link {
+    font-weight: 100;
+    color: #5b5b5b;
+    font-size: 0.8rem;
+    padding: .8rem 0.1rem !important;
+}
+.sidebar-light .nav-link .feather {
+    margin-right: 4px;
+    color: #999;
+}
+.sidebar-light .nav-link.active {
+    color: #ffffff;
+    background-color: #475A62;
+}
+.sidebar-light .nav-link:hover {
+    color: #ffffff;
+    background-color: #787e82;
+}
+.sidebar-light .nav-link:hover .feather,
+.sidebar-light .nav-link.active .feather {
+    color: inherit;
+    background-color: #475A62;
+}
+.sidebar-heading {
+    font-size: .75rem;
+    text-transform: uppercase;
+}
+.nav-item > .dropdown-menu {
+    box-shadow: 3px 1px 12px 0px #d6d6d6;
+    left: -2px !important;
+}
+/* -------------------------------------------------------------------------------------------------------------------*/
+
+/* -----------------------------Styles for containers that work with sidebars and nav bars ---------------------------*/
+.component-wrapper-top-navbar {
+    margin-top: 65px;
+}
+.component-wrapper-compact-sidebar {
+    padding-left:15px;
+    margin-right:0px;
+    padding-top:15px;
+    margin-top: 25px;
+}
+.sidebar_compact_left_visible {
+    padding-left:95px;
+    margin-right:30px;
+    padding-top:15px;
+    transition: ease 0.5s;
+}
+.sidebar_toggle {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 80px;
+    display: inline-block;
+    padding: 7px;
+    text-align: center;
+    vertical-align: top;
+    z-index: 3;
+}
+.sidebar_toggle:hover {
+    cursor:pointer;
+}
+.sidebar_toggle::after {
+    font-family: "FontAwesome";
+    font-size:1.2rem;
+    content: "\f036";
+}
+.app_logo_compact_sidebar {
+    width:100px;
+    position:fixed;
+    top:2px;
+    left:65px;
+    z-index: 3;
+}
+.sidebar_compact_left_visible > .sidebar_toggle_in_content {
+    display:none;
+}
+.sidebar_compact_left_visible > .app_logo_compact_sidebar {
+    top:2px;
+    left:95px;
+}
+@media (max-width: 1024px) {
+    .sidebar_compact_left_visible {
+        padding-left:15px;
+        margin-right:0px;
+        padding-top:15px;
+    }
+    .sidebar_compact_left_visible > .sidebar_toggle_in_content {
+        display:inline-block;
+    }
+}
+/* -------------------------------------------------------------------------------------------------------------------*/
+
+/* --------------------------------------------Styles for offline notifications---------------------------------------*/
+#AppUpdateWrapper {
+    background-color: #696969;
+    color: #fff;
+}
+#AppReloadDismissButton {
+    color: #d6d6d6;
+}
+#AppReloadButton {
+    text-transform: uppercase;
+    color:#6aa9ec;
+}

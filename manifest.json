@@ -2,12 +2,12 @@
   "name": "divblox App",
   "icons": [
     {
-      "src": "project/assets/images/dx-icon-192.png",
+      "src": "project/assets/images/app_icon_192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "project/assets/images/dx-icon-512.png",
+      "src": "project/assets/images/app_icon_512.png",
       "type": "image/png",
       "sizes": "512x512"
     }

@@ -90,6 +90,7 @@ define ('DATE_TIME_FORMAT_HTML_STR','DD-MMM-YYYY');
 
 define("AUTHENTICATION_TOKEN_STR","auth_token_".str_replace(" ", "_", strtolower(APP_NAME_STR)));
 define("COMPONENT_BUILDER_EDITOR_THEME_STR","LIGHT");// Options are LIGHT or DARK
+define("SANDBOX_ACTIVE_BOOL",false); // If true, will disable certain setup page features
 
 require_once(DATA_MODELLER_PATH_STR.'/data_model/DataModel_Config.inc.php');
 require_once(DATA_MODELLER_PATH_STR.'/data_model/DataModel.class.php');
@@ -97,7 +98,6 @@ include(PROJECT_ROOT_STR."/assets/php/project_classes.php");
 include(PROJECT_ROOT_STR."/assets/php/project_functions.php");
 include(DATA_MODEL_ORM_PATH_STR.'/generated/_class_paths.inc.php');
 include(DATA_MODEL_ORM_PATH_STR.'/generated/dxQueryN.class.php');
-
 
 spl_autoload_register(array('ProjectFunctions', 'Autoload'));
 ProjectFunctions::InitializeDatabaseConnections();

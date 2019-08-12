@@ -1,16 +1,18 @@
-const PRECACHE = 'precache-v1565257103';
+const PRECACHE = 'precache-v1565601906';
 const RUNTIME = 'runtime';
 // A list of local resources we always want to be cached.
 const PRECACHE_URLS = [
 	'index.html',
 	'project/assets/css/project.css',
+    'project/assets/css/theme.css',
 	'divblox/assets/js/divblox.js',
 	'project/assets/js/project.js',
-	'project/assets/images/divblox_favicon.ico',
-	'project/assets/images/dx-icon-192.png',
-	'project/assets/images/dx-icon-512.png',
-	'project/assets/images/dx-icon-192.jpg',
-	'project/assets/images/dx-icon-512.jpg',
+    'project/assets/images/app_logo.png',
+	'project/assets/images/favicon.ico',
+	'project/assets/images/app_icon_192.png',
+	'project/assets/images/app_icon_512.png',
+	'project/assets/images/app_icon_192.jpg',
+	'project/assets/images/app_icon_512.jpg',
 	'project/assets/images/apple_splash_2048.jpeg',
 	'project/assets/images/apple_splash_1668.jpeg',
 	'project/assets/images/apple_splash_1536.jpeg',
