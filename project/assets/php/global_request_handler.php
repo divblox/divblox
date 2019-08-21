@@ -35,6 +35,8 @@ function getCurrentAccountAttribute() {
             if (!file_exists(DOCUMENT_ROOT_STR.SUBDIRECTORY_STR.$Candidate)) {
                 return null;
             }
+        } else {
+            return null;
         }
     }
     return $Candidate;

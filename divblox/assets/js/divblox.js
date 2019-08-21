@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // divblox initialization
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "1.1.3";
+let dx_version = "1.2.2";
 let bootstrap_version = "4.3.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.2";
@@ -373,6 +373,7 @@ class DivbloxDomBaseComponent {
 		this.sub_component_objects = [];
 		this.sub_component_loaded_count = 0;
 		this.allowed_access_array = [];
+		this.is_loading = false;
 	}
 	loadPrerequisites(success_callback,fail_callback) {
 		if (typeof success_callback !== "function") {
@@ -413,6 +414,16 @@ class DivbloxDomBaseComponent {
 				this.initCustomFunctions();
 				// Load additional components here
 				this.loadSubComponent();
+				if (checkComponentBuilderActive()) {
+					setTimeout(function() {
+						//JGL: Some components might not remove their loading state if they do not receive
+						// initialization inputs. When we are in the component builder, we want to override this
+						if (this.is_loading) {
+							dxLog("Removing loading state if "+this.getComponentName()+" for component builder");
+							this.removeLoadingState();
+						}
+					}.bind(this),1000);
+				}
 			}.bind(this));
 		}.bind(this),function () {
 			this.handleComponentError("Error loading component dependencies");
@@ -422,11 +433,13 @@ class DivbloxDomBaseComponent {
 		this.resetSubComponents(inputs);
 	}
 	setLoadingState() {
+		this.is_loading = true;
 		$("#"+this.uid+"_ComponentContent").hide();
 		$("#"+this.uid+"_ComponentPlaceholder").show();
 		$("#"+this.uid+"_ComponentFeedback").html('');
 	}
 	removeLoadingState() {
+		this.is_loading = false;
 		$("#"+this.uid+"_ComponentContent").show();
 		$("#"+this.uid+"_ComponentPlaceholder").hide();
 	}
