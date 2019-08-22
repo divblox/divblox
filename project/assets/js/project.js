@@ -160,3 +160,7 @@ function doPostPageLoadActions() {
 		loadCurrentUserProfilePicture();
 	},1000); //JGL: We set a delay here to ensure everything else on the page has completed
 }
+function doAfterInitActions() {
+	//JGL: Any actions that should happen once the document is ready and all dx dependencies have been loaded can be
+	// placed here.
+}

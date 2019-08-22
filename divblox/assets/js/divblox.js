@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // divblox initialization
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "1.2.2";
+let dx_version = "1.2.3";
 let bootstrap_version = "4.3.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.2";
@@ -159,6 +159,7 @@ function checkFrameworkReady() {
 	// After that we call a generic "on_divblox_ready()" function
 	if (isNative()) {
 		allow_feedback = local_config.allow_feedback;
+		doAfterInitActions();
 		on_divblox_ready();
 		return;
 	}
@@ -219,6 +220,7 @@ function checkFrameworkReady() {
 				// developer
 			}
 			if (typeof on_divblox_ready !== "undefined") {
+				doAfterInitActions();
 				on_divblox_ready();
 			}
 			if ((typeof cb_active === "undefined") || (cb_active === false)) {
@@ -689,6 +691,8 @@ function loadPageComponent(component_name,load_arguments,callback) {
 	}
 	registered_component_array = {};
 	unRegisterEventHandlers();
+	$(document).off();
+	$('body').off();
 	let final_load_arguments = {"uid":page_uid};
 	if (typeof load_arguments === "object") {
 		let load_argument_keys = Object.keys(load_arguments);
@@ -1111,7 +1115,7 @@ function dxRequestInternalQueued(url,parameters,on_success,on_fail,trigger_eleme
 			dx_processing_queue = false;
 			dxProcessRequestQueue();
 			if (!isJsonString(data)) {
-				on_fail({"Result":"Failed","Message":"Returned value is not a valid JSON string"});
+				on_fail({"Result":"Failed","Message":"Returned value is not a valid JSON string","Returned":data});
 			} else {
 				let data_obj = JSON.parse(data);
 				if (typeof data_obj.AuthenticationToken !== "undefined") {
