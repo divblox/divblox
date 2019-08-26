@@ -124,6 +124,11 @@ $('#paper').bind('mousewheel', function(e){
 });
 function downloadDataModel() {
 	showAlert("Coming soon","info",[]);
+	return;
+	
+	let encodedData;
+	let s = new XMLSerializer().serializeToString(document.getElementById("paper"));
+	encodedData = window.btoa(s);
 }
 function initEntities() {
 	classes = {};
@@ -298,6 +303,7 @@ function addRelationship(EntityName,Relationship) {
 function disableButtons(TriggeredButton) {
 	$("#DropDownButtonGroup").prop("disabled", true);
 	$("#SyncDb").prop("disabled", true);
+	$("#ExportDb").prop("disabled", true);
 	$("#CleanAndResetDb").prop("disabled", true);
 	$("#RestoreDb").prop("disabled", true);
 	$("#SaveEntityBtn").prop("disabled", true);
@@ -309,6 +315,7 @@ function disableButtons(TriggeredButton) {
 function enableButtons(TriggeredButton,ButtonRestoreText) {
 	$("#DropDownButtonGroup").prop("disabled", false);
 	$("#SyncDb").prop("disabled", false);
+	$("#ExportDb").prop("disabled", false);
 	$("#CleanAndResetDb").prop("disabled", false);
 	$("#RestoreDb").prop("disabled", false);
 	$("#SaveEntityBtn").prop("disabled", false);
