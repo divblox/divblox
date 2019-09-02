@@ -3,6 +3,7 @@
 // The first section of this file is reserved for divblox code generation. Do not modify these lines manually
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 let local_config = {
+	spa_mode:false,
 	service_worker_enabled:false,
 	debug_mode:true,
 	allow_feedback:true,

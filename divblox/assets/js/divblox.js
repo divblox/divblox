@@ -11,10 +11,11 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // divblox initialization
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "1.2.7";
+let dx_version = "1.2.8";
 let bootstrap_version = "4.3.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.2";
+let spa_mode = false;
 let debug_mode = true;
 let allow_feedback = false;
 let allowable_divblox_paths = ["divblox","project"];
@@ -159,6 +160,7 @@ function checkFrameworkReady() {
 	// After that we call a generic "on_divblox_ready()" function
 	if (isNative()) {
 		allow_feedback = local_config.allow_feedback;
+		spa_mode = true;
 		doAfterInitActions();
 		on_divblox_ready();
 		return;
@@ -167,6 +169,7 @@ function checkFrameworkReady() {
 		event.preventDefault();
 		installPromptEvent = event;
 	});
+	spa_mode = local_config.spa_mode;
 	debug_mode = local_config.debug_mode;
 	allow_feedback = local_config.allow_feedback;
 	let config_cookie = getValueFromAppState('divblox_config');
@@ -674,6 +677,10 @@ function loadComponentJs(component_path,load_arguments,callback) {
 	}
 }
 function loadPageComponent(component_name,load_arguments,callback) {
+	if (!isSpa() && !isNative()) {
+		redirectToInternalPath('?view='+component_name);
+		return;
+	}
 	if ((typeof cb_active !== "undefined") && (cb_active)) {
 		// JGL: In this case we should inform the user that we are opening a new page in a new component builder window
 		if (confirm("This will open a new component builder window for the page: "+component_name)) {
@@ -831,7 +838,11 @@ function preparePageInputs(url_parameters_str) {
 	if (typeof url_parameters_str !== "undefined") {
 		updateAppState('page_inputs',url_parameters_str);
 	}
-	redirectToInternalPath();
+	if (isSpa() || isNative()) {
+		redirectToInternalPath();
+	} else {
+		processPageInputs();
+	}
 }
 function processPageInputs() {
 	let page_inputs = getValueFromAppState('page_inputs');
@@ -1794,6 +1805,12 @@ function setIsNative() {
 }
 function isNative() {
 	return is_native;
+}
+function isSpa() {
+	if (!isNative()) {
+		return spa_mode;
+	}
+	return isNative();
 }
 function initNative() {
 	updateAppState('divblox_config','success');
