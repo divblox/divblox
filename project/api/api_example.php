@@ -13,15 +13,6 @@ require("../../divblox/divblox.php");
 PublicApi::addApiOperation("dummyOperation",["Name","Surname"],"A string containing your full name");
 PublicApi::initApi("Example API to illustrate the basics of divblox APIs. Call the api with /dummyOperation/Name=ACoolName/Surname=ACoolSurname to see results");
 
-if (function_exists(PublicApi::getOperation())) {
-    call_user_func(PublicApi::getOperation());
-} else {
-    PublicApi::addApiOutput("Result","Failed");
-    PublicApi::addApiOutput("Message","Invalid operation provided. Try providing swapping '".PublicApi::getOperation()."' for 'doc' at the end of the url to see documentation");
-    PublicApi::printApiResult();
-}
-
-
 // Operations
 function dummyOperation() {
     $Name = PublicApi::getInputParameter("Name");

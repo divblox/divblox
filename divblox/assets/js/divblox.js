@@ -7,11 +7,12 @@
  * THIS FILE SHOULD NOT BE EDITED. divblox assumes the integrity of this file. If you edit this file, it could be overridden by a future divblox update
  * For queries please send an email to support@divblox.com
  */
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// divblox initialization
+/**
+ * divblox initialization
+ */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "1.2.8";
+let dx_version = "1.2.9";
 let bootstrap_version = "4.3.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.2";
@@ -34,6 +35,9 @@ let registered_toasts = [];
 let updating_toasts = false;
 let global_vars = {};
 let app_state = {};
+let root_history = [];
+let root_history_index = -1;
+let root_history_processing = false;
 let cache_scripts_requested = [];
 let cache_scripts_loaded = [];
 let url_input_parameters = null;
@@ -44,9 +48,10 @@ if(window.jQuery === undefined) {
 	throw new Error("jQuery has not been loaded. Please ensure that jQuery is loaded before divblox");
 }
 let component_classes = {};
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// divblox initialization related functions
+/**
+ * divblox initialization related functions
+ */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 let dependency_array = [
 	"divblox/assets/js/bootstrap/4.3.1/bootstrap.bundle.min.js",
@@ -54,6 +59,11 @@ let dependency_array = [
 	"project/assets/js/project.js",
 	"project/assets/js/momentjs/moment.js"
 ];
+/**
+ * Must be called at load to ensure that divblox loads correctly for the current environment. This function will set all
+ * required paths and load divblox dependencies
+ * @param {Boolean} as_native Tells divblox whether to initiate for a native environment or web
+ */
 function initDx(as_native) {
 	if (typeof as_native === "undefined") {
 		as_native = false;
@@ -65,6 +75,10 @@ function initDx(as_native) {
 	}
 	loadDependencies();
 }
+/**
+ * Loads the divblox dependencies, recursively. When all dependencies are loaded, checkFrameworkReady() is called.
+ * @param {Number} count The index in the variable dependency_array
+ */
 function loadDependencies(count) {
 	if (typeof count === "undefined") {
 		count = 0;
@@ -77,6 +91,10 @@ function loadDependencies(count) {
 		checkFrameworkReady();
 	}
 }
+/**
+ * Sets the divblox root paths
+ * @param {Boolean} as_native Tells divblox whether to initiate for a native environment or web
+ */
 function setPaths(as_native) {
 	if (typeof as_native === "undefined") {
 		as_native = false;
@@ -132,22 +150,9 @@ function setPaths(as_native) {
 		setIsNative();
 	}
 }
-function isIos() {
-	let user_agent = window.navigator.userAgent.toLowerCase();
-	return /iphone|ipad|ipod/.test(user_agent);
-}
-function isInStandaloneMode() {
-	// replace standalone with fullscreen or minimal-ui according to your manifest
-	if (matchMedia('(display-mode: standalone)').matches) {
-		// Android and iOS 11.3+
-		return true;
-	}
-	if (isIos()) {
-		return ('standalone' in window.navigator) && (window.navigator.standalone);
-	} else {
-		return false;
-	}
-}
+/**
+ * Placeholder function that handles the event to call the Install prompt for progressive web apps
+ */
 function callInstallPrompt() {
 	// We can't fire the dialog before preventing default browser dialog
 	//TODO: Complete this for custom prompts
@@ -155,9 +160,11 @@ function callInstallPrompt() {
 		installPromptEvent.prompt();
 	}
 }
+/**
+ * Checks if the framework is installed and configured. If so, sets up the offline event handlers. After
+ * that we call a generic "on_divblox_ready()" function that the developer can implement
+ */
 function checkFrameworkReady() {
-	// Check if the framework is installed and configured.
-	// After that we call a generic "on_divblox_ready()" function
 	if (isNative()) {
 		allow_feedback = local_config.allow_feedback;
 		spa_mode = true;
@@ -258,28 +265,24 @@ function checkFrameworkReady() {
 			});
 		});
 	}
-	if (debug_mode && !isNative()) {
-		setTimeout(function() {
-			// JGL: Disabling this for now since component builder cache settings seem to fix the problem we are trying
-			// to address with this code. This code will be removed in future dx releases
-			/*if (typeof override_console_check === "undefined") {
-				let t = performance.now();
-				for (i = 0; i < 100; i++) {
-					console.warn("DEBUG MODE: Checking console open...");
-				}
-				let duration = performance.now() - t;
-				if (duration < 10) {
-					showToast("Console not opened","Debug mode is currently on. When debug mode is on, it is" +
-						" recommended to always have the browser console opened with cache disabled to avoid caching" +
-						" issues.");
-				}
-			}*/
-		},3000);
+	if (isSpa()) {
+		$(window).on("popstate", function (e) {
+			let position = Number(window.history.state); // Absolute position in stack
+			let direction = Math.sign(position - root_history_index);
+			// One for backward (-1), reload (0) or forward (1)
+			loadPageFromRootHistory(direction);
+		});
 	}
 }
+/**
+ * Shows a notification that indicates an update to the app is available. Only used when the service worker is installed
+ */
 function showAppUpdateBar() {
 	$("#AppUpdateWrapper").addClass("show").css("z-index",getHighestZIndex()+1);
 }
+/**
+ * Removes the current service worker
+ */
 function removeServiceWorker() {
 	if (!navigator.serviceWorker) {
 		return;
@@ -290,6 +293,10 @@ function removeServiceWorker() {
 		}
 	});
 }
+/**
+ * Returns the current root path of the server.
+ * @return {String} The root path which is a valid url, e.g https://divblox.com/
+ */
 function getServerRootPath() {
 	if (isNative()) {
 		return server_final_url;
@@ -307,12 +314,21 @@ function getServerRootPath() {
 	}
 	return root_path;
 }
+/**
+ * Returns the current root path from index.html
+ * @return {String} The root path which is a relative path
+ */
 function getRootPath() {
 	if (typeof force_server_root !== "undefined") {
 		return getServerRootPath();
 	}
 	return "";
 }
+/**
+ * Sets the value of a url parameter in the app state. Useful when in SPA mode.
+ * @param {String} name The name of the parameter
+ * @param {String} value The value to set it to
+ */
 function setUrlInputParameter(name,value) {
 	if (url_input_parameters === null) {
 		url_input_parameters = new URLSearchParams();
@@ -320,20 +336,37 @@ function setUrlInputParameter(name,value) {
 	url_input_parameters.set(name,value);
 	updateAppState('page_inputs',"?"+url_input_parameters.toString());
 }
+/**
+ * Returns the value for a url parameter in the app state
+ * @param {String} name The name of the parameter
+ * @return {String|Null} The value stored in the app state
+ */
 function getUrlInputParameter(name) {
 	if (url_input_parameters === null) {
 		return null;
 	}
 	return url_input_parameters.get(name);
 }
+/**
+ * Updates a value in the app state and calls the function to store the app state
+ * @param {String} item_key The name of the item
+ * @param {String} item_value The value of the item
+ */
 function updateAppState(item_key,item_value) {
 	app_state[item_key] = item_value;
 	storeAppState();
 }
+/**
+ * Stores the current app state in local storage
+ */
 function storeAppState() {
 	app_state['global_vars'] = global_vars;
 	setItemInLocalStorage("dx_app_state",btoa(JSON.stringify(app_state)));
 }
+/**
+ * Returns the current app state from local storage
+ * @return {Object} The current app state
+ */
 function getAppState() {
 	let app_state_encoded = getItemInLocalStorage("dx_app_state");
 	if (app_state_encoded !== null) {
@@ -341,6 +374,11 @@ function getAppState() {
 	}
 	return app_state;
 }
+/**
+ * Returns a specific value stored in the app state
+ * @param {String} item_key The name of the item
+ * @return {String|Null} The value of the item
+ */
 function getValueFromAppState(item_key) {
 	app_state = getAppState();
 	if (typeof app_state[item_key] !== "undefined") {
@@ -349,15 +387,23 @@ function getValueFromAppState(item_key) {
 	return null;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// divblox component and DOM related functions
+/**
+ * divblox component and DOM related functions
+ */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 let dom_component_index_map = {};
 // JGL: Let's initialize the object that will contain relevant DOM info for our components that are rendered on the page
 let registered_component_array = {};
-/*DivbloxDomBaseComponent is the base class that manages the component javascript for every component*/
+/**
+ * DivbloxDomBaseComponent is the base class that manages the component javascript for every component
+ */
 class DivbloxDomBaseComponent {
+	/**
+	 * Initializes all the base variables for a divblox dom component
+	 * @param {Object} inputs The arguments to pass to the component
+	 * @param {Boolean} supports_native Indicate whether this component works on native projects
+	 * @param {Boolean} requires_native Indicate whether this component works ONLY on native projects
+	 */
 	constructor(inputs,supports_native,requires_native) {
 		this.arguments = inputs;
 		if (typeof supports_native === "undefined") {
@@ -380,6 +426,11 @@ class DivbloxDomBaseComponent {
 		this.allowed_access_array = [];
 		this.is_loading = false;
 	}
+	/**
+	 * Used to load any prerequisites that a component may require before continuing to load the component
+	 * @param {Function} success_callback The function to call when prerequisites were loaded successfully
+	 * @param {Function} fail_callback The function to call when something went wrong during load
+	 */
 	loadPrerequisites(success_callback,fail_callback) {
 		if (typeof success_callback !== "function") {
 			success_callback = function(){};
@@ -389,6 +440,12 @@ class DivbloxDomBaseComponent {
 		}
 		success_callback();
 	}
+	/**
+	 * This is the very first method that is called when a component is loaded. This triggers additional default
+	 * behaviour for the component
+	 * @param {Boolean} confirm_success Indicate whether the component should confirm a successful load or not
+	 * @param {Function} callback The function to call once the component is fully loaded and ready to go
+	 */
 	on_component_loaded(confirm_success,callback) {
 		if (isNative()) {
 			if (!this.supports_native) {
@@ -434,28 +491,50 @@ class DivbloxDomBaseComponent {
 			this.handleComponentError("Error loading component dependencies");
 		}.bind(this));
 	}
+	/**
+	 * A useful function to call to reset the component state
+	 * @param {Object} inputs The arguments to pass to the component
+	 */
 	reset(inputs) {
 		this.resetSubComponents(inputs);
 	}
+	/**
+	 * Toggles the variable is_loading to true and displays the component loading state
+	 */
 	setLoadingState() {
 		this.is_loading = true;
 		$("#"+this.uid+"_ComponentContent").hide();
 		$("#"+this.uid+"_ComponentPlaceholder").show();
 		$("#"+this.uid+"_ComponentFeedback").html('');
 	}
+	/**
+	 * Toggles the variable is_loading to false and removes the component loading state
+	 */
 	removeLoadingState() {
 		this.is_loading = false;
 		$("#"+this.uid+"_ComponentContent").show();
 		$("#"+this.uid+"_ComponentPlaceholder").hide();
 	}
+	/**
+	 * Calls the reset function for all of this component's sub components
+	 * @param inputs
+	 */
 	resetSubComponents(inputs) {
 		this.sub_component_objects.forEach(function(component) {
 			component.reset(inputs);
 		}.bind(this));
 	}
+	/**
+	 * Checks whether this component is ready
+	 * @return {boolean} true if ready, false if not
+	 */
 	getReadyState() {
 		return this.component_success;
 	}
+	/**
+	 * Used to remove the loading or error state when a component loads successfully
+	 * @param additional_input Unused
+	 */
 	handleComponentSuccess(additional_input) {
 		if (this.component_success === true) {
 			return;
@@ -465,10 +544,14 @@ class DivbloxDomBaseComponent {
 		$("#"+this.uid+"_ComponentPlaceholder").hide();
 		if (typeof cb_active !== "undefined") {
 			if (cb_active) {
-				on_divblox_component_success(this);
+				addComponentOverlay(this);
 			}
 		}
 	}
+	/**
+	 * Used to display the error state with a relevant message for this component
+	 * @param {String} ErrorMessage The error message to display
+	 */
 	handleComponentError(ErrorMessage) {
 		this.component_success = false;
 		$("#"+this.uid+"_ComponentContent").hide();
@@ -478,41 +561,83 @@ class DivbloxDomBaseComponent {
 			' </strong><br>'+ErrorMessage+'</div>');
 		if (typeof cb_active !== "undefined") {
 			if (cb_active) {
-				on_divblox_component_error(this);
+				addComponentOverlay(this);
 			}
 		}
 	}
+	/**
+	 * Used to display an access error for the current component
+	 * @param {String} ErrorMessage The error message to display
+	 */
 	handleComponentAccessError(ErrorMessage) {
 		this.handleComponentError(ErrorMessage);
 	}
+	/**
+	 * When registering DOM events it is useful to keep track of them per component if we want to offload them
+	 * later. This method is a wrapper for that functionality
+	 */
 	registerDomEvents() {/*To be overridden in sub class as needed*/}
+	/**
+	 * Called by on_component_loaded to allow us to initiate additional local functions for this component
+	 */
 	initCustomFunctions() {/*To be overridden in sub class as needed*/}
+	/**
+	 * A default callback method that is called whenever a sub component is successfully loaded
+	 * @param {Object} component The component that was loaded
+	 */
 	subComponentLoadedCallBack(component) {
 		this.sub_component_objects.push(component);
 		this.sub_component_loaded_count++;
 		this.loadSubComponent();
 		// JGL: Override as needed
 	}
+	/**
+	 * Loads the next sub component as defined in sub_component_definitions
+	 */
 	loadSubComponent() {
 		if (typeof this.sub_component_definitions[this.sub_component_loaded_count] !== "undefined") {
 			let sub_component_definition = this.sub_component_definitions[this.sub_component_loaded_count];
 			loadComponent(sub_component_definition.component_load_path,this.uid,sub_component_definition.parent_element,sub_component_definition.arguments,false,false,this.subComponentLoadedCallBack.bind(this));
 		} else {
 			this.reset();
+			if (this.getUid() === page_uid) {
+				this.postPageLoadActions();
+			}
 		}
 	}
+	/**
+	 * Gets all the sub components for the current component
+	 * @return {Array} The array of sub component objects
+	 */
 	getSubComponents() {
 		return this.sub_component_objects;
 	}
+	/**
+	 * Gets all the sub component definitions for the current component
+	 * @return {Array} The array of sub component definitions
+	 */
 	getSubComponentDefinitions() {
 		return this.sub_component_definitions;
 	}
+	/**
+	 * Gets the current component's UID
+	 * @return {String} The current component's UID
+	 */
 	getUid() {
 		return this.uid;
 	}
+	/**
+	 * Gets the current component's name
+	 * @return {String} The current component's name
+	 */
 	getComponentName() {
 		return this.arguments['component_name'];
 	}
+	/**
+	 * Gets an argument defined for the current component
+	 * @param {String} argument The argument to return
+	 * @return {*|Null} The value of the argument if it exists, null if not
+	 */
 	getLoadArgument(argument) {
 		if (typeof this.arguments[argument] !== "undefined") {
 			return this.arguments[argument];
@@ -524,6 +649,12 @@ class DivbloxDomBaseComponent {
 		}
 		return null;
 	}
+	/**
+	 * Handles a propagated event on the current component and continues the propagation to this component's sub
+	 * components
+	 * @param {String} event_name The name of the event that was received
+	 * @param {Object} parameters_obj An object with inputs passed with the event
+	 */
 	eventTriggered(event_name,parameters_obj) {
 		switch(event_name) {
 			case '[event_name]':
@@ -533,37 +664,48 @@ class DivbloxDomBaseComponent {
 		// Let's pass the event to all sub components
 		this.propagateEventTriggered(event_name,parameters_obj);
 	}
+	/**
+	 * Propagates an event to this component's sub components
+	 * @param {String} event_name The name of the event that was received
+	 * @param {Object} parameters_obj An object with inputs passed with the event
+	 */
 	propagateEventTriggered(event_name,parameters_obj) {
 		this.sub_component_objects.forEach(function(component) {
 			component.eventTriggered(event_name,parameters_obj);
 		});
 	}
+	/**
+	 * Processes the post page load actions if this component is the main page component
+	 */
+	postPageLoadActions() {
+		initFeedbackCapture();
+		loadCurrentUserProfilePicture();
+		renderAppLogo();
+	}
 }
-function on_divblox_component_success(component) {
-	let uid = component.getUid();
-	component.dom_component_obj.component_success = true;
-	$("#"+uid+"_ComponentContent").show();
-	$("#"+uid+"_ComponentPlaceholder").hide();
-	
-}
-function on_divblox_component_error(component,message) {
-	let uid = component.getUid();
-	component.dom_component_obj.component_success = false;
-	$("#"+uid+"_ComponentContent").hide();
-	$("#"+uid+"_ComponentPlaceholder").show();
-	$("#"+uid+"_ComponentFeedback").html('<div class="alert alert-danger alert-danger-component"><strong><i' +
-		' class="fa fa-exclamation-triangle ComponentErrorExclamation" aria-hidden="true"></i>' +
-		' </strong><br>'+message+'</div>');
-}
+/**
+ * Checks whether we are in the component builder
+ * @return {boolean} true if in component builder, false if not
+ */
 function checkComponentBuilderActive() {
 	if (typeof cb_active !== "undefined") {
 		return cb_active;
 	}
 }
+/**
+ * Loads a component by creating an instance of the component's DivbloxDomComponent class implementation and then
+ * calling the relevant function to load the component HTML, CSS & JavaScript into the DOM
+ * @param {String} component_name The fully qualified name of the component, e.g "data_model/account_create"
+ * @param {String} parent_uid The UID of the component within which this component is being loaded as a sub
+ * component. This can by null if the component is loaded as the first component for this page, i.e the page component
+ * @param {String} parent_element_id The DOM id of the parent component element
+ * @param {Object} load_arguments The arguments to pass to the component's constructor
+ * @param {Boolean} replace_parent_content If true, the parent element's html is overridden with the component that
+ * is being loaded. If false, the component's DOM content is appended to the parent element
+ * @param {Boolean} component_builder_active Flag that indicates whether the component builder is active
+ * @param {Function} callback Function to call once the component has been loaded completely
+ */
 function loadComponent(component_name,parent_uid,parent_element_id,load_arguments,replace_parent_content,component_builder_active,callback) {
-	// JGL: Views are simply components that are used as a collection of components, so this function is also used
-	// to load views. arguments is an optional parameter that will be in the form of objects
-	// {input:value,input2:value2}, etc.
 	parent_uid = parent_uid || "";
 	if (parent_element_id != "body") {
 		let parent_uid_str = "";
@@ -633,6 +775,10 @@ function loadComponent(component_name,parent_uid,parent_element_id,load_argument
 		throw new Error("No component name provided");
 	}
 }
+/**
+ * Loads the component's CSS into the DOM
+ * @param {String} component_path The relative path to the component's folder
+ */
 function loadComponentCss(component_path) {
 	let url = component_path+'/component.css';
 	if (debug_mode || checkComponentBuilderActive()) {
@@ -645,6 +791,12 @@ function loadComponentCss(component_path) {
 	}
 	$('head').append('<link rel="stylesheet" href="'+url+'" type="text/css" />');
 }
+/**
+ * Loads the component's javascript file into memory
+ * @param {String} component_path The relative path to the component's folder
+ * @param {Object} load_arguments The arguments to pass to the component's constructor
+ * @param {Function} callback The function to call once the javascript has loaded
+ */
 function loadComponentJs(component_path,load_arguments,callback) {
 	let class_name = ""+load_arguments["component_name"];
 	if (typeof component_classes[class_name] !== "undefined") {
@@ -676,6 +828,13 @@ function loadComponentJs(component_path,load_arguments,callback) {
 		},false);
 	}
 }
+/**
+ * Loads a new page based on the component provided. If in SPA mode, this does not load a new window, but refreshes
+ * the DOM with the new component's content
+ * @param {String} component_name The fully qualified name of the component, e.g "data_model/account_create"
+ * @param {Object} load_arguments The arguments to pass to the component's constructor
+ * @param {Function} callback The function to call once the component has loaded
+ */
 function loadPageComponent(component_name,load_arguments,callback) {
 	if (!isSpa() && !isNative()) {
 		redirectToInternalPath('?view='+component_name);
@@ -707,6 +866,11 @@ function loadPageComponent(component_name,load_arguments,callback) {
 			final_load_arguments[key] = load_arguments[key];
 		});
 	}
+	if (!root_history_processing) {
+		addPageToRootHistory(component_name);
+	} else {
+		root_history_processing = false;
+	}
 	setUrlInputParameter("view",component_name);
 	updateAppState("CurrentPage",component_name);
 	loadComponent("pages/"+component_name,null,'body',final_load_arguments,true,undefined,callback);
@@ -729,8 +893,56 @@ function loadPageComponent(component_name,load_arguments,callback) {
 				});
 		},1000)
 	}
-	doPostPageLoadActions();
 }
+/**
+ * Used to handle the onpopstate event when the browser back/forward buttons are clicked in SPA mode
+ * @param {Number} direction -1 For backwards, 0 for nothing or 1 for forwards
+ */
+function loadPageFromRootHistory(direction) {
+	if (direction == -1) {
+		root_history_index--;
+		if (root_history_index < 0) {root_history_index = 0;}
+	} else if (direction == 1) {
+		root_history_index++;
+		if (root_history_index >= root_history.length)  {
+			root_history_index = root_history.length - 1;
+		}
+	} else {
+		return;
+	}
+	let view_to_load = root_history[root_history_index];
+	let current_view = getUrlInputParameter("view");
+	if (view_to_load !== current_view) {
+		root_history_processing = true;
+		loadPageComponent(view_to_load);
+	}
+}
+/**
+ * Adds the provided page view to the root history array as the current active page
+ * @param {String} page_view The name of the page component to add to the root history array
+ */
+function addPageToRootHistory(page_view) {
+	if (!isSpa()) {return;}
+	if (root_history[root_history.length - 1] !== page_view) {
+		root_history.push(page_view);
+	}
+	root_history_index = root_history.length - 1;
+	updatePushStateWithCurrentView();
+}
+/**
+ * Updates the window history with the current view for SPA mode
+ */
+function updatePushStateWithCurrentView() {
+	if (!isSpa()) {return;}
+	let current_view = getUrlInputParameter("view");
+	if (current_view !== null) {
+		window.history.pushState(root_history_index, null, getServerRootPath()+'?view='+current_view);
+		window.history.replaceState(root_history_index, null, location.pathname);
+	}
+}
+/**
+ * Helper function to redirect to the login page when a component load error occurs
+ */
 function handleLoadComponentError() {
 	setTimeout(function() {
 		loadPageComponent('login');
@@ -739,11 +951,23 @@ function handleLoadComponentError() {
 		" Click here to visit the setup page: "+getServerRootPath()+"divblox/config/framework/divblox_admin/setup.php" +
 		"Will redirect to login page in 2s");
 }
+/**
+ * When a component is loaded in the DOM, it's element Id's are prefixed with the component UID. This function
+ * modifies the component HTML to provide the final html
+ * @param {String} uid The UID of the component
+ * @param {String} initial_html The html as provided by the component
+ * @return {String} The final html with the UID's prefixed
+ */
 function getComponentFinalHtml(uid,initial_html) {
 	let final_html = initial_html.replace(/id="/g,'id="'+uid+'_');
 	final_html = final_html.replace(/="#/g,'="#'+uid+'_');
 	return final_html
 }
+/**
+ * When a component is loaded more than once in the DOM, it needs to have a unique DOM index. This function provides
+ * that functionality
+ * @param {String} component_name The name of the component
+ */
 function generateNextDOMIndex(component_name) {
 	if (typeof dom_component_index_map[component_name] !== "undefined") {
 		let LastValue = dom_component_index_map[component_name][dom_component_index_map[component_name].length-1];
@@ -752,40 +976,86 @@ function generateNextDOMIndex(component_name) {
 		dom_component_index_map[component_name] = [1];
 	}
 }
+/**
+ * Registers a component in the  registered_component_array in order for it to be retrievable later.
+ * @param {Object} component_dom_object The component object to register
+ * @param {String} uid The UID of the component to register
+ */
 function registerComponent(component_dom_object,uid) {
 	if (typeof(registered_component_array[uid]) !== "undefined") {
 		throw new Error("The component '"+uid+"' is already registered in the DOM");
 	}
 	registered_component_array[uid] = component_dom_object;
-	renderAppLogo();
 }
+/**
+ * Retrieves a component, based on its UID from registered_component_array
+ * @param {String} uid The UID of the component to retrieve
+ * @return {Object} The component object
+ */
 function getRegisteredComponent(uid) {
 	if (typeof(registered_component_array[uid]) === "undefined") {
 		throw new Error("The component '"+uid+"' is not registered in the DOM");
 	}
 	return registered_component_array[uid]
 }
+/**
+ * Gets the component name for a given component
+ * @param {Object} component The component objet
+ * @return {String} The name of the component
+ */
 function getComponentName(component) {
 	return component.getComponentName();
 }
+/**
+ * The current page will always have a default main component. This function returns that component
+ * @return {Object} The component object
+ */
 function getPageMainComponent() {
 	return getRegisteredComponent(page_uid);
 }
+/**
+ * Gets an HTML element based on its id and component
+ * @param {Object} component The component object
+ * @param {String} element_id The original DOM id of the element
+ * @return {jQuery|HTMLElement} The element object
+ */
 function getComponentElementById(component,element_id) {
 	return $("#"+component.uid+"_"+element_id);
 }
+/**
+ * Based on the actual DOM element id, retrieves the component UID from an HTML element id
+ * @param {String} component_element_id The final DOM id of the element
+ * @param {String} element_id The original element id of the element
+ * @return {String} The UID of the component where this element is defined
+ */
 function getUidFromComponentElementId(component_element_id,element_id) {
 	return component_element_id.replace("_"+element_id,"");
 }
+/**
+ * Starts the propagation of an event by triggering it on the main page component
+ * @param {String} event_name The name of the event
+ * @param {Object} parameters_obj The parameters to send along with the event
+ */
 function pageEventTriggered(event_name,parameters_obj) {
 	getPageMainComponent().eventTriggered(event_name,parameters_obj);
 }
+/**
+ * Gets the path to the given component's php script. If in native mode, this returns the full url to the script on
+ * the server. If not, it's a relative path to the script.
+ * @param {Object} component The component object
+ * @return {string} The path to the component's php script
+ */
 function getComponentControllerPath(component) {
 	if (isNative()) {
 		return server_final_url+component.arguments["component_path"]+"/component.php";
 	}
 	return component.arguments["component_path"]+"/component.php";
 }
+/**
+ * Loads the given component's html as a jQuery DOM object and passes it to the callback function
+ * @param {String} component_path The path to the component
+ * @param {Function} callback The function to execute once the DOM object has been created
+ */
 function loadComponentHtmlAsDOMObject(component_path,callback) {
 	dxGetScript(component_path+"/component.html"+getRandomFilePostFix(), function(html) {
 		let doctype = document.implementation.createDocumentType('html', '', '');
@@ -798,6 +1068,12 @@ function loadComponentHtmlAsDOMObject(component_path,callback) {
 	
 	},false/*We need to return the html from the request here*/);
 }
+/**
+ * Gets a component by its wrapper div id
+ * @param {String} wrapper_div_id The element id of the wrapper div
+ * @param {String} parent_uid The UID of the component parent
+ * @return {Object} The component object
+ */
 function getComponentByWrapperId(wrapper_div_id,parent_uid) {
 	if (typeof parent_uid === "undefined") {
 		parent_uid = page_uid;
@@ -818,6 +1094,10 @@ function getComponentByWrapperId(wrapper_div_id,parent_uid) {
 	});
 	return component_to_return;
 }
+/**
+ * Generates a unique id that can be assigned to a DOM element
+ * @return {string} The css id to use
+ */
 function getUniqueDomCssId() {
 	let css_id_candidate = '';
 	let possible_characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -834,6 +1114,10 @@ function getUniqueDomCssId() {
 	}
 	return css_id_candidate;
 }
+/**
+ * Scans the url input parameters and adds them to the current app state
+ * @param {String} url_parameters_str The current url input parameters
+ */
 function preparePageInputs(url_parameters_str) {
 	if (typeof url_parameters_str !== "undefined") {
 		updateAppState('page_inputs',url_parameters_str);
@@ -844,6 +1128,9 @@ function preparePageInputs(url_parameters_str) {
 		processPageInputs();
 	}
 }
+/**
+ * Handles the current page load based on the input parameters provided
+ */
 function processPageInputs() {
 	let page_inputs = getValueFromAppState('page_inputs');
 	if (page_inputs === null) {
@@ -861,6 +1148,7 @@ function processPageInputs() {
 	if ((typeof url_input_parameters.get("view") === "undefined") || (url_input_parameters.get("view") == null)) {
 		throw new Error("Invalid component name provided. Click here to visit the setup page: "+getServerRootPath()+"divblox/config/framework/divblox_admin/setup.php");
 	} else {
+		addPageToRootHistory(url_input_parameters.get("view"));
 		loadComponent(view,null,'body',{"uid":page_uid},false);
 	}
 	if (debug_mode) {
@@ -878,8 +1166,11 @@ function processPageInputs() {
 			},
 			function(data) {});
 	}
-	doPostPageLoadActions();
 }
+/**
+ * Provides a file post fix that is used to ensure files are reloaded from the server and not cached
+ * @return {string} The file post fix to append to the file name
+ */
 function getRandomFilePostFix() {
 	let postfix_candidate = '';
 	let possible_characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -888,6 +1179,13 @@ function getRandomFilePostFix() {
 	}
 	return '?v='+postfix_candidate;
 }
+/**
+ * Adds an event handler to the registered_event_handlers array to enable diblox to offload it later
+ * @param {String} dom_node The string describing the dom node to which the event was attached
+ * @param {String} event The name of the event
+ * @param {String} dom_id The id of the dom element
+ * @param {String} dom_class The class of the dom element
+ */
 function registerEventHandler(dom_node,event,dom_id,dom_class) {
 	if (typeof dom_node === "undefined"){return;}
 	if (typeof event === "undefined"){return;}
@@ -897,6 +1195,9 @@ function registerEventHandler(dom_node,event,dom_id,dom_class) {
 	}
 	registered_event_handlers.push(event_obj);
 }
+/**
+ * Loops through registered_event_handlers and removes the registered event handlers
+ */
 function unRegisterEventHandlers() {
 	let event_keys = Object.keys(registered_event_handlers);
 	event_keys.forEach(function(key) {
@@ -912,13 +1213,23 @@ function unRegisterEventHandlers() {
 	registered_event_handlers = [];
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+/**
+ * divblox issue tracking related functions
+ */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// divblox issue tracking related functions
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Sends a request to the server to log a new feedback item on basecamp. This function will automatically detect the
+ * current page component from which the feedback is captured. Also, if a user is logged in, we will automatically
+ * capture their details on the feedback as well
+ * @param {String} type ISSUE|FEATURE
+ * @param {String} title The title of the feedback
+ * @param {String} description The description of the feedback
+ * @param {String} component_name The name of the specifically affected sub component
+ * @param {String} component_uid The UID of the specifically affected sub component
+ * @param {Function} on_success The function to call when the feedback was captured successfully
+ * @param {Function} on_fail The function to call when something went wrong
+ */
 function logNewComponentFeedback(type,title,description,component_name,component_uid,on_success,on_fail) {
-	//JGL: This function will automatically detect the current page component from which the feedback is captured
-	//JGL: Also, if a user is logged in, we will automatically capture their details on the feedback as well
 	if (typeof on_success !== "function") {
 		on_success = function(){}
 	}
@@ -943,6 +1254,9 @@ function logNewComponentFeedback(type,title,description,component_name,component
 			on_fail(data_obj.Message);
 		});
 }
+/**
+ * Appends the feedback button and modal to the current page
+ */
 function initFeedbackCapture() {
 	if (!allow_feedback) {return;}
 	let button_html = '<button id="dxGlobalFeedbackButton" type="button" class="btn btn-dark" data-toggle="modal"' +
@@ -1025,10 +1339,15 @@ function initFeedbackCapture() {
 	})
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+/**
+ * divblox general helper functions
+ */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// divblox helper functions
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Provides a more detailed implementation of console.log that honours the "debug_mode" flag
+ * @param {String} Message The message to log to console
+ * @param {Boolean} show_stack_trace If true, includes the current stack trace
+ */
 function dxLog(Message,show_stack_trace) {
 	if (typeof show_stack_trace === "undefined") {
 		show_stack_trace = true;
@@ -1043,6 +1362,13 @@ function dxLog(Message,show_stack_trace) {
 		}
 	}
 }
+/**
+ * Divblox keeps an array of elements that are currently disabled because a request is currently happening. This
+ * function adds a specific element to that array, disables it and sets its text to the provided text
+ * @param {jQuery|HTMLElement} element The element to add to the loading array
+ * @param {String} loading_text The text to display while loading (Optional)
+ * @return {String} The id of the element that was added to the array
+ */
 function addTriggerElementToLoadingElementArray(element,loading_text) {
 	let trigger_element_id = -1;
 	let focused = $(':focus');
@@ -1073,6 +1399,10 @@ function addTriggerElementToLoadingElementArray(element,loading_text) {
 	}
 	return trigger_element_id;
 }
+/**
+ * Should be called once a request has completed to restore the trigger element to its original state
+ * @param {String} trigger_element_id The dom id of the element to restore
+ */
 function removeTriggerElementFromLoadingElementArray(trigger_element_id) {
 	if (typeof trigger_element_id !== "undefined") {
 		if (typeof element_loading_obj[trigger_element_id] !== "undefined") {
@@ -1080,6 +1410,22 @@ function removeTriggerElementFromLoadingElementArray(trigger_element_id) {
 		}
 	}
 }
+/**
+ * This function is the default function to send a request to the server from the divblox frontend. This function
+ * does some heavy lifting with regards to sending a request to the server:
+ * - Determines the current state of the connection to the server in order to either queue, deny or process the request
+ * - Adds the element that triggered the request to the loading element array to be disabled during the request
+ * - Adds the request to the dx_queue to be processed.
+ * @param {String} url The url on the server to which the request must be sent
+ * @param {Object} parameters The input parameters to send in the POST body
+ * @param {Function} on_success A callback function to call when the request is successfully processed. This
+ * callback will ALWAYS be populated with an object containing a property "Result: Success"
+ * @param {Function} on_fail A callback function to call when the request is NOT successfully processed. This
+ * callback will ALWAYS be populated with an object containing a property "Result: Failed"
+ * @param {Boolean} queue_on_offline Tells the function to either queue or deny the request, based on the offline state
+ * @param {jQuery|HTMLElement} element The element to add to the loading array
+ * @param {String} loading_text The text to display while loading (Optional)
+ */
 function dxRequestInternal(url,parameters,on_success,on_fail,queue_on_offline,element,loading_text) {
 	if (isNative()) {
 		if (url.indexOf(server_final_url) === -1) {
@@ -1106,6 +1452,17 @@ function dxRequestInternal(url,parameters,on_success,on_fail,queue_on_offline,el
 	let trigger_element_id = addTriggerElementToLoadingElementArray(element,loading_text);
 	dxAddToRequestQueue({"url":url,"parameters":parameters,"on_success":on_success,"on_fail":on_fail,"trigger_element_id":trigger_element_id});
 }
+/**
+ * This function processes the next request in the dx_queue
+ * @param {String} url The url on the server to which the request must be sent
+ * @param {Object} parameters The input parameters to send in the POST body
+ * @param {Function} on_success A callback function to call when the request is successfully processed. This
+ * callback will ALWAYS be populated with an object containing a property "Result: Success"
+ * @param {Function} on_fail A callback function to call when the request is NOT successfully processed. This
+ * callback will ALWAYS be populated with an object containing a property "Result: Failed
+ * @param {String} trigger_element_id The dom id of the element that triggered the request
+ * @return {dxRequestInternalQueued} Unused
+ */
 function dxRequestInternalQueued(url,parameters,on_success,on_fail,trigger_element_id) {
 	dx_processing_queue = true;
 	if (typeof parameters !== "object") {
@@ -1149,10 +1506,17 @@ function dxRequestInternalQueued(url,parameters,on_success,on_fail,trigger_eleme
 		});
 	return this;
 }
+/**
+ * Adds the given request to dx_queue and calls dxProcessRequestQueue()
+ * @param {Object} request The request to add to dx_queue
+ */
 function dxAddToRequestQueue(request) {
 	dx_queue.push(request);
 	dxProcessRequestQueue();
 }
+/**
+ *Triggers the processing of the next request in dx_queue
+ */
 function dxProcessRequestQueue() {
 	if (dx_processing_queue) {return;}
 	if (!navigator.onLine) {
@@ -1167,6 +1531,16 @@ function dxProcessRequestQueue() {
 		dx_processing_queue = false;
 	}
 }
+/**
+ * Wrapper for jQuery's $.get function that is used to load component scripts. This function will first attempt to
+ * check if the script was already loaded before doing an additional request to the server.
+ * @param {String} url The url of the script on the server that should be loaded
+ * @param {Function} on_success The function to call when the script was loaded
+ * @param {Function} on_fail The function to call when the script could not be loaded
+ * @param {Boolean} force_cache If true, the function first checks if the script is flagged as already loaded. If
+ * false, the function will ALWAYS load the script from the server
+ * @return {*} Used to force the function to exit
+ */
 function dxGetScript(url,on_success,on_fail,force_cache) {
 	if (typeof on_success !== "function") {
 		on_success = function() {}
@@ -1231,6 +1605,15 @@ function dxGetScript(url,on_success,on_fail,force_cache) {
 		});
 	}
 }
+/**
+ * Used by the component builder and setup scripts to do server requests
+ * @param {String} url The url on the server to which the request must be sent
+ * @param {Object} parameters The input parameters to send in the POST body
+ * @param {Function} on_success A callback function to call when the request is successfully processed. This
+ * callback will ALWAYS be populated with a string containing the request result
+ * @param {Function} on_fail A callback function to call when the request is NOT successfully processed. This
+ * callback will ALWAYS be populated with a string containing the request result
+ */
 function dxRequestSystem(url,parameters,on_success,on_fail) {
 	if (typeof parameters !== "object") {
 		parameters = {};
@@ -1247,6 +1630,15 @@ function dxRequestSystem(url,parameters,on_success,on_fail) {
 	}
 	dxPostExternal(url,parameters,on_success,on_fail);
 }
+/**
+ * Used by the component builder and setup scripts to do server requests
+ * @param {String} url The url on the server to which the request must be sent
+ * @param {Object} parameters The input parameters to send in the POST body
+ * @param {Function} on_success A callback function to call when the request is successfully processed. This
+ * callback will ALWAYS be populated with a string containing the request result
+ * @param {Function} on_fail A callback function to call when the request is NOT successfully processed. This
+ * callback will ALWAYS be populated with a string containing the request result
+ */
 function dxRequestAdmin(url,parameters,on_success,on_fail) {
 	if (typeof on_success !== "function") {
 		on_success = function() {
@@ -1266,6 +1658,15 @@ function dxRequestAdmin(url,parameters,on_success,on_fail) {
 			on_fail(data)
 		});
 }
+/**
+ * Used by the component builder and setup scripts to do server requests
+ * @param {String} url The url on the server to which the request must be sent
+ * @param {Object} parameters The input parameters to send in the POST body
+ * @param {Function} on_success A callback function to call when the request is successfully processed. This
+ * callback will ALWAYS be populated with a string containing the request result
+ * @param {Function} on_fail A callback function to call when the request is NOT successfully processed. This
+ * callback will ALWAYS be populated with a string containing the request result
+ */
 function dxPostExternal(url,parameters,on_success,on_fail) {
 	if (typeof on_success !== "function") {
 		on_success = function() {
@@ -1294,6 +1695,11 @@ function dxPostExternal(url,parameters,on_success,on_fail) {
 			on_fail(data)
 		});
 }
+/**
+ * Determines whether a string is a valid JSON string
+ * @param {String} input_string The string to check
+ * @return {boolean} true if valid JSON, false if not
+ */
 function isJsonString(input_string) {
 	try {
 		JSON.parse(input_string);
@@ -1302,6 +1708,11 @@ function isJsonString(input_string) {
 	}
 	return true;
 }
+/**
+ * Gets the current url input parameters
+ * @param {String} url The url to parse
+ * @return {Object} A key:value pairing object that represents the current url input parameters
+ */
 function getAllUrlParams(url) {
 	// get query string from url (optional) or window
 	let queryString = url ? url.split('?')[1] : window.location.search.slice(1);
@@ -1352,65 +1763,91 @@ function getAllUrlParams(url) {
 	}
 	return obj;
 }
-function showAlert(AlertStr,Icon,ButtonArray,AutoHide,TimeUntilAutoHide,ConfirmFunction,CancelFunction) {
-	if (typeof Icon === "undefined") {
-		Icon = 'info'; // Force the user to pass Icon = "success, error or warning" if they want other icons
+/**
+ * Wrapper function for the SweetAlert library to show informational popups with different statuses and potential
+ * call backs
+ * @param {String} alert_str The message to alert
+ * @param {String} icon The type of icon to show with the message: "success|error|warning|info"
+ * @param {String|Array} button_array Can be either a string to display on a single button or an array of strings to
+ * display on multiple buttons
+ * @param {Boolean} auto_hide If true, the sweet alert will auto hide. If false, it needs to be dismissed
+ * @param {Number} milliseconds_until_auto_hide If auto_hide is true, this value determines how long to wait before
+ * hiding
+ * @param {Function} confirm_function Optional to pass a confirm function that is executed when the confirm button
+ * is clicked
+ * @param {Function} cancel_function  Optional to pass a cancel function that is executed when the cancel button
+ * is clicked
+ */
+function showAlert(alert_str,icon,button_array,auto_hide,milliseconds_until_auto_hide,confirm_function,cancel_function) {
+	if (typeof icon === "undefined") {
+		icon = 'info'; // Force the user to pass icon = "success, error or warning" if they want other icons
 	}
-	if (typeof ButtonArray === "undefined") {
-		ButtonArray = []; // Force the user to pass ButtonText in order to show a button
+	if (typeof button_array === "undefined") {
+		button_array = []; // Force the user to pass ButtonText in order to show a button
 	}
-	if (typeof AutoHide === "undefined") {
-		AutoHide = true; // Force the user to pass AutoHide = false to not auto hide
+	if (typeof auto_hide === "undefined") {
+		auto_hide = true; // Force the user to pass auto_hide = false to not auto hide
 	}
-	if (typeof TimeUntilAutoHide === "undefined") {
-		TimeUntilAutoHide = 1000;
+	if (typeof milliseconds_until_auto_hide === "undefined") {
+		milliseconds_until_auto_hide = 1500;
 	}
 	if (typeof swal !== "undefined") {
-		if ((typeof ConfirmFunction !== "undefined") &&
-			(typeof CancelFunction !== "undefined")) {
+		if ((typeof confirm_function !== "undefined") &&
+			(typeof cancel_function !== "undefined")) {
 			swal({
 				title: null,
-				text: AlertStr,
-				icon: Icon,
-				buttons: ButtonArray,
+				text: alert_str,
+				icon: icon,
+				buttons: button_array,
 				dangerMode: true,
 			}).then((confirmed) => {
 				if (confirmed) {
-					ConfirmFunction();
+					confirm_function();
 				} else {
-					CancelFunction();
+					cancel_function();
 				}
 			});
 		} else {
 			swal({
 				title: null,
-				text: AlertStr,
-				icon: Icon,
-				button: ButtonArray,
+				text: alert_str,
+				icon: icon,
+				button: button_array,
 			});
-			if (AutoHide) {
+			if (auto_hide) {
 				setTimeout(function() {
 					swal.close();
-				},TimeUntilAutoHide)
+				},milliseconds_until_auto_hide)
 			}
 		}
 	} else {
-		alert(AlertStr);
+		alert(alert_str);
 	}
 }
-function createCookie(Name, Value, Days) {
+/**
+ * Adds a cookie in the browser for the current path
+ * @param {String} name The name of the cookie
+ * @param {String} value The value to store
+ * @param {Number} days How many days until the cookie should expire
+ */
+function createCookie(name, value, days) {
 	let Expires;
-	if (Days) {
+	if (days) {
 		let CurrentDate = new Date();
-		CurrentDate.setTime(CurrentDate.getTime() + (Days * 24 * 60 * 60 * 1000));
+		CurrentDate.setTime(CurrentDate.getTime() + (days * 24 * 60 * 60 * 1000));
 		Expires = "; expires=" + CurrentDate.toGMTString();
 	} else {
 		Expires = "";
 	}
-	document.cookie = encodeURIComponent(Name) + "=" + encodeURIComponent(Value) + Expires + "; path=/";
+	document.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) + Expires + "; path=/";
 }
-function readCookie(Name) {
-	let NameEQ = encodeURIComponent(Name) + "=";
+/**
+ * Returns the value of a cookie from the browser
+ * @param {String} name The name of the cookie to return
+ * @return {String|Null} The value of the cookie or null
+ */
+function readCookie(name) {
+	let NameEQ = encodeURIComponent(name) + "=";
 	let ca = document.cookie.split(';');
 	for (let i = 0; i < ca.length; i++) {
 		let c = ca[i];
@@ -1421,9 +1858,21 @@ function readCookie(Name) {
 	}
 	return null;
 }
-function eraseCookie(Name) {
-	createCookie(Name, "", -1);
+/**
+ * Removes a cookie from the browser
+ * @param {String} name The name of the cookie to remove
+ */
+function eraseCookie(name) {
+	createCookie(name, "", -1);
 }
+/**
+ * Toggles the (Bootstrap) validation state for an attribute that is contained within a component
+ * @param {Object} component The containing component object
+ * @param {String} attribute The original element id of the attribute
+ * @param {String} validation_message The validation message to display
+ * @param {Boolean} is_valid If true, toggles the "is-valid" class, if false, toggles "is-invalid"
+ * @param {Boolean} is_reset If false applies the class specified by is_valid
+ */
 function toggleValidationState(component,attribute,validation_message,is_valid,is_reset) {
 	is_valid = is_valid || false;
 	is_reset = is_reset || false;
@@ -1439,14 +1888,30 @@ function toggleValidationState(component,attribute,validation_message,is_valid,i
 		getComponentElementById(component,attribute+"InvalidFeedback").text(validation_message);
 	}
 }
+/**
+ * Returns true if an attribute that is contained within a component's validation state is valid
+ * @param {Object} component The containing component object
+ * @param {String} attribute The original element id of the attribute
+ * @return {boolean} true if valid, false if not
+ */
 function checkValidationState(component,attribute) {
 	// JGL: returns true if valid
 	return !getComponentElementById(component,attribute).hasClass("is-invalid");
 }
+/**
+ * A Quick regex to valid email addresses
+ * @param {String} email The email address to validate
+ * @return {boolean} true if a valid email, false if not
+ */
 function validateEmail(email) {
 	var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 	return re.test(String(email).toLowerCase());
 }
+/**
+ * Gets the string value for a specified data model attribute
+ * @param {String|Object|Null} attribute The attribute to interrogate
+ * @return {String} The string value for the attribute
+ */
 function getDataModelAttributeValue(attribute) {
 	if (typeof attribute === "object") {
 		if (attribute === null) {
@@ -1462,9 +1927,12 @@ function getDataModelAttributeValue(attribute) {
 			return js_date;
 		}
 	}
-	
 	return attribute;
 }
+/**
+ * Helper function to return the current highest z-index in die DOM
+ * @return {number} The z-index
+ */
 function getHighestZIndex() {
 	var index_highest = 0;
 	$('div').each(function(){
@@ -1475,20 +1943,33 @@ function getHighestZIndex() {
 	});
 	return index_highest;
 }
+/**
+ * Returns the path to the App's main logo
+ * @return {string} The path to the logo file
+ */
 function getAppLogoUrl() {
 	return getRootPath()+'divblox/assets/images/divblox_logo.svg';
 }
+/**
+ * 	Renders the app's logo within any div with class "app_logo"
+ */
 function renderAppLogo() {
-	// Renders the app's logo within any div with class "app_logo"
 	$(".app_logo").html('<a href="'+getRootPath()+'"><img alt="App Logo" src="'+getAppLogoUrl()+'"' +
 		' class="img-fluid"/></a>');
 }
+/**
+ * Adds a wrapper for the offline notification message to the html body
+ */
 function addOfflineWrapper() {
 	let offline_notification = $(".OfflineNotificationWrapper");
 	if (offline_notification.length == 0) {
 		$("body").append('<div class="OfflineNotificationWrapper"><p id="OfflineMessage"></p></div>');
 	}
 }
+/**
+ * Wrapper function to serve both native and web needs with regards to online status
+ * @return {boolean} true if online, false if not
+ */
 function checkOnlineStatus() {
 	if (!isNative()) {
 		return navigator.onLine;
@@ -1506,6 +1987,9 @@ function checkOnlineStatus() {
 	
 	return networkState !== Connection.NONE;
 }
+/**
+ * Triggers the required user feedback when offline
+ */
 function setOffline() {
 	addOfflineWrapper();
 	$(".OfflineNotificationWrapper").removeClass("BackOnlineNotificationWrapper")
@@ -1514,6 +1998,9 @@ function setOffline() {
 	$(".OfflineNotificationWrapper").css("zIndex", getHighestZIndex()+1);
 	dx_offline = true;
 }
+/**
+ * Triggers the required user feedback when back online
+ */
 function setOnline() {
 	addOfflineWrapper();
 	$("#OfflineMessage").html('<i class="fa fa-plug" aria-hidden="true" style="margin-right:10px;"></i>Back Online');
@@ -1524,6 +2011,12 @@ function setOnline() {
 	dx_offline = false;
 	dxProcessRequestQueue();
 }
+/**
+ * Checks whether the current logged in user's role is in allowable_role_array.
+ * @param {Array} allowable_role_array The array of roles that are allowed
+ * @param {Function} on_not_allowed The function that is executed when the role is not allowed
+ * @param {Function} on_allowed The function that is executed when the role is allowed
+ */
 function dxCheckCurrentUserRole(allowable_role_array,on_not_allowed,on_allowed) {
 	if (allowable_role_array.length === 0) {
 		on_allowed();
@@ -1572,7 +2065,12 @@ function dxCheckCurrentUserRole(allowable_role_array,on_not_allowed,on_allowed) 
 		}
 	});
 }
-function getCurrentUserRole(callback/*Sends input with current role string*/) {
+/**
+ * Gets the current user's user role from the server
+ * @param {Function} callback The function that is executed once the current user's role is retrieved from the
+ * server. This function receives the current role
+ */
+function getCurrentUserRole(callback) {
 	dxRequestSystem(getServerRootPath()+'project/assets/php/global_request_handler.php',{f:'getUserRole'},
 		function(data) {
 			let data_obj = JSON.parse(data);
@@ -1587,12 +2085,69 @@ function getCurrentUserRole(callback/*Sends input with current role string*/) {
 			callback(undefined);
 		});
 }
+/**
+ * Checks whether the current client's OS is mobile
+ * @return {boolean} true if mobile, false if not
+ */
 function isMobile() {
 	if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
 		return true;
 	}
 	return false;
 }
+/**
+ * Checks whether the current OS is iOS
+ * @return {Boolean} true if is iOS, false if not
+ */
+function isIos() {
+	let user_agent = window.navigator.userAgent.toLowerCase();
+	return /iphone|ipad|ipod/.test(user_agent);
+}
+/**
+ * Checks whether we are in standalone mode and not in the browser
+ * @return {Boolean} true if standalone, false if not
+ */
+function isInStandaloneMode() {
+	// replace standalone with fullscreen or minimal-ui according to your manifest
+	if (matchMedia('(display-mode: standalone)').matches) {
+		// Android and iOS 11.3+
+		return true;
+	}
+	if (isIos()) {
+		return ('standalone' in window.navigator) && (window.navigator.standalone);
+	} else {
+		return false;
+	}
+}
+/**
+ * Triggers the intialization function when in native mode
+ */
+function setIsNative() {
+	is_native = true;
+	initNative();
+}
+/**
+ * Checks whether we are in native mode and not in the browser
+ * @return {Boolean} true if native, false if not
+ */
+function isNative() {
+	return is_native;
+}
+/**
+ * Checks whether we are in Single Page Application mode
+ * @return {Boolean} true if SPA or native, false if not
+ */
+function isSpa() {
+	if (!isNative()) {
+		return spa_mode;
+	}
+	return isNative();
+}
+/**
+ * Updates the navigation class for the active page to highlight the menu item that relates to the page
+ * @param {String} page_name The name of the page component
+ * @param {String} page_title The title to display in the browser
+ */
 function setActivePage(page_name,page_title) {
 	if (typeof page_name === "undefined") {
 		page_name = "page";
@@ -1608,12 +2163,21 @@ function setActivePage(page_name,page_title) {
 		}
 	},500);
 }
+/**
+ * Wrapper function for window.open() that ensures that we are loading a relative path in the same window
+ * @param {String} path_from_root The path to load
+ */
 function redirectToInternalPath(path_from_root) {
 	if (typeof path_from_root === "undefined") {
 		path_from_root = './';
 	}
 	window.open(getRootPath()+path_from_root,"_self");
 }
+/**
+ * Wrapper function for window.open() that confirms to the user that they will be redirected to a webpage when in
+ * native mode. When not in native mode, it opens the provided url in a new window.
+ * @param {String} url The url to navigate to
+ */
 function redirectToExternalPath(url) {
 	if (typeof url === "undefined") {
 		throw new Error("Path url not provided");
@@ -1626,6 +2190,17 @@ function redirectToExternalPath(url) {
 		window.open(url,"_blank");
 	}
 }
+/**
+ * A helper function that displays and manages a bootstrap toast message
+ * @param {String} title The title of the toast
+ * @param {String} toast_message The message to be displayed in the toast
+ * @param {Object} position The position of the toast on the page: {x:"left|middle|right",y:"top|middle|bottom"}
+ * @param {String} icon_path The path to the icon file that must be displayed on the toast
+ * @param {moment} toast_time_stamp OPTIONAL An instance of a moment object that is used to keep track of when the
+ * toast was
+ * created
+ * @param {Number} auto_hide If not provided, the toast will not auto hide. Otherwise, it will hide in "auto_hide" ms
+ */
 function showToast(title,toast_message,position,icon_path,toast_time_stamp,auto_hide) {
 	if (typeof title === "undefined") {
 		title = local_config.app_name;
@@ -1732,6 +2307,9 @@ function showToast(title,toast_message,position,icon_path,toast_time_stamp,auto_
 	}
 	$("#"+toast_id).toast("show");
 }
+/**
+ * Used to update the time value on a toast
+ */
 function updateToasts() {
 	let toasts_left_to_update = 0;
 	if ((registered_toasts.length > 0) && (updating_toasts)) {
@@ -1758,6 +2336,12 @@ function updateToasts() {
 		}
 	}
 }
+/**
+ * Adds a key:value pairing to the global_vars array and stores it in the app state
+ * @param {String} name The name of the variable to store
+ * @param {String} value The value to store
+ * @return {Boolean|*} false if a name was not specified.
+ */
 function setGlobalVariable(name,value) {
 	if (typeof name === "undefined") {
 		return false;
@@ -1768,12 +2352,23 @@ function setGlobalVariable(name,value) {
 	global_vars[name] = value;
 	storeAppState();
 }
+/**
+ * Returns a global variable from the global_vars array by name
+ * @param {String} name The name of the variable to return
+ * @return {String} The value to return
+ */
 function getGlobalVariable(name) {
 	if (typeof global_vars[name] === "undefined") {
 		return '';
 	}
 	return global_vars[name];
 }
+/**
+ * Sets a global id that is used to constrain for a specified entity
+ * @param {String} entity The name of the entity to which this constrain id applies
+ * @param {Number} constraining_id The id to constain by
+ * @return {Boolean|*} false if a name was not specified.
+ */
 function setGlobalConstrainById(entity,constraining_id) {
 	if (typeof entity === "undefined") {
 		return false
@@ -1783,6 +2378,11 @@ function setGlobalConstrainById(entity,constraining_id) {
 	}
 	setGlobalVariable('Constraining'+entity+'Id',constraining_id);
 }
+/**
+ * Returns a global id that is used to constrain for a specified entity
+ * @param {String} entity The name of the entity to which this constrain id applies
+ * @return {Number} The id to constain by. -1 If not set
+ */
 function getGlobalConstrainById(entity) {
 	if (typeof entity === "undefined") {
 		return -1
@@ -1799,23 +2399,18 @@ function getGlobalConstrainById(entity) {
 	}
 	return return_value;
 }
-function setIsNative() {
-	is_native = true;
-	initNative();
-}
-function isNative() {
-	return is_native;
-}
-function isSpa() {
-	if (!isNative()) {
-		return spa_mode;
-	}
-	return isNative();
-}
+/**
+ * Initiates the required functionality for native mode
+ */
 function initNative() {
 	updateAppState('divblox_config','success');
 	console.log("dx native init");
 }
+/**
+ * Stores a key:value pairing in local storage
+ * @param {String} item_key The key to store
+ * @param {String} item_value The value to store
+ */
 function setItemInLocalStorage(item_key,item_value) {
 	if (typeof(Storage) === "undefined") {
 		// JGL: This is a fallback for when local storage is not available.
@@ -1824,6 +2419,11 @@ function setItemInLocalStorage(item_key,item_value) {
 	}
 	localStorage.setItem(item_key, item_value);
 }
+/**
+ * Retrieves a value from local storage by key
+ * @param {String} item_key The key to find
+ * @return {String|Null} The value returned from local storage
+ */
 function getItemInLocalStorage(item_key) {
 	if (typeof(Storage) === "undefined") {
 		// JGL: This is a fallback for when local storage is not available.

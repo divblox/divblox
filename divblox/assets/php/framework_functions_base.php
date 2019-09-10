@@ -11,6 +11,9 @@
 
 // Exception and Error Handling. It is important to note that divblox will display all errors/exceptions thrown in php
 // since php will never be used to render ui to the user (Except for divblox admin functions)
+/**
+ * @param $e
+ */
 function divbloxHandleException($e) {
     $ExceptionReflectionObj = new ReflectionObject($e);
     $Output = ob_get_clean();
@@ -23,6 +26,14 @@ function divbloxHandleException($e) {
         "Output" => $Output,);
     die(json_encode($ErrorArray));
 }
+
+/**
+ * @param $severity
+ * @param $message
+ * @param $file
+ * @param $line
+ * @throws ErrorException
+ */
 function divbloxErrorHandler($severity, $message, $file, $line) {
     if (!(error_reporting() & $severity)) {
         // This error code is not included in error_reporting
@@ -31,12 +42,21 @@ function divbloxErrorHandler($severity, $message, $file, $line) {
     throw new ErrorException($message, 0, $severity, $file, $line);
 }
 
+/**
+ * Class FrameworkFunctions_base
+ */
 abstract class FrameworkFunctions_base {
     /**
      * @var
      */
     public static $Database;
+    /**
+     * @var
+     */
     public static $ClassFile;
+    /**
+     * @var string
+     */
     public static $objCacheProvider = 'dxCacheProviderNoCache';
 
     /**
@@ -434,6 +454,9 @@ abstract class FrameworkFunctions_base {
         return str_replace(' ', '', $String);
     }
 
+    /**
+     * @return null
+     */
     public static function getCurrentAuthenticationToken() {
         if (isset($_POST['AuthenticationToken'])) {
             return $_POST['AuthenticationToken'];
@@ -443,6 +466,11 @@ abstract class FrameworkFunctions_base {
         }
         return null;
     }
+
+    /**
+     * @param string $TokenStr
+     * @return ClientAuthenticationToken
+     */
     public static function getCurrentAuthTokenObject($TokenStr = '') {
         $ClientAuthenticationTokenObj = ClientAuthenticationToken::LoadByToken($TokenStr);
         if (is_null($ClientAuthenticationTokenObj)) {
@@ -549,16 +577,25 @@ abstract class FrameworkFunctions_base {
         return 'Anonymous';
     }
 
+    /**
+     * @param string $ContentType
+     */
     public static function printCleanOutput($ContentType = "Content-Type: text/plain") {
         $Output = ob_get_clean();
         header($ContentType);
         echo trim($Output);
     }
 
+    /**
+     * @return array
+     */
     public static function get_divblox_Attributes() {
         return ["Id","SearchMetaInfo","LastUpdated","ObjectOwner"];
     }
 
+    /**
+     * @return string
+     */
     public static function generateUniqueClientAuthenticationToken() {
         $TokenCandidate = '';
         $Done = false;
@@ -573,6 +610,20 @@ abstract class FrameworkFunctions_base {
     }
 
     //region Native support related
+
+    /**
+     * @param null $InternalUniqueId
+     * @param null $RegistrationId
+     * @param null $DeviceUuid
+     * @param null $DevicePlatform
+     * @param string $DeviceOs
+     * @param null $RegistrationDateTime
+     * @param string $Status
+     * @param null $AuthenticationToken
+     * @param null $ErrorInfo
+     * @return bool
+     * @throws dxCallerException
+     */
     public static function updatePushRegistration($InternalUniqueId = null,
                                                   $RegistrationId = null,
                                                   $DeviceUuid = null,
@@ -640,6 +691,10 @@ abstract class FrameworkFunctions_base {
         $ErrorInfo = [$PushRegistrationObj->Id];
         return true;
     }
+
+    /**
+     * @return string
+     */
     public static function generateUniquePushRegistrationId() {
         $TokenCandidate = '';
         $Done = false;
@@ -652,6 +707,22 @@ abstract class FrameworkFunctions_base {
         }
         return $TokenCandidate;
     }
+
+    /**
+     * @param null $InternalUniqueId
+     * @param string $Priority
+     * @param string $Title
+     * @param string $Message
+     * @param string $LaunchImage
+     * @param int $BadgeCount
+     * @param string $Sound
+     * @param int $NotificationId
+     * @param string $Category
+     * @param string $CustomKey1
+     * @param string $CustomKey2
+     * @param array $ErrorInfo
+     * @return bool
+     */
     public static function deliverPushPayload($InternalUniqueId = null,
                                               $Priority = NativePushPriority::NORMAL_STR, /*Android only*/
                                               $Title = 'A short string describing the purpose of the notification',

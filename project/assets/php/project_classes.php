@@ -6,7 +6,19 @@
  * */
 include(FRAMEWORK_ROOT_STR."/assets/php/framework_classes.php");
 //region Project Access related
+
+/**
+ * Class ProjectAccessManager
+ * Responsible for system-wide access for components and objects
+ */
 abstract class ProjectAccessManager extends AccessManager {
+    /**
+     * Determines the access rights for a given object and account combination
+     * @param int $AccountId The id of the account trying to access the object
+     * @param null $ObjectType The entity name of the object
+     * @param int $ObjectId The primary key id of the object in the database
+     * @return array Best case: [AccessOperation::CREATE_STR,AccessOperation::READ_STR,AccessOperation::UPDATE_STR,AccessOperation::DELETE_STR]
+     */
     public static function getObjectAccess($AccountId = -1, $ObjectType = null, $ObjectId = -1) {
         $ReturnArray = parent::getObjectAccess($AccountId,$ObjectType,$ObjectId);
         // TODO: Override your access here per object type or leave if no special functionality is required
@@ -46,7 +58,14 @@ abstract class ProjectAccessManager extends AccessManager {
          }*/
          //endregion
         return $ReturnArray;
-     }
+    }
+
+    /**
+     * Determines whether a user has access to the specified component, based on their user role
+     * @param int $AccountId The id of the account trying to access the object
+     * @param string $ComponentName The name of the component being accessed
+     * @return bool true if access is allowed, false if not
+     */
     public static function getComponentAccess($AccountId = -1, $ComponentName = '') {
         $InitialReturn = parent::getComponentAccess($AccountId,$ComponentName);
         if ($InitialReturn == true) {
@@ -90,6 +109,11 @@ abstract class ProjectAccessManager extends AccessManager {
 //endregion
 
 //region Component controller related
+
+/**
+ * Class ProjectComponentController
+ * Responsible for managing the project-level behaviour of all server-side component scripts
+ */
 class ProjectComponentController extends ComponentController {
     public function __construct($ComponentNameStr = 'Component') {
         parent::__construct($ComponentNameStr);

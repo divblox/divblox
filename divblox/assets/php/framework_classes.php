@@ -10,6 +10,10 @@
  */
 include(FRAMEWORK_ROOT_STR."/assets/php/framework_classes_base.php");
 //region Component controller related
+/**
+ * Class ProjectComponentController
+ * Responsible for managing the framework-level behaviour of all server-side component scripts
+ */
 class ComponentController extends ComponentController_base {
     public function __construct($ComponentNameStr = 'Component') {
         parent::__construct($ComponentNameStr);
@@ -115,6 +119,13 @@ abstract class PublicApi_Base {
             }
             ProjectFunctions::printCleanOutput("Content-Type: text/html");
             die();
+        }
+        if (function_exists(PublicApi::getOperation())) {
+            call_user_func(PublicApi::getOperation());
+        } else {
+            PublicApi::addApiOutput("Result","Failed");
+            PublicApi::addApiOutput("Message","Invalid operation provided. Try providing swapping '".PublicApi::getOperation()."' for 'doc' at the end of the url to see documentation");
+            PublicApi::printApiResult();
         }
     }
     public static function getOperation() {

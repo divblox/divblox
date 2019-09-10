@@ -257,12 +257,21 @@ class dxCallerException extends Exception {
 }
 
 class dxUndefinedPrimaryKeyException extends dxCallerException {
+    /**
+     * dxUndefinedPrimaryKeyException constructor.
+     * @param $strMessage
+     */
     public function __construct($strMessage) {
         parent::__construct($strMessage, 2);
     }
 }
 
 class dxIndexOutOfRangeException extends dxCallerException {
+    /**
+     * dxIndexOutOfRangeException constructor.
+     * @param $intIndex
+     * @param $strMessage
+     */
     public function __construct($intIndex, $strMessage) {
         if ($strMessage)
             $strMessage = ": " . $strMessage;
@@ -271,18 +280,31 @@ class dxIndexOutOfRangeException extends dxCallerException {
 }
 
 class dxUndefinedPropertyException extends dxCallerException {
+    /**
+     * dxUndefinedPropertyException constructor.
+     * @param $strType
+     * @param $strClass
+     * @param $strProperty
+     */
     public function __construct($strType, $strClass, $strProperty) {
         parent::__construct(sprintf("Undefined %s property or variable in '%s' class: %s", $strType, $strClass, $strProperty), 2);
     }
 }
 
 class dxOptimisticLockingException extends dxCallerException {
+    /**
+     * dxOptimisticLockingException constructor.
+     * @param $strClass
+     */
     public function __construct($strClass) {
         parent::__construct(sprintf('Optimistic Locking constraint when trying to update %s object.  To update anyway, call ->Save() with $blnForceUpdate set to true', $strClass, 2));
     }
 }
 
 class dxRemoteAdminDeniedException extends dxCallerException {
+    /**
+     * dxRemoteAdminDeniedException constructor.
+     */
     public function __construct() {
         parent::__construct('Remote access to "' . ProjectFunctions::$RequestUri . '" has been disabled.' .
             "\r\nTo allow remote access to this script, set the ALLOW_REMOTE_ADMIN constant to TRUE\r\nor to \"" . $_SERVER['REMOTE_ADDR'] . '" in "configuration.inc.php".', 2);
@@ -290,6 +312,10 @@ class dxRemoteAdminDeniedException extends dxCallerException {
 }
 
 class dxInvalidFormStateException extends dxCallerException {
+    /**
+     * dxInvalidFormStateException constructor.
+     * @param $strFormId
+     */
     public function __construct($strFormId) {
         parent::__construct(sprintf('Invalid Form State Data for "%s" object (session may have been lost)', $strFormId), 2);
     }
@@ -364,23 +390,68 @@ abstract class dxType {
         throw new dxCallerException('Type should never be instantiated.  All methods and variables are publically statically accessible.');
     }
 
+    /**
+     *
+     */
     const String = 'string';
+    /**
+     *
+     */
     const Integer = 'integer';
+    /**
+     *
+     */
     const Float = 'double';
+    /**
+     *
+     */
     const Boolean = 'boolean';
+    /**
+     *
+     */
     const Object = 'object';
+    /**
+     *
+     */
     const ArrayType = 'array';
 
+    /**
+     *
+     */
     const DateTime = 'dxDateTime';
 
+    /**
+     *
+     */
     const Resource = 'resource';
 
+    /**
+     *
+     */
     const NoOp = 1;
+    /**
+     *
+     */
     const CheckOnly = 2;
+    /**
+     *
+     */
     const CastOnly = 3;
+    /**
+     *
+     */
     const CheckAndCast = 4;
+    /**
+     * @var int
+     */
     private static $intBehaviour = dxType::CheckAndCast;
 
+    /**
+     * @param $objItem
+     * @param $strType
+     * @return bool|mixed|string
+     * @throws dxInvalidCastException
+     */
     private static function CastObjectTo($objItem, $strType) {
         try {
             $objReflection = new ReflectionClass($objItem);
@@ -413,7 +484,14 @@ abstract class dxType {
         throw new dxInvalidCastException(sprintf('Unable to cast %s object to %s', $objReflection->getName(), $strType));
     }
 
-    private static function CastValueTo($mixItem, $strNewType,$precision = 1.0e-7) {
+    /**
+     * @param $mixItem
+     * @param $strNewType
+     * @param float $precision
+     * @return mixed
+     * @throws dxInvalidCastException
+     */
+    private static function CastValueTo($mixItem, $strNewType, $precision = 1.0e-7) {
         // Set precision to be smaller when working with greater accuracy. As default, we are happy with 7 decimals
         $strOriginalType = gettype($mixItem);
 
@@ -521,6 +599,12 @@ abstract class dxType {
         }
     }
 
+    /**
+     * @param $arrItem
+     * @param $strType
+     * @return mixed
+     * @throws dxInvalidCastException
+     */
     private static function CastArrayTo($arrItem, $strType) {
         if ($strType == dxType::ArrayType)
             return $arrItem;
@@ -645,6 +729,11 @@ abstract class dxType {
         }
     }
 
+    /**
+     * @param $strType
+     * @return string
+     * @throws dxInvalidCastException
+     */
     public final static function TypeFromDoc($strType) {
         switch (strtolower($strType)) {
             case 'string':
@@ -832,6 +921,12 @@ abstract class dxString {
     }
 
     // Implementation from http://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Longest_common_substring
+
+    /**
+     * @param $str1
+     * @param $str2
+     * @return mixed|string
+     */
     public final static function LongestCommonSubsequence($str1, $str2) {
         $str1Len = mb_strlen($str1, APP_ENCODING_TYPE_STR);
         $str2Len = mb_strlen($str2, APP_ENCODING_TYPE_STR);
@@ -934,13 +1029,31 @@ abstract class dxDatabaseBase extends dxBaseClass {
     protected $intDatabaseIndex;
     /** @var bool Has the profiling been enabled? */
     protected $blnEnableProfiling;
+    /**
+     * @var array
+     */
     protected $strProfileArray;
 
+    /**
+     * @var string[]
+     */
     protected $objConfigArray;
+    /**
+     * @var bool
+     */
     protected $blnConnectedFlag = false;
 
+    /**
+     * @var string
+     */
     protected $strEscapeIdentifierBegin = '"';
+    /**
+     * @var string
+     */
     protected $strEscapeIdentifierEnd = '"';
+    /**
+     * @var bool
+     */
     protected $blnOnlyFullGroupBy = false; // should be set in sub-classes as appropriate
 
     /**
@@ -952,16 +1065,53 @@ abstract class dxDatabaseBase extends dxBaseClass {
     protected $intTransactionDepth = 0;
 
     // Abstract Methods that ALL Database Adapters MUST implement
+
+    /**
+     * @return mixed
+     */
     abstract public function Connect();
     // these are protected - externally, the "Query/NonQuery" wrappers are meant to be called
+
+    /**
+     * @param $strQuery
+     * @return mixed
+     */
     abstract protected function ExecuteQuery($strQuery);
+
+    /**
+     * @param $strNonQuery
+     * @return mixed
+     */
     abstract protected function ExecuteNonQuery($strNonQuery);
 
+    /**
+     * @return mixed
+     */
     abstract public function GetTables();
+
+    /**
+     * @param null $strTableName
+     * @param null $strColumnName
+     * @return mixed
+     */
     abstract public function InsertId($strTableName = null, $strColumnName = null);
 
+    /**
+     * @param $strTableName
+     * @return mixed
+     */
     abstract public function GetFieldsForTable($strTableName);
+
+    /**
+     * @param $strTableName
+     * @return mixed
+     */
     abstract public function GetIndexesForTable($strTableName);
+
+    /**
+     * @param $strTableName
+     * @return mixed
+     */
     abstract public function GetForeignKeysForTable($strTableName);
 
     /**
@@ -1018,16 +1168,41 @@ abstract class dxDatabaseBase extends dxBaseClass {
         $this->intTransactionDepth = 0;
     }
 
+    /**
+     * @param $strLimitInfo
+     * @return mixed
+     */
     abstract public function SqlLimitVariablePrefix($strLimitInfo);
+
+    /**
+     * @param $strLimitInfo
+     * @return mixed
+     */
     abstract public function SqlLimitVariableSuffix($strLimitInfo);
+
+    /**
+     * @param $strSortByInfo
+     * @return mixed
+     */
     abstract public function SqlSortByVariable($strSortByInfo);
 
+    /**
+     * @return mixed
+     */
     abstract public function Close();
 
+    /**
+     * @param $strIdentifier
+     * @return string
+     */
     public function EscapeIdentifier($strIdentifier) {
         return $this->strEscapeIdentifierBegin . $strIdentifier . $this->strEscapeIdentifierEnd;
     }
 
+    /**
+     * @param $mixIdentifiers
+     * @return array|string
+     */
     public function EscapeIdentifiers($mixIdentifiers) {
         if (is_array($mixIdentifiers)) {
             return array_map(array($this, 'EscapeIdentifier'), $mixIdentifiers);
@@ -1036,6 +1211,10 @@ abstract class dxDatabaseBase extends dxBaseClass {
         }
     }
 
+    /**
+     * @param $mixValues
+     * @return array|string
+     */
     public function EscapeValues($mixValues) {
         if (is_array($mixValues)) {
             return array_map(array($this, 'SqlVariable'), $mixValues);
@@ -1044,6 +1223,10 @@ abstract class dxDatabaseBase extends dxBaseClass {
         }
     }
 
+    /**
+     * @param $mixColumnsAndValuesArray
+     * @return array
+     */
     public function EscapeIdentifiersAndValues($mixColumnsAndValuesArray) {
         $result = array();
         foreach ($mixColumnsAndValuesArray as $strColumn => $mixValue) {
@@ -1052,6 +1235,11 @@ abstract class dxDatabaseBase extends dxBaseClass {
         return $result;
     }
 
+    /**
+     * @param $strTable
+     * @param $mixColumnsAndValuesArray
+     * @param null $strPKNames
+     */
     public function InsertOrUpdate($strTable, $mixColumnsAndValuesArray, $strPKNames = null) {
         $strEscapedArray = $this->EscapeIdentifiersAndValues($mixColumnsAndValuesArray);
         $strColumns = array_keys($strEscapedArray);
@@ -1110,6 +1298,10 @@ abstract class dxDatabaseBase extends dxBaseClass {
         return $result;
     }
 
+    /**
+     * @param $strNonQuery
+     * @return mixed
+     */
     public final function NonQuery($strNonQuery) {
         if (!$this->blnConnectedFlag) {
             $this->Connect();
@@ -1133,6 +1325,11 @@ abstract class dxDatabaseBase extends dxBaseClass {
         return $result;
     }
 
+    /**
+     * @param string $strName
+     * @return bool|mixed|string
+     * @throws dxCallerException
+     */
     public function __get($strName) {
         switch ($strName) {
             case 'EscapeIdentifierBegin':
@@ -1357,6 +1554,11 @@ abstract class dxDatabaseBase extends dxBaseClass {
         return $strToReturn . sprintf("'%s'", addslashes($mixData));
     }
 
+    /**
+     * @param $strQuery
+     * @param $mixParameterArray
+     * @return mixed
+     */
     public function PrepareStatement($strQuery, $mixParameterArray) {
         foreach ($mixParameterArray as $strKey => $mixValue) {
             if (is_array($mixValue)) {
@@ -1415,23 +1617,67 @@ abstract class dxDatabaseBase extends dxBaseClass {
 }
 
 abstract class dxDatabaseFieldBase extends dxBaseClass {
+    /**
+     * @var
+     */
     protected $strName;
+    /**
+     * @var
+     */
     protected $strOriginalName;
+    /**
+     * @var
+     */
     protected $strTable;
+    /**
+     * @var
+     */
     protected $strOriginalTable;
+    /**
+     * @var
+     */
     protected $strDefault;
+    /**
+     * @var
+     */
     protected $intMaxLength;
+    /**
+     * @var
+     */
     protected $strComment;
 
     // Bool
+    /**
+     * @var
+     */
     protected $blnIdentity;
+    /**
+     * @var
+     */
     protected $blnNotNull;
+    /**
+     * @var
+     */
     protected $blnPrimaryKey;
+    /**
+     * @var
+     */
     protected $blnUnique;
+    /**
+     * @var
+     */
     protected $blnTimestamp;
 
+    /**
+     * @var
+     */
     protected $strType;
 
+    /**
+     * @param string $strName
+     * @return mixed
+     * @throws dxCallerException
+     */
     public function __get($strName) {
         switch ($strName) {
             case "Name":
@@ -1477,20 +1723,61 @@ abstract class dxDatabaseFieldBase extends dxBaseClass {
  */
 abstract class dxDatabaseResultBase extends dxBaseClass {
     // Allow to attach a dxQueryBuilder object to use the result object as cursor resource for cursor queries.
+    /**
+     * @var
+     */
     protected $objQueryBuilder;
 
+    /**
+     * @return mixed
+     */
     abstract public function FetchArray();
+
+    /**
+     * @return mixed
+     */
     abstract public function FetchRow();
+
+    /**
+     * @return mixed
+     */
     abstract public function FetchField();
+
+    /**
+     * @return mixed
+     */
     abstract public function FetchFields();
+
+    /**
+     * @return mixed
+     */
     abstract public function CountRows();
+
+    /**
+     * @return mixed
+     */
     abstract public function CountFields();
 
+    /**
+     * @return mixed
+     */
     abstract public function GetNextRow();
+
+    /**
+     * @return mixed
+     */
     abstract public function GetRows();
 
+    /**
+     * @return mixed
+     */
     abstract public function Close();
 
+    /**
+     * @param string $strName
+     * @return mixed
+     * @throws dxCallerException
+     */
     public function __get($strName) {
         switch ($strName) {
             case 'QueryBuilder':
@@ -1505,6 +1792,13 @@ abstract class dxDatabaseResultBase extends dxBaseClass {
         }
     }
 
+    /**
+     * @param string $strName
+     * @param string $mixValue
+     * @return mixed
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     public function __set($strName, $mixValue) {
         switch ($strName) {
             case 'QueryBuilder':
@@ -1530,8 +1824,22 @@ abstract class dxDatabaseResultBase extends dxBaseClass {
  * @package DatabaseAdapters
  */
 abstract class dxDatabaseRowBase extends dxBaseClass {
+    /**
+     * @param $strColumnName
+     * @param null $strColumnType
+     * @return mixed
+     */
     abstract public function GetColumn($strColumnName, $strColumnType = null);
+
+    /**
+     * @param $strColumnName
+     * @return mixed
+     */
     abstract public function ColumnExists($strColumnName);
+
+    /**
+     * @return mixed
+     */
     abstract public function GetColumnNameArray();
 }
 
@@ -1540,9 +1848,19 @@ abstract class dxDatabaseRowBase extends dxBaseClass {
  * @package DatabaseAdapters
  */
 abstract class dxDatabaseExceptionBase extends dxCallerException {
+    /**
+     * @var
+     */
     protected $intErrorNumber;
+    /**
+     * @var
+     */
     protected $strQuery;
 
+    /**
+     * @param $strName
+     * @return array|int|mixed
+     */
     public function __get($strName) {
         switch ($strName) {
             case "ErrorNumber":
@@ -1560,11 +1878,30 @@ abstract class dxDatabaseExceptionBase extends dxCallerException {
  * @package DatabaseAdapters
  */
 class dxDatabaseForeignKey extends dxBaseClass {
+    /**
+     * @var
+     */
     protected $strKeyName;
+    /**
+     * @var
+     */
     protected $strColumnNameArray;
+    /**
+     * @var
+     */
     protected $strReferenceTableName;
+    /**
+     * @var
+     */
     protected $strReferenceColumnNameArray;
 
+    /**
+     * dxDatabaseForeignKey constructor.
+     * @param $strKeyName
+     * @param $strColumnNameArray
+     * @param $strReferenceTableName
+     * @param $strReferenceColumnNameArray
+     */
     public function __construct($strKeyName, $strColumnNameArray, $strReferenceTableName, $strReferenceColumnNameArray) {
         $this->strKeyName = $strKeyName;
         $this->strColumnNameArray = $strColumnNameArray;
@@ -1572,6 +1909,11 @@ class dxDatabaseForeignKey extends dxBaseClass {
         $this->strReferenceColumnNameArray = $strReferenceColumnNameArray;
     }
 
+    /**
+     * @param string $strName
+     * @return mixed
+     * @throws dxCallerException
+     */
     public function __get($strName) {
         switch ($strName) {
             case "KeyName":
@@ -1598,11 +1940,30 @@ class dxDatabaseForeignKey extends dxBaseClass {
  * @package DatabaseAdapters
  */
 class dxDatabaseIndex extends dxBaseClass {
+    /**
+     * @var
+     */
     protected $strKeyName;
+    /**
+     * @var
+     */
     protected $blnPrimaryKey;
+    /**
+     * @var
+     */
     protected $blnUnique;
+    /**
+     * @var
+     */
     protected $strColumnNameArray;
 
+    /**
+     * dxDatabaseIndex constructor.
+     * @param $strKeyName
+     * @param $blnPrimaryKey
+     * @param $blnUnique
+     * @param $strColumnNameArray
+     */
     public function __construct($strKeyName, $blnPrimaryKey, $blnUnique, $strColumnNameArray) {
         $this->strKeyName = $strKeyName;
         $this->blnPrimaryKey = $blnPrimaryKey;
@@ -1610,6 +1971,11 @@ class dxDatabaseIndex extends dxBaseClass {
         $this->strColumnNameArray = $strColumnNameArray;
     }
 
+    /**
+     * @param string $strName
+     * @return mixed
+     * @throws dxCallerException
+     */
     public function __get($strName) {
         switch ($strName) {
             case "KeyName":
@@ -1636,25 +2002,68 @@ class dxDatabaseIndex extends dxBaseClass {
  * @package DatabaseAdapters
  */
 abstract class dxDatabaseFieldType {
+    /**
+     *
+     */
     const Blob = "Blob";
+    /**
+     *
+     */
     const VarChar = "VarChar";
+    /**
+     *
+     */
     const Char = "Char";
+    /**
+     *
+     */
     const Integer = "Integer";
+    /**
+     *
+     */
     const DateTime = "DateTime";
+    /**
+     *
+     */
     const Date = "Date";
+    /**
+     *
+     */
     const Time = "Time";
+    /**
+     *
+     */
     const Float = "Float";
+    /**
+     *
+     */
     const Bit = "Bit";
 }
 
 class dxMySqliDatabase extends dxDatabaseBase {
+    /**
+     *
+     */
     const Adapter = 'MySql Improved Database Adapter for MySQL 4';
 
+    /**
+     * @var
+     */
     protected $objMySqli;
 
+    /**
+     * @var string
+     */
     protected $strEscapeIdentifierBegin = '`';
+    /**
+     * @var string
+     */
     protected $strEscapeIdentifierEnd = '`';
 
+    /**
+     * @param $strLimitInfo
+     * @return mixed|null|string
+     */
     public function SqlLimitVariablePrefix($strLimitInfo) {
         // MySQL uses Limit by Suffixes (via a LIMIT clause)
 
@@ -1665,6 +2074,11 @@ class dxMySqliDatabase extends dxDatabaseBase {
         return null;
     }
 
+    /**
+     * @param $strLimitInfo
+     * @return mixed|null|string
+     * @throws Exception
+     */
     public function SqlLimitVariableSuffix($strLimitInfo) {
         // Setup limit suffix (if applicable) via a LIMIT clause
         if (strlen($strLimitInfo)) {
@@ -1678,6 +2092,11 @@ class dxMySqliDatabase extends dxDatabaseBase {
         return null;
     }
 
+    /**
+     * @param $strSortByInfo
+     * @return mixed|null|string
+     * @throws Exception
+     */
     public function SqlSortByVariable($strSortByInfo) {
         // Setup sorting information (if applicable) via a ORDER BY clause
         if (strlen($strSortByInfo)) {
@@ -1692,6 +2111,12 @@ class dxMySqliDatabase extends dxDatabaseBase {
         return null;
     }
 
+    /**
+     * @param $strTable
+     * @param $mixColumnsAndValuesArray
+     * @param null $strPKNames
+     * @throws dxMySqliDatabaseException
+     */
     public function InsertOrUpdate($strTable, $mixColumnsAndValuesArray, $strPKNames = null) {
         $strEscapedArray = $this->EscapeIdentifiersAndValues($mixColumnsAndValuesArray);
         $strUpdateStatement = '';
@@ -1708,6 +2133,10 @@ class dxMySqliDatabase extends dxDatabaseBase {
         $this->ExecuteNonQuery($strSql);
     }
 
+    /**
+     * @return mixed|void
+     * @throws dxMySqliDatabaseException
+     */
     public function Connect() {
         // Connect to the Database Server
         $this->objMySqli = mysqli_init();
@@ -1737,6 +2166,9 @@ class dxMySqliDatabase extends dxDatabaseBase {
             $this->NonQuery('SET NAMES ' . $this->objConfigArray['encoding'] . ';');
     }
 
+    /**
+     * @return bool
+     */
     public function checkTableNamesCase() {
         $strQuery = "SHOW VARIABLES LIKE 'lower_case_table_names'";
         $objResult = $this->objMySqli->query($strQuery);
@@ -1758,6 +2190,11 @@ class dxMySqliDatabase extends dxDatabaseBase {
         return false;
     }
 
+    /**
+     * @param string $strName
+     * @return bool|mixed|string
+     * @throws dxCallerException
+     */
     public function __get($strName) {
         switch ($strName) {
             case 'AffectedRows':
@@ -1772,6 +2209,11 @@ class dxMySqliDatabase extends dxDatabaseBase {
         }
     }
 
+    /**
+     * @param $strQuery
+     * @return dxMySqliDatabaseResult|mixed
+     * @throws dxMySqliDatabaseException
+     */
     protected function ExecuteQuery($strQuery) {
         // Perform the Query
         $objResult = $this->objMySqli->query($strQuery);
@@ -1783,6 +2225,11 @@ class dxMySqliDatabase extends dxDatabaseBase {
         return $objMySqliDatabaseResult;
     }
 
+    /**
+     * @param $strNonQuery
+     * @return mixed|void
+     * @throws dxMySqliDatabaseException
+     */
     protected function ExecuteNonQuery($strNonQuery) {
         // Perform the Query
         $this->objMySqli->query($strNonQuery);
@@ -1790,6 +2237,9 @@ class dxMySqliDatabase extends dxDatabaseBase {
             throw new dxMySqliDatabaseException($this->objMySqli->error, $this->objMySqli->errno, $strNonQuery);
     }
 
+    /**
+     * @return array|mixed
+     */
     public function GetTables() {
         // Use the MySQL "SHOW TABLES" functionality to get a list of all the tables in this database
         $objResult = $this->Query("SHOW TABLES");
@@ -1799,15 +2249,27 @@ class dxMySqliDatabase extends dxDatabaseBase {
         return $strToReturn;
     }
 
+    /**
+     * @param $strTableName
+     * @return mixed
+     */
     public function GetFieldsForTable($strTableName) {
         $objResult = $this->Query(sprintf('SELECT * FROM %s%s%s LIMIT 1', $this->strEscapeIdentifierBegin, $strTableName, $this->strEscapeIdentifierEnd));
         return $objResult->FetchFields();
     }
 
+    /**
+     * @param null $strTableName
+     * @param null $strColumnName
+     * @return mixed
+     */
     public function InsertId($strTableName = null, $strColumnName = null) {
         return $this->objMySqli->insert_id;
     }
 
+    /**
+     * @return mixed|void
+     */
     public function Close() {
         $this->objMySqli->close();
 
@@ -1815,23 +2277,36 @@ class dxMySqliDatabase extends dxDatabaseBase {
         $this->blnConnectedFlag = false;
     }
 
+    /**
+     *
+     */
     protected function ExecuteTransactionBegin() {
         // Set to AutoCommit
         $this->NonQuery('SET AUTOCOMMIT=0;');
     }
 
+    /**
+     *
+     */
     protected function ExecuteTransactionCommit() {
         $this->NonQuery('COMMIT;');
         // Set to AutoCommit
         $this->NonQuery('SET AUTOCOMMIT=1;');
     }
 
+    /**
+     *
+     */
     protected function ExecuteTransactionRollBack() {
         $this->NonQuery('ROLLBACK;');
         // Set to AutoCommit
         $this->NonQuery('SET AUTOCOMMIT=1;');
     }
 
+    /**
+     * @return mixed
+     * @throws dxCallerException
+     */
     public function GetFoundRows() {
         if (array_key_exists('usefoundrows', $this->objConfigArray) && $this->objConfigArray['usefoundrows']) {
             $objResult = $this->Query('SELECT FOUND_ROWS();');
@@ -1841,6 +2316,11 @@ class dxMySqliDatabase extends dxDatabaseBase {
             throw new dxCallerException('Cannot call GetFoundRows() on the database when "usefoundrows" configuration was not set to true.');
     }
 
+    /**
+     * @param $strTableName
+     * @return array|mixed
+     * @throws Exception
+     */
     public function GetIndexesForTable($strTableName) {
         // Figure out the Table Type (InnoDB, MyISAM, etc.) by parsing the Create Table description
         $strCreateStatement = $this->GetCreateStatementForTable($strTableName);
@@ -1862,6 +2342,11 @@ class dxMySqliDatabase extends dxDatabaseBase {
         }
     }
 
+    /**
+     * @param $strTableName
+     * @return array|mixed
+     * @throws Exception
+     */
     public function GetForeignKeysForTable($strTableName) {
         // Figure out the Table Type (InnoDB, MyISAM, etc.) by parsing the Create Table description
         $strCreateStatement = $this->GetCreateStatementForTable($strTableName);
@@ -1890,6 +2375,11 @@ class dxMySqliDatabase extends dxDatabaseBase {
 
     // MySql defines KeyDefinition to be [OPTIONAL_NAME] ([COL], ...)
     // If the key name exists, this will parse it out and return it
+    /**
+     * @param $strKeyDefinition
+     * @return bool|null|string
+     * @throws Exception
+     */
     private function ParseNameFromKeyDefinition($strKeyDefinition) {
         $strKeyDefinition = trim($strKeyDefinition);
 
@@ -1913,6 +2403,11 @@ class dxMySqliDatabase extends dxDatabaseBase {
 
     // MySql defines KeyDefinition to be [OPTIONAL_NAME] ([COL], ...)
     // This will return an array of strings that are the names [COL], etc.
+    /**
+     * @param $strKeyDefinition
+     * @return array
+     * @throws Exception
+     */
     private function ParseColumnNameArrayFromKeyDefinition($strKeyDefinition) {
         $strKeyDefinition = trim($strKeyDefinition);
 
@@ -1943,6 +2438,11 @@ class dxMySqliDatabase extends dxDatabaseBase {
         return $strToReturn;
     }
 
+    /**
+     * @param $strCreateStatement
+     * @return array
+     * @throws Exception
+     */
     private function ParseForIndexes($strCreateStatement) {
         // MySql nicely splits each object in a table into it's own line
         // Split the create statement into lines, and then pull out anything
@@ -1993,6 +2493,11 @@ class dxMySqliDatabase extends dxDatabaseBase {
         return $objIndexArray;
     }
 
+    /**
+     * @param $strCreateStatement
+     * @return array
+     * @throws Exception
+     */
     private function ParseForInnoDbForeignKeys($strCreateStatement) {
         // MySql nicely splits each object in a table into it's own line
         // Split the create statement into lines, and then pull out anything
@@ -2047,6 +2552,10 @@ class dxMySqliDatabase extends dxDatabaseBase {
         return $objForeignKeyArray;
     }
 
+    /**
+     * @param $strTableName
+     * @return mixed
+     */
     private function GetCreateStatementForTable($strTableName) {
         // Use the MySQL "SHOW CREATE TABLE" functionality to get the table's Create statement
         $objResult = $this->Query(sprintf('SHOW CREATE TABLE `%s`', $strTableName));
@@ -2056,6 +2565,11 @@ class dxMySqliDatabase extends dxDatabaseBase {
         return $strCreateTable;
     }
 
+    /**
+     * @param $strCreateStatement
+     * @return string
+     * @throws Exception
+     */
     private function GetTableTypeForCreateStatement($strCreateStatement) {
         // Table Type is in the last line of the Create Statement, "TYPE=DbTableType"
         $strLineArray = explode("\n", $strCreateStatement);
@@ -2148,6 +2662,12 @@ class dxMySqliDatabase extends dxDatabaseBase {
  * @package DatabaseAdapters
  */
 class dxMySqliDatabaseException extends dxDatabaseExceptionBase {
+    /**
+     * dxMySqliDatabaseException constructor.
+     * @param $strMessage
+     * @param $intNumber
+     * @param $strQuery
+     */
     public function __construct($strMessage, $intNumber, $strQuery) {
         parent::__construct(sprintf("MySqli Error: %s", $strMessage), 2);
         $this->intErrorNumber = $intNumber;
@@ -2160,18 +2680,36 @@ class dxMySqliDatabaseException extends dxDatabaseExceptionBase {
  * @package DatabaseAdapters
  */
 class dxMySqliDatabaseResult extends dxDatabaseResultBase {
+    /**
+     * @var mysqli_result
+     */
     protected $objMySqliResult;
+    /**
+     * @var dxMySqliDatabase
+     */
     protected $objDb;
 
+    /**
+     * dxMySqliDatabaseResult constructor.
+     * @param mysqli_result $objResult
+     * @param dxMySqliDatabase $objDb
+     */
     public function __construct(mysqli_result $objResult, dxMySqliDatabase $objDb) {
         $this->objMySqliResult = $objResult;
         $this->objDb = $objDb;
     }
 
+    /**
+     * @return mixed
+     */
     public function FetchArray() {
         return $this->objMySqliResult->fetch_array();
     }
 
+    /**
+     * @return array|mixed
+     * @throws Exception
+     */
     public function FetchFields() {
         $objArrayToReturn = array();
         while ($objField = $this->objMySqliResult->fetch_field())
@@ -2179,31 +2717,53 @@ class dxMySqliDatabaseResult extends dxDatabaseResultBase {
         return $objArrayToReturn;
     }
 
+    /**
+     * @return dxMySqliDatabaseField|mixed
+     * @throws Exception
+     */
     public function FetchField() {
         if ($objField = $this->objMySqliResult->fetch_field())
             return new dxMySqliDatabaseField($objField, $this->objDb);
     }
 
+    /**
+     * @return mixed
+     */
     public function FetchRow() {
         return $this->objMySqliResult->fetch_row();
     }
 
+    /**
+     * @return object
+     */
     public function MySqlFetchField() {
         return $this->objMySqliResult->fetch_field();
     }
 
+    /**
+     * @return int|mixed
+     */
     public function CountRows() {
         return $this->objMySqliResult->num_rows;
     }
 
+    /**
+     * @return mixed
+     */
     public function CountFields() {
         return $this->objMySqliResult->num_fields();
     }
 
+    /**
+     * @return mixed|void
+     */
     public function Close() {
         $this->objMySqliResult->free();
     }
 
+    /**
+     * @return dxMySqliDatabaseRow|mixed|null
+     */
     public function GetNextRow() {
         $strColumnArray = $this->FetchArray();
 
@@ -2213,6 +2773,9 @@ class dxMySqliDatabaseResult extends dxDatabaseResultBase {
             return null;
     }
 
+    /**
+     * @return array|mixed
+     */
     public function GetRows() {
         $objDbRowArray = array();
         while ($objDbRow = $this->GetNextRow())
@@ -2226,12 +2789,26 @@ class dxMySqliDatabaseResult extends dxDatabaseResultBase {
  * @package DatabaseAdapters
  */
 class dxMySqliDatabaseRow extends dxDatabaseRowBase {
+    /**
+     * @var
+     */
     protected $strColumnArray;
 
+    /**
+     * dxMySqliDatabaseRow constructor.
+     * @param $strColumnArray
+     */
     public function __construct($strColumnArray) {
         $this->strColumnArray = $strColumnArray;
     }
 
+    /**
+     * @param $strColumnName
+     * @param null $strColumnType
+     * @return dxDateTime|mixed|null
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     public function GetColumn($strColumnName, $strColumnType = null) {
         if (array_key_exists($strColumnName, $this->strColumnArray)) {
             $strColumnValue = $this->strColumnArray[$strColumnName];
@@ -2273,10 +2850,17 @@ class dxMySqliDatabaseRow extends dxDatabaseRowBase {
             return null;
     }
 
+    /**
+     * @param $strColumnName
+     * @return bool|mixed
+     */
     public function ColumnExists($strColumnName) {
         return array_key_exists($strColumnName, $this->strColumnArray);
     }
 
+    /**
+     * @return mixed
+     */
     public function GetColumnNameArray() {
         return $this->strColumnArray;
     }
@@ -2287,6 +2871,12 @@ class dxMySqliDatabaseRow extends dxDatabaseRowBase {
  * @package DatabaseAdapters
  */
 class dxMySqliDatabaseField extends dxDatabaseFieldBase {
+    /**
+     * dxMySqliDatabaseField constructor.
+     * @param $mixFieldData
+     * @param null $objDb
+     * @throws Exception
+     */
     public function __construct($mixFieldData, $objDb = null) {
         $this->strName = $mixFieldData->name;
         $this->strOriginalName = $mixFieldData->orgname;
@@ -2340,6 +2930,10 @@ class dxMySqliDatabaseField extends dxDatabaseFieldBase {
         $this->SetFieldType($mixFieldData->type);
     }
 
+    /**
+     * @param $intMySqlFieldType
+     * @throws Exception
+     */
     protected function SetFieldType($intMySqlFieldType) {
         switch ($intMySqlFieldType) {
             case MYSQLI_TYPE_TINY:
@@ -2423,8 +3017,14 @@ class dxMySqliDatabaseField extends dxDatabaseFieldBase {
 
 // New MySQL 5 constanst not yet in PHP (as of PHP 5.1.2)
 if (!defined('MYSQLI_TYPE_NEWDECIMAL'))
+    /**
+     *
+     */
     define('MYSQLI_TYPE_NEWDECIMAL', 246);
 if (!defined('MYSQLI_TYPE_BIT'))
+    /**
+     *
+     */
     define('MYSQLI_TYPE_BIT', 16);
 
 /**
@@ -2432,8 +3032,15 @@ if (!defined('MYSQLI_TYPE_BIT'))
  * @package DatabaseAdapters
  */
 class dxMySqli5Database extends dxMySqliDatabase {
+    /**
+     *
+     */
     const Adapter = 'MySql Improved Database Adapter for MySQL 5';
 
+    /**
+     * @return array|mixed
+     * @throws dxMySqliDatabaseException
+     */
     public function GetTables() {
         // Connect if Applicable
         if (!$this->blnConnectedFlag) $this->Connect();
@@ -2458,6 +3065,11 @@ class dxMySqli5Database extends dxMySqliDatabase {
         return $strToReturn;
     }
 
+    /**
+     * @param $strQuery
+     * @return dxMySqli5DatabaseResult|dxMySqliDatabaseResult|mixed
+     * @throws dxMySqliDatabaseException
+     */
     protected function ExecuteQuery($strQuery) {
         // Perform the Query
         $objResult = $this->objMySqli->query($strQuery);
@@ -2501,6 +3113,10 @@ class dxMySqli5Database extends dxMySqliDatabase {
  * @package DatabaseAdapters
  */
 class dxMySqli5DatabaseResult extends dxMySqliDatabaseResult {
+    /**
+     * @return array|mixed
+     * @throws Exception
+     */
     public function FetchFields() {
         $objArrayToReturn = array();
         while ($objField = $this->objMySqliResult->fetch_field())
@@ -2508,6 +3124,10 @@ class dxMySqli5DatabaseResult extends dxMySqliDatabaseResult {
         return $objArrayToReturn;
     }
 
+    /**
+     * @return dxMySqli5DatabaseField|dxMySqliDatabaseField|mixed
+     * @throws Exception
+     */
     public function FetchField() {
         if ($objField = $this->objMySqliResult->fetch_field())
             return new dxMySqli5DatabaseField($objField, $this->objDb);
@@ -2519,6 +3139,10 @@ class dxMySqli5DatabaseResult extends dxMySqliDatabaseResult {
  * @package DatabaseAdapters
  */
 class dxMySqli5DatabaseField extends dxMySqliDatabaseField {
+    /**
+     * @param $intMySqlFieldType
+     * @throws Exception
+     */
     protected function SetFieldType($intMySqlFieldType) {
         switch ($intMySqlFieldType) {
             case MYSQLI_TYPE_NEWDECIMAL:
@@ -2537,6 +3161,10 @@ class dxMySqli5DatabaseField extends dxMySqliDatabaseField {
 
 // NOTATIONS: http://www.cob.sjsu.edu/johnson_f/notation.htm
 abstract class dxConvertNotationBase {
+    /**
+     * @param $strType
+     * @return string
+     */
     public static function PrefixFromType($strType) {
         switch ($strType) {
             case dxType::ArrayType:
@@ -2556,6 +3184,10 @@ abstract class dxConvertNotationBase {
         }
     }
 
+    /**
+     * @param $strName
+     * @return string
+     */
     public static function WordsFromUnderscore($strName) {
         $strToReturn = trim(str_replace('_', ' ', $strName));
         if (strtolower($strToReturn) == $strToReturn)
@@ -2563,6 +3195,10 @@ abstract class dxConvertNotationBase {
         return $strToReturn;
     }
 
+    /**
+     * @param $strName
+     * @return string
+     */
     public static function CamelCaseFromUnderscore($strName) {
         $strToReturn = '';
 
@@ -2586,6 +3222,10 @@ abstract class dxConvertNotationBase {
         return $strToReturn;
     }
 
+    /**
+     * @param $strName
+     * @return string
+     */
     public static function WordsFromCamelCase($strName) {
         if (strlen($strName) == 0)
             return '';
@@ -2630,6 +3270,10 @@ abstract class dxConvertNotationBase {
         return $strToReturn;
     }
 
+    /**
+     * @param $strName
+     * @return string
+     */
     public static function UnderscoreFromCamelCase($strName) {
         if (strlen($strName) == 0)
             return '';
@@ -2647,6 +3291,10 @@ abstract class dxConvertNotationBase {
         return strtolower($strToReturn);
     }
 
+    /**
+     * @param $strName
+     * @return string
+     */
     public static function JavaCaseFromUnderscore($strName) {
         $strToReturn = dxConvertNotation::CamelCaseFromUnderscore($strName);
         return strtolower(substr($strToReturn, 0, 1)) . substr($strToReturn, 1);
@@ -2783,21 +3431,59 @@ class dxCacheProviderNoCache extends dxAbstractCacheProvider {
  * @property-read dxQueryBaseNode $_PrimaryKeyNode
  */
 abstract class dxQueryBaseNode extends dxBaseClass {
+    /**
+     * @var
+     */
     protected $objParentNode;
+    /**
+     * @var
+     */
     protected $strType;
+    /**
+     * @var
+     */
     protected $strName;
+    /**
+     * @var
+     */
     protected $strAlias;
+    /**
+     * @var
+     */
     protected $strPropertyName;
+    /**
+     * @var
+     */
     protected $strRootTableName;
 
+    /**
+     * @var
+     */
     protected $strTableName;
+    /**
+     * @var
+     */
     protected $strPrimaryKey;
+    /**
+     * @var
+     */
     protected $strClassName;
 
     // used by expansion nodes
+    /**
+     * @var
+     */
     protected $blnExpandAsArray;
+    /**
+     * @var
+     */
     protected $objChildNodeArray;
 
+    /**
+     * @param string $strName
+     * @return mixed
+     * @throws dxCallerException
+     */
     public function __get($strName) {
         switch ($strName) {
             case '_ParentNode':
@@ -2836,6 +3522,12 @@ abstract class dxQueryBaseNode extends dxBaseClass {
         }
     }
 
+    /**
+     * @param string $strName
+     * @param string $mixValue
+     * @return mixed
+     * @throws dxCallerException
+     */
     public function __set($strName, $mixValue) {
         switch ($strName) {
             case 'Alias':
@@ -2869,7 +3561,21 @@ abstract class dxQueryBaseNode extends dxBaseClass {
         }
     }
 
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @param $blnExpandSelection
+     * @param dxQuerySelect|null $objSelect
+     * @return mixed
+     */
     abstract public function GetColumnAliasHelper(dxQueryBuilder $objBuilder, $blnExpandSelection, dxQuerySelect $objSelect = null);
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @param bool $blnExpandSelection
+     * @param dxQueryCondition|null $objJoinCondition
+     * @param dxQuerySelect|null $objSelect
+     * @return mixed
+     */
     abstract public function GetColumnAlias(dxQueryBuilder $objBuilder, $blnExpandSelection = false, dxQueryCondition $objJoinCondition = null, dxQuerySelect $objSelect = null);
 
     /**
@@ -2907,6 +3613,9 @@ abstract class dxQueryBaseNode extends dxBaseClass {
         }
     }
 
+    /**
+     * @return string
+     */
     public function ExtendedAlias () {
         $strExtendedAlias = $this->strAlias;
         $objNode = $this;
@@ -2917,6 +3626,9 @@ abstract class dxQueryBaseNode extends dxBaseClass {
         return $strExtendedAlias;
     }
 
+    /**
+     * @return mixed|null
+     */
     public function FirstChild() {
         $a = $this->objChildNodeArray;
         if ($a) {
@@ -2929,6 +3641,14 @@ abstract class dxQueryBaseNode extends dxBaseClass {
 }
 
 class dxQueryNode extends dxQueryBaseNode {
+    /**
+     * dxQueryNode constructor.
+     * @param $strName
+     * @param $strPropertyName
+     * @param $strType
+     * @param dxQueryBaseNode|null $objParentNode
+     * @throws dxCallerException
+     */
     public function __construct($strName, $strPropertyName, $strType, dxQueryBaseNode $objParentNode = null) {
         $this->objParentNode = $objParentNode;
         $this->strName = $strName;
@@ -2996,6 +3716,9 @@ class dxQueryNode extends dxQueryBaseNode {
         }
     }
 
+    /**
+     * @return string
+     */
     public function GetAsManualSqlColumn() {
         if ($this->strTableName)
             return $this->strTableName . '.' . $this->strName;
@@ -3005,10 +3728,21 @@ class dxQueryNode extends dxQueryBaseNode {
             return $this->strName;
     }
 
+    /**
+     * @return bool
+     */
     public function isTopLevelLeafNode() {
         return (get_class($this) == 'dxQueryNode') && (is_null($this->objParentNode->_Type));
     }
 
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @param bool $blnExpandSelection
+     * @param dxQueryCondition|null $objJoinCondition
+     * @param dxQuerySelect|null $objSelect
+     * @return mixed|string
+     * @throws dxCallerException
+     */
     public function GetTable(dxQueryBuilder $objBuilder, $blnExpandSelection = false, dxQueryCondition $objJoinCondition = null, dxQuerySelect $objSelect = null) {
         // Make sure our Root Tables Match
         if ($this->_RootTableName != $objBuilder->RootTableName)
@@ -3039,11 +3773,24 @@ class dxQueryNode extends dxQueryBaseNode {
         }
     }
 
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @param bool $blnExpandSelection
+     * @param dxQueryCondition|null $objJoinCondition
+     * @param dxQuerySelect|null $objSelect
+     * @return mixed|string
+     * @throws dxCallerException
+     */
     public function GetTableAlias(dxQueryBuilder $objBuilder, $blnExpandSelection = false, dxQueryCondition $objJoinCondition = null, dxQuerySelect $objSelect = null) {
         $strTable = $this->GetTable($objBuilder, $blnExpandSelection, $objJoinCondition, $objSelect);
         return $objBuilder->GetTableAlias($strTable);
     }
 
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @param $strTableAlias
+     * @return string
+     */
     public function MakeColumnAlias(dxQueryBuilder $objBuilder, $strTableAlias) {
         $strBegin = $objBuilder->Database->EscapeIdentifierBegin;
         $strEnd = $objBuilder->Database->EscapeIdentifierEnd;
@@ -3053,17 +3800,39 @@ class dxQueryNode extends dxQueryBaseNode {
             $strBegin, $this->strName, $strEnd);
     }
 
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @param bool $blnExpandSelection
+     * @param dxQueryCondition|null $objJoinCondition
+     * @param dxQuerySelect|null $objSelect
+     * @return mixed|string
+     * @throws dxCallerException
+     */
     public function GetColumnAlias(dxQueryBuilder $objBuilder, $blnExpandSelection = false, dxQueryCondition $objJoinCondition = null, dxQuerySelect $objSelect = null) {
         $strTableAlias = $this->GetTableAlias($objBuilder, $blnExpandSelection, $objJoinCondition, $objSelect);
         // Pull the Begin and End Escape Identifiers from the Database Adapter
         return $this->MakeColumnAlias($objBuilder, $strTableAlias);
     }
 
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @param $strJoinTableAlias
+     * @param $strParentAlias
+     * @param dxQueryCondition|null $objJoinCondition
+     * @throws dxCallerException
+     */
     protected function addJoinTable(dxQueryBuilder $objBuilder, $strJoinTableAlias, $strParentAlias, dxQueryCondition $objJoinCondition = null) {
         $objBuilder->AddJoinItem($this->strTableName, $strJoinTableAlias,
             $strParentAlias, $this->strName, $this->strPrimaryKey, $objJoinCondition);
     }
 
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @param $blnExpandSelection
+     * @param dxQuerySelect|null $objSelect
+     * @return mixed|string
+     * @throws dxCallerException
+     */
     public function GetColumnAliasHelper(dxQueryBuilder $objBuilder, $blnExpandSelection, dxQuerySelect $objSelect = null) {
         // Are we at the Parent Node?
         if (is_null($this->objParentNode))
@@ -3096,12 +3865,22 @@ class dxQueryNode extends dxQueryBaseNode {
     //////////////////
     // Helpers for Orm-generated DataGrids
     //////////////////
+    /**
+     * @param $strNodeLabelArray
+     * @param $intIndex
+     * @return string
+     */
     protected function GetDataGridHtmlHelper($strNodeLabelArray, $intIndex) {
         if (($intIndex + 1) == ProjectFunctions::getDataSetSize($strNodeLabelArray))
             return $strNodeLabelArray[$intIndex];
         else
             return sprintf('(%s ? %s : null)', $strNodeLabelArray[$intIndex], $this->GetDataGridHtmlHelper($strNodeLabelArray, $intIndex + 1));
     }
+
+    /**
+     * @return string
+     * @throws Exception
+     */
     public function GetDataGridHtml() {
         // Array-ify Node Hierarchy
         $objNodeArray = array();
@@ -3144,12 +3923,19 @@ class dxQueryNode extends dxQueryBaseNode {
         return $strToReturn;
     }
 
+    /**
+     * @return $this|dxQueryBaseNode
+     */
     public function GetDataGridOrderByNode() {
         if ($this instanceof dxQueryReverseReferenceNode)
             return $this->_PrimaryKeyNode;
         else
             return $this;
     }
+
+    /**
+     * @param QDataGridColumn $col
+     */
     public function SetFilteredDataGridColumnFilter(QDataGridColumn $col)
     {
         switch($this->strType)
@@ -3192,8 +3978,20 @@ class dxQueryNode extends dxQueryBaseNode {
 }
 
 class dxQueryReverseReferenceNode extends dxQueryNode {
+    /**
+     * @var
+     */
     protected $strForeignKey;
 
+    /**
+     * dxQueryReverseReferenceNode constructor.
+     * @param dxQueryBaseNode $objParentNode
+     * @param $strName
+     * @param $strType
+     * @param $strForeignKey
+     * @param null $strPropertyName
+     * @throws dxCallerException
+     */
     public function __construct(dxQueryBaseNode $objParentNode, $strName, $strType, $strForeignKey, $strPropertyName = null) {
         $this->objParentNode = $objParentNode;
         if ($objParentNode) {
@@ -3211,16 +4009,34 @@ class dxQueryReverseReferenceNode extends dxQueryNode {
         $this->strPropertyName = $strPropertyName;
     }
 
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @param $strJoinTableAlias
+     * @param $strParentAlias
+     * @param dxQueryCondition|null $objJoinCondition
+     * @throws dxCallerException
+     */
     protected function addJoinTable(dxQueryBuilder $objBuilder, $strJoinTableAlias, $strParentAlias, dxQueryCondition $objJoinCondition = null) {
         $objBuilder->AddJoinItem($this->strTableName, $strJoinTableAlias,
             $strParentAlias, $this->objParentNode->_PrimaryKey, $this->strForeignKey, $objJoinCondition);
     }
 
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @param bool $blnExpandSelection
+     * @param dxQueryCondition|null $objJoinCondition
+     * @param dxQuerySelect|null $objSelect
+     * @return mixed|null|string
+     * @throws dxCallerException
+     */
     public function GetColumnAlias(dxQueryBuilder $objBuilder, $blnExpandSelection = false, dxQueryCondition $objJoinCondition = null, dxQuerySelect $objSelect = null) {
         $this->GetTableAlias($objBuilder, $blnExpandSelection, $objJoinCondition, $objSelect);
         return null;
     }
 
+    /**
+     * @return string
+     */
     public function GetExpandArrayAlias() {
 //			$objNode = $this;
 //			$objChildTableNode = $this->_ChildTableNode;
@@ -3241,6 +4057,11 @@ class dxQueryReverseReferenceNode extends dxQueryNode {
  * @property-read dxQueryNode $_ChildTableNode
  */
 class dxQueryAssociationNode extends dxQueryBaseNode {
+    /**
+     * dxQueryAssociationNode constructor.
+     * @param dxQueryBaseNode $objParentNode
+     * @throws dxCallerException
+     */
     public function __construct(dxQueryBaseNode $objParentNode) {
         $this->objParentNode = $objParentNode;
         if ($objParentNode) {
@@ -3255,6 +4076,14 @@ class dxQueryAssociationNode extends dxQueryBaseNode {
         $this->strAlias = $this->strName;
     }
 
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @param bool $blnExpandSelection
+     * @param dxQueryCondition|null $objJoinCondition
+     * @param dxQuerySelect|null $objSelect
+     * @return mixed|string
+     * @throws dxCallerException
+     */
     public function GetColumnAlias(dxQueryBuilder $objBuilder, $blnExpandSelection = false, dxQueryCondition $objJoinCondition = null, dxQuerySelect $objSelect = null) {
         // Make sure our Root Tables Match
         if ($this->_RootTableName != $objBuilder->RootTableName)
@@ -3289,6 +4118,13 @@ class dxQueryAssociationNode extends dxQueryBaseNode {
         }
     }
 
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @param $blnExpandSelection
+     * @param dxQuerySelect|null $objSelect
+     * @return mixed|string
+     * @throws dxCallerException
+     */
     public function GetColumnAliasHelper(dxQueryBuilder $objBuilder, $blnExpandSelection, dxQuerySelect $objSelect = null) {
         // Are we at the Parent Node?
         if (is_null($this->objParentNode))
@@ -3307,6 +4143,9 @@ class dxQueryAssociationNode extends dxQueryBaseNode {
         }
     }
 
+    /**
+     * @return string
+     */
     public function GetExpandArrayAlias() {
         $objNode = $this;
         $objChildTableNode = $this->_ChildTableNode;
@@ -3321,10 +4160,23 @@ class dxQueryAssociationNode extends dxQueryBaseNode {
 }
 
 class dxQueryNamedValue extends dxQueryNode {
+    /**
+     *
+     */
     const DelimiterCode = 3;
+
+    /**
+     * dxQueryNamedValue constructor.
+     * @param $strName
+     */
     public function __construct($strName) {
         $this->strName = $strName;
     }
+
+    /**
+     * @param null $blnEqualityType
+     * @return string
+     */
     public function Parameter($blnEqualityType = null) {
         if (is_null($blnEqualityType))
             return chr(dxQueryNamedValue::DelimiterCode) . '{' . $this->strName . '}';
@@ -3336,12 +4188,27 @@ class dxQueryNamedValue extends dxQueryNode {
 }
 
 abstract class dxQueryCondition extends dxBaseClass {
+    /**
+     * @var
+     */
     protected $strOperator;
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed
+     */
     abstract public function UpdateQueryBuilder(dxQueryBuilder $objBuilder);
+
+    /**
+     * @return string
+     */
     public function __toString() {
         return 'dxQueryCondition Object';
     }
 
+    /**
+     * @var
+     */
     protected $blnProcessed;
 
     /**
@@ -3371,20 +4238,40 @@ abstract class dxQueryCondition extends dxBaseClass {
 }
 
 class dxQueryConditionAll extends dxQueryCondition {
+    /**
+     * dxQueryConditionAll constructor.
+     * @param $mixParameterArray
+     * @throws dxCallerException
+     */
     public function __construct($mixParameterArray) {
         if (ProjectFunctions::getDataSetSize($mixParameterArray))
             throw new dxCallerException('All clause takes in no parameters', 3);
     }
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed|void
+     */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
         $objBuilder->AddWhereItem('1=1');
     }
 }
 
 class dxQueryConditionNone extends dxQueryCondition {
+    /**
+     * dxQueryConditionNone constructor.
+     * @param $mixParameterArray
+     * @throws dxCallerException
+     */
     public function __construct($mixParameterArray) {
         if (ProjectFunctions::getDataSetSize($mixParameterArray))
             throw new dxCallerException('None clause takes in no parameters', 3);
     }
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed|void
+     */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
         $objBuilder->AddWhereItem('1=0');
     }
@@ -3393,6 +4280,12 @@ class dxQueryConditionNone extends dxQueryCondition {
 abstract class dxQueryConditionLogical extends dxQueryCondition {
     /** @var dxQueryCondition[] */
     protected $objConditionArray;
+
+    /**
+     * @param $mixParameterArray
+     * @return array
+     * @throws dxCallerException
+     */
     protected function CollapseConditions($mixParameterArray) {
         $objConditionArray = array();
         foreach ($mixParameterArray as $mixParameter) {
@@ -3411,6 +4304,12 @@ abstract class dxQueryConditionLogical extends dxQueryCondition {
         else
             throw new dxCallerException('No parameters passed in to logical Or/And clause', 3);
     }
+
+    /**
+     * dxQueryConditionLogical constructor.
+     * @param $mixParameterArray
+     * @throws dxCallerException
+     */
     public function __construct($mixParameterArray) {
         $objConditionArray = $this->CollapseConditions($mixParameterArray);
         try {
@@ -3420,6 +4319,12 @@ abstract class dxQueryConditionLogical extends dxQueryCondition {
             throw $objExc;
         }
     }
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed|void
+     * @throws dxCallerException
+     */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
         $intLength = ProjectFunctions::getDataSetSize($this->objConditionArray);
         if ($intLength) {
@@ -3442,18 +4347,38 @@ abstract class dxQueryConditionLogical extends dxQueryCondition {
 }
 
 class dxQueryConditionOr extends dxQueryConditionLogical {
+    /**
+     * @var string
+     */
     protected $strOperator = 'OR';
 }
 
 class dxQueryConditionAnd extends dxQueryConditionLogical {
+    /**
+     * @var string
+     */
     protected $strOperator = 'AND';
 }
 
 class dxQueryConditionNot extends dxQueryCondition {
+    /**
+     * @var dxQueryCondition
+     */
     protected $objCondition;
+
+    /**
+     * dxQueryConditionNot constructor.
+     * @param dxQueryCondition $objCondition
+     */
     public function __construct(dxQueryCondition $objCondition) {
         $this->objCondition = $objCondition;
     }
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed|void
+     * @throws dxCallerException
+     */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
         $objBuilder->AddWhereItem('(NOT');
         try {
@@ -3467,8 +4392,21 @@ class dxQueryConditionNot extends dxQueryCondition {
 }
 
 abstract class dxQueryConditionComparison extends dxQueryCondition {
+    /**
+     * @var dxQueryNode
+     */
     public $objQueryNode;
+    /**
+     * @var dxQueryNode
+     */
     public $mixOperand;
+
+    /**
+     * dxQueryConditionComparison constructor.
+     * @param dxQueryNode $objQueryNode
+     * @param $mixOperand
+     * @throws dxInvalidCastException
+     */
     public function __construct(dxQueryNode $objQueryNode, $mixOperand) {
         $this->objQueryNode = $objQueryNode;
         if (!$objQueryNode->_ParentNode)
@@ -3497,34 +4435,69 @@ abstract class dxQueryConditionComparison extends dxQueryCondition {
             $this->mixOperand = $mixOperand;
         }
     }
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed|void
+     * @throws dxCallerException
+     */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
         $objBuilder->AddWhereItem($this->objQueryNode->GetColumnAlias($objBuilder) . $this->strOperator . $this->objQueryNode->GetValue($this->mixOperand, $objBuilder));
     }
 }
 
 class dxQueryConditionIsNull extends dxQueryConditionComparison {
+    /**
+     * dxQueryConditionIsNull constructor.
+     * @param dxQueryNode $objQueryNode
+     * @throws dxInvalidCastException
+     */
     public function __construct(dxQueryNode $objQueryNode) {
         $this->objQueryNode = $objQueryNode;
         if (!$objQueryNode->_ParentNode)
             throw new dxInvalidCastException('Unable to cast "' . $objQueryNode->_Name . '" table to Column-based dxQueryNode', 3);
     }
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed|void
+     * @throws dxCallerException
+     */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
         $objBuilder->AddWhereItem($this->objQueryNode->GetColumnAlias($objBuilder) . ' IS NULL');
     }
 }
 
 class dxQueryConditionIsNotNull extends dxQueryConditionComparison {
+    /**
+     * dxQueryConditionIsNotNull constructor.
+     * @param dxQueryNode $objQueryNode
+     * @throws dxInvalidCastException
+     */
     public function __construct(dxQueryNode $objQueryNode) {
         $this->objQueryNode = $objQueryNode;
         if (!$objQueryNode->_ParentNode)
             throw new dxInvalidCastException('Unable to cast "' . $objQueryNode->_Name . '" table to Column-based dxQueryNode', 3);
     }
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed|void
+     * @throws dxCallerException
+     */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
         $objBuilder->AddWhereItem($this->objQueryNode->GetColumnAlias($objBuilder) . ' IS NOT NULL');
     }
 }
 
 class dxQueryConditionIn extends dxQueryConditionComparison {
+    /**
+     * dxQueryConditionIn constructor.
+     * @param dxQueryNode $objQueryNode
+     * @param $mixValuesArray
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     public function __construct(dxQueryNode $objQueryNode, $mixValuesArray) {
         $this->objQueryNode = $objQueryNode;
         if (!$objQueryNode->_ParentNode)
@@ -3544,6 +4517,12 @@ class dxQueryConditionIn extends dxQueryConditionComparison {
             }
         }
     }
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed|void
+     * @throws dxCallerException
+     */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
         $mixOperand = $this->mixOperand;
         if ($mixOperand instanceof dxQueryNamedValue) {
@@ -3566,6 +4545,13 @@ class dxQueryConditionIn extends dxQueryConditionComparison {
 }
 
 class dxQueryConditionNotIn extends dxQueryConditionComparison {
+    /**
+     * dxQueryConditionNotIn constructor.
+     * @param dxQueryNode $objQueryNode
+     * @param $mixValuesArray
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     public function __construct(dxQueryNode $objQueryNode, $mixValuesArray) {
         $this->objQueryNode = $objQueryNode;
         if (!$objQueryNode->_ParentNode)
@@ -3585,6 +4571,12 @@ class dxQueryConditionNotIn extends dxQueryConditionComparison {
             }
         }
     }
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed|void
+     * @throws dxCallerException
+     */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
         $mixOperand = $this->mixOperand;
         if ($mixOperand instanceof dxQueryNamedValue) {
@@ -3607,6 +4599,13 @@ class dxQueryConditionNotIn extends dxQueryConditionComparison {
 }
 
 class dxQueryConditionLike extends dxQueryConditionComparison {
+    /**
+     * dxQueryConditionLike constructor.
+     * @param dxQueryNode $objQueryNode
+     * @param $strValue
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     public function __construct(dxQueryNode $objQueryNode, $strValue) {
         $this->objQueryNode = $objQueryNode;
         if (!$objQueryNode->_ParentNode)
@@ -3624,6 +4623,12 @@ class dxQueryConditionLike extends dxQueryConditionComparison {
             }
         }
     }
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed|void
+     * @throws dxCallerException
+     */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
         $mixOperand = $this->mixOperand;
         if ($mixOperand instanceof dxQueryNamedValue) {
@@ -3636,6 +4641,13 @@ class dxQueryConditionLike extends dxQueryConditionComparison {
 }
 
 class dxQueryConditionNotLike extends dxQueryConditionComparison {
+    /**
+     * dxQueryConditionNotLike constructor.
+     * @param dxQueryNode $objQueryNode
+     * @param $strValue
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     public function __construct(dxQueryNode $objQueryNode, $strValue) {
         $this->objQueryNode = $objQueryNode;
         if (!$objQueryNode->_ParentNode)
@@ -3653,6 +4665,12 @@ class dxQueryConditionNotLike extends dxQueryConditionComparison {
             }
         }
     }
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed|void
+     * @throws dxCallerException
+     */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
         $mixOperand = $this->mixOperand;
         if ($mixOperand instanceof dxQueryNamedValue) {
@@ -3665,7 +4683,19 @@ class dxQueryConditionNotLike extends dxQueryConditionComparison {
 }
 
 class dxQueryConditionBetween extends dxQueryConditionComparison {
+    /**
+     * @var dxQueryNamedValue
+     */
     protected $mixOperandTwo;
+
+    /**
+     * dxQueryConditionBetween constructor.
+     * @param dxQueryNode $objQueryNode
+     * @param $strMinValue
+     * @param $strMaxValue
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     public function __construct(dxQueryNode $objQueryNode, $strMinValue, $strMaxValue) {
         $this->objQueryNode = $objQueryNode;
         if (!$objQueryNode->_ParentNode)
@@ -3686,6 +4716,12 @@ class dxQueryConditionBetween extends dxQueryConditionComparison {
             $this->mixOperandTwo = $strMaxValue;
 
     }
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed|void
+     * @throws dxCallerException
+     */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
         $mixOperand = $this->mixOperand;
         $mixOperandTwo = $this->mixOperandTwo;
@@ -3700,7 +4736,19 @@ class dxQueryConditionBetween extends dxQueryConditionComparison {
 }
 
 class dxQueryConditionNotBetween extends dxQueryConditionComparison {
+    /**
+     * @var dxQueryNamedValue
+     */
     protected $mixOperandTwo;
+
+    /**
+     * dxQueryConditionNotBetween constructor.
+     * @param dxQueryNode $objQueryNode
+     * @param $strMinValue
+     * @param $strMaxValue
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     public function __construct(dxQueryNode $objQueryNode, $strMinValue, $strMaxValue) {
         $this->objQueryNode = $objQueryNode;
         if (!$objQueryNode->_ParentNode)
@@ -3721,6 +4769,12 @@ class dxQueryConditionNotBetween extends dxQueryConditionComparison {
             $this->mixOperandTwo = $strMaxValue;
 
     }
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed|void
+     * @throws dxCallerException
+     */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
         $mixOperand = $this->mixOperand;
         $mixOperandTwo = $this->mixOperandTwo;
@@ -3735,32 +4789,62 @@ class dxQueryConditionNotBetween extends dxQueryConditionComparison {
 }
 
 class dxQueryConditionEqual extends dxQueryConditionComparison {
+    /**
+     * @var string
+     */
     protected $strOperator = ' = ';
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed|void
+     * @throws dxCallerException
+     */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
         $objBuilder->AddWhereItem($this->objQueryNode->GetColumnAlias($objBuilder) . ' ' . $this->objQueryNode->GetValue($this->mixOperand, $objBuilder, true));
     }
 }
 
 class dxQueryConditionNotEqual extends dxQueryConditionComparison {
+    /**
+     * @var string
+     */
     protected $strOperator = ' != ';
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed|void
+     * @throws dxCallerException
+     */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
         $objBuilder->AddWhereItem($this->objQueryNode->GetColumnAlias($objBuilder) . ' ' . $this->objQueryNode->GetValue($this->mixOperand, $objBuilder, false));
     }
 }
 
 class dxQueryConditionGreaterThan extends dxQueryConditionComparison {
+    /**
+     * @var string
+     */
     protected $strOperator = ' > ';
 }
 
 class dxQueryConditionLessThan extends dxQueryConditionComparison {
+    /**
+     * @var string
+     */
     protected $strOperator = ' < ';
 }
 
 class dxQueryConditionGreaterOrEqual extends dxQueryConditionComparison {
+    /**
+     * @var string
+     */
     protected $strOperator = ' >= ';
 }
 
 class dxQueryConditionLessOrEqual extends dxQueryConditionComparison {
+    /**
+     * @var string
+     */
     protected $strOperator = ' <= ';
 }
 
@@ -3769,65 +4853,188 @@ class dxQuery {
     // dxQueryCondition Factories
     /////////////////////////
 
+    /**
+     * @return dxQueryConditionAll
+     * @throws dxCallerException
+     */
     static public function All() {
         return new dxQueryConditionAll(func_get_args());
     }
 
+    /**
+     * @return dxQueryConditionNone
+     * @throws dxCallerException
+     */
     static public function None() {
         return new dxQueryConditionNone(func_get_args());
     }
 
+    /**
+     * @return dxQueryConditionOr
+     * @throws dxCallerException
+     */
     static public function OrCondition(/* array and/or parameterized list of QLoad objects*/) {
         return new dxQueryConditionOr(func_get_args());
     }
 
+    /**
+     * @return dxQueryConditionAnd
+     * @throws dxCallerException
+     */
     static public function AndCondition(/* array and/or parameterized list of QLoad objects*/) {
         return new dxQueryConditionAnd(func_get_args());
     }
 
+    /**
+     * @param dxQueryCondition $objCondition
+     * @return dxQueryConditionNot
+     */
     static public function Not(dxQueryCondition $objCondition) {
         return new dxQueryConditionNot($objCondition);
     }
 
+    /**
+     * @param dxQueryNode $objQueryNode
+     * @param $mixValue
+     * @return dxQueryConditionEqual
+     * @throws dxInvalidCastException
+     */
     static public function Equal(dxQueryNode $objQueryNode, $mixValue) {
         return new dxQueryConditionEqual($objQueryNode, $mixValue);
     }
+
+    /**
+     * @param dxQueryNode $objQueryNode
+     * @param $mixValue
+     * @return dxQueryConditionNotEqual
+     * @throws dxInvalidCastException
+     */
     static public function NotEqual(dxQueryNode $objQueryNode, $mixValue) {
         return new dxQueryConditionNotEqual($objQueryNode, $mixValue);
     }
+
+    /**
+     * @param dxQueryNode $objQueryNode
+     * @param $mixValue
+     * @return dxQueryConditionGreaterThan
+     * @throws dxInvalidCastException
+     */
     static public function GreaterThan(dxQueryNode $objQueryNode, $mixValue) {
         return new dxQueryConditionGreaterThan($objQueryNode, $mixValue);
     }
+
+    /**
+     * @param dxQueryNode $objQueryNode
+     * @param $mixValue
+     * @return dxQueryConditionGreaterOrEqual
+     * @throws dxInvalidCastException
+     */
     static public function GreaterOrEqual(dxQueryNode $objQueryNode, $mixValue) {
         return new dxQueryConditionGreaterOrEqual($objQueryNode, $mixValue);
     }
+
+    /**
+     * @param dxQueryNode $objQueryNode
+     * @param $mixValue
+     * @return dxQueryConditionLessThan
+     * @throws dxInvalidCastException
+     */
     static public function LessThan(dxQueryNode $objQueryNode, $mixValue) {
         return new dxQueryConditionLessThan($objQueryNode, $mixValue);
     }
+
+    /**
+     * @param dxQueryNode $objQueryNode
+     * @param $mixValue
+     * @return dxQueryConditionLessOrEqual
+     * @throws dxInvalidCastException
+     */
     static public function LessOrEqual(dxQueryNode $objQueryNode, $mixValue) {
         return new dxQueryConditionLessOrEqual($objQueryNode, $mixValue);
     }
+
+    /**
+     * @param dxQueryNode $objQueryNode
+     * @return dxQueryConditionIsNull
+     * @throws dxInvalidCastException
+     */
     static public function IsNull(dxQueryNode $objQueryNode) {
         return new dxQueryConditionIsNull($objQueryNode);
     }
+
+    /**
+     * @param dxQueryNode $objQueryNode
+     * @return dxQueryConditionIsNotNull
+     * @throws dxInvalidCastException
+     */
     static public function IsNotNull(dxQueryNode $objQueryNode) {
         return new dxQueryConditionIsNotNull($objQueryNode);
     }
+
+    /**
+     * @param dxQueryNode $objQueryNode
+     * @param $mixValuesArray
+     * @return dxQueryConditionIn
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     static public function In(dxQueryNode $objQueryNode, $mixValuesArray) {
         return new dxQueryConditionIn($objQueryNode, $mixValuesArray);
     }
+
+    /**
+     * @param dxQueryNode $objQueryNode
+     * @param $mixValuesArray
+     * @return dxQueryConditionNotIn
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     static public function NotIn(dxQueryNode $objQueryNode, $mixValuesArray) {
         return new dxQueryConditionNotIn($objQueryNode, $mixValuesArray);
     }
+
+    /**
+     * @param dxQueryNode $objQueryNode
+     * @param $strValue
+     * @return dxQueryConditionLike
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     static public function Like(dxQueryNode $objQueryNode, $strValue) {
         return new dxQueryConditionLike($objQueryNode, $strValue);
     }
+
+    /**
+     * @param dxQueryNode $objQueryNode
+     * @param $strValue
+     * @return dxQueryConditionNotLike
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     static public function NotLike(dxQueryNode $objQueryNode, $strValue) {
         return new dxQueryConditionNotLike($objQueryNode, $strValue);
     }
+
+    /**
+     * @param dxQueryNode $objQueryNode
+     * @param $strMinValue
+     * @param $strMaxValue
+     * @return dxQueryConditionBetween
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     static public function Between(dxQueryNode $objQueryNode, $strMinValue, $strMaxValue) {
         return new dxQueryConditionBetween($objQueryNode, $strMinValue, $strMaxValue);
     }
+
+    /**
+     * @param dxQueryNode $objQueryNode
+     * @param $strMinValue
+     * @param $strMaxValue
+     * @return dxQueryConditionNotBetween
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     static public function NotBetween(dxQueryNode $objQueryNode, $strMinValue, $strMaxValue) {
         return new dxQueryConditionNotBetween($objQueryNode, $strMinValue, $strMaxValue);
     }
@@ -3835,6 +5042,14 @@ class dxQuery {
     ////////////////////////
     // dxQueryCondition Shortcuts
     ////////////////////////
+    /**
+     * @param dxQueryNode $objQueryNode
+     * @param $strSymbol
+     * @param $mixValue
+     * @param null $mixValueTwo
+     * @return dxQueryConditionBetween|dxQueryConditionNotBetween
+     * @throws dxCallerException
+     */
     static public function _(dxQueryNode $objQueryNode, $strSymbol, $mixValue, $mixValueTwo = null) {
         try {
             switch(strtolower(trim($strSymbol))) {
@@ -3865,11 +5080,23 @@ class dxQuery {
     // dxQuerySubQuery Factories
     /////////////////////////
 
+    /**
+     * @param $strSql
+     * @param null $objParentQueryNodes
+     * @return dxQuerySubQuerySqlNode
+     * @throws dxCallerException
+     */
     static public function SubSql($strSql, $objParentQueryNodes = null) {
         $objParentQueryNodeArray = func_get_args();
         return new dxQuerySubQuerySqlNode($strSql, $objParentQueryNodeArray);
     }
 
+    /**
+     * @param $strName
+     * @param dxQuerySubQueryNode|null $objSubQueryDefinition
+     * @return dxQueryVirtualNode
+     * @throws dxCallerException
+     */
     static public function Virtual($strName, dxQuerySubQueryNode $objSubQueryDefinition = null) {
         return new dxQueryVirtualNode($strName, $objSubQueryDefinition);
     }
@@ -3878,6 +5105,10 @@ class dxQuery {
     // dxQueryClause Factories
     /////////////////////////
 
+    /**
+     * @return array
+     * @throws dxCallerException
+     */
     static public function Clause(/* parameterized list of dxQueryClause objects */) {
         $objClauseArray = array();
 
@@ -3892,38 +5123,91 @@ class dxQuery {
         return $objClauseArray;
     }
 
+    /**
+     * @return dxQueryOrderBy
+     */
     static public function OrderBy(/* array and/or parameterized list of dxQueryNode objects*/) {
         return new dxQueryOrderBy(func_get_args());
     }
 
+    /**
+     * @return dxQueryGroupBy
+     */
     static public function GroupBy(/* array and/or parameterized list of dxQueryNode objects*/) {
         return new dxQueryGroupBy(func_get_args());
     }
 
+    /**
+     * @param dxQuerySubQuerySqlNode $objNode
+     * @return dxQueryHavingClause
+     */
     static public function Having(dxQuerySubQuerySqlNode $objNode) {
         return new dxQueryHavingClause($objNode);
     }
 
+    /**
+     * @param $objNode
+     * @param $strAttributeName
+     * @return dxQueryCount
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     static public function Count($objNode, $strAttributeName) {
         return new dxQueryCount($objNode, $strAttributeName);
     }
 
+    /**
+     * @param $objNode
+     * @param $strAttributeName
+     * @return dxQuerySum
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     static public function Sum($objNode, $strAttributeName) {
         return new dxQuerySum($objNode, $strAttributeName);
     }
 
+    /**
+     * @param $objNode
+     * @param $strAttributeName
+     * @return dxQueryMinimum
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     static public function Minimum($objNode, $strAttributeName) {
         return new dxQueryMinimum($objNode, $strAttributeName);
     }
 
+    /**
+     * @param $objNode
+     * @param $strAttributeName
+     * @return dxQueryMaximum
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     static public function Maximum($objNode, $strAttributeName) {
         return new dxQueryMaximum($objNode, $strAttributeName);
     }
 
+    /**
+     * @param $objNode
+     * @param $strAttributeName
+     * @return dxQueryAverage
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     static public function Average($objNode, $strAttributeName) {
         return new dxQueryAverage($objNode, $strAttributeName);
     }
 
+    /**
+     * @param $objNode
+     * @param dxQueryCondition|null $objJoinCondition
+     * @param dxQuerySelect|null $objSelect
+     * @return dxQueryExpand|dxQueryExpandVirtualNode
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     static public function Expand($objNode, dxQueryCondition $objJoinCondition = null, dxQuerySelect $objSelect = null) {
 //			if (gettype($objNode) == 'string')
 //				return new dxQueryExpandVirtualNode(new dxQueryVirtualNode($objNode));
@@ -3934,18 +5218,36 @@ class dxQuery {
             return new dxQueryExpand($objNode, $objJoinCondition, $objSelect);
     }
 
+    /**
+     * @param $objNode
+     * @param dxQuerySelect|null $objSelect
+     * @return dxQueryExpandAsArray
+     * @throws dxCallerException
+     */
     static public function ExpandAsArray($objNode, dxQuerySelect $objSelect = null) {
         return new dxQueryExpandAsArray($objNode, $objSelect);
     }
 
+    /**
+     * @return dxQuerySelect
+     */
     static public function Select(/* array and/or parameterized list of dxQueryNode objects*/) {
         return new dxQuerySelect(func_get_args());
     }
 
+    /**
+     * @param $intMaxRowCount
+     * @param int $intOffset
+     * @return dxQueryLimitInfo
+     * @throws dxCallerException
+     */
     static public function LimitInfo($intMaxRowCount, $intOffset = 0) {
         return new dxQueryLimitInfo($intMaxRowCount, $intOffset);
     }
 
+    /**
+     * @return dxQueryDistinct
+     */
     static public function Distinct() {
         return new dxQueryDistinct();
     }
@@ -3995,6 +5297,10 @@ class dxQuery {
     /////////////////////////
     // NamedValue dxQuery Node
     /////////////////////////
+    /**
+     * @param $strName
+     * @return dxQueryNamedValue
+     */
     static public function NamedValue($strName) {
         return new dxQueryNamedValue($strName);
     }
@@ -4038,18 +5344,39 @@ abstract class dxQuerySubQueryNode extends dxQueryNode {
 }
 
 class dxQuerySubQueryCountNode extends dxQuerySubQueryNode {
+    /**
+     * @var string
+     */
     protected $strFunctionName = 'COUNT';
 }
 
 class dxQuerySubQuerySqlNode extends dxQuerySubQueryNode {
+    /**
+     * @var
+     */
     protected $strSql;
     /** @var dxQueryNode[] */
     protected $objParentQueryNodes;
+
+    /**
+     * dxQuerySubQuerySqlNode constructor.
+     * @param $strSql
+     * @param null $objParentQueryNodes
+     */
     public function __construct($strSql, $objParentQueryNodes = null) {
         $this->objParentNode = true;
         $this->objParentQueryNodes = $objParentQueryNodes;
         $this->strSql = $strSql;
     }
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @param bool $blnExpandSelection
+     * @param dxQueryCondition|null $objJoinCondition
+     * @param dxQuerySelect|null $objSelect
+     * @return mixed|string
+     * @throws dxCallerException
+     */
     public function GetColumnAlias(dxQueryBuilder $objBuilder, $blnExpandSelection = false, dxQueryCondition $objJoinCondition = null, dxQuerySelect $objSelect = null) {
         $strSql = $this->strSql;
         for ($intIndex = 1; $intIndex < ProjectFunctions::getDataSetSize($this->objParentQueryNodes); $intIndex++) {
@@ -4061,12 +5388,30 @@ class dxQuerySubQuerySqlNode extends dxQuerySubQueryNode {
 }
 
 class dxQueryVirtualNode extends dxQueryNode {
+    /**
+     * @var dxQuerySubQueryNode
+     */
     protected $objSubQueryDefinition;
+
+    /**
+     * dxQueryVirtualNode constructor.
+     * @param $strName
+     * @param dxQuerySubQueryNode|null $objSubQueryDefinition
+     */
     public function __construct($strName, dxQuerySubQueryNode $objSubQueryDefinition = null) {
         $this->objParentNode = true;
         $this->strName = trim(strtolower($strName));
         $this->objSubQueryDefinition = $objSubQueryDefinition;
     }
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @param bool $blnExpandSelection
+     * @param dxQueryCondition|null $objJoinCondition
+     * @param dxQuerySelect|null $objSelect
+     * @return mixed|string
+     * @throws dxCallerException
+     */
     public function GetColumnAlias(dxQueryBuilder $objBuilder, $blnExpandSelection = false, dxQueryCondition $objJoinCondition = null, dxQuerySelect $objSelect = null) {
         if ($this->objSubQueryDefinition) {
             $objBuilder->SetVirtualNode($this->strName, $this->objSubQueryDefinition);
@@ -4081,19 +5426,38 @@ class dxQueryVirtualNode extends dxQueryNode {
             }
         }
     }
+
+    /**
+     * @return string
+     */
     public function GetAttributeName() {
         return $this->strName;
     }
 }
 
 abstract class dxQueryClause extends dxBaseClass {
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed
+     */
     abstract public function UpdateQueryBuilder(dxQueryBuilder $objBuilder);
+
+    /**
+     * @return mixed
+     */
     abstract public function __toString();
 }
 
 class dxQueryOrderBy extends dxQueryClause {
     /** @var dxQueryNode[]  */
     protected $objNodeArray;
+
+    /**
+     * @param $mixParameterArray
+     * @return array|dxQueryNode[]
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     protected function CollapseNodes($mixParameterArray) {
         /** @var dxQueryNode[] $objNodeArray */
         $objNodeArray = array();
@@ -4123,9 +5487,22 @@ class dxQueryOrderBy extends dxQueryClause {
         else
             throw new dxCallerException('No parameters passed in to OrderBy clause', 3);
     }
+
+    /**
+     * dxQueryOrderBy constructor.
+     * @param $mixParameterArray
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     public function __construct($mixParameterArray) {
         $this->objNodeArray = $this->CollapseNodes($mixParameterArray);
     }
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed|void
+     * @throws dxCallerException
+     */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
         $intLength = ProjectFunctions::getDataSetSize($this->objNodeArray);
         for ($intIndex = 0; $intIndex < $intLength; $intIndex++) {
@@ -4185,23 +5562,47 @@ class dxQueryOrderBy extends dxQueryClause {
         return implode(',', $strOrderByArray);
     }
 
+    /**
+     * @return mixed|string
+     */
     public function __toString() {
         return 'dxQueryOrderBy Clause';
     }
 }
 
 class dxQueryDistinct extends dxQueryClause {
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed|void
+     */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
         $objBuilder->SetDistinctFlag();
     }
+
+    /**
+     * @return mixed|string
+     */
     public function __toString() {
         return 'dxQueryDistinct Clause';
     }
 }
 
 class dxQueryLimitInfo extends dxQueryClause {
+    /**
+     * @var mixed
+     */
     protected $intMaxRowCount;
+    /**
+     * @var mixed
+     */
     protected $intOffset;
+
+    /**
+     * dxQueryLimitInfo constructor.
+     * @param $intMaxRowCount
+     * @param int $intOffset
+     * @throws dxCallerException
+     */
     public function __construct($intMaxRowCount, $intOffset = 0) {
         try {
             $this->intMaxRowCount = dxType::Cast($intMaxRowCount, dxType::Integer);
@@ -4211,16 +5612,30 @@ class dxQueryLimitInfo extends dxQueryClause {
             throw $objExc;
         }
     }
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed|void
+     */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
         if ($this->intOffset)
             $objBuilder->SetLimitInfo($this->intOffset . ',' . $this->intMaxRowCount);
         else
             $objBuilder->SetLimitInfo($this->intMaxRowCount);
     }
+
+    /**
+     * @return mixed|string
+     */
     public function __toString() {
         return 'dxQueryLimitInfo Clause';
     }
 
+    /**
+     * @param string $strName
+     * @return mixed
+     * @throws dxCallerException
+     */
     public function __get($strName) {
         switch ($strName) {
             case 'MaxRowCount':
@@ -4239,10 +5654,24 @@ class dxQueryLimitInfo extends dxQueryClause {
 }
 
 class dxQueryExpandVirtualNode extends dxQueryClause {
+    /**
+     * @var dxQueryVirtualNode
+     */
     protected $objNode;
+
+    /**
+     * dxQueryExpandVirtualNode constructor.
+     * @param dxQueryVirtualNode $objNode
+     */
     public function __construct(dxQueryVirtualNode $objNode) {
         $this->objNode = $objNode;
     }
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed|void
+     * @throws dxCallerException
+     */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
         try {
             $objBuilder->AddSelectFunction(null, $this->objNode->GetColumnAlias($objBuilder), $this->objNode->GetAttributeName());
@@ -4251,6 +5680,10 @@ class dxQueryExpandVirtualNode extends dxQueryClause {
             throw $objExc;
         }
     }
+
+    /**
+     * @return mixed|string
+     */
     public function __toString() {
         return 'dxQueryExpandVirtualNode Clause';
     }
@@ -4259,9 +5692,23 @@ class dxQueryExpandVirtualNode extends dxQueryClause {
 class dxQueryExpand extends dxQueryClause {
     /** @var dxQueryNode */
     protected $objNode;
+    /**
+     * @var dxQueryCondition
+     */
     protected $objJoinCondition;
+    /**
+     * @var dxQuerySelect
+     */
     protected $objSelect;
 
+    /**
+     * dxQueryExpand constructor.
+     * @param $objNode
+     * @param dxQueryCondition|null $objJoinCondition
+     * @param dxQuerySelect|null $objSelect
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     public function __construct($objNode, dxQueryCondition $objJoinCondition = null, dxQuerySelect $objSelect  = null) {
         // Check against root and table dxQueryNodes
         if ($objNode instanceof dxQueryAssociationNode)
@@ -4275,9 +5722,19 @@ class dxQueryExpand extends dxQueryClause {
         $this->objJoinCondition = $objJoinCondition;
         $this->objSelect = $objSelect;
     }
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed|void
+     * @throws dxCallerException
+     */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
         $this->objNode->GetColumnAlias($objBuilder, true, $this->objJoinCondition, $this->objSelect);
     }
+
+    /**
+     * @return mixed|string
+     */
     public function __toString() {
         return 'dxQueryExpand Clause';
     }
@@ -4288,18 +5745,40 @@ class dxQueryExpand extends dxQueryClause {
  * to expand column names. Standard SQL has limited Having capabilities, but many SQL engines have useful extensions.
  */
 class dxQueryHavingClause extends dxQueryClause {
+    /**
+     * @var dxQuerySubQueryNode
+     */
     protected $objNode;
+
+    /**
+     * dxQueryHavingClause constructor.
+     * @param dxQuerySubQueryNode $objSubQueryDefinition
+     */
     public function __construct(dxQuerySubQueryNode $objSubQueryDefinition) {
         $this->objNode = $objSubQueryDefinition;
     }
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed|void
+     * @throws dxCallerException
+     */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
         $objBuilder->AddHavingItem (
             $this->objNode->GetColumnAlias($objBuilder)
         );
     }
+
+    /**
+     * @return mixed
+     */
     public function GetAttributeName() {
         return $this->strName;
     }
+
+    /**
+     * @return mixed|string
+     */
     public function __toString() {
         return "Having Clause";
     }
@@ -4309,8 +5788,22 @@ class dxQueryHavingClause extends dxQueryClause {
 abstract class dxQueryAggregationClause extends dxQueryClause {
     /** @var dxQueryNode */
     protected $objNode;
+    /**
+     * @var
+     */
     protected $strAttributeName;
+    /**
+     * @var
+     */
     protected $strFunctionName;
+
+    /**
+     * dxQueryAggregationClause constructor.
+     * @param $objNode
+     * @param $strAttributeName
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     public function __construct($objNode, $strAttributeName) {
         // Check against root and table dxQueryNodes
         if ($objNode instanceof dxQueryAssociationNode)
@@ -4323,41 +5816,82 @@ abstract class dxQueryAggregationClause extends dxQueryClause {
         $this->objNode = $objNode;
         $this->strAttributeName = $strAttributeName;
     }
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed|void
+     * @throws dxCallerException
+     */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
         $objBuilder->AddSelectFunction($this->strFunctionName, $this->objNode->GetColumnAlias($objBuilder), $this->strAttributeName);
     }
 }
 
 class dxQueryCount extends dxQueryAggregationClause {
+    /**
+     * @var string
+     */
     protected $strFunctionName = 'COUNT';
+
+    /**
+     * @return mixed|string
+     */
     public function __toString() {
         return 'dxQueryCount Clause';
     }
 }
 
 class dxQuerySum extends dxQueryAggregationClause {
+    /**
+     * @var string
+     */
     protected $strFunctionName = 'SUM';
+
+    /**
+     * @return mixed|string
+     */
     public function __toString() {
         return 'dxQuerySum Clause';
     }
 }
 
 class dxQueryMinimum extends dxQueryAggregationClause {
+    /**
+     * @var string
+     */
     protected $strFunctionName = 'MIN';
+
+    /**
+     * @return mixed|string
+     */
     public function __toString() {
         return 'dxQueryMinimum Clause';
     }
 }
 
 class dxQueryMaximum extends dxQueryAggregationClause {
+    /**
+     * @var string
+     */
     protected $strFunctionName = 'MAX';
+
+    /**
+     * @return mixed|string
+     */
     public function __toString() {
         return 'dxQueryMaximum Clause';
     }
 }
 
 class dxQueryAverage extends dxQueryAggregationClause {
+    /**
+     * @var string
+     */
     protected $strFunctionName = 'AVG';
+
+    /**
+     * @return mixed|string
+     */
     public function __toString() {
         return 'dxQueryAverage Clause';
     }
@@ -4366,7 +5900,17 @@ class dxQueryAverage extends dxQueryAggregationClause {
 class dxQueryExpandAsArray extends dxQueryClause {
     /** @var dxQueryNode|dxQueryAssociationNode */
     protected $objNode;
+    /**
+     * @var dxQuerySelect
+     */
     protected $objSelect;
+
+    /**
+     * dxQueryExpandAsArray constructor.
+     * @param $objNode
+     * @param dxQuerySelect|null $objSelect
+     * @throws dxCallerException
+     */
     public function __construct($objNode, dxQuerySelect $objSelect = null) {
         // Ensure that this is an dxQueryAssociationNode
         if ((!($objNode instanceof dxQueryAssociationNode)) && (!($objNode instanceof dxQueryReverseReferenceNode)))
@@ -4375,6 +5919,12 @@ class dxQueryExpandAsArray extends dxQueryClause {
         $this->objNode = $objNode;
         $this->objSelect = $objSelect;
     }
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed|void
+     * @throws dxCallerException
+     */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
         if ($this->objNode instanceof dxQueryAssociationNode)
             $this->objNode->_ChildTableNode->GetColumnAlias($objBuilder, true, null, $this->objSelect);
@@ -4382,6 +5932,10 @@ class dxQueryExpandAsArray extends dxQueryClause {
             $this->objNode->GetColumnAlias($objBuilder, true, null, $this->objSelect);
         $objBuilder->AddExpandAsArrayNode($this->objNode);
     }
+
+    /**
+     * @return mixed|string
+     */
     public function __toString() {
         return 'dxQueryExpandAsArray Clause';
     }
@@ -4390,6 +5944,13 @@ class dxQueryExpandAsArray extends dxQueryClause {
 class dxQueryGroupBy extends dxQueryClause {
     /** @var dxQueryBaseNode[] */
     protected $objNodeArray;
+
+    /**
+     * @param $mixParameterArray
+     * @return array
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     protected function CollapseNodes($mixParameterArray) {
         $objNodeArray = array();
         foreach ($mixParameterArray as $mixParameter) {
@@ -4419,40 +5980,78 @@ class dxQueryGroupBy extends dxQueryClause {
         else
             throw new dxCallerException('No parameters passed in to Expand clause', 3);
     }
+
+    /**
+     * dxQueryGroupBy constructor.
+     * @param $mixParameterArray
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     public function __construct($mixParameterArray) {
         $this->objNodeArray = $this->CollapseNodes($mixParameterArray);
     }
+
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed|void
+     */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
         $intLength = ProjectFunctions::getDataSetSize($this->objNodeArray);
         for ($intIndex = 0; $intIndex < $intLength; $intIndex++)
             $objBuilder->AddGroupByItem($this->objNodeArray[$intIndex]->GetColumnAlias($objBuilder));
     }
+
+    /**
+     * @return mixed|string
+     */
     public function __toString() {
         return 'dxQueryGroupBy Clause';
     }
 }
 
 class dxQuerySelect extends dxQueryClause {
+    /**
+     * @var array
+     */
     protected $arrNodeObj = array();
 
+    /**
+     * dxQuerySelect constructor.
+     * @param $arrNodeObj
+     */
     public function __construct($arrNodeObj) {
         $this->arrNodeObj = $arrNodeObj;
     }
 
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @return mixed|void
+     */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
     }
 
+    /**
+     * @param dxQueryBuilder $objBuilder
+     * @param $strTableName
+     * @param $strAliasPrefix
+     */
     public function AddSelectItems(dxQueryBuilder $objBuilder, $strTableName, $strAliasPrefix) {
         foreach ($this->arrNodeObj as $objNode) {
             $objBuilder->AddSelectItem($strTableName, $objNode->_Name, $strAliasPrefix . $objNode->_Name);
         }
     }
 
+    /**
+     * @param dxQuerySelect|null $objSelect
+     */
     public function Merge(dxQuerySelect $objSelect = null) {
         if ($objSelect) foreach ($objSelect->arrNodeObj as $objNode)
             array_push($this->arrNodeObj, $objNode);
     }
 
+    /**
+     * @return mixed|string
+     */
     public function __toString() {
         return 'dxQuerySelectColumn Clause';
     }
@@ -4466,32 +6065,97 @@ class dxQuerySelect extends dxQueryClause {
  * @property dxQueryBaseNode $ExpandAsArrayNode
  */
 class dxQueryBuilder extends dxBaseClass {
+    /**
+     * @var array
+     */
     protected $strSelectArray;
+    /**
+     * @var array
+     */
     protected $strColumnAliasArray;
+    /**
+     * @var int
+     */
     protected $intColumnAliasCount = 0;
+    /**
+     * @var array
+     */
     protected $strTableAliasArray;
+    /**
+     * @var int
+     */
     protected $intTableAliasCount = 0;
+    /**
+     * @var array
+     */
     protected $strFromArray;
+    /**
+     * @var array
+     */
     protected $strJoinArray;
+    /**
+     * @var array
+     */
     protected $strJoinConditionArray;
+    /**
+     * @var array
+     */
     protected $strWhereArray;
+    /**
+     * @var array
+     */
     protected $strOrderByArray;
+    /**
+     * @var array
+     */
     protected $strGroupByArray;
+    /**
+     * @var array
+     */
     protected $strHavingArray;
     /** @var dxQueryVirtualNode[] */
     protected $objVirtualNodeArray;
+    /**
+     * @var
+     */
     protected $strLimitInfo;
+    /**
+     * @var
+     */
     protected $blnDistinctFlag;
+    /**
+     * @var
+     */
     protected $objExpandAsArrayNode;
 
+    /**
+     * @var
+     */
     protected $blnCountOnlyFlag;
 
+    /**
+     * @var dxDatabaseBase
+     */
     protected $objDatabase;
+    /**
+     * @var
+     */
     protected $strRootTableName;
 
+    /**
+     * @var string
+     */
     protected $strEscapeIdentifierBegin;
+    /**
+     * @var string
+     */
     protected $strEscapeIdentifierEnd;
 
+    /**
+     * @param $strTableName
+     * @param $strColumnName
+     * @param $strFullAlias
+     */
     public function AddSelectItem($strTableName, $strColumnName, $strFullAlias) {
         $strTableAlias = $this->GetTableAlias($strTableName);
 
@@ -4508,12 +6172,20 @@ class dxQueryBuilder extends dxBaseClass {
             $this->strEscapeIdentifierBegin, $strColumnAlias, $this->strEscapeIdentifierEnd);
     }
 
+    /**
+     * @param $strFunctionName
+     * @param $strColumnName
+     * @param $strFullAlias
+     */
     public function AddSelectFunction($strFunctionName, $strColumnName, $strFullAlias) {
         $this->strSelectArray[$strFullAlias] = sprintf('%s(%s) AS %s__%s%s',
             $strFunctionName, $strColumnName,
             $this->strEscapeIdentifierBegin, $strFullAlias, $this->strEscapeIdentifierEnd);
     }
 
+    /**
+     * @param $strTableName
+     */
     public function AddFromItem($strTableName) {
         $strTableAlias = $this->GetTableAlias($strTableName);
 
@@ -4522,6 +6194,10 @@ class dxQueryBuilder extends dxBaseClass {
             $this->strEscapeIdentifierBegin, $strTableAlias, $this->strEscapeIdentifierEnd);
     }
 
+    /**
+     * @param $strTableName
+     * @return mixed|string
+     */
     public function GetTableAlias($strTableName) {
         if (!array_key_exists($strTableName, $this->strTableAliasArray)) {
             $strTableAlias = 't' . $this->intTableAliasCount++;
@@ -4532,6 +6208,15 @@ class dxQueryBuilder extends dxBaseClass {
         }
     }
 
+    /**
+     * @param $strJoinTableName
+     * @param $strJoinTableAlias
+     * @param $strTableName
+     * @param $strColumnName
+     * @param $strLinkedColumnName
+     * @param dxQueryCondition|null $objJoinCondition
+     * @throws dxCallerException
+     */
     public function AddJoinItem($strJoinTableName, $strJoinTableAlias, $strTableName, $strColumnName, $strLinkedColumnName, dxQueryCondition $objJoinCondition = null) {
         $strJoinItem = sprintf('LEFT JOIN %s%s%s AS %s%s%s ON %s%s%s.%s%s%s = %s%s%s.%s%s%s',
             $this->strEscapeIdentifierBegin, $strJoinTableName, $this->strEscapeIdentifierEnd,
@@ -4603,6 +6288,12 @@ class dxQueryBuilder extends dxBaseClass {
             $this->strJoinConditionArray[$strJoinIndex] = $strConditionClause;
     }
 
+    /**
+     * @param $strJoinTableName
+     * @param $strJoinTableAlias
+     * @param dxQueryCondition $objJoinCondition
+     * @throws dxCallerException
+     */
     public function AddJoinCustomItem($strJoinTableName, $strJoinTableAlias, dxQueryCondition $objJoinCondition) {
         $strJoinItem = sprintf('LEFT JOIN %s%s%s AS %s%s%s ON ',
             $this->strEscapeIdentifierBegin, $strJoinTableName, $this->strEscapeIdentifierEnd,
@@ -4620,43 +6311,76 @@ class dxQueryBuilder extends dxBaseClass {
         $this->strJoinArray[$strJoinItem] = $strJoinItem;
     }
 
+    /**
+     * @param $strSql
+     */
     public function AddJoinCustomSqlItem($strSql) {
         $this->strJoinArray[$strSql] = $strSql;
     }
 
+    /**
+     * @param $strItem
+     */
     public function AddWhereItem($strItem) {
         array_push($this->strWhereArray, $strItem);
     }
 
+    /**
+     * @param $strItem
+     */
     public function AddOrderByItem($strItem) {
         array_push($this->strOrderByArray, $strItem);
     }
 
+    /**
+     * @param $strItem
+     */
     public function AddGroupByItem($strItem) {
         array_push($this->strGroupByArray, $strItem);
     }
 
+    /**
+     * @param $strItem
+     */
     public function AddHavingItem ($strItem) {
         array_push($this->strHavingArray, $strItem);
     }
 
 
+    /**
+     * @param $strLimitInfo
+     */
     public function SetLimitInfo($strLimitInfo) {
         $this->strLimitInfo = $strLimitInfo;
     }
 
+    /**
+     *
+     */
     public function SetDistinctFlag() {
         $this->blnDistinctFlag = true;
     }
 
+    /**
+     *
+     */
     public function SetCountOnlyFlag() {
         $this->blnCountOnlyFlag = true;
     }
 
+    /**
+     * @param $strName
+     * @param dxQuerySubQueryNode $objNode
+     */
     public function SetVirtualNode($strName, dxQuerySubQueryNode $objNode) {
         $this->objVirtualNodeArray[trim(strtolower($strName))] = $objNode;
     }
 
+    /**
+     * @param $strName
+     * @return dxQueryVirtualNode|mixed
+     * @throws dxCallerException
+     */
     public function GetVirtualNode($strName) {
         $strName = trim(strtolower($strName));
         if (array_key_exists($strName, $this->objVirtualNodeArray))
@@ -4664,6 +6388,9 @@ class dxQueryBuilder extends dxBaseClass {
         else throw new dxCallerException('Undefined Virtual Node: ' . $strName);
     }
 
+    /**
+     * @param $objNode
+     */
     public function AddExpandAsArrayNode($objNode) {
         /** @var dxQueryReverseReferenceNode|dxQueryAssociationNode $objNode */
         // build child nodes and find top node of given node
@@ -4681,6 +6408,11 @@ class dxQueryBuilder extends dxBaseClass {
         }
     }
 
+    /**
+     * dxQueryBuilder constructor.
+     * @param dxDatabaseBase $objDatabase
+     * @param $strRootTableName
+     */
     public function __construct(dxDatabaseBase $objDatabase, $strRootTableName) {
         $this->objDatabase = $objDatabase;
         $this->strEscapeIdentifierBegin = $objDatabase->EscapeIdentifierBegin;
@@ -4700,6 +6432,9 @@ class dxQueryBuilder extends dxBaseClass {
         $this->objVirtualNodeArray = array();
     }
 
+    /**
+     * @return string
+     */
     public function GetStatement() {
         // SELECT Clause
         if ($this->blnCountOnlyFlag) {
@@ -4753,7 +6488,11 @@ class dxQueryBuilder extends dxBaseClass {
     }
 
 
-
+    /**
+     * @param string $strName
+     * @return array|dxDatabaseBase|mixed
+     * @throws dxCallerException
+     */
     public function __get($strName) {
         switch ($strName) {
             case 'Database':
@@ -4782,16 +6521,32 @@ class dxQueryBuilder extends dxBaseClass {
  * 	only build a condition clause appropriate for a conditional expansion.
  */
 class dxQueryPartialQueryBuilder extends dxQueryBuilder {
+    /**
+     * @var dxQueryBuilder
+     */
     protected $objParentBuilder;
+
+    /**
+     * dxQueryPartialQueryBuilder constructor.
+     * @param dxQueryBuilder $objBuilder
+     */
     public function __construct(dxQueryBuilder $objBuilder) {
         parent::__construct($objBuilder->objDatabase, $objBuilder->strRootTableName);
         $this->objParentBuilder = $objBuilder;
         $this->strColumnAliasArray = &$objBuilder->strColumnAliasArray;
         $this->strTableAliasArray = &$objBuilder->strTableAliasArray;
     }
+
+    /**
+     * @return string
+     */
     public function GetWhereStatement() {
         return implode(' ', $this->strWhereArray);
     }
+
+    /**
+     * @return string
+     */
     public function GetFromStatement() {
         return implode(' ', $this->strFromArray) . ' ' . implode(' ', $this->strJoinArray);
     }
@@ -4818,21 +6573,63 @@ function dxDateTimeErrorHandler() {}
  * For legacy PHP users (PHP < 5.2.0), please refer to dxDateTime.legacy
  */
 class dxDateTime extends DateTime {
+    /**
+     *
+     */
     const Now = 'now';
+    /**
+     *
+     */
     const FormatIso = 'YYYY-MM-DD hhhh:mm:ss';
+    /**
+     *
+     */
     const FormatIsoCompressed = 'YYYYMMDDhhhhmmss';
+    /**
+     *
+     */
     const FormatDisplayDate = 'MMM DD YYYY';
+    /**
+     *
+     */
     const FormatDisplayDateFull = 'DDD, MMMM D, YYYY';
+    /**
+     *
+     */
     const FormatDisplayDateTime = 'MMM DD YYYY hh:mm zz';
+    /**
+     *
+     */
     const FormatDisplayDateTimeFull = 'DDDD, MMMM D, YYYY, h:mm:ss zz';
+    /**
+     *
+     */
     const FormatDisplayTime = 'hh:mm:ss zz';
+    /**
+     *
+     */
     const FormatRfc822 = 'DDD, DD MMM YYYY hhhh:mm:ss ttt';
 
+    /**
+     *
+     */
     const FormatSoap = 'YYYY-MM-DDThhhh:mm:ss';
 
+    /**
+     *
+     */
     const UnknownType = 0;
+    /**
+     *
+     */
     const DateOnlyType = 1;
+    /**
+     *
+     */
     const TimeOnlyType = 2;
+    /**
+     *
+     */
     const DateAndTimeType = 3;
 
     /**
@@ -4864,26 +6661,59 @@ class dxDateTime extends DateTime {
         return $dttToReturn;
     }
 
+    /**
+     * @var bool
+     */
     protected $blnDateNull = true;
+    /**
+     * @var bool
+     */
     protected $blnTimeNull = true;
 
+    /**
+     * @param null $strFormat
+     * @return string
+     * @throws dxCallerException
+     */
     public static function NowToString($strFormat = null) {
         $dttNow = new dxDateTime(dxDateTime::Now);
         return $dttNow->qFormat($strFormat);
     }
+
+    /**
+     * @return bool
+     */
     public function IsDateNull() {
         return $this->blnDateNull;
     }
+
+    /**
+     * @return bool
+     */
     public function IsNull() {
         return ($this->blnDateNull && $this->blnTimeNull);
     }
+
+    /**
+     * @return bool
+     */
     public function IsTimeNull() {
         return $this->blnTimeNull;
     }
+
+    /**
+     * @param $strFormat
+     * @return string
+     */
     public function PhpDate($strFormat) {
         // This just makes a call to format
         return parent::format($strFormat);
     }
+
+    /**
+     * @param $dttArray
+     * @return array|null
+     */
     public function GetSoapDateTimeArray($dttArray) {
         if (!$dttArray)
             return null;
@@ -4903,6 +6733,13 @@ class dxDateTime extends DateTime {
         return new dxDateTime(date('Y-m-d H:i:s', $intTimestamp), $objTimeZone);
     }
 
+    /**
+     * dxDateTime constructor.
+     * @param null $mixValue
+     * @param DateTimeZone|null $objTimeZone
+     * @param int $intType
+     * @throws dxCallerException
+     */
     public function __construct($mixValue = null, DateTimeZone $objTimeZone = null, $intType = dxDateTime::UnknownType) {
         switch ($intType) {
             case dxDateTime::DateOnlyType:
@@ -5050,11 +6887,22 @@ class dxDateTime extends DateTime {
     }
 
     /* The Following Methods are in place because of a bug in PHP 5.2.0 */
+    /**
+     * @var
+     */
     protected $strSerializedData;
+
+    /**
+     * @return array
+     */
     public function __sleep() {
         $this->strSerializedData = parent::format(DateTime::ISO8601);
         return array('blnDateNull', 'blnTimeNull', 'strSerializedData');
     }
+
+    /**
+     *
+     */
     public function __wakeup() {
         parent::__construct($this->strSerializedData);
     }
@@ -5237,6 +7085,15 @@ class dxDateTime extends DateTime {
         return $strToReturn;
     }
 
+    /**
+     * @param int $intHour
+     * @param null $intMinute
+     * @param null $intSecond
+     * @param null $intMicroSecond
+     * @return $this|DateTime|false
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     public function setTime($intHour, $intMinute = null, $intSecond = null, $intMicroSecond = null) {
         // If HOUR or MINUTE is NULL...
         if (is_null($intHour) || is_null($intMinute)) {
@@ -5257,6 +7114,14 @@ class dxDateTime extends DateTime {
         return $this;
     }
 
+    /**
+     * @param int $intYear
+     * @param int $intMonth
+     * @param int $intDay
+     * @return $this|DateTime
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
     public function setDate($intYear, $intMonth, $intDay) {
         $intYear = dxType::Cast($intYear, dxType::Integer);
         $intMonth = dxType::Cast($intMonth, dxType::Integer);
@@ -5266,6 +7131,9 @@ class dxDateTime extends DateTime {
         return $this;
     }
 
+    /**
+     *
+     */
     protected function ReinforceNullProperties() {
         if ($this->blnDateNull)
             parent::setDate(2000, 1, 1);
@@ -5294,6 +7162,11 @@ class dxDateTime extends DateTime {
         } catch (Exception $objExc) {}
     }
 
+    /**
+     * @param dxDateTime $dttCompare
+     * @return bool
+     * @throws dxCallerException
+     */
     public function IsEqualTo(dxDateTime $dttCompare) {
         // All comparison operations MUST have operands with matching Date Nullstates
         if ($this->blnDateNull != $dttCompare->blnDateNull)
@@ -5315,6 +7188,11 @@ class dxDateTime extends DateTime {
         }
     }
 
+    /**
+     * @param dxDateTime $dttCompare
+     * @return bool
+     * @throws dxCallerException
+     */
     public function IsEarlierThan(dxDateTime $dttCompare) {
         // All comparison operations MUST have operands with matching Date Nullstates
         if ($this->blnDateNull != $dttCompare->blnDateNull)
@@ -5336,6 +7214,11 @@ class dxDateTime extends DateTime {
         }
     }
 
+    /**
+     * @param dxDateTime $dttCompare
+     * @return bool
+     * @throws dxCallerException
+     */
     public function IsEarlierOrEqualTo(dxDateTime $dttCompare) {
         // All comparison operations MUST have operands with matching Date Nullstates
         if ($this->blnDateNull != $dttCompare->blnDateNull)
@@ -5357,6 +7240,11 @@ class dxDateTime extends DateTime {
         }
     }
 
+    /**
+     * @param dxDateTime $dttCompare
+     * @return bool
+     * @throws dxCallerException
+     */
     public function IsLaterThan(dxDateTime $dttCompare) {
         // All comparison operations MUST have operands with matching Date Nullstates
         if ($this->blnDateNull != $dttCompare->blnDateNull)
@@ -5378,6 +7266,11 @@ class dxDateTime extends DateTime {
         }
     }
 
+    /**
+     * @param dxDateTime $dttCompare
+     * @return bool
+     * @throws dxCallerException
+     */
     public function IsLaterOrEqualTo(dxDateTime $dttCompare) {
         // All comparison operations MUST have operands with matching Date Nullstates
         if ($this->blnDateNull != $dttCompare->blnDateNull)
@@ -5399,11 +7292,20 @@ class dxDateTime extends DateTime {
         }
     }
 
+    /**
+     * @param dxDateTime $dttDateTime
+     * @return QDateTimeSpan
+     */
     public function Difference(dxDateTime $dttDateTime) {
         $intDifference = $this->Timestamp - $dttDateTime->Timestamp;
         return new QDateTimeSpan($intDifference);
     }
 
+    /**
+     * @param DateInterval $dtsSpan
+     * @return $this|DateTime
+     * @throws dxCallerException
+     */
     public function Add($dtsSpan){
         if (!$dtsSpan instanceof QDateTimeSpan) {
             throw new dxCallerException("Can only add QDateTimeSpan objects");
@@ -5416,41 +7318,74 @@ class dxDateTime extends DateTime {
         return $this;
     }
 
+    /**
+     * @param $intSeconds
+     * @return $this
+     */
     public function AddSeconds($intSeconds){
         $this->Second += $intSeconds;
         return $this;
     }
 
+    /**
+     * @param $intMinutes
+     * @return $this
+     */
     public function AddMinutes($intMinutes){
         $this->Minute += $intMinutes;
         return $this;
     }
 
+    /**
+     * @param $intHours
+     * @return $this
+     */
     public function AddHours($intHours){
         $this->Hour += $intHours;
         return $this;
     }
 
+    /**
+     * @param $intDays
+     * @return $this
+     */
     public function AddDays($intDays){
         $this->Day += $intDays;
         return $this;
     }
 
+    /**
+     * @param $intMonths
+     * @return $this
+     */
     public function AddMonths($intMonths){
         $this->Month += $intMonths;
         return $this;
     }
 
+    /**
+     * @param $intYears
+     * @return $this
+     */
     public function AddYears($intYears){
         $this->Year += $intYears;
         return $this;
     }
 
+    /**
+     * @param string $mixValue
+     * @return $this|DateTime
+     */
     public function Modify($mixValue) {
         parent::modify($mixValue);
         return $this;
     }
 
+    /**
+     * @param $strName
+     * @return dxDateTime|string
+     * @throws dxUndefinedPropertyException
+     */
     public function __get($strName) {
         switch ($strName) {
             case 'Month':
@@ -5520,6 +7455,15 @@ class dxDateTime extends DateTime {
         }
     }
 
+    /**
+     * @param $strName
+     * @param $mixValue
+     * @return mixed
+     * @throws dxCallerException
+     * @throws dxDateTimeNullException
+     * @throws dxInvalidCastException
+     * @throws dxUndefinedPropertyException
+     */
     public function __set($strName, $mixValue) {
         try {
             switch ($strName) {
@@ -5616,14 +7560,42 @@ class dxDateTime extends DateTime {
 //endregion
 
 //region Component controller related
+/**
+ * Class ProjectComponentController
+ * Responsible for managing the base-level behaviour of all server-side component scripts
+ */
 class ComponentController_base {
+    /**
+     * @var string
+     */
     protected $ComponentNameStr;
+    /**
+     * @var array
+     */
     protected $ResultArray;
+    /**
+     * @var array
+     */
     protected $InputParameterArray = [];
+    /**
+     * @var bool
+     */
     protected $RequireCleanInputBool = true;
+    /**
+     * @var
+     */
     protected $CurrentClientAuthenticationToken;
+    /**
+     * @var string
+     */
     protected $CurrentUserAgentStr = '';
-    public function __construct($ComponentNameStr = 'Component',$RequireCleanInputBool = true) {
+
+    /**
+     * ComponentController_base constructor.
+     * @param string $ComponentNameStr
+     * @param bool $RequireCleanInputBool
+     */
+    public function __construct($ComponentNameStr = 'Component', $RequireCleanInputBool = true) {
         $this->ComponentNameStr = $ComponentNameStr;
         $this->ResultArray = array();
         $this->setReturnValue("Result","Failed");
@@ -5643,6 +7615,12 @@ class ComponentController_base {
         $this->RequireCleanInputBool = $RequireCleanInputBool;
         $this->executeComponentFunction();
     }
+
+    /**
+     * @param null $Key
+     * @param string $Value
+     * @return bool
+     */
     protected function setReturnValue($Key = null, $Value = "") {
         if (is_null($Key)) {
             return false;
@@ -5650,6 +7628,10 @@ class ComponentController_base {
         $this->ResultArray[$Key] = $Value;
         return true;
     }
+
+    /**
+     *
+     */
     protected function processAuthenticationToken() {
         $this->CurrentClientAuthenticationToken = $this->getInputValue("AuthenticationToken");
 //        if (is_null($this->CurrentClientAuthenticationToken)) {
@@ -5668,20 +7650,37 @@ class ComponentController_base {
             $this->checkValidAuthenticationToken($ClientAuthenticationTokenObj);
         }
     }
+
+    /**
+     * @return bool
+     */
     protected function checkIsNative() {
         return !is_null($this->getInputValue("is_native"));
     }
+
+    /**
+     * @param string $Token
+     */
     protected function registerAuthenticationTokenInSession($Token = "") {
         $this->CurrentClientAuthenticationToken = $Token;
         $this->setReturnValue("AuthenticationToken",$Token);
         $_SESSION["AuthenticationToken"] = $Token;
     }
+
+    /**
+     * @return null
+     */
     protected function checkAuthenticationTokenInSession() {
         if (isset($_SESSION["AuthenticationToken"])) {
             return $_SESSION["AuthenticationToken"];
         }
         return null;
     }
+
+    /**
+     * @param ClientAuthenticationToken|null $ClientAuthenticationTokenObj
+     * @throws dxUndefinedPrimaryKeyException
+     */
     protected function checkValidAuthenticationToken(ClientAuthenticationToken $ClientAuthenticationTokenObj = null) {
         if (is_null($ClientAuthenticationTokenObj)) {
             $this->initializeNewAuthenticationToken();
@@ -5722,6 +7721,10 @@ class ComponentController_base {
         }
         $this->updateAuthenticationToken($ClientAuthenticationTokenObj);
     }
+
+    /**
+     * @param ClientAuthenticationToken|null $ClientAuthenticationTokenObj
+     */
     protected function updateAuthenticationToken(ClientAuthenticationToken $ClientAuthenticationTokenObj = null) {
         if (is_null($ClientAuthenticationTokenObj)) {
             $this->initializeNewAuthenticationToken();
@@ -5738,6 +7741,10 @@ class ComponentController_base {
 
         }
     }
+
+    /**
+     * @param ClientAuthenticationToken|null $ClientAuthenticationTokenObj
+     */
     protected function regenerateAuthenticationToken(ClientAuthenticationToken $ClientAuthenticationTokenObj = null) {
         if (is_null($ClientAuthenticationTokenObj)) {
             $this->initializeNewAuthenticationToken();
@@ -5756,6 +7763,10 @@ class ComponentController_base {
 
         }
     }
+
+    /**
+     * @return bool
+     */
     protected function initializeNewAuthenticationToken() {
         // JGL: We need to create a new auth token that will initially not be linked to an account
         $ClientAuthenticationTokenObj = new ClientAuthenticationToken();
@@ -5787,6 +7798,10 @@ class ComponentController_base {
             return false;
         }
     }
+
+    /**
+     *
+     */
     public function checkComponentAccess() {
         $this->setReturnValue("Result","Success");
         $this->setReturnValue("Message","Component ready");
@@ -5796,6 +7811,10 @@ class ComponentController_base {
             $this->presentOutput();
         }
     }
+
+    /**
+     *
+     */
     public function processInput() {
         if (!$this->RequireCleanInputBool) {
             $this->InputParameterArray = $_POST;
@@ -5807,7 +7826,13 @@ class ComponentController_base {
             $this->InputParameterArray[$key] = $HTMLPurifierObj->purify($value);
         }
     }
-    public function getInputValue($Value = null,$ForceNumeric = false) {
+
+    /**
+     * @param null $Value
+     * @param bool $ForceNumeric
+     * @return int|mixed|null
+     */
+    public function getInputValue($Value = null, $ForceNumeric = false) {
         if (is_null($Value)) {
             if ($ForceNumeric) {
                 return -1;
@@ -5822,6 +7847,10 @@ class ComponentController_base {
         }
         return $this->InputParameterArray[$Value];
     }
+
+    /**
+     *
+     */
     public function executeComponentFunction() {
         $FunctionName = $this->getInputValue("f");
         if (is_null($FunctionName)) {
@@ -5837,6 +7866,10 @@ class ComponentController_base {
             $this->presentOutput();
         }
     }
+
+    /**
+     *
+     */
     public function presentOutput() {
         die(json_encode($this->ResultArray));
     }
@@ -5913,24 +7946,54 @@ abstract class AccessManager_Base {
     }
 }
 abstract class AccessOperation {
+    /**
+     *
+     */
     const CREATE_STR = 'CREATE';
+    /**
+     *
+     */
     const READ_STR = 'READ';
+    /**
+     *
+     */
     const UPDATE_STR = 'UPDATE';
+    /**
+     *
+     */
     const DELETE_STR = 'DELETE';
 }
 //endregion
 
 //region Native support related
 abstract class NativeDevicePlatform {
+    /**
+     *
+     */
     const IOS_STR = 'IOS';
+    /**
+     *
+     */
     const ANDROID_STR = 'ANDROID';
 }
 abstract class NativeDevicePushRegistrationStatus {
+    /**
+     *
+     */
     const ACTIVE_STR = 'ACTIVE';
+    /**
+     *
+     */
     const INACTIVE_STR = 'INACTIVE';
 }
 abstract class NativePushPriority {
+    /**
+     *
+     */
     const NORMAL_STR = 'normal';
+    /**
+     *
+     */
     const HIGH_STR = 'high';
 }
 //endregion

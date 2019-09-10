@@ -3,6 +3,9 @@ require('../../../divblox/divblox.php');
 if (!isset($_POST["f"])) {
     die(json_encode(array("Result" => "Failed","Message" => "Invalid function")));
 }
+/**
+ * Determine which server function to call based on the input parameter "f"
+ */
 switch($_POST["f"]) {
     case 'getUserRole': die(json_encode(array("Result" => "Success","CurrentRole" => ProjectFunctions::getCurrentUserRole())));
         break;
@@ -17,6 +20,10 @@ switch($_POST["f"]) {
         // TODO: Define custom function handlers here...
     default:  die(json_encode(array("Result" => "Failed","Message" => "Invalid function")));
 }
+/**
+ * Gets the attribute for the current account based on the variable $_POST['attribute']
+ * @return null|string null if not found or attribute value
+ */
 function getCurrentAccountAttribute() {
     if (!isset($_POST['attribute'])) {
         return null;
@@ -41,6 +48,11 @@ function getCurrentAccountAttribute() {
     }
     return $Candidate;
 }
+
+/**
+ * Creates an entry of PushRegistration for the given variables in $_POST
+ * @throws dxCallerException
+ */
 function updatePushRegistration() {
     $InternalUniqueId = null;
     if (isset($_POST["internal_id"])) {

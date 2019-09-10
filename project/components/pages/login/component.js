@@ -45,6 +45,9 @@ if (typeof component_classes['pages_login'] === "undefined") {
 				component.updateImage("project/assets/images/app_logo.png");
 			}
 		}
+		postPageLoadActions() {
+			// We do not want the standard post page load actions here
+		}
 	}
 	component_classes['pages_login'] = pages_login;
 }

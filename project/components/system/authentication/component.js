@@ -6,6 +6,9 @@ if (typeof component_classes['system_authentication'] === "undefined") {
 			this.sub_component_definitions = [];
 			// Sub component config end
 		}
+		reset() {
+			getComponentElementById(this,'InputUsername').focus();
+		}
 		registerDomEvents() {
 			getComponentElementById(this,"btnProcessAuthentication").on("click", function() {
 				this.processAuthentication();
