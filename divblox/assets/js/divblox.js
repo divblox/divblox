@@ -12,7 +12,7 @@
  * divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "1.2.9";
+let dx_version = "1.2.10";
 let bootstrap_version = "4.3.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.2";
@@ -1650,6 +1650,7 @@ function dxRequestAdmin(url,parameters,on_success,on_fail) {
 		
 		}
 	}
+	url = url + getRandomFilePostFix();
 	$.post(url,parameters)
 		.done(function(data) {
 			on_success(data)
