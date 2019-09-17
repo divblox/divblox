@@ -12,7 +12,7 @@
  * divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "1.2.10";
+let dx_version = "1.2.11";
 let bootstrap_version = "4.3.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.2";
@@ -84,7 +84,13 @@ function loadDependencies(count) {
 		count = 0;
 	}
 	if (count < dependency_array.length) {
-		dxGetScript(getRootPath()+dependency_array[count], function( data, textStatus, jqxhr ) {
+		let url = getRootPath()+dependency_array[count];
+		if (typeof admin_mode !== "undefined") {
+			if (admin_mode) {
+				url = url+getRandomFilePostFix();
+			}
+		}
+		dxGetScript(url, function( data, textStatus, jqxhr ) {
 			loadDependencies(count+1);
 		});
 	} else {
@@ -1651,6 +1657,7 @@ function dxRequestAdmin(url,parameters,on_success,on_fail) {
 		}
 	}
 	url = url + getRandomFilePostFix();
+	dxLog("Url: "+url);
 	$.post(url,parameters)
 		.done(function(data) {
 			on_success(data)
