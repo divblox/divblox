@@ -202,3 +202,10 @@ function createPushRegistration(registration_id,success_callback,failure_callbac
 function doAfterInitActions() {
 	// Your functionality here...
 }
+
+/**
+ * @todo Any actions that should happen after authentication should be placed here
+ */
+function doAfterAuthenticationActions() {
+
+}

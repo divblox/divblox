@@ -12,7 +12,7 @@
  * divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "1.2.13";
+let dx_version = "1.2.14";
 let bootstrap_version = "4.3.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.2";
@@ -939,7 +939,7 @@ function addPageToRootHistory(page_view) {
  * Updates the window history with the current view for SPA mode
  */
 function updatePushStateWithCurrentView() {
-	if (!isSpa()) {return;}
+	if (!isSpa() || isNative()) {return;}
 	let current_view = getUrlInputParameter("view");
 	if (current_view !== null) {
 		window.history.pushState(root_history_index, null, getServerRootPath()+'?view='+current_view);
@@ -2091,6 +2091,23 @@ function getCurrentUserRole(callback) {
 			callback(undefined);
 		});
 }
+
+/**
+ * Gets the current user's user role from the local app state. Useful when no need for a server call
+ * @return {String|Null} The current user role
+ */
+function getCurrentUserRoleFromAppState() {
+	return getValueFromAppState("dx_role");
+}
+/**
+ * Registers the the current user role in the app state
+ * @param {String} user_role The user role to register
+ */
+function registerUserRole(user_role) {
+	updateAppState("dx_role",user_role);
+	doAfterAuthenticationActions();
+}
+
 /**
  * Checks whether the current client's OS is mobile
  * @return {boolean} true if mobile, false if not

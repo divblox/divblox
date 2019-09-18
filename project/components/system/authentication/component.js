@@ -21,6 +21,7 @@ if (typeof component_classes['system_authentication'] === "undefined") {
 					Password:getComponentElementById(this,"InputPassword").val()},
 				function(data_obj) {
 					setGlobalConstrainById("Account",data_obj.AccountId);
+					registerUserRole(data_obj.UserRole);
 					pageEventTriggered("authenticated",data_obj);
 				}.bind(this),
 				function(data_obj) {

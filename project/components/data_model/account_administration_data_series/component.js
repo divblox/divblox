@@ -55,7 +55,7 @@ if (typeof component_classes['data_model_account_administration_data_series'] ==
 				}.bind(this))
 			}.bind(this));
 		}
-		registerDomEvents = function() {
+		registerDomEvents() {
 			getComponentElementById(this,"BulkActionExportXlsx").on("click", function() {
 				let uid = this.getUid();
 				this.table_exporter = getComponentElementById(this,"DataTableTableHtml").tableExport({
@@ -97,43 +97,53 @@ if (typeof component_classes['data_model_account_administration_data_series'] ==
 				this.loadPage();
 			}.bind(this));
 			getComponentElementById(this,"PaginationItemsPerPage").on("change", function() {
-				this.current_items_per_page = $(this).val();
-				this.loadPage();
-			}.bind(this));
+				let uid = $(this).attr("id").replace("_PaginationItemsPerPage","");
+				let this_component = getRegisteredComponent(uid);
+				this_component.current_items_per_page = $(this).val();
+				this_component.loadPage();
+			});
 			getComponentElementById(this,"PaginationResetButton").on("click", function() {
 				if ($(this).hasClass("disabled")) {
 					return;
 				}
-				this.current_page = 1;
-				this.loadPage();
-			}.bind(this));
+				let uid = $(this).attr("id").replace("_PaginationResetButton","");
+				let this_component = getRegisteredComponent(uid);
+				this_component.current_page = 1;
+				this_component.loadPage();
+			});
 			getComponentElementById(this,"PaginationFinalPageButton").on("click", function() {
 				if ($(this).hasClass("disabled")) {
 					return;
 				}
-				this.current_page = this.total_pages;
-				this.loadPage();
-			}.bind(this));
+				let uid = $(this).attr("id").replace("_PaginationFinalPageButton","");
+				let this_component = getRegisteredComponent(uid);
+				this_component.current_page = this_component.total_pages;
+				this_component.loadPage();
+			});
 			getComponentElementById(this,"PaginationJumpBack").on("click", function() {
 				if ($(this).hasClass("disabled")) {
 					return;
 				}
-				this.current_page = this.current_page - 3;
-				if (this.current_page < 1) {
-					this.current_page = 1;
+				let uid = $(this).attr("id").replace("_PaginationJumpBack","");
+				let this_component = getRegisteredComponent(uid);
+				this_component.current_page = this_component.current_page - 3;
+				if (this_component.current_page < 1) {
+					this_component.current_page = 1;
 				}
-				this.loadPage();
-			}.bind(this));
+				this_component.loadPage();
+			});
 			getComponentElementById(this,"PaginationJumpForward").on("click", function() {
 				if ($(this).hasClass("disabled")) {
 					return;
 				}
-				this.current_page = this.current_page + 3;
-				if (this.current_page > this.total_pages) {
-					this.current_page = this.total_pages;
+				let uid = $(this).attr("id").replace("_PaginationJumpForward","");
+				let this_component = getRegisteredComponent(uid);
+				this_component.current_page = this_component.current_page + 3;
+				if (this_component.current_page > this_component.total_pages) {
+					this_component.current_page = this_component.total_pages;
 				}
-				this.loadPage();
-			}.bind(this));
+				this_component.loadPage();
+			});
 			getComponentElementById(this,"PaginationNextItem").on("click", function() {
 				this.current_page = this.current_page + 1;
 				if (this.current_page > this.total_pages) {
@@ -224,17 +234,17 @@ if (typeof component_classes['data_model_account_administration_data_series'] ==
 				}.bind(this));
 			}.bind(this));
 		}
-		doNothing = function() {
+		doNothing() {
 			//Just a helper function to reference on cancel of confirmation
 		};
-		exportData = function(table_exporter_data) {
+		exportData(table_exporter_data) {
 			this.table_exporter.export2file(
 				table_exporter_data.data,
 				table_exporter_data.mimeType,
 				table_exporter_data.filename,
 				table_exporter_data.fileExtension);
 		}
-		deleteSelected = function() {
+		deleteSelected() {
 			dxRequestInternal(getComponentControllerPath(this),
 				{f:"deleteSelection",
 					SelectedItemArray:JSON.stringify(this.selected_items_array)},
@@ -249,7 +259,7 @@ if (typeof component_classes['data_model_account_administration_data_series'] ==
 					showAlert("Error deleting items: "+data_obj.Message,"error","OK",false);
 				}.bind(this));
 		}
-		loadPage = function() {
+		loadPage() {
 			let uid = this.getUid();
 			let search_text = getComponentElementById(this,"DataTableSearchInput").val();
 			getComponentElementById(this,"DataTableBody").html('<tr id="'+uid+'_DataTableLoading"><td colspan="7"' +
@@ -309,7 +319,7 @@ if (typeof component_classes['data_model_account_administration_data_series'] ==
 					this.handleComponentError('Could not retrieve data: '+data_obj.Message);
 				}.bind(this),false,false);
 		}
-		addRow = function(row_data_obj) {
+		addRow(row_data_obj) {
 			this.current_page_array.push(row_data_obj);
 			let uid = this.getUid();
 			let row_id = row_data_obj["Id"];
@@ -341,7 +351,7 @@ if (typeof component_classes['data_model_account_administration_data_series'] ==
 			getComponentElementById(this,"DataTableBody").append(html);
 		}
 		// Data table functions to implement
-		on_item_clicked = function(id) {
+		on_item_clicked(id) {
 			setGlobalConstrainById("Account",id);
 			pageEventTriggered("account_clicked",{id:id});
 		}
