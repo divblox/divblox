@@ -57,7 +57,6 @@ class EmailMessageGen extends dxBaseClass implements IteratorAggregate {
      * @var string strFromAddress
      */
     protected $strFromAddress;
-    const FromAddressMaxLength = 150;
     const FromAddressDefault = null;
 
 
@@ -66,7 +65,6 @@ class EmailMessageGen extends dxBaseClass implements IteratorAggregate {
      * @var string strReplyEmail
      */
     protected $strReplyEmail;
-    const ReplyEmailMaxLength = 150;
     const ReplyEmailDefault = null;
 
 
@@ -648,10 +646,10 @@ class EmailMessageGen extends dxBaseClass implements IteratorAggregate {
         $objToReturn->dttSentDate = $objDbRow->GetColumn($strAliasName, 'DateTime');
         $strAlias = $strAliasPrefix . 'FromAddress';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->strFromAddress = $objDbRow->GetColumn($strAliasName, 'VarChar');
+        $objToReturn->strFromAddress = $objDbRow->GetColumn($strAliasName, 'Blob');
         $strAlias = $strAliasPrefix . 'ReplyEmail';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->strReplyEmail = $objDbRow->GetColumn($strAliasName, 'VarChar');
+        $objToReturn->strReplyEmail = $objDbRow->GetColumn($strAliasName, 'Blob');
         $strAlias = $strAliasPrefix . 'Recipients';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->strRecipients = $objDbRow->GetColumn($strAliasName, 'Blob');
@@ -1703,9 +1701,9 @@ class EmailMessageGen extends dxBaseClass implements IteratorAggregate {
 				case 'SentDate':
 					return new dxQueryNode('SentDate', 'SentDate', 'DateTime', $this);
 				case 'FromAddress':
-					return new dxQueryNode('FromAddress', 'FromAddress', 'VarChar', $this);
+					return new dxQueryNode('FromAddress', 'FromAddress', 'Blob', $this);
 				case 'ReplyEmail':
-					return new dxQueryNode('ReplyEmail', 'ReplyEmail', 'VarChar', $this);
+					return new dxQueryNode('ReplyEmail', 'ReplyEmail', 'Blob', $this);
 				case 'Recipients':
 					return new dxQueryNode('Recipients', 'Recipients', 'Blob', $this);
 				case 'Cc':

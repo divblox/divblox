@@ -71,11 +71,10 @@ abstract class ProjectAccessManager extends AccessManager {
         if ($InitialReturn == true) {
             return true;
         }
-        return true; // TODO: This is a temporary measure to allow you to get started quickly without restrictions.
-        // Remove this and implement correctly for your solution. NB! THIS GIVES ACCESS TO ALL COMPONENTS TO ANY USER!!!
+        if (DISABLE_COMPONENT_SECURITY_CHECKS_BOOL) {return true;}
 
         // TODO: Override your access here per component or leave if no special functionality is required
-        $AnonymousComponentArray = ["authentication","current_user_profile_manager","profile_picture_uploader","account_additional_info_manager"];
+        $AnonymousComponentArray = ["authentication","account_registration"];
         if (in_array($ComponentName, $AnonymousComponentArray)) {
             return true; // JGL: Anyone can access these components
         }
@@ -94,7 +93,8 @@ abstract class ProjectAccessManager extends AccessManager {
             return false;
         }
         $UserRoleSpecificComponentArray = array(
-            "User" => ["account_additional_info_manager","account_additional_info_manager_data_series","account_additional_info_manager_create","account_additional_info_manager_update"],
+            "User" => ["current_user_profile_manager","profile_picture_uploader",
+                "account_additional_info_manager","account_additional_info_manager_data_series","account_additional_info_manager_create","account_additional_info_manager_update"],
             //TODO: Add more as required here
         );
         if (array_key_exists($UserRoleObj->Role, $UserRoleSpecificComponentArray)) {
@@ -1282,6 +1282,14 @@ class FileUploader {
 //region Project API related
 abstract class PublicApi extends PublicApi_Base {
 
+}
+//endregion
+
+//region Email Related
+abstract class EmailManager extends EmailManager_Framework {
+}
+abstract class EmailSettings extends EmailSettings_Framework {
+    public static $SMTPServer = 'smtp1.example.com';
 }
 //endregion
 ?>

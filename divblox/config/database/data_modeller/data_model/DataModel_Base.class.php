@@ -180,8 +180,8 @@ class DataModel_Base {
             "TEXT"),
         "EmailMessage" => array(
             "DATETIME",
-            "VARCHAR(150)",
-            "VARCHAR(150)",
+            "TEXT",
+            "TEXT",
             "TEXT",
             "TEXT",
             "TEXT",

@@ -91,6 +91,7 @@ define ('DATE_TIME_FORMAT_HTML_STR','DD-MMM-YYYY');
 define("AUTHENTICATION_TOKEN_STR","auth_token_".str_replace(" ", "_", strtolower(APP_NAME_STR)));
 define("COMPONENT_BUILDER_EDITOR_THEME_STR","LIGHT");// Options are LIGHT or DARK
 define("SANDBOX_ACTIVE_BOOL",false); // If true, will disable certain setup page features
+define("DISABLE_COMPONENT_SECURITY_CHECKS_BOOL",false); // If true, will disable checking if a user should have access to a component. NB! THIS GIVES ACCESS TO ALL COMPONENTS TO ANY USER!!!
 
 require_once(DATA_MODELLER_PATH_STR.'/data_model/DataModel_Config.inc.php');
 require_once(DATA_MODELLER_PATH_STR.'/data_model/DataModel.class.php');

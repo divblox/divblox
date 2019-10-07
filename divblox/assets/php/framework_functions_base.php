@@ -42,6 +42,25 @@ function divbloxErrorHandler($severity, $message, $file, $line) {
     throw new ErrorException($message, 0, $severity, $file, $line);
 }
 
+//region Email related
+/**
+ * A special exception handler used for PHPMailer to avoid returning to the client too early
+ * @param $e
+ */
+function handleEmailException($e) {
+    $ExceptionReflectionObj = new ReflectionObject($e);
+    $Output = ob_get_clean();
+    $ErrorArray = array("Result" => "Failed",
+        "Message" => $e->getMessage(),
+        "Type" => $ExceptionReflectionObj->getName(),
+        "File" => $e->getFile(),
+        "Line" => $e->getLine(),
+        "Trace" => $e->getTrace(),
+        "Output" => $Output,);
+    error_log("Handled email exception");
+}
+//endregion
+
 /**
  * Class FrameworkFunctions_base
  */
@@ -744,5 +763,4 @@ abstract class FrameworkFunctions_base {
         //TODO:Implement this
     }
     //endregion
-
 }

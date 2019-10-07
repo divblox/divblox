@@ -10,6 +10,12 @@
  */
 
 require_once(FRAMEWORK_ROOT_STR.'/assets/php/third_party/htmlpurifier-4.10.0/library/HTMLPurifier.auto.php');
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
+require(FRAMEWORK_ROOT_STR.'/assets/php/third_party/vendor/autoload.php');
+
 //region Core framework classes
 abstract class dxBaseClass {
     /**
@@ -7995,6 +8001,257 @@ abstract class NativePushPriority {
      *
      */
     const HIGH_STR = 'high';
+}
+//endregion
+//region Email Related
+
+/**
+ * Class EmailManager_Base The base email sending class. This class wraps PHPMailer and creates an entry of EmailMessage
+ * in the database upon attempting to send
+ * Typical usage:
+ * 1. Set the following before sending:
+ *  EmailSettings::$SMTPServer = 'smtp.yourserver.com';
+    EmailSettings::$SMTPUsername = 'user@yourserver.com';
+    EmailSettings::$SMTPPassword = 'YourPassword';
+    EmailSettings::$SMTPForceSecurityProtocol = true; // Needed for TLS
+ * 2. Call the prepareEmail function to set the subject and message content
+    EmailManager::prepareEmail("Test subject","A test message");
+ * 3. Add recipients as needed:
+    EmailManager::addRecipientAddress("john@doe.com",'John Doe');
+ * 4. Send the email:
+    if (EmailManager::sendEmail($ErrorInfo)) {
+        echo "Email sent!<br>".json_encode($ErrorInfo);
+    } else {
+        echo "Email NOT sent: <br>".json_encode($ErrorInfo);
+    }
+ */
+abstract class EmailManager_Base {
+    /**
+     * Used to indicate the DEFAULT state of the Email Manager
+     */
+    const READY_STATE_NOT_READY_STR = 'NOT READY';
+    /**
+     * Used to indicate that the email server and message content has been configured
+     */
+    const READY_STATE_INITIATED_STR = 'INITIATED';
+    /**
+     * Used to indicate that at least 1 recipient email address has been added
+     */
+    const READY_STATE_READY_STR = 'READY';
+
+    /**
+     * @var The PHPMailer instance
+     */
+    protected static $PHPMailerObj;
+    /**
+     * @var string The Email Manager ready state that control whether emails can be sent
+     */
+    protected static $ReadyState = self::READY_STATE_NOT_READY_STR;
+
+    /**
+     * @param string $SubjectStr Your email's subject
+     * @param string $MessageHTMLStr The HTML message of your email
+     * @param null $MessagePlainTextStr The plaintext message of your email (optional)
+     * @param null $FromDetailsArray OPTIONAL Can be specified as array("email" => 'john@do.com',"name" => 'John Doe');
+     * @param null $ReplyDetailsArray OPTIONAL Can be specified as array("email" => 'john@do.com',"name" => 'John Doe');
+     * @param bool $isHTMLBool Indicates whether we will send the email as HTML or plaintext
+     * @throws Exception
+     */
+    public static function prepareEmail($SubjectStr = 'Default subject',
+                                        $MessageHTMLStr = '',
+                                        $MessagePlainTextStr = null,
+                                        $FromDetailsArray = null,
+                                        $ReplyDetailsArray = null,
+                                        $isHTMLBool = true) {
+        self::$PHPMailerObj = new PHPMailer(true);
+        //Server settings
+        self::$PHPMailerObj->isSMTP();                                            // Send using SMTP
+        self::$PHPMailerObj->SMTPAuth    = true;                                   // Enable SMTP authentication
+        self::$PHPMailerObj->SMTPDebug   = EmailSettings::$SMTPDebugMode;
+        self::$PHPMailerObj->Host        = EmailSettings::$SMTPServer;
+        self::$PHPMailerObj->Username    = EmailSettings::$SMTPUsername;
+        self::$PHPMailerObj->Password    = EmailSettings::$SMTPPassword;
+        self::$PHPMailerObj->Port        = EmailSettings::$SMTPPort;
+        self::$PHPMailerObj->SMTPAutoTLS = EmailSettings::$SMTPAutoTLS;
+        if (EmailSettings::$SMTPForceSecurityProtocol) {
+            self::$PHPMailerObj->SMTPSecure = EmailSettings::$SMTPSecure;
+        }
+        self::$PHPMailerObj->isHTML($isHTMLBool);                                  // Set email format to HTML/Plaintext
+
+        if (is_null($FromDetailsArray)) {
+            $FromDetailsArray = array("email" => self::$PHPMailerObj->Username,"name" => self::$PHPMailerObj->Username);
+        }
+        if (is_null($ReplyDetailsArray)) {
+            $ReplyDetailsArray = array("email" => self::$PHPMailerObj->Username,"name" => self::$PHPMailerObj->Username);
+        }
+
+        if (!isset($FromDetailsArray['email'])) {
+            $FromDetailsArray['email'] = self::$PHPMailerObj->Username;
+        }
+        if (!isset($FromDetailsArray['name'])) {
+            $FromDetailsArray['name'] = '';
+        }
+
+        if (!isset($ReplyDetailsArray['email'])) {
+            $ReplyDetailsArray['email'] = self::$PHPMailerObj->Username;
+        }
+        if (!isset($ReplyDetailsArray['name'])) {
+            $ReplyDetailsArray['name'] = '';
+        }
+
+        self::$PHPMailerObj->setFrom($FromDetailsArray['email'], $FromDetailsArray["name"]);
+        self::$PHPMailerObj->addReplyTo($ReplyDetailsArray['email'], $ReplyDetailsArray["name"]);
+
+        self::$PHPMailerObj->Subject = $SubjectStr;
+        self::$PHPMailerObj->Body    = $MessageHTMLStr;
+        if (is_null($MessagePlainTextStr)) {
+            $MessagePlainTextStr = $MessageHTMLStr;
+        }
+        self::$PHPMailerObj->AltBody = $MessagePlainTextStr;
+
+        self::$ReadyState = self::READY_STATE_INITIATED_STR;
+    }
+
+    /**
+     * In order for an email to be ready to sent, it needs at least 1 recipient address.
+     * @param null $EmailAddressStr The email address to send to
+     * @param null $FullName The optional name of the recipient
+     * @throws \Exception
+     */
+    public static function addRecipientAddress($EmailAddressStr = null, $FullName = null) {
+        if (self::$ReadyState != self::READY_STATE_INITIATED_STR) {
+            throw new \Exception("Trying to add recipient address: $EmailAddressStr. Ready state must be ".self::READY_STATE_INITIATED_STR."; Current state: ".self::$ReadyState);
+        }
+        if (!is_null($FullName)) {
+            self::$PHPMailerObj->addAddress($EmailAddressStr, $FullName);     // Add a recipient
+        } else {
+            self::$PHPMailerObj->addAddress($EmailAddressStr);     // Add a recipient
+        }
+        self::$ReadyState = self::READY_STATE_READY_STR;
+    }
+
+    /**
+     * @param null $EmailAddressStr The email address to cc
+     * @throws \Exception
+     */
+    public static function addCCAddress($EmailAddressStr = null) {
+        if (self::$ReadyState != self::READY_STATE_READY_STR) {
+            throw new \Exception("Trying to add CC address: $EmailAddressStr. Ready state must be ".self::READY_STATE_READY_STR."; Current state: ".self::$ReadyState);
+        }
+        self::$PHPMailerObj->addCC($EmailAddressStr);     // Add a recipient
+    }
+
+    /**
+     * @param null $EmailAddressStr The email address to bcc
+     * @throws \Exception
+     */
+    public static function addBCCAddress($EmailAddressStr = null) {
+        if (self::$ReadyState != self::READY_STATE_READY_STR) {
+            throw new \Exception("Trying to add BCC address: $EmailAddressStr. Ready state must be ".self::READY_STATE_READY_STR."; Current state: ".self::$ReadyState);
+        }
+        self::$PHPMailerObj->addBCC($EmailAddressStr);     // Add a recipient
+    }
+
+    /**
+     * @param null $FilePath The path, from document root, of the file to add as an attachment
+     * @param null $FileName The OPTIONAL name of the file
+     * @throws \Exception
+     */
+    public static function addAttachment($FilePath = null, $FileName = null) {
+        if (self::$ReadyState != self::READY_STATE_READY_STR) {
+            throw new \Exception("Trying to add attachment for PHPMailer. Ready state must be ".self::READY_STATE_READY_STR."; Current state: ".self::$ReadyState);
+        }
+        if (!file_exists($FilePath)) {
+            throw new \Exception("Trying to add attachment for PHPMailer. No file exists at $FilePath");
+        } else {
+            if (!is_null($FileName)) {
+                self::$PHPMailerObj->addAttachment($FilePath, $FileName);
+            } else {
+                self::$PHPMailerObj->addAttachment($FilePath);
+            }
+        }
+    }
+
+    /**
+     * @param $ErrorInfo Will be an array containing information about what happened
+     * @return bool True when an email was successfully sent, false when not.
+     * @throws dxCallerException
+     */
+    public static function sendEmail(&$ErrorInfo) {
+        if (self::$ReadyState != self::READY_STATE_READY_STR) {
+            throw new \Exception("Trying to send email with PHPMailer. Ready state must be ".self::READY_STATE_READY_STR."; Current state: ".self::$ReadyState);
+        }
+        $ErrorInfo = [];
+        if (class_exists("EmailMessage")) {
+            $EmailMessageObj = new EmailMessage();
+            $EmailMessageObj->SentDate = dxDateTime::Now();
+            $EmailMessageObj->FromAddress = self::$PHPMailerObj->From;
+            $EmailMessageObj->ReplyEmail = json_encode(self::$PHPMailerObj->getReplyToAddresses());
+            $EmailMessageObj->Recipients = json_encode(self::$PHPMailerObj->getToAddresses());
+            $EmailMessageObj->Cc = json_encode(self::$PHPMailerObj->getCcAddresses());
+            $EmailMessageObj->Bcc = json_encode(self::$PHPMailerObj->getBccAddresses());
+            $EmailMessageObj->Subject = self::$PHPMailerObj->Subject;
+            $EmailMessageObj->EmailMessage = self::$PHPMailerObj->Body;
+            $EmailMessageObj->ErrorInfo = "Pre send";
+            $EmailMessageObj->Save();
+            $ErrorInfo["EmailMessageId"] = $EmailMessageObj->Id;
+        }
+        set_exception_handler('handleEmailException');
+        $EmailSendSuccessBool = false;
+        $ErrorInfo["Status"] = 'NOT SENT';
+        try {
+            self::$PHPMailerObj->send();
+            if (class_exists("EmailMessage")) {
+                $EmailMessageObj->ErrorInfo = 'Message sent';
+            }
+            $EmailSendSuccessBool = true;
+            $ErrorInfo["Status"] = 'SENT';
+        } catch (Exception $e) {
+            if (class_exists("EmailMessage")) {
+                $EmailMessageObj->ErrorInfo = self::$PHPMailerObj->ErrorInfo;
+            }
+            $ErrorInfo["Details"] = self::$PHPMailerObj->ErrorInfo;
+        }
+        set_exception_handler('divbloxHandleException');
+        $EmailMessageObj->Save();
+        return $EmailSendSuccessBool;
+    }
+
+}
+abstract class EmailSettings_Base {
+    /**
+     * @var string
+     */
+    public static $SMTPServer = 'smtp1.example.com';
+    /**
+     * @var string
+     */
+    public static $SMTPUsername = 'user@example.com';
+    /**
+     * @var string
+     */
+    public static $SMTPPassword = 'secret';
+    /**
+     * @var int
+     */
+    public static $SMTPPort = 587;
+    /**
+     * @var int
+     */
+    public static $SMTPDebugMode = SMTP::DEBUG_OFF;// To enable verbose debug output, use DEBUG_SERVER
+    /**
+     * @var string
+     */
+    public static $SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;// Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` also accepted
+    /**
+     * @var bool
+     */
+    public static $SMTPForceSecurityProtocol = false;
+    /**
+     * @var bool
+     */
+    public static $SMTPAutoTLS = false;
+
 }
 //endregion
 ?>
