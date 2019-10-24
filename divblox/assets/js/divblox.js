@@ -12,7 +12,7 @@
  * divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "1.3.0";
+let dx_version = "1.3.1";
 let bootstrap_version = "4.3.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.2";
@@ -842,8 +842,18 @@ function loadComponentJs(component_path,load_arguments,callback) {
  * @param {Function} callback The function to call once the component has loaded
  */
 function loadPageComponent(component_name,load_arguments,callback) {
+    let final_load_arguments = {"uid":page_uid};
+    let parameters_str = '';
+    if (typeof load_arguments === "object") {
+        let load_argument_keys = Object.keys(load_arguments);
+        load_argument_keys.forEach(function(key) {
+            final_load_arguments[key] = load_arguments[key];
+            parameters_str += '&'+key+"="+load_arguments[key];
+        });
+    }
+	
 	if (!isSpa() && !isNative()) {
-		redirectToInternalPath('?view='+component_name);
+		redirectToInternalPath('?view='+component_name+parameters_str);
 		return;
 	}
 	if ((typeof cb_active !== "undefined") && (cb_active)) {
@@ -865,13 +875,7 @@ function loadPageComponent(component_name,load_arguments,callback) {
 	unRegisterEventHandlers();
 	$(document).off();
 	$('body').off();
-	let final_load_arguments = {"uid":page_uid};
-	if (typeof load_arguments === "object") {
-		let load_argument_keys = Object.keys(load_arguments);
-		load_argument_keys.forEach(function(key) {
-			final_load_arguments[key] = load_arguments[key];
-		});
-	}
+	
 	if (!root_history_processing) {
 		addPageToRootHistory(component_name);
 	} else {

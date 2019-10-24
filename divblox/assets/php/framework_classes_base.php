@@ -8119,9 +8119,6 @@ abstract class EmailManager_Base {
      * @throws \Exception
      */
     public static function addRecipientAddress($EmailAddressStr = null, $FullName = null) {
-        if (self::$ReadyState != self::READY_STATE_INITIATED_STR) {
-            throw new \Exception("Trying to add recipient address: $EmailAddressStr. Ready state must be ".self::READY_STATE_INITIATED_STR."; Current state: ".self::$ReadyState);
-        }
         if (!is_null($FullName)) {
             self::$PHPMailerObj->addAddress($EmailAddressStr, $FullName);     // Add a recipient
         } else {

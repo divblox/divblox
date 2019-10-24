@@ -7,6 +7,10 @@ if (typeof component_classes['system_default_image_upload'] === "undefined") {
 			// Sub component config end
 			this.file_upload_array = [];
 		}
+        reset(inputs) {
+            let api = $.fileuploader.getInstance('#'+this.getUid()+'_file_uploader');
+            api.reset();
+        }
 		loadPrerequisites(success_callback,fail_callback) {
 			dxGetScript(getRootPath()+"project/assets/js/jquery_fileuploader/jquery.fileuploader.min.js", function( data, textStatus, jqxhr ) {
 				this.initFileUploader();

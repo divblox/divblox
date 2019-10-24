@@ -1,133 +1,162 @@
-<?php
-/**
- * Copyright (c) 2019. Stratusolve (Pty) Ltd, South Africa
- * This file is the property of Stratusolve (Pty) Ltd.
- * This file may not be used or included in any project prior to the signing of the divblox software license agreement.
- * By using this file or including it in your project you agree to the terms and conditions stipulated by the divblox software license agreement.
- * This file may not be copied or modified in any way without prior written permission from Stratusolve (Pty) Ltd
- * THIS FILE SHOULD NOT BE EDITED. divblox assumes the integrity of this file. If you edit this file, it could be overridden by a future divblox update
- * For queries please send an email to support@divblox.com
- */
-
-header("Content-type: text/plain");
-if (!file_exists("config.php")) {
-    die(json_encode(array("Failed" => "Config is not present")));
-}
-if (!file_exists("environments.php")) {
-    die(json_encode(array("Failed" => "Environment is not present")));
-}
-require("../../divblox.php");
-function checkMinimumPhpVersion() {
-    $CurrentVersionArray = explode('.',phpversion());
-    $CurrentVersionComponents = array(
-        'Major'      =>  $CurrentVersionArray[0],
-        'Minor'      =>  $CurrentVersionArray[1],
-        'Release'    =>  $CurrentVersionArray[2]);
-
-    $RequiredVersionArray = explode('.',PHP_MIN_VERSION_REQUIRED);
-    $Release = 0;
-    if (isset($RequiredVersionArray[2])) {
-        $Release = $RequiredVersionArray[2];
-    }
-    $RequiredVersionComponents = array(
-        'Major'      =>  $RequiredVersionArray[0],
-        'Minor'      =>  $RequiredVersionArray[1],
-        'Release'    =>  $Release);
-    return $CurrentVersionComponents["Major"] >= $RequiredVersionComponents["Major"] &&
-        $CurrentVersionComponents["Minor"] >= $RequiredVersionComponents["Minor"] &&
-        $CurrentVersionComponents["Minor"] >= $RequiredVersionComponents["Minor"];
-
-}
-function checkMinimumDbVersion($Database = 'mariadb') {
-    $CurrentDbVersion = getCurrentDbVersion();
-    if ($CurrentDbVersion["Version"] == 'N/A') {
-        return false;
-    }
-    $CurrentVersionArray = explode('.',$CurrentDbVersion["Version"]);
-    $CurrentVersionComponents = array(
-        'Major'      =>  $CurrentVersionArray[0],
-        'Minor'      =>  $CurrentVersionArray[1],
-        'Release'    =>  $CurrentVersionArray[2]);
-
-    if ($CurrentDbVersion['Server'] == "mariadb") {
-        $RequiredVersionArray = explode('.',MARIADB_MIN_VERSION_REQUIRED);
-    } else {
-        $RequiredVersionArray = explode('.',MYSQL_MIN_VERSION_REQUIRED);
-    }
-    $Release = 0;
-    if (isset($RequiredVersionArray[2])) {
-        $Release = $RequiredVersionArray[2];
-    }
-    $RequiredVersionComponents = array(
-        'Major'      =>  $RequiredVersionArray[0],
-        'Minor'      =>  $RequiredVersionArray[1],
-        'Release'    =>  $Release);
-    return $CurrentVersionComponents["Major"] >= $RequiredVersionComponents["Major"] &&
-        $CurrentVersionComponents["Minor"] >= $RequiredVersionComponents["Minor"] &&
-        $CurrentVersionComponents["Minor"] >= $RequiredVersionComponents["Minor"];
-
-}
-function getCurrentDbVersion() {
-    $ModuleArray = json_decode(APP_MODULES_STR);
-    $intMaxIndex = ProjectFunctions::getDataSetSize($ModuleArray);
-    if ($intMaxIndex < 1) {
-        return array("Server" => "mariadb", "Version" => "N/A","Reason" => 'No database configured. Configure databases in the divblox setup page: <a target="_blank" href="'.ProjectFunctions::getBaseUrl().'/divblox/config/framework/divblox_admin/setup.php">here</a>');
-    }
-    $strConstantPrefix = strtoupper($ModuleArray[0]);
-    $strConstantName = $strConstantPrefix."_DATABASE_SERVER_STR";
-
-    $host = constant($strConstantName);
-    $username = constant($strConstantPrefix."_DATABASE_USER_STR");
-    $password = constant($strConstantPrefix."_DATABASE_PASSWORD_STR");
-    try {
-        $link = mysqli_connect("$host","$username","$password");
-    } catch (ErrorException $e) {
-        return array("Server" => "mariadb", "Version" => "N/A","Reason" => 'Could not connect to database server. Error: '.$e->getMessage().'<br>Configure databases in the divblox setup page: <a target="_blank" href="'.ProjectFunctions::getBaseUrl().'/divblox/config/framework/divblox_admin/setup.php">here</a>');
-    }
-    if (mysqli_connect_errno()) {
-        return array("Server" => "mariadb", "Version" => "N/A","Reason" => "Could not connect to database server");
-    }
-    $Result = $link->query("SHOW VARIABLES like '%version%'");
-    $VersionStr = '';
-    if ($Result) {
-        $ResultArray = $Result->fetch_assoc();
-        $VersionStr = $ResultArray["Value"];
-    }
-    $Version = mysqli_get_server_info($link);
-    $Server = 'mariadb';
-    if (strpos(strtolower($Version),"mariadb") == false) {
-        if (floatval($VersionStr) < 10) {
-            $Server = 'mysql';
-        }
-    }
-    $LowerCaseTableNamesOk = false;
-    $Result = $link->query("SHOW VARIABLES LIKE 'lower_case_table_names'");
-    if ($Result) {
-        $ResultArray2 = $Result->fetch_assoc();
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            $LowerCaseTableNamesOk = $ResultArray2["Value"] == 2;
-        } else {
-            $LowerCaseTableNamesOk = $ResultArray2["Value"] != 1;
-        }
-    }
-
-    $link->close();
-    return array("Server" => $Server, "Version" => $VersionStr,"Reason" => $ResultArray,"LowerCaseTableNamesOK" => $LowerCaseTableNamesOk);
-}
-function getRequiredDbVersion() {
-    $CurrentDbVersion = getCurrentDbVersion();
-    if ($CurrentDbVersion["Server"] == 'mariadb') {
-        return MARIADB_MIN_VERSION_REQUIRED;
-    } else {
-        return MYSQL_MIN_VERSION_REQUIRED;
-    }
-}
-echo json_encode(array("Success" => "Environment & config is present",
-    "PhpVersion" => phpversion(),
-    "RequiredPhpVersion" => PHP_MIN_VERSION_REQUIRED,
-    "PhpVersionOk" => checkMinimumPhpVersion(),
-    "DbVersion" => getCurrentDbVersion(),
-    "RequiredDbVersion" => getRequiredDbVersion(),
-    "DbVersionOk" => checkMinimumDbVersion()));
-ProjectFunctions::printCleanOutput();
+<?php //004fb
+if(!extension_loaded('ionCube Loader')){$__oc=strtolower(substr(php_uname(),0,3));$__ln='ioncube_loader_'.$__oc.'_'.substr(phpversion(),0,3).(($__oc=='win')?'.dll':'.so');if(function_exists('dl')){@dl($__ln);}if(function_exists('_il_exec')){return _il_exec();}$__ln='/ioncube/'.$__ln;$__oid=$__id=realpath(ini_get('extension_dir'));$__here=dirname(__FILE__);if(strlen($__id)>1&&$__id[1]==':'){$__id=str_replace('\\','/',substr($__id,2));$__here=str_replace('\\','/',substr($__here,2));}$__rd=str_repeat('/..',substr_count($__id,'/')).$__here.'/';$__i=strlen($__rd);while($__i--){if($__rd[$__i]=='/'){$__lp=substr($__rd,0,$__i).$__ln;if(file_exists($__oid.$__lp)){$__ln=$__lp;break;}}}if(function_exists('dl')){@dl($__ln);}}else{die('The file '.__FILE__." is corrupted.\n");}if(function_exists('_il_exec')){return _il_exec();}echo("Site error: the ".(php_sapi_name()=='cli'?'ionCube':'<a href="http://www.ioncube.com">ionCube</a>')." PHP Loader needs to be installed. This is a widely used PHP extension for running ionCube protected PHP code, website security and malware blocking.\n\nPlease visit ".(php_sapi_name()=='cli'?'get-loader.ioncube.com':'<a href="http://get-loader.ioncube.com">get-loader.ioncube.com</a>')." for install assistance.\n\n");exit(199);
 ?>
+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
+VANya1eL8zEjGStp+W==

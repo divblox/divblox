@@ -1,429 +1,178 @@
-<?php
-/**
- * Created by Stratusolve (Pty) Ltd in South Africa.
- * @author     johangriesel <info@stratusolve.com>
- *
- * Copyright (C) 2018 Stratusolve (Pty) Ltd - All Rights Reserved
- * Modification or removal of this script is not allowed. In order
- * to include this script within your solution you require express
- * permission from Stratusolve (Pty) Ltd.
- * Please reference the divblox SaaS Subscription license agreement. A
- * copy of this agreement can be obtained by sending an email to
- * info@stratusolve.co
- *
- *
- * THIS FILE SHOULD NOT BE EDITED. divblox assumes the integrity of this file.
- * If you edit this file, it could be overridden by a future divblox update
- */
-require_once(DATA_MODELLER_PATH_STR."/data_model/DataModel_Data.inc.php");
-class DataModel_Base {
-    protected $UserRoleArray = array("Administrator","User");
-
-    protected $ProjectEntityArray = array();
-    protected $ProjectEntityAttributeArray = array();
-    protected $ProjectEntityAttributeTypeArray = array();
-    protected $ProjectEntitySingleRelationshipArray = array();
-
-    protected $BaseEntityArray = array(
-        "Account",
-        "AdditionalAccountInformation",
-        "UserRole",
-        "AuditLogEntry",
-        "EmailMessage",
-        "PasswordReset",
-        "FileDocument",
-        "PageView",
-        "BackgroundProcess",
-        "BackgroundProcessUpdate",
-        "ClientConnection",
-        "ClientAuthenticationToken",
-        "PushRegistration");
-    protected $BaseEntityAttributeArray = array (
-        "Account" => array(
-            "FullName",
-            "FirstName",
-            "MiddleNames",
-            "LastName",
-            "EmailAddress",
-            "Username",
-            "Password",
-            "MaidenName",
-            "ProfilePicturePath",
-            "MainContactNumber",
-            "Title",
-            "DateOfBirth",
-            "PhysicalAddressLineOne",
-            "PhysicalAddressLineTwo",
-            "PhysicalAddressPostalCode",
-            "PhysicalAddressCountry",
-            "PostalAddressLineOne",
-            "PostalAddressLineTwo",
-            "PostalAddressPostalCode",
-            "PostalAddressCountry",
-            "IdentificationNumber",
-            "Nickname",
-            "Status",
-            "Gender",
-            "AccessBlocked",
-            "BlockedReason"),
-        "AdditionalAccountInformation" => array(
-            "Type",
-            "Label",
-            "Value"
-        ),
-        "UserRole" => array(
-            "Role"), // e.g Administrator,User
-        "AuditLogEntry" => array(
-            "EntryTimeStamp",
-            "ObjectName",
-            "ModificationType",// Type = Updated,Created,Deleted
-            "UserEmail",
-            "ObjectId",
-            "AuditLogEntryDetail"),
-        "EmailMessage" => array(
-            "SentDate",
-            "FromAddress",
-            "ReplyEmail",
-            "Recipients",
-            "Cc",
-            "Bcc",
-            "Subject",
-            "EmailMessage",
-            "Attachments",
-            "ErrorInfo"),
-        "PasswordReset" => array(
-            "Token",
-            "CreatedDateTime"),
-        "FileDocument" => array(
-            "FileName",
-            "Path",
-            "UploadedFileName",
-            "FileType",
-            "SizeInKilobytes",
-            "CreatedDate"),
-        "PageView" => array(
-            "TimeStamped",
-            "IPAddress",
-            "PageDetails",
-            "UserAgentDetails",
-            "UserRole",
-            "Username"),
-	    "BackgroundProcess" => array(
-	        "PId",
-            "UserId",
-            "UpdateDateTime",
-            "Status",
-            "Summary",
-            "StartDateTime"),
-	    "BackgroundProcessUpdate" => array(
-	        "UpdateDateTime",
-            "UpdateMessage"),
-        "ClientConnection" => array(
-            "ClientIpAddress",
-            "ClientUserAgent",
-            "UpdateDateTime"),
-        "ClientAuthenticationToken" => array(
-            "Token",
-            "UpdateDateTime",
-            "ExpiredToken"),
-        "PushRegistration" => array(
-            "RegistrationId",
-            "DeviceUuid",
-            "DevicePlatform",
-            "DeviceOs",
-            "RegistrationDateTime",
-            "RegistrationStatus",
-            "InternalUniqueId",
-        ),
-    );
-    protected $BaseEntityAttributeTypeArray = array (// The attribute type for each of the defined object attributes (Defines how it is stored in the db)
-        "Account"  => array(
-            "VARCHAR(50)",
-            "VARCHAR(50)",
-            "VARCHAR(150)",
-            "VARCHAR(50)",
-            "VARCHAR(150)",
-            "VARCHAR(50) UNIQUE",
-            "VARCHAR(250)",
-            "VARCHAR(50)",
-            "VARCHAR(250)",
-            "VARCHAR(25)",
-            "VARCHAR(25)",
-            "DATE",
-            "VARCHAR(150)",
-            "VARCHAR(150)",
-            "VARCHAR(150)",
-            "VARCHAR(150)",
-            "VARCHAR(150)",
-            "VARCHAR(150)",
-            "VARCHAR(150)",
-            "VARCHAR(150)",
-            "VARCHAR(50)",
-            "VARCHAR(50)",
-            "VARCHAR(250)",
-            "VARCHAR(25)",
-            "BOOLEAN",
-            "TEXT"),
-        "AdditionalAccountInformation" => array(
-            "VARCHAR(150)",
-            "VARCHAR(150)",
-            "TEXT"
-        ),
-        "UserRole" => array(
-            "VARCHAR(50) UNIQUE"),
-        "AuditLogEntry" => array(
-            "DATETIME",
-            "VARCHAR(50)",
-            "VARCHAR(15)",
-            "VARCHAR(100)",
-            "TEXT",
-            "TEXT"),
-        "EmailMessage" => array(
-            "DATETIME",
-            "TEXT",
-            "TEXT",
-            "TEXT",
-            "TEXT",
-            "TEXT",
-            "TEXT",
-            "TEXT",
-            "TEXT",
-            "TEXT"),
-        "PasswordReset" => array(
-            "VARCHAR(50) UNIQUE",
-            "DATETIME"),
-        "FileDocument" => array(
-            "VARCHAR(200)",
-            "VARCHAR(300)",
-            "VARCHAR(300)",
-            "VARCHAR(50)",
-            "DOUBLE",
-            "DATETIME"),
-        "PageView" => array(
-            "DATETIME",
-            "VARCHAR(50)",
-            "VARCHAR(500)",
-            "TEXT",
-            "VARCHAR(200)",
-            "VARCHAR(200)"),
-	    "BackgroundProcess" => array(
-	        "VARCHAR(50)",
-            "VARCHAR(50)",
-            "DATETIME",
-            "VARCHAR(50)",
-            "TEXT",
-            "DATETIME"),
-	    "BackgroundProcessUpdate" => array(
-	        "DATETIME",
-            "TEXT"),
-        "ClientConnection" => array(
-            "VARCHAR(50)",
-            "VARCHAR(250)",
-            "DATETIME"),
-        "ClientAuthenticationToken" => array(
-            "VARCHAR(50) UNIQUE NOT NULL",
-            "DATETIME",
-            "VARCHAR(50) UNIQUE"),
-        "PushRegistration" => array(
-            "TEXT",
-            "VARCHAR(150)",
-            "VARCHAR(150)",
-            "VARCHAR(50)",
-            "DATETIME",
-            "VARCHAR(50)",
-            "VARCHAR(50) UNIQUE NOT NULL"
-        ),
-    );
-    protected $BaseEntitySingleRelationshipArray = array ( // The list of entities that each object is related to once
-        "Account" => array(
-            "UserRole"),
-        "AdditionalAccountInformation" => array(
-            "Account"),
-        "PasswordReset" => array(
-            "Account"),
-	    "BackgroundProcessUpdate" => array(
-	        "BackgroundProcess"),
-        "ClientConnection" => array(
-            "Account"),
-        "ClientAuthenticationToken" => array(
-            "ClientConnection"),
-        "PushRegistration" => array(
-            "ClientAuthenticationToken","Account"),
-    );
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // To merge the Base Entities with the Project-Defined Entities
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    protected $EntityArray;
-    protected $EntityAttributeArray;
-    protected $EntityAttributeTypeArray;
-    protected $EntitySingleRelationshipArray;
-
-    protected $CurrentModule;
-
-    public function __construct() {
-	    if (class_exists("DataModelData")) {
-		    $this->EntityArray = array_merge($this->BaseEntityArray,DataModelData::$ProjectEntityArray);
-		    $this->EntityAttributeArray = array_merge($this->BaseEntityAttributeArray,DataModelData::$ProjectEntityAttributeArray);
-		    $this->EntityAttributeTypeArray = array_merge($this->BaseEntityAttributeTypeArray,DataModelData::$ProjectEntityAttributeTypeArray);
-		    $this->EntitySingleRelationshipArray = array_merge($this->BaseEntitySingleRelationshipArray,DataModelData::$ProjectEntitySingleRelationshipArray);
-		    $this->UserRoleArray = DataModelData::$UserRoleArray;
-	    } else {
-	        throw new Exception("FATAL error: Class DataModelData does not exists");
-        }
-        $this->resetCurrentModule();
-    }
-    public function setCurrentModule($ModuleName = '') {
-        $ModuleArray = $this->getModuleArray();
-        if (!array_key_exists($ModuleName, $ModuleArray)) {
-            throw new Exception("FATAL error: Data model tried to set invalid module name (input: $ModuleName) for db sync");
-        }
-        $this->CurrentModule = $ModuleName;
-    }
-    public function resetCurrentModule() {
-        $this->CurrentModule = null;
-    }
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Retrieve functions
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public function getEntities($Constraint = "ALL"/*"PROJECT","SYSTEM","ALL"*/) {
-        if (is_null($this->CurrentModule)) {
-            switch($Constraint) {
-                case "ALL": return $this->EntityArray;
-                    break;
-                case "PROJECT": return DataModelData::$ProjectEntityArray;
-                    break;
-                case "SYSTEM": return $this->BaseEntityArray;
-                    break;
-                default: return $this->EntityArray;
-            }
-        } else {
-            // When the current module is set, it means that we are synchronizing the database. For this reason, we return ALL by default
-            if ($Constraint != 'ALL') {
-                throw new Exception("Cannot get project or system entities for a specific module");
-            }
-            $ReturnArray = $this->getModuleArray();
-            return $ReturnArray[$this->CurrentModule];
-        }
-    }
-    public function getEntityModule($EntityNameStr = '') {
-        foreach(DataModelData::$ModuleArray as $Module => $EntityArray) {
-            if (in_array($EntityNameStr, $EntityArray)) {
-                return $Module;
-            }
-        }
-        return null;
-    }
-    public function getAllAttributes() {
-    	return $this->EntityAttributeArray;
-    }
-    public function getAllAttributeTypes() {
-		return $this->EntityAttributeTypeArray;
-	}
-    public function getAllSingleRelationships() {
-		return $this->EntitySingleRelationshipArray;
-	}
-    public function getAllUserRoles() {
-		return $this->UserRoleArray;
-	}
-    public function getAttributeTypeArrayForEntity($Entity) {
-		if (isset($this->EntityAttributeTypeArray[$Entity])) {
-            return $this->EntityAttributeTypeArray[$Entity];
-        }
-		return null;
-	}
-    public function getEntityAttributes($Entity) {
-        if (array_key_exists($Entity,$this->EntityAttributeArray)) {
-            return $this->EntityAttributeArray[$Entity];
-        }
-        return array("");
-    }
-    public function getEntityAttributeType($Entity,$EntityAttribute) {
-        if (array_key_exists($Entity,$this->EntityAttributeArray)) {
-            $Index = array_search($EntityAttribute, $this->EntityAttributeArray[$Entity]);
-            return $this->EntityAttributeTypeArray[$Entity][$Index];
-        }
-        return "Not Defined";
-    }
-    public function getEntitySingleRelationships($Entity) {
-        if (array_key_exists($Entity,$this->EntitySingleRelationshipArray)) {
-            return $this->EntitySingleRelationshipArray[$Entity];
-        }
-        return null;
-    }
-    public function getEntityPossibleRelationshipsRecursive($Entity,$ReturnArray = []) {
-        if (array_key_exists($Entity,$this->EntitySingleRelationshipArray)) {
-            if (ProjectFunctions::getDataSetSize($this->EntitySingleRelationshipArray[$Entity]) > 0) {
-                foreach($this->EntitySingleRelationshipArray[$Entity] as $item) {
-                    if ($item == $Entity) {
-                        continue;
-                    }
-                    if (!in_array($item, $ReturnArray)) {
-                        array_push($ReturnArray, $item);
-                    }
-                    $ReturnArray = $this->getEntityPossibleRelationshipsRecursive($item,$ReturnArray);
-                }
-            }
-            return $ReturnArray;
-        }
-        return $ReturnArray;
-    }
-    public function getEntityRelationshipPathAsString($Entity = "",$Relationship = "",$PathArray) {
-        $ReturnString = "";
-        if (array_key_exists($Entity,$this->EntitySingleRelationshipArray)) {
-            if (in_array($Relationship,$this->EntitySingleRelationshipArray[$Entity])) {
-                // Loop over path array to build path string here
-                if (ProjectFunctions::getDataSetSize($PathArray) > 0) {
-                    foreach($PathArray as $item) {
-                        $ReturnString .= $item.'Object->';
-                    }
-                }
-                return $ReturnString.$Relationship.'Object->';
-            } else {
-                foreach($this->EntitySingleRelationshipArray[$Entity] as $RelatedEntity) {
-                    array_push($PathArray,$RelatedEntity);
-                    $ReturnString = $this->getEntityRelationshipPathAsString($RelatedEntity,$Relationship,$PathArray);
-                    if (strlen($ReturnString) > 0) {
-                        break;
-                    } else {
-                        $PathArray = [];
-                    }
-                }
-                return $ReturnString;
-            }
-        } else {
-            return '';
-        }
-    }
-    public function getModuleArray() {
-        $ConfiguredModuleArray = [];
-        if (ProjectFunctions::isJson(APP_MODULES_STR)) {
-            $ConfiguredModuleArray = json_decode(APP_MODULES_STR);
-        }
-        if (!isset(DataModelData::$ModuleArray) ||
-            is_null(DataModelData::$ModuleArray) ||
-            ProjectFunctions::getDataSetSize(DataModelData::$ModuleArray) == 0) {
-            $CurrentDataModelDataModuleArray = [];
-            foreach($ConfiguredModuleArray as $Module) {
-                $CurrentDataModelDataModuleArray[$Module] = [];
-            }
-            return $CurrentDataModelDataModuleArray;
-        } else {
-            $ReturnArray = DataModelData::$ModuleArray;
-            foreach($ConfiguredModuleArray as $Module) {
-                if (!array_key_exists($Module, $ReturnArray)) {
-                    $ReturnArray[$Module] = [];
-                }
-            }
-            $AvailableModuleArray = array_keys($ReturnArray);
-            foreach($AvailableModuleArray as $ModuleName) {
-                if (!in_array($ModuleName, $ConfiguredModuleArray)) {
-                    unset($ReturnArray[$ModuleName]);
-                }
-            }
-            return $ReturnArray;
-        }
-        throw new Exception("FATAL error: No app modules are defined.");
-    }
-}
+<?php //004fb
+if(!extension_loaded('ionCube Loader')){$__oc=strtolower(substr(php_uname(),0,3));$__ln='ioncube_loader_'.$__oc.'_'.substr(phpversion(),0,3).(($__oc=='win')?'.dll':'.so');if(function_exists('dl')){@dl($__ln);}if(function_exists('_il_exec')){return _il_exec();}$__ln='/ioncube/'.$__ln;$__oid=$__id=realpath(ini_get('extension_dir'));$__here=dirname(__FILE__);if(strlen($__id)>1&&$__id[1]==':'){$__id=str_replace('\\','/',substr($__id,2));$__here=str_replace('\\','/',substr($__here,2));}$__rd=str_repeat('/..',substr_count($__id,'/')).$__here.'/';$__i=strlen($__rd);while($__i--){if($__rd[$__i]=='/'){$__lp=substr($__rd,0,$__i).$__ln;if(file_exists($__oid.$__lp)){$__ln=$__lp;break;}}}if(function_exists('dl')){@dl($__ln);}}else{die('The file '.__FILE__." is corrupted.\n");}if(function_exists('_il_exec')){return _il_exec();}echo("Site error: the ".(php_sapi_name()=='cli'?'ionCube':'<a href="http://www.ioncube.com">ionCube</a>')." PHP Loader needs to be installed. This is a widely used PHP extension for running ionCube protected PHP code, website security and malware blocking.\n\nPlease visit ".(php_sapi_name()=='cli'?'get-loader.ioncube.com':'<a href="http://get-loader.ioncube.com">get-loader.ioncube.com</a>')." for install assistance.\n\n");exit(199);
 ?>
+HR+cPwiPJqpeshDZOydQRu0nPyd6kaDl5dBkBE4Qj6CSIxvYko00cqEfedH+yEYDjFv7D6ZANv3a
+0a+ZnI1b59oQio40oE2VEsR1S7gaMU4qjqPy4HUCcrYGo2ew/7Qm18QL1nNEbJRGfovULXAvjpKl
+uJJs/B/GufaZNUAttAz+VT/c+mSrDWMYcJFPT8tND9RNKLWsdK8LbscuENiBbBnx/KwTwL6KkRSM
+Fkh45uDyjfSpBghvlcSWSrYYWxoUFHZftvGnC5fPA4viQSzGI//8WenqNF4U5b0Fot/N541I94fg
+Gkl9IAUPR5kE5fyN7riPKD4whtqRy7WGXH7wXAteRYIvMZq5OkgmCNVE1jkBSUJAWeCiNVhCiq+G
+gTS7L9MuGR8ZurLj5wwbg4JjJ2oeZZElL6ngqRBrKmTgBj032bMa36mQ7EGD7N4hCxn0jU6VNFV2
+SzQ+7hf2Io8NrA0b3DzHcXd0zBwUGafvj8LCDF88wxmgTIqInTpS6KMR+i7ChJAom7lOcT0xUwyA
+YPrS5VQcnOty0dWK+tEmfFbzKvsFItpOOPpF2JOMFO8D8KGe2cbr52JBONC8U9FX84E3AXeBXe0t
+7X5kVTZFzZR9/0dBlhHUnDGMXrpPzKVLvHNpH7rAOFdlo4FKB4wwZhkeC/Mv3Ix3A4KlWAtNyHEt
+42QvU0fBxzeBbBZbb2XOeLbbcyUsOtrKnzsqI258uGEIQE36khOSDHt+VuXqdf3WjU/AFn+lRKEJ
+ve4Y8+j6ZUFljZZD3y3EZVJZBxptYE27J14DyzTUIsGCFuLvlwnVRDCmcJ7/jUEeIW0uY11OSJaU
+X9D9HHInBzt5S/1TNb1w3HxSfjOJ5zAPY+EK1M1oVHt6phtC7pya/oqBug8+AezY8xa0X2qJn9Ag
+eU5YWoBewSURFRYaTVx9K2J5IEn/rcylvBA7jb5yuOcaO/h8/Us9XFJa85D7YqMiEeMgUfqklvYu
+SSn1OSBSjAhSNXLyHW75dzcjv1ax839cuk68YYBOA7fpS+hhDR/TSMm9LnIWmLf4ZnOU439udQlS
+7BrX4G6gkO9ncMOQUaJORq5LWNyMP99kpSf0kA2417qNlQk+HsO/Ui8OgaVqlB32cBApDFZ22zaT
+uSG8CXUfW+Bbhc3b/IHd2//A0WguMycVH9qxbTTSdszVra4h+olbNXoXA8nFD4qloMpCXe1n2XAH
+79nI3Vofab1jo0pKQht7rI88jWvSevFKN8xBxr+cDkjeG78adoQNZxMqlST3kBdGsRN14pE+WN79
+16fSfrwHJvSNyY4o2HR5Is7Vg2749NuaqWP61raFLiDy8ufNteRz4v+Ydy4t2aMGTEfiNnPqsa9C
+kTj9nBVhvwirehtqsEClh6fSAcs0gjKV0nExaVoLS3tukOsyUCdoXrihW6UMHLgiPxULJuxwhNmo
+ZjhhwTNuuT5LJye5VBa12SANis95zzqh7spMYNGwygK9oUXUDviI94laX9n31qkROJwGwic3eGht
+yYpafcHZ1HaMiigLDy1ntPANRnCunnU8gf9f3G1YDEYrXAmDviUcuy5Vv+emsjUWSZGQ3afqmVan
+BwKnAgzj91w5Dg7lasdd5iR++TZDIWIoBV59jYPMtm7PFXinDpe1HI4FO9CzdR6XByPXfnGXNTE5
+jeuqraJJfVvsQ2QFpxHYfr6UJ358NxUByEAfM8/kZdHuHktOl5aQXwjWihdAFtIjpBnTwoFv4jYm
+nmxuKuvT2yXPmHig/vCL5H9WSdBe7S2NCx+hYge3f5RgaeVEQw8JNtWMIka4P7fNQ9k3QIWjB5SN
+pwJtO+NKXd5/hCAaFhboHU8H6n6ZK67G02kyr0ABkQ6nU14N7edc9i0Y0iWwfnxG7sKC2REa3Uyx
+2DKwGetMjwsE/ytl0cn9iCEnuv1Mu5W8hUrSt3OupBYWFsftKiSK3wVyCmmnvw2H6lURRE5keF0+
+3zN+knShJqDrwgAfNNOsnXJH/miGchtmsTEnBVBpa3/ZAu6Qldk3mWRjJSOY5eTAonV6HHY8lVHN
+pUrwtiEFOTntjjWaBP6jVrjbZQhu3AuYBtPHv2LLC/aTtHQ/lqI6wGj43wn0Mb91zC/ja09oinkX
+/eluyipdt/qV0NufX2Q1hZUGlKXiT78DomMQ7txKgOxKiK4a3DoLEDMRoK6VOm0dZc7DJFzjy0MK
+BRg/iBeeaUZcixIMw0+rpkwRZbiUknVCrni908V3KUzz32AM4wtMkjPUIwrNcJWYtRxXvXT9Mido
+C1R709utOW2hZQcmTu+OcvuGQs297MrdMBkYyBT+q3W79Tpt2JKNKM2q2gbs5OJ9E2bCeL6Zxapw
+NWYRK5XYy5nY7jgwlije4BQyVTYXdDmm6mNBS3cpJUvGkShCQMehLHNMA5cMvtgL66k/AGc98PcR
+RwZlDdLwi0j9vrcGZVThZx7b77+mPzcXZSbCzeCj3xAWpi3NPTO6V+niNDSk41V3MbV+2s6VQQTN
+HK3EW68satewUqYOY9kTCwiAYBvZANms/nldMPMEuH0NB9+B0syiP3jGakQFuwVgZLp0BY6q9ub/
+LBXYuMrFp1LoODZZ/mCOLujw5+wluN8FHztiy3tGgHHqs2s5TZbWqpEIHK4qKHGu8sMczE3CuRvH
+tv5+4itanSRSJL2B8tQkMbC2zqC2ZsnHyVBa2GBNjBorqrRTyMuhjU056wZCmx3tVJPiryf0/09d
+gc81WVCd1ab+gwEdg8pVNE34GQOEmNT1LKgWCyKBE3avBR1KpEROZ7yv/5k06iLohi4CY+yEYE9H
+PrtI2oA7ImsURFQZ0VAO38PuIgJPL+E7bNvY4EdMgljdmeaHGizPTO2tSN/VYxoijhBSxKR/33k/
+K6eBYh3y1YA//zkUcQNpzksdlbZLgwFFcIeTnn23v+/E5P7isl7kZyFX9lE4kzt+H/PFZPYJX+xv
++SNE5fEzt8KwAM43V1phBjKqUqpu3aLFOdi1zYptK2pThA2H0++CJ25Y/PHcDqnOIQzZHBLYa3yB
+9Lb7DZDcaEE9Fbkh7Ddy/EqoCKYnpRcUoNhpbnmEdfRycW2uYK5xAcVQPdWijCxOSe9Ut1XrlkGQ
+MymwA/ggtBjQ0/sjey3t9N9b2nD+ix64V+UWInzEQV9M8M5pAAtY1q/1yKY3ruX1WshU5tHitznI
+OhSRAOwZ6Cns8NktfclR+GHaeHxhCgJ4V//BvDKUmo6ZwU5bGPyEVPfOGQaglVuaM64o3BDNmRPO
+4ZWcS/4TIDlebEmiuvNsppP/ODaX7ELvnOHZS6Wr6qN+y/jaLct6PxWrhR1Iftp/WqSGNrw9yaV8
+mJK+pdf3kXIHIM+mB7U4JqkGw3uZsEg70hOA+ILxHWJ84YvnExSYVdzhPTEpe2lSRlOMVLGCHjoH
+Ny//8XNlOKKPArU6+B5GRtwTCAK8S5cA/HzQvy4S9EU6BVIeHJEwEN5kCUW09H2wxGjuCidYztbQ
+FTWWde6o3S8Kifv6T+Vv/jVMWzzQr28iOktaEG9B/HfLw1cCt9G1so3izwul3/+VUPHg39mf//GJ
+WtZrOHQrqY1bWdPcZ6bga47oBdCvmLJOqCG1/vX35OVrTEdo/bVthWm3B1EFBGkbbYuNUUOW4m86
+rvaQzDDRyPHFvWYzILo38Kx3Yfs4LNiTIruNaxFA1EpqsTkhIa3Q24CQxTQHmfY1/lAhzm+6gmT9
+/vyQfdzJiiCqy4sznYQS/FB/mkd+ZHQRewWovJ/kWWONiFto9x7byFc44CrsVLrQw4o4mUzFN/0Y
+5WZkHwo6wZGpWl9jzSY2u9+P+YZcBoFj1DoYTHlQpkA1BPyTnsagtz32qp2ZN9XJYWgHgTyT7nEA
+3rrxLE1/hOj8mT86UnjGyde9HB+1yBp0ZZfinavhvCCBS1S0xBOCG++6nM2E7t1cqpWzXpbt96MF
+xFU6DbziHEwpC4eoLAajXwj3dDS7RyRysMg0mxg22aowlZs64+2vbYlwl/QRZSfl0BvwPApRFeu8
+4NLCglC8PjPv3wR1h7DdTK15AaLccYWvaWl+gi+YjdohqxJFSLoo16bLZBHP96lPjU9uFHuXG86N
+LeSIAIj5iswMODgbYW5JvEK1rQ39OjHgtiQ7xmp84BV9c4QkoTt2H4P0YzYr4XbWh/J2/2YN6LTO
+rLN8ADxz6Ge9mo+o6muPL7wp8gfPhtWiwpCTG3FrTm1Ornf9NNDcr6vY15ItEQeF07ex3mdRyHk8
+8FznvjeFPiv4ZP4fzxmALBjucNdjmukkA/1fsFek8h5LJxpc+Q5vkZvzTATtEgRInHxtR0i7lQ5W
+k9mqpAAILi5j5Jfu3f4YvyG3aos55ddqwzpr8zQLBRuuZvUS5QR76Q7gcMtec++kNBxWcb2CwiZ1
+PYDYjY6mgde8Eya7r84iAnZLmrvq920ofO3JuqYaEGFWkBQQsuJU6I9igZJoZNqQDAYjoLDmkKwf
+i9NJJTa+LulgW0KXJFpEqbGxg9OhRMOOZr0Dhb2lw1rImmHQITqbMnhBpULSiP+s2g2DPclnljYX
+BQ4bVanEoGDxIYmWS9Ee/nEK0KbpIChotbwafmWW/tcoWhimzbPHZX2js1Cd7sg+gtvVKpKw6Q0F
+A6P/JWajT3ulkAY8sAnhGX0kVx+XeWpGpLXEELllWQiJwhOfLYHXiK3Gd0seNPOpFKSfyoQv/CZj
+lWJQaxWtMeUwef/2iEQUNZ9hY4W5oaAwL+DRUki2VPgOURFzHioFbPmYe7Bef7ssDnZCO3ZQXDP9
+5VdZOG6i0OdXEAq8HiaQx7Vf8P72wWTpl/4XztBnetCJI6QCNadqJO8h0NEA8M3tnbQsaSKwU/YG
+pLuQrlA6oU62zhOQGxfHzIHv+l43D61NRQ3BMfXYeYXwvPqnDEpy48y6KXvgpR45M1E7Gm2i2bVY
+3Z1M2e7AqFWMEz60X+qRKYTZQFG9l8ZtBs3TiJiddgmKV+16MICj8BLizzYtQYlM96D9HMPIIdEO
+4f2EczyNb+YTBAAk0ZJJ74Sw18lR4H36ZHXkHJFWzAQGPYABrv2lDoTTrFHuNsRo+vfxcCUQerFx
+1yNRaxkLa20xN3HmlrefvYWzPcsv+8B0LSwu8ujDlkmmLB/RHoJ873XcPpY1e4y0XuX/e1+0rhjG
+k0Wc4feVGnlHabhDHIIKYcJFt26eCFKiS/KOE3ygZS4cXNsPuAck+WqdS2pYczDXUQgUohw0fgwG
+tTm4bu8rHnmhHvdvti365t3YLMDjTBAp/T2Yi4ZLLLQvj5ZBIGU5yp0myAeKYLe4viinCRB8O6mq
+1oFI+lDqZqMu8jfj/I95w90ORY5ocKOWKdcQFmz6msq+TvYtnqYNWHLZvJtQ9fsQKF2DvzXIaU2A
+rJhcidNU2VbiHsXprDyjgSI3OKYBPcaSmZF7q+uzjx7mm5tLSnJUv46XdDo/L3RKfzp6p10XO/fg
+bcjM0GAfLmQ6tjNa2zpvD0CNDDcKeAhULwljaYxqg8N3Rrfr6DVdFS3OsmY7aG6YNOXojnB1gCHh
+rj3IPfmXz7TSwJ0wiyQTbNqmomqTVnW840aWKK/F2rc4a5fWcxRIqmIsMIxceY4+puMcX0nm44yH
+sf8JpWVJXAiFGe8e6NT//vHdqmA2E6j+BDVXg89PKZYO0YXTwlxjnrDMBiXlg1YAh4K6reXfONBM
+N7s1dhUBmd8tWsot2MR0mBqZdJSEpORkKTFF46Xn9ltMLoHYbbBf2mBkRNbNBcNhkCkeyp31ZBsR
+gv51Fm9X7AgAPnKerWe5C9xvn9hBhhSMdCG73C1JLqPy6LztD2DfqTUONqBLGn9nLvU5LdWiy6KS
+ebLLiuXNpvHDOeryQW8stm6oW1gpu6/BbErob8UVzhpS6dX1BnPD2zGz5SOWe0kefYXh9RztEetG
+xWL19bcZ4+PKD4eIr9YsN5cpTtd0M5AN57NUKmNnViqKnFuqqe2ujd1GMsWRSdltLZMa+PSYiCnm
+uEcdTJsfDweHFYm3bimPY9Kjuwlr0CS9qgnTFtFDWn0DvNfRZzVGm7oBMTnBE4NoLTLPZLYM3vdb
+ak1cAZCovteId+GkcFq0VczYSUeRnsrcBAv8LTx5+3hSktmpIUZ/SqNY4dR5UTYktooCrlb7cB9y
+EbixNGxm61o0XQKssD3uPcrfR2+wFr5kbfii/Ft18PECJp5ZodFGgYGdc5mN7EEtYCu2qL6BZ27i
+r1shJAcMzqKszWMOyA2P9FT/GCFuIYE/l/EmTAG4gxgmomnoTH7jN/EG3EOQ/ls0LbV+WX9iPOLU
+rTg+d9rpupZ26UP35UOr3KxAUban7wLXIbe/CRSCAR58qfmnH35fOlJPJH7L5BvDLbyAGIWNtpuS
+VdOaTtVX8GteEJ3DmCcAyCbvqNumP7f25WrBkmbJ5pS3BB3B+n2vC6TAFcExSqNgWHVJn9hsCwNp
+HRD2IdmJI2Ui3mYnR3ttaHesSh++uvB242PWbdC7K2zBRrDg/5gX4d3FEY1ei2sk42z08sFr4nAE
+zQROkuz7VUF3YZUGgoHODDbxkOC9VXGYDIourw+lo3GaqUX92EzkTSjkX73KvzxzWljq5n/XIKDz
+xI4olDwRV2jt3uhmMqG7UKtfucpsw9ssJsZWsDFvw9+ihTfG8Gj2BRuqVW58+yqqXkrT//bF1077
+XnySbuf6r0jC4gPCUYmZ9GaHsS7U8MwFyzSr/mATHFQTnE8vKgRdzobbiwjOQKLT7W17j+VjY/rw
+SihgLM7f6A+VHXikmUagy9cOBor5OXH8/WD8+kd5+hjeL08GQ8Zm6isDPO+M8/geizM30P2W2GCq
+UH5pmQxyh2TUPrT5OjVoRfHg0vireBXVRSpRIp07MuxW3xBYaM5b9ZqLOro/brVjTVNjB7j9jxmg
+B2H/Qx+KY6t8eTFmYoZDDl25fSJrQJE9CPtrwcm4i2O1sGKEW47PQhewkhDqvJdJXLKbLVQhEaor
+XskHvkRgxipSZmO74Ru7g55Lvm9v94LdYY2K4LbPYscYvz3j7qC2oBk5oAIBQckh3jW6rg5QTetb
+Mgm+x6J3/FAEl7EhNxolLIKeh7sbA67LEMBb5wdvGpN/FpvGU0ht+IHcc1+JYwDVVy9ipoflmqvm
+xEKNkiIg1a7qPRWP+ONfIfUWODqK5RXiYJ6LptFwDdWlP+C+K6ZhJ90GflBT1PLL/5AQyzhheXvO
+fm4SgWb+7xpM///5an1YHtsMQ1rVWW5WAUlUcN7b8uuzW0PNAmhjRQHh5MT0dXxTXqJTAMo4sMwV
+1UexRcIf0XmC2SIpb6WVQh1jjYkDREa0OJDI2xHPlwCGkvwWeJresAfydeylnUIokRnf4Zt+9l+J
++PGusu04CE8rcB/Lf23P04Nyf9RDskNiM96+wwJo7wOkkQcji3FIRnunqV9fGaDpc6vTnzXyo4RM
+GyUjBRtLU6sOjDFlBDbu5qcjo4iWG5fEzmUuLv+KnrPLA6SBNIv4IEzktBPrKwpm5sFYSGyRvv9+
+D0RipW6nf7HrLxsOJfVPiWLvXsAccH4MNJy6JO30FGitt3ijehMslK128rnI0P1p8VL1qjUCqdBK
+083b1bZPR7zPbB7fpVCNDhIUzSQs5i43K/AnHDjuQ39jMIgGExjtEGqYCgb2kOKQTbUP63hK/Pzk
+sepUrfV4rRqLTC2zQa0RMRZbQ0fWi+BI4Hzx/m9X3S2P5GwtBtIhBCgNv/0wanKvpAgHE2A8SpPV
+4Ag7nnKMOlhhY93IynbCET8fRbzjDiLgutFd+QyNGfmU6RVS90SnYfHR6RPCd4XNGeTtZ+3otPqr
+1FNJei52qNOUKGUbFNQujBKm44Jg/fVtTgjG6S1Oxy4rtSlLVUJzJEiHU0yvrGdU/YC6lpd72OhZ
+m3R7z1Xk8brn087bGoBNyyIehETYRhLADAm4qL0EzFOPkg5HMZAP5Lj+WMGqP/e1CIp53tcXE+KH
+2DZovUU63/yLySvMFQr4rBVpzAWzIzbZ881BneIvLxIp0IzEkfrbTK8Mt9B5zycxhj1wVJsXItK1
+p9Nb2ltLwtkNNWK0AAj5Q8ZS/HsRs5+oPzfyy5KlxAU+VOSDH9xpnWRaSBOhiC8fjmjRzzQo9pLC
+jZIZGrStXgztPAoqIZtovOvmKkMJruGuxQj6Sj00acTsvD8SYmYeNMJ0HzcaNpNoxaxF6+P6ZIcV
+IoVJFZLu54U9WHdpmQE0Ge4Br5IaIOEJwZ44/4AdbgLhyuL/S4+ef6/ppXy7NLxDJKwrwrU9D7Tm
+a0ytkUEZ1yU9pjJHMIxxqkfoRhm0LzjdvFDWUBgop+X1J+SJhsokEz5pzExnfyM0bQ6wIVe/EJFN
+I96ca8FmmnsXfjz/e4LQdmnelbzm+R13p+BcG/gx3FviCtw8AbinwN89IPOZtUUMdPa4TJ7LbSvw
+V0eLR6wSD9EJ/M6gyDplWWeoPaEuPUxt4mtu2LIK3pyNhZdieu8gKJ1jkxcQPl4Fw4BbPEgaN3j/
+bw8OEmapXZzcgfa2sagUuydbf1Ejj4gmoStyCLvIEUoBe7ojn67FuT9lQ6jyXpwmm7dIp0DZDfhT
+vGVS7OPBVCOGocn2X6+NQkAbGdDI/Jhss+puoFFooHpKIghicMyCanaETti5Jtapee1n+n6Re877
+Q9ZENagRDwXbSS3KtGpj1n7/Lria7BL7QxDk1WVqJQN2nceohHQG7Ha0M/Tqet4V2JYnWPr9h2nF
+SOn63ItWygleafdmTvXVhKbS5wBYv9vJVC9NbT/DtbXI7XGuUuMsIr5rGsFUoJKfNAgDSMxH+fyM
+CCLaHSEPco/5VQIsNFjyuzkAl5R8Unhi4yZMzYo2yKq0o0zFELHgfTLm2Qq5UB+jv8dyHXQPivwd
+62GNhvmPRPOLX21koUD7KMDm9/spiY8NrT+cmqSozR+zbm1C6DN5hxU8iyeuBROTEL5DxiH/7Iov
+6eeKK7888NyX8oaS3x37dYoEVABd4jzFyyH/LG2QYqfC3BjDKDdOFYFFjLTW6/eNSUEno6lHflzQ
+Ee+D0j3AyFqdOMBHff1WOJ4ffUS9qKC6mg0e1Fg2PwOi920baAhDKdO2RBg9ijsCRPs2vh+qP3gx
+dCXF0sEKhPdRxjetDzCgCh3dCBkq4D2CU2BEWWBLtaqhsprMvvxWFoSNhqi/zH/FK5h9qQPMGVLQ
+icXKWwMzZ9aNCIhLM3MozSVKDTMJAnegwtfgGZjZnBkqrQo09X5amC9/weC1jwhGdUcsQeJMSWig
+V4pGe10qain9WuM4MsvJl47E+xPk0NetwElcvGDdVmq+46tWYs8wUL6ovTV6aXuSwgoMvBXEhGVd
+e00X48YlYaypAdv4pLvZ7O4+URDSYCYm/BAr7zqMnKqFSvPKdyTOhns/oISG8COvDga2+OTGMqlW
+2bMwuO2hOtlPvNKgz9uYJDjN5JGKpcrZiqWuLOG59r/39ws1W1DymcadwN2c4eDyBK/sWxMDbH5u
+rEd8uU5c4HKkhuocq2CaWNRa3zE8QvoQCZz1N12BTwPc0z0hhRR1Rp4NUP1Q9HaPyEhRgykgqb4p
+WJGZdoHUlMT2COg8M49Qpfn+Z9YyOSZw7FQB1vNu/3r4Nj0lzGgB4azDksgT+QQjRftuokVXlw6O
+YwGd49m20+b4C9V3IorJ/gzOLSFjPuH5Eainl57gzg5JUKbwtfc1jEUWdAW+a4Gf4M/g0LJqkDa3
+72q4Ps8YnESZpoABXeuv4P596QSOc6UEw6eNjHI542QdZa47C/MKkczBNSghBXgNcveHcF7Kmgkx
+cDpfmgBFK2x5+g44vOKsu//+3M+xkk7m4YTEXL7yQCVUWsTdPKET/zL10+P1YghaMQz+KY7ssgDh
+5uFFxQBimPHnPCRhnCpqHI7zchgutqCw9wZPm/mBSwYQELetyWnvcRKsdBZiJw7aILyN5H1zV/KZ
+rG+vZOcMEcHCkYdRyHO0/pchR/R94J4lHn5OrBTfh9uF8kMJBT7qGrd2WaTvslvpaU3U7uaYyaYT
+1idigT/wAjjvndqE2p5HeILMdSry5Ti/YeeD9n3WElFGz+JQhFjxRhPRyvnvK0gmpAH1e613uYpo
+a9SV4ybrN8ls0lxk7lRMnprrClBQoVXE/+DuA/crE5ntvDJ9pyrzku+6uRBsEc+5ui9Z90Yfq6vX
+L4MG/tGFoUD/L5gFeLKVZ/KAJaDc2tZeqT/GMt6bqAt0n55aIzaLOwC0lvj0TUDUYQ5cIWeuPGwY
+rFz56Ttcp4oWE0PdTphsRLYd81+ShF/GQkNQmTSaZIGW63Y5qDvTlTSVvVoOyLnaY5TODEQyD2QU
+LXTj2e1Vaj9tkSKdfMUGWN7u3ZVOlgWlyr8ouv3X9uIkzqF2+KB8y1AvQ8jTyMXMcThyn6iXSTEJ
+0KNFkoOhGL7jSxVoXrIjdEvNZo3bdZh1V9nNUsTXxcPzIIzsWNmO5FfRcdJhi6RMass/Vtw1WEL6
+pgwPrNuA5FSzbIzWnGEx3h3MWvNB7jE30iuKZX9Uhmy9lvlUyf1Cy/OvoH47s06944OQLsg9r6Q4
+JfAjwrFlZBp7ioQNVHe53aFqINrCfkpA7Ia6O3/5BJZ8n527GeKMwMKB4IBN0OdZCa4xs99pwpOX
+1a/U8I6nWqkfehqCdY1HVIPzCvt0q8o2wfzgqjoU33ZfaosWSiGFkexvndLN+Z52yGzwssxXNTAk
++K64obbfA9IY78+CsOvV9BHNkTMYagTFoqpeSSadGnHF8nbMNmTie9ID/zRP1bVkQr+V5d3a/pkJ
+dU227fPj9uP1ONfYNbAQ8hHZ8bTyKkkYgh8c9KC1WIwCwy2sOoBGwneDMpZ5gumUjnDDc710Q3sj
+FXA2/8zNEuyepzO4P7pkoXl+ZZ1rWPFCUtcDJ4L3qrk23i5Y0ebDXSeHkv3HZjPfXu4hr/eFhnVd
+AYuFp2P6U4fOPRkCblieSSS+4VZmdsJBES9sKJYNEDfHjAUB+PnXr+oxrxzC54A6LMQVmNjMWKDD
+Gnbrw1zFW07KXQTbgmIDAwhqGINWZJUgJoVJlpNi3P9YD9H5kWxHmF/KUMCMI16k5bbCkjoa+Xmf
+1oAMmCqSWm5Y7GFyLQmhdaXNtOuUi/i3iZWpNLrLf+d4IQXCCoKgM3THn7q8O+EHMJuWct8oaYoK
+2Gu5Y7BzBLKw2fZ+q2y4MG55tpz9gt3YrG1Z4sCdZtFStNaX0Zsfaf+GIXDndQ8PLs3z4lPh/iYz
+v6YnXH9LNjG8WHV5oHvwt+RPQ8yluQW7vuifEdzFstT3exwrIG7H3h00f/Yg43O5fTUzWJ6jNhkr
+GvzkjzKEGP2axuLBL0eoknSKf4L94mpvKK65KR3ctv45AHolHeM9xcqSMrVwV8wxn5B9vI5nWupV
+zu7qEvQ4YOqg4IWpYtYoxWl49aolab9AqGEyYbrkFkzVLRQtlrB0bVE2Qs48zVIrFaWNKwUAjJUx
+h9uBBv1V2CCsfVwmXVBtxTuNDMMLcM+AvHy1n8oQvhmpPSymZfSq2BoXVD/7kaS4Bw92VmwqtLS0
+wuXRBdn4T/JrPiK4TJ1aHAzupKkARYvJi7RhjQlycj/0+CAVmDP/JFMV2OAectjr3nLQoY6t2+TF
+6yQAPPRAql/cTdQX9XuOn54xf0LvUPBkiP2XD1tl0uhJpwWIRurI7aRJRkCR0S/HQMRNZX+sbPEl
+lasivTO1j0sf3+dczrLxly1Y085iivBvxu28QmOdqJObSvx1BS64qpwFQqzSY/SBiJSxbVf/6hEL
+BMylYnkcsFTcW7OXBrbxEa6VqlnRdg4J659oOzfU02+NxAB7qkLcbctz3/6Q84ZzTRT6MycX8RUZ
+iWObBleqMYqWqliGBsGTyyx5mTr5/muk/+EPcAo1Yg7CcvdxM4t7MTe69XL5FKCAtEW8/0cXG55s
+UNNDgnuwkbeULPU1odvyWWkPEzwbsYmVwfb4FVW8OI1nqT9oLcxsj5p5hO1xtsTzYhTVZv25YRv3
+gize8aflS2R/lkG8Lmen5djt1aizf6xU8JeKVKMfpsQvb3uoXlqz2tsJOU1xYcmBK2zybvddFhkc
+Cezb+Da3JUn24qFwIGEScazgjgXLrbsI+jees8KNa4n2p79qSk8jZkY3jVDRh2B+mDwxJjo70vdi
+yVmbU955aLjYgyM10wf+MrdZC57BQBw8+oO7EtSKNR2QV8/SqGX1o9J+rxqWx3/qmPVCU4//ILsN
++sInAL4VWxU8CwK72WQW8nBQluss4LGZoAWLtkIqCpO/Tof20RDQ/FmcAjQkFPjnVKW/a107wFoo
+tQQKnHkULBi7pvBmqQ+KsTQZ3VtI55Mw7lPyKIHr5zfJoTy551oXVPzHfnzXLY6gWUbVD5dJfEy0
+yXYuaCqWMH7lveoxEZVZLdOMqybJtXuuaDBqbZfw3bcj2JRtnwNS7Uw0xH33t1Fad6Pdy5A8CLP8
+dt51e2zrhwhYGo/g6aIFDAcXQow/ruprYf2DvULa/UasiLOTletIKgL3zDbbeICzIXuffkf0W8fd
+Dh9Clb8uqNyv5SEb1jEVSLqd/YZ1AGO/8pCzvdm/qaq5st5mCxTqAwY7+yEVHEMjftswtMxo87WR
+O2ZvpyXE6pK3GlGZjaj0zYAkY2E307dBwJUF0O17rH1CfGofrMW+kZWqn3gonQiGVO2SeoYUTzV/
+Sl5HxrfqGVjf+joyJUyNODNpgyntW46T5ygBqMY8f+9IevJlkdN7SYpYqkhCh16lLmFPksXX7M8j
+KVvrYXOXbDpI+Qnwf1kvp8ilLmb4TRYJO7H3TzaUfym8mboXaMvlsIkKLC+wCUaF9rw4IaLcFUgM
+Bz8XcH50aRBYzj4+btmkrbk3mpX1ZYY+UooZnQNzu6N7vGGObkjowv5gBfif3a6KPkp1XQcYkgCY
+/+0wWAmddYZ+vEIa10yPhiTPkqukaPUfk+o6em2JyHRUwYd0WqYRGzlaFNQQTqHzyvyvJDldjuju
+MifnzOFarGNGLMMvsau/kTkJtBoF/ROk/fWI1vDY35h/bGI8GL3I8/9H7VWuH3AqPKwOHY0xOPnr
+XKRKefD7A6m7Vvnqbyq2Qm1kksSmNQS0XeOPnjasMaO174fMnU7AQ0ykePr4oClEEn0N2SRTY3E7
+4HRQ3ffMmjkkB5AuKNkhjwW0JJdY8IOMNW8iKCuYbko+BZX2YizApub1vfqrLBGJKPu5rDYMygXR
+W04el9RXbD9Tzgn3pomXN8cko6QWCfcEWlTNQ3WLD0oVJXpsVkoOluFLtRg9u5HSmQ2Th3sprVe=

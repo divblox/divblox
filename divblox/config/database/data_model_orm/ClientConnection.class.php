@@ -43,92 +43,6 @@ class ClientConnection extends ClientConnectionGen {
         if (!is_numeric($this->intObjectOwner)) {
             $this->intObjectOwner = ProjectFunctions::getCurrentAccountId();
         }*/
-        $ExistingObj = ClientConnection::Load($this->intId);
-        $newAuditLogEntry = new AuditLogEntry();
-        $ChangedArray = array();
-        $newAuditLogEntry->EntryTimeStamp = dxDateTime::Now();
-        $newAuditLogEntry->ObjectId = $this->intId;
-        $newAuditLogEntry->ObjectName = 'ClientConnection';
-        $newAuditLogEntry->UserEmail = ProjectFunctions::getCurrentUserEmailForAudit();
-        if (!$ExistingObj) {
-            $newAuditLogEntry->ModificationType = 'Create';
-            $ChangedArray = array_merge($ChangedArray,array("Id" => $this->intId));
-            $ChangedArray = array_merge($ChangedArray,array("ClientIpAddress" => $this->strClientIpAddress));
-            $ChangedArray = array_merge($ChangedArray,array("ClientUserAgent" => $this->strClientUserAgent));
-            $ChangedArray = array_merge($ChangedArray,array("UpdateDateTime" => $this->dttUpdateDateTime));
-            $ChangedArray = array_merge($ChangedArray,array("Account" => $this->intAccount));
-            $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
-            $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
-            $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
-            $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
-        } else {
-            $newAuditLogEntry->ModificationType = 'Update';
-            $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->Id)) {
-                $ExistingValueStr = $ExistingObj->Id;
-            }
-            if ($ExistingObj->Id != $this->intId) {
-                $ChangedArray = array_merge($ChangedArray,array("Id" => array("Before" => $ExistingValueStr,"After" => $this->intId)));
-                //$ChangedArray = array_merge($ChangedArray,array("Id" => "From: ".$ExistingValueStr." to: ".$this->intId));
-            }
-            $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->ClientIpAddress)) {
-                $ExistingValueStr = $ExistingObj->ClientIpAddress;
-            }
-            if ($ExistingObj->ClientIpAddress != $this->strClientIpAddress) {
-                $ChangedArray = array_merge($ChangedArray,array("ClientIpAddress" => array("Before" => $ExistingValueStr,"After" => $this->strClientIpAddress)));
-                //$ChangedArray = array_merge($ChangedArray,array("ClientIpAddress" => "From: ".$ExistingValueStr." to: ".$this->strClientIpAddress));
-            }
-            $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->ClientUserAgent)) {
-                $ExistingValueStr = $ExistingObj->ClientUserAgent;
-            }
-            if ($ExistingObj->ClientUserAgent != $this->strClientUserAgent) {
-                $ChangedArray = array_merge($ChangedArray,array("ClientUserAgent" => array("Before" => $ExistingValueStr,"After" => $this->strClientUserAgent)));
-                //$ChangedArray = array_merge($ChangedArray,array("ClientUserAgent" => "From: ".$ExistingValueStr." to: ".$this->strClientUserAgent));
-            }
-            $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->UpdateDateTime)) {
-                $ExistingValueStr = $ExistingObj->UpdateDateTime;
-            }
-            if ($ExistingObj->UpdateDateTime != $this->dttUpdateDateTime) {
-                $ChangedArray = array_merge($ChangedArray,array("UpdateDateTime" => array("Before" => $ExistingValueStr,"After" => $this->dttUpdateDateTime)));
-                //$ChangedArray = array_merge($ChangedArray,array("UpdateDateTime" => "From: ".$ExistingValueStr." to: ".$this->dttUpdateDateTime));
-            }
-            $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->Account)) {
-                $ExistingValueStr = $ExistingObj->Account;
-            }
-            if ($ExistingObj->Account != $this->intAccount) {
-                $ChangedArray = array_merge($ChangedArray,array("Account" => array("Before" => $ExistingValueStr,"After" => $this->intAccount)));
-                //$ChangedArray = array_merge($ChangedArray,array("Account" => "From: ".$ExistingValueStr." to: ".$this->intAccount));
-            }
-            $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->SearchMetaInfo)) {
-                $ExistingValueStr = $ExistingObj->SearchMetaInfo;
-            }
-            if ($ExistingObj->SearchMetaInfo != $this->strSearchMetaInfo) {
-                $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => array("Before" => $ExistingValueStr,"After" => $this->strSearchMetaInfo)));
-                //$ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => "From: ".$ExistingValueStr." to: ".$this->strSearchMetaInfo));
-            }
-            $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->LastUpdated)) {
-                $ExistingValueStr = $ExistingObj->LastUpdated;
-            }
-            if ($ExistingObj->LastUpdated != $this->strLastUpdated) {
-                $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => array("Before" => $ExistingValueStr,"After" => $this->strLastUpdated)));
-                //$ChangedArray = array_merge($ChangedArray,array("LastUpdated" => "From: ".$ExistingValueStr." to: ".$this->strLastUpdated));
-            }
-            $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->ObjectOwner)) {
-                $ExistingValueStr = $ExistingObj->ObjectOwner;
-            }
-            if ($ExistingObj->ObjectOwner != $this->intObjectOwner) {
-                $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => array("Before" => $ExistingValueStr,"After" => $this->intObjectOwner)));
-                //$ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => "From: ".$ExistingValueStr." to: ".$this->intObjectOwner));
-            }
-            $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
-        }
         try {
             if ((!$this->__blnRestored) || ($blnForceInsert)) {
                 //JGL: No object access is required for this
@@ -194,12 +108,6 @@ class ClientConnection extends ClientConnectionGen {
             $objExc->IncrementOffset();
             throw $objExc;
         }
-        try {
-            $newAuditLogEntry->ObjectId = $this->intId;
-            $newAuditLogEntry->Save();
-        } catch(dxCallerException $e) {
-            error_log('Could not save audit log while saving ClientConnection. Details: '.$newAuditLogEntry->getJson().'<br>Error details: '.$e->getMessage());
-        }
         // Update __blnRestored and any Non-Identity PK Columns (if applicable)
         $this->__blnRestored = true;
 
@@ -234,27 +142,6 @@ class ClientConnection extends ClientConnectionGen {
 
         // Get the Database Object for this Class
         $objDatabase = ClientConnection::GetDatabase();
-        $newAuditLogEntry = new AuditLogEntry();
-        $ChangedArray = array();
-        $newAuditLogEntry->EntryTimeStamp = dxDateTime::Now();
-        $newAuditLogEntry->ObjectId = $this->intId;
-        $newAuditLogEntry->ObjectName = 'ClientConnection';
-        $newAuditLogEntry->UserEmail = ProjectFunctions::getCurrentUserEmailForAudit();
-        $newAuditLogEntry->ModificationType = 'Delete';
-        $ChangedArray = array_merge($ChangedArray,array("Id" => $this->intId));
-        $ChangedArray = array_merge($ChangedArray,array("ClientIpAddress" => $this->strClientIpAddress));
-        $ChangedArray = array_merge($ChangedArray,array("ClientUserAgent" => $this->strClientUserAgent));
-        $ChangedArray = array_merge($ChangedArray,array("UpdateDateTime" => $this->dttUpdateDateTime));
-        $ChangedArray = array_merge($ChangedArray,array("Account" => $this->intAccount));
-        $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
-        $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
-        $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
-        $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
-        try {
-            $newAuditLogEntry->Save();
-        } catch(dxCallerException $e) {
-            error_log('Could not save audit log while deleting ClientConnection. Details: '.$newAuditLogEntry->getJson().'<br>Error details: '.$e->getMessage());
-        }
 
         // Perform the SQL Query
         $objDatabase->NonQuery('

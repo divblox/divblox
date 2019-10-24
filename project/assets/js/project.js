@@ -73,10 +73,10 @@ function presentOfflineRequestBlockedMessage() {
  */
 function logout() {
 	current_user_profile_picture_path = "";
+    registerUserRole("anonymous");
 	dxRequestInternal(getRootPath()+"project/assets/php/global_request_handler.php",{f:"logoutCurrentAccount"},
 		function(data_obj) {
 			if (data_obj.Result === "Success") {
-				setItemInLocalStorage("dx_role","anonymous");
 				loadUserRoleLandingPage("anonymous");
 			}
 		},
