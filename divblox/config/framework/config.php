@@ -9,8 +9,12 @@ require_once("environments.php");
 if (!isset($EnvironmentArray)) {
     die(json_encode(array("Error" => 'Error in config file environments.php. Invalid environments array. For a quick fix, delete the file environments.php')));
 }
-
-$CurrentDocumentRoot = $_SERVER["DOCUMENT_ROOT"];
+if (!isset($_SERVER["DOCUMENT_ROOT"])) {
+    die(json_encode(array("Error" => 'Document root cannot be determined. Please configure manually in config.php')));
+    //Example for hardcoding the document root: $CurrentDocumentRoot = '/usr/www/users/username';
+} else {
+    $CurrentDocumentRoot = $_SERVER["DOCUMENT_ROOT"];
+}
 $CurrentEnvironment = null;
 $CurrentEnvironmentInstanceName = 'default';
 $CurrentPath = str_replace('\\','/',dirname(__FILE__));

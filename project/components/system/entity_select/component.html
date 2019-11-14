@@ -1,0 +1,28 @@
+<div id="ComponentWrapper" class="component-wrapper">
+    <div id="ComponentPlaceholder" class="component_placeholder component_placeholder_general">
+        <div id="ComponentFeedback"></div>
+    </div>
+    <div id="ComponentContent" class="component-content" style="display:none">
+        <div class="row mb-3">
+            <div class="col-12">
+                <div id="SelectInputWrapper" class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="EntitySelectLabel"></span>
+                    </div>
+                    <input id="SelectInput" name="SelectInput" type="text" class="form-control appended-input" placeholder="Tap to select...">
+                    <div class="input-group-append">
+                        <span id="SelectInputActionButton" class="input-group-text input-group-text-transparent dropdown-toggle"></span>
+                    </div>
+                    <div id="SelectInputInvalidFeedback" class="invalid-feedback">
+                        Please select an option
+                    </div>
+                </div>
+                <div id="SelectListWrapper" style="max-height: 300px;position: absolute;overflow:scroll;z-index: 1;">
+                    <div id="SelectList" class="list-group">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

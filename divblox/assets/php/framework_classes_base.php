@@ -7813,6 +7813,7 @@ class ComponentController_base {
         $this->setReturnValue("Message","Component ready");
         if (!ProjectAccessManager::getComponentAccess(ProjectFunctions::getCurrentAccountId(),$this->ComponentNameStr)) {
             $this->setReturnValue("Result","Failed");
+            $this->setReturnValue("ForceLogout",true);
             $this->setReturnValue("Message","Access is denied for component '".$this->ComponentNameStr."'");
             $this->presentOutput();
         }

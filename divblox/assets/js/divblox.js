@@ -12,7 +12,7 @@
  * divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "1.3.1";
+let dx_version = "1.4.0";
 let bootstrap_version = "4.3.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.2";
@@ -48,6 +48,7 @@ if(window.jQuery === undefined) {
 	throw new Error("jQuery has not been loaded. Please ensure that jQuery is loaded before divblox");
 }
 let component_classes = {};
+let dx_admin_roles = ["dxadmin","administrator"];
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * divblox initialization related functions
@@ -687,6 +688,13 @@ class DivbloxDomBaseComponent {
 		initFeedbackCapture();
 		loadCurrentUserProfilePicture();
 		renderAppLogo();
+		let current_user_role = getCurrentUserRoleFromAppState();
+		if (current_user_role == null) {return;}
+		if (dx_admin_roles.indexOf(current_user_role.toLowerCase()) != -1) {
+			$('.administrator-visible').show();
+		} else {
+			$('.'+current_user_role.toLowerCase()+'-visible').show();
+		}
 	}
 }
 /**
@@ -1499,6 +1507,13 @@ function dxRequestInternalQueued(url,parameters,on_success,on_fail,trigger_eleme
 				if (typeof data_obj.AuthenticationToken !== "undefined") {
 					authentication_token = data_obj.AuthenticationToken;
 					updateAppState('dxAuthenticationToken',authentication_token);
+				}
+				if (typeof data_obj.ForceLogout !== "undefined") {
+					if (data_obj.ForceLogout) {
+						dxLog("A force logout was received. Full return: "+data);
+						logout();
+						return;
+					}
 				}
 				if (data_obj.Result != "Success") {
 					on_fail(data_obj);
