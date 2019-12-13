@@ -19,6 +19,8 @@ var app = {
     // 'pause', 'resume', etc.
     onDeviceReady: function() {
         this.receivedEvent('deviceready');
+        document.addEventListener("pause", onNativePause, false);
+        document.addEventListener("resume", onNativeResume, false);
     },
 
     // Update DOM on a Received Event

@@ -12,7 +12,7 @@
  * divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "1.4.0";
+let dx_version = "2.0.0";
 let bootstrap_version = "4.3.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.2";
@@ -695,6 +695,18 @@ class DivbloxDomBaseComponent {
 		} else {
 			$('.'+current_user_role.toLowerCase()+'-visible').show();
 		}
+	}
+	/**
+	 * Fires when the native app is paused
+	 */
+	onNativePause() {
+		//TODO: Implement this if required
+	}
+	/**
+	 * Fires when the native app is resumed
+	 */
+	onNativeResume() {
+		//TODO: Implement this if required
 	}
 }
 /**
@@ -1590,7 +1602,6 @@ function dxGetScript(url,on_success,on_fail,force_cache) {
 		}).length;
 		
 		if (len === 0) {
-			console.log("script tag for "+url+" not yet in scope");
 			let script_element = document.createElement('script');
 			document.getElementsByTagName('head')[0].appendChild(script_element);
 			script_element.src = url;
@@ -1609,7 +1620,6 @@ function dxGetScript(url,on_success,on_fail,force_cache) {
 				on_success();
 			};
 		} else {
-			console.log("script tag for "+url+" ALREADY in scope");
 			if (force_cache) {
 				cache_scripts_loaded.push(url);
 			}
@@ -2446,7 +2456,6 @@ function getGlobalConstrainById(entity) {
  */
 function initNative() {
 	updateAppState('divblox_config','success');
-	console.log("dx native init");
 }
 /**
  * Stores a key:value pairing in local storage
@@ -2475,5 +2484,31 @@ function getItemInLocalStorage(item_key) {
 		return localStorage[item_key];
 	}
 	return null;
+}
+/**
+ * Fires when the native app is paused
+ */
+function onNativePause() {
+	getRegisteredComponent(page_uid).onNativePause();
+}
+/**
+ * Fires when the native app is resumed
+ */
+function onNativeResume() {
+	getRegisteredComponent(page_uid).onNativeResume();
+	initPushNotifications();
+}
+/**
+ * Function to be implemented in project.js for handling the reception of push notifications
+ * @param data The data received.
+ // data.message,
+ // data.title,
+ // data.count,
+ // data.sound,
+ // data.image,
+ // data.additionalData
+ */
+function handleReceivePushNotification(data) {
+	dxLog("Push notification received. Data: "+JSON.stringify(data));
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

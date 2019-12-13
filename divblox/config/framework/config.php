@@ -10,6 +10,7 @@ if (!isset($EnvironmentArray)) {
     die(json_encode(array("Error" => 'Error in config file environments.php. Invalid environments array. For a quick fix, delete the file environments.php')));
 }
 if (!isset($_SERVER["DOCUMENT_ROOT"])) {
+    error_log("Document root cannot be determined. Please configure manually in config.php");
     die(json_encode(array("Error" => 'Document root cannot be determined. Please configure manually in config.php')));
     //Example for hardcoding the document root: $CurrentDocumentRoot = '/usr/www/users/username';
 } else {
@@ -96,6 +97,12 @@ define("AUTHENTICATION_TOKEN_STR","auth_token_".str_replace(" ", "_", strtolower
 define("COMPONENT_BUILDER_EDITOR_THEME_STR","LIGHT");// Options are LIGHT or DARK
 define("SANDBOX_ACTIVE_BOOL",false); // If true, will disable certain setup page features
 define("DISABLE_COMPONENT_SECURITY_CHECKS_BOOL",false); // If true, will disable checking if a user should have access to a component. NB! THIS GIVES ACCESS TO ALL COMPONENTS TO ANY USER!!!
+
+//Firebase configuration for push notifications
+//api_key in Firebase Console -> Project Settings -> CLOUD MESSAGING -> Server key
+define("FIREBASE_SERVER_KEY_STR",'xxxxxxxxxxxxxxxxx');
+//FCM API end-point
+define("FIREBASE_FCM_ENDPOINT_STR",'https://fcm.googleapis.com/fcm/send');
 
 require_once(DATA_MODELLER_PATH_STR.'/data_model/DataModel_Config.inc.php');
 require_once(DATA_MODELLER_PATH_STR.'/data_model/DataModel.class.php');

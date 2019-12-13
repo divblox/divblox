@@ -23,6 +23,7 @@
  * @property dxDateTime $RegistrationDateTime the value for dttRegistrationDateTime 
  * @property string $RegistrationStatus the value for strRegistrationStatus 
  * @property string $InternalUniqueId the value for strInternalUniqueId (Unique)
+ * @property integer $CurrentBadgeCount the value for intCurrentBadgeCount 
  * @property integer $ClientAuthenticationToken the value for intClientAuthenticationToken 
  * @property string $SearchMetaInfo the value for strSearchMetaInfo 
  * @property integer $Account the value for intAccount 
@@ -105,6 +106,14 @@ class PushRegistrationGen extends dxBaseClass implements IteratorAggregate {
     protected $strInternalUniqueId;
     const InternalUniqueIdMaxLength = 50;
     const InternalUniqueIdDefault = null;
+
+
+    /**
+     * Protected member variable that maps to the database column PushRegistration.CurrentBadgeCount
+     * @var integer intCurrentBadgeCount
+     */
+    protected $intCurrentBadgeCount;
+    const CurrentBadgeCountDefault = null;
 
 
     /**
@@ -199,6 +208,7 @@ class PushRegistrationGen extends dxBaseClass implements IteratorAggregate {
         $this->dttRegistrationDateTime = (PushRegistration::RegistrationDateTimeDefault === null)?null:new dxDateTime(PushRegistration::RegistrationDateTimeDefault);
         $this->strRegistrationStatus = PushRegistration::RegistrationStatusDefault;
         $this->strInternalUniqueId = PushRegistration::InternalUniqueIdDefault;
+        $this->intCurrentBadgeCount = PushRegistration::CurrentBadgeCountDefault;
         $this->intClientAuthenticationToken = PushRegistration::ClientAuthenticationTokenDefault;
         $this->strSearchMetaInfo = PushRegistration::SearchMetaInfoDefault;
         $this->intAccount = PushRegistration::AccountDefault;
@@ -548,6 +558,7 @@ class PushRegistrationGen extends dxBaseClass implements IteratorAggregate {
             $objBuilder->AddSelectItem($strTableName, 'RegistrationDateTime', $strAliasPrefix . 'RegistrationDateTime');
             $objBuilder->AddSelectItem($strTableName, 'RegistrationStatus', $strAliasPrefix . 'RegistrationStatus');
             $objBuilder->AddSelectItem($strTableName, 'InternalUniqueId', $strAliasPrefix . 'InternalUniqueId');
+            $objBuilder->AddSelectItem($strTableName, 'CurrentBadgeCount', $strAliasPrefix . 'CurrentBadgeCount');
             $objBuilder->AddSelectItem($strTableName, 'ClientAuthenticationToken', $strAliasPrefix . 'ClientAuthenticationToken');
             $objBuilder->AddSelectItem($strTableName, 'SearchMetaInfo', $strAliasPrefix . 'SearchMetaInfo');
             $objBuilder->AddSelectItem($strTableName, 'Account', $strAliasPrefix . 'Account');
@@ -698,6 +709,9 @@ class PushRegistrationGen extends dxBaseClass implements IteratorAggregate {
         $strAlias = $strAliasPrefix . 'InternalUniqueId';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->strInternalUniqueId = $objDbRow->GetColumn($strAliasName, 'VarChar');
+        $strAlias = $strAliasPrefix . 'CurrentBadgeCount';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->intCurrentBadgeCount = $objDbRow->GetColumn($strAliasName, 'Integer');
         $strAlias = $strAliasPrefix . 'ClientAuthenticationToken';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intClientAuthenticationToken = $objDbRow->GetColumn($strAliasName, 'Integer');
@@ -968,6 +982,7 @@ class PushRegistrationGen extends dxBaseClass implements IteratorAggregate {
             $ChangedArray = array_merge($ChangedArray,array("RegistrationDateTime" => $this->dttRegistrationDateTime));
             $ChangedArray = array_merge($ChangedArray,array("RegistrationStatus" => $this->strRegistrationStatus));
             $ChangedArray = array_merge($ChangedArray,array("InternalUniqueId" => $this->strInternalUniqueId));
+            $ChangedArray = array_merge($ChangedArray,array("CurrentBadgeCount" => $this->intCurrentBadgeCount));
             $ChangedArray = array_merge($ChangedArray,array("ClientAuthenticationToken" => $this->intClientAuthenticationToken));
             $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
             $ChangedArray = array_merge($ChangedArray,array("Account" => $this->intAccount));
@@ -1041,6 +1056,14 @@ class PushRegistrationGen extends dxBaseClass implements IteratorAggregate {
                 //$ChangedArray = array_merge($ChangedArray,array("InternalUniqueId" => "From: ".$ExistingValueStr." to: ".$this->strInternalUniqueId));
             }
             $ExistingValueStr = "NULL";
+            if (!is_null($ExistingObj->CurrentBadgeCount)) {
+                $ExistingValueStr = $ExistingObj->CurrentBadgeCount;
+            }
+            if ($ExistingObj->CurrentBadgeCount != $this->intCurrentBadgeCount) {
+                $ChangedArray = array_merge($ChangedArray,array("CurrentBadgeCount" => array("Before" => $ExistingValueStr,"After" => $this->intCurrentBadgeCount)));
+                //$ChangedArray = array_merge($ChangedArray,array("CurrentBadgeCount" => "From: ".$ExistingValueStr." to: ".$this->intCurrentBadgeCount));
+            }
+            $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->ClientAuthenticationToken)) {
                 $ExistingValueStr = $ExistingObj->ClientAuthenticationToken;
             }
@@ -1098,6 +1121,7 @@ class PushRegistrationGen extends dxBaseClass implements IteratorAggregate {
 							`RegistrationDateTime`,
 							`RegistrationStatus`,
 							`InternalUniqueId`,
+							`CurrentBadgeCount`,
 							`ClientAuthenticationToken`,
 							`SearchMetaInfo`,
 							`Account`,
@@ -1110,6 +1134,7 @@ class PushRegistrationGen extends dxBaseClass implements IteratorAggregate {
 							' . $objDatabase->SqlVariable($this->dttRegistrationDateTime) . ',
 							' . $objDatabase->SqlVariable($this->strRegistrationStatus) . ',
 							' . $objDatabase->SqlVariable($this->strInternalUniqueId) . ',
+							' . $objDatabase->SqlVariable($this->intCurrentBadgeCount) . ',
 							' . $objDatabase->SqlVariable($this->intClientAuthenticationToken) . ',
 							' . $objDatabase->SqlVariable($this->strSearchMetaInfo) . ',
 							' . $objDatabase->SqlVariable($this->intAccount) . ',
@@ -1146,6 +1171,7 @@ class PushRegistrationGen extends dxBaseClass implements IteratorAggregate {
 							`RegistrationDateTime` = ' . $objDatabase->SqlVariable($this->dttRegistrationDateTime) . ',
 							`RegistrationStatus` = ' . $objDatabase->SqlVariable($this->strRegistrationStatus) . ',
 							`InternalUniqueId` = ' . $objDatabase->SqlVariable($this->strInternalUniqueId) . ',
+							`CurrentBadgeCount` = ' . $objDatabase->SqlVariable($this->intCurrentBadgeCount) . ',
 							`ClientAuthenticationToken` = ' . $objDatabase->SqlVariable($this->intClientAuthenticationToken) . ',
 							`SearchMetaInfo` = ' . $objDatabase->SqlVariable($this->strSearchMetaInfo) . ',
 							`Account` = ' . $objDatabase->SqlVariable($this->intAccount) . ',
@@ -1211,6 +1237,7 @@ class PushRegistrationGen extends dxBaseClass implements IteratorAggregate {
         $ChangedArray = array_merge($ChangedArray,array("RegistrationDateTime" => $this->dttRegistrationDateTime));
         $ChangedArray = array_merge($ChangedArray,array("RegistrationStatus" => $this->strRegistrationStatus));
         $ChangedArray = array_merge($ChangedArray,array("InternalUniqueId" => $this->strInternalUniqueId));
+        $ChangedArray = array_merge($ChangedArray,array("CurrentBadgeCount" => $this->intCurrentBadgeCount));
         $ChangedArray = array_merge($ChangedArray,array("ClientAuthenticationToken" => $this->intClientAuthenticationToken));
         $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
         $ChangedArray = array_merge($ChangedArray,array("Account" => $this->intAccount));
@@ -1300,6 +1327,7 @@ class PushRegistrationGen extends dxBaseClass implements IteratorAggregate {
         $this->dttRegistrationDateTime = $objReloaded->dttRegistrationDateTime;
         $this->strRegistrationStatus = $objReloaded->strRegistrationStatus;
         $this->strInternalUniqueId = $objReloaded->strInternalUniqueId;
+        $this->intCurrentBadgeCount = $objReloaded->intCurrentBadgeCount;
         $this->ClientAuthenticationToken = $objReloaded->ClientAuthenticationToken;
         $this->strSearchMetaInfo = $objReloaded->strSearchMetaInfo;
         $this->Account = $objReloaded->Account;
@@ -1377,6 +1405,13 @@ class PushRegistrationGen extends dxBaseClass implements IteratorAggregate {
                  * @return string
                  */
                 return $this->strInternalUniqueId;
+
+            case 'CurrentBadgeCount':
+                /**
+                 * Gets the value for intCurrentBadgeCount 
+                 * @return integer
+                 */
+                return $this->intCurrentBadgeCount;
 
             case 'ClientAuthenticationToken':
                 /**
@@ -1563,6 +1598,19 @@ class PushRegistrationGen extends dxBaseClass implements IteratorAggregate {
                  */
                 try {
                     return ($this->strInternalUniqueId = dxType::Cast($mixValue, dxType::String));
+                } catch (dxCallerException $objExc) {
+                    $objExc->IncrementOffset();
+                    throw $objExc;
+                }
+
+            case 'CurrentBadgeCount':
+                /**
+                 * Sets the value for intCurrentBadgeCount 
+                 * @param integer $mixValue
+                 * @return integer
+                 */
+                try {
+                    return ($this->intCurrentBadgeCount = dxType::Cast($mixValue, dxType::Integer));
                 } catch (dxCallerException $objExc) {
                     $objExc->IncrementOffset();
                     throw $objExc;
@@ -1762,6 +1810,7 @@ class PushRegistrationGen extends dxBaseClass implements IteratorAggregate {
         $strToReturn .= '<element name="RegistrationDateTime" type="xsd:dateTime"/>';
         $strToReturn .= '<element name="RegistrationStatus" type="xsd:string"/>';
         $strToReturn .= '<element name="InternalUniqueId" type="xsd:string"/>';
+        $strToReturn .= '<element name="CurrentBadgeCount" type="xsd:int"/>';
         $strToReturn .= '<element name="ClientAuthenticationTokenObject" type="xsd1:ClientAuthenticationToken"/>';
         $strToReturn .= '<element name="SearchMetaInfo" type="xsd:string"/>';
         $strToReturn .= '<element name="AccountObject" type="xsd1:Account"/>';
@@ -1807,6 +1856,8 @@ class PushRegistrationGen extends dxBaseClass implements IteratorAggregate {
             $objToReturn->strRegistrationStatus = $objSoapObject->RegistrationStatus;
         if (property_exists($objSoapObject, 'InternalUniqueId'))
             $objToReturn->strInternalUniqueId = $objSoapObject->InternalUniqueId;
+        if (property_exists($objSoapObject, 'CurrentBadgeCount'))
+            $objToReturn->intCurrentBadgeCount = $objSoapObject->CurrentBadgeCount;
         if ((property_exists($objSoapObject, 'ClientAuthenticationTokenObject')) &&
             ($objSoapObject->ClientAuthenticationTokenObject))
             $objToReturn->ClientAuthenticationTokenObject = ClientAuthenticationToken::GetObjectFromSoapObject($objSoapObject->ClientAuthenticationTokenObject);
@@ -1869,6 +1920,7 @@ class PushRegistrationGen extends dxBaseClass implements IteratorAggregate {
         $iArray['RegistrationDateTime'] = $this->dttRegistrationDateTime;
         $iArray['RegistrationStatus'] = $this->strRegistrationStatus;
         $iArray['InternalUniqueId'] = $this->strInternalUniqueId;
+        $iArray['CurrentBadgeCount'] = $this->intCurrentBadgeCount;
         $iArray['ClientAuthenticationToken'] = $this->intClientAuthenticationToken;
         $iArray['SearchMetaInfo'] = $this->strSearchMetaInfo;
         $iArray['Account'] = $this->intAccount;
@@ -1916,6 +1968,7 @@ class PushRegistrationGen extends dxBaseClass implements IteratorAggregate {
      * @property-read dxQueryNode $RegistrationDateTime
      * @property-read dxQueryNode $RegistrationStatus
      * @property-read dxQueryNode $InternalUniqueId
+     * @property-read dxQueryNode $CurrentBadgeCount
      * @property-read dxQueryNode $ClientAuthenticationToken
      * @property-read dxQueryNodeClientAuthenticationToken $ClientAuthenticationTokenObject
      * @property-read dxQueryNode $SearchMetaInfo
@@ -1950,6 +2003,8 @@ class PushRegistrationGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNode('RegistrationStatus', 'RegistrationStatus', 'VarChar', $this);
 				case 'InternalUniqueId':
 					return new dxQueryNode('InternalUniqueId', 'InternalUniqueId', 'VarChar', $this);
+				case 'CurrentBadgeCount':
+					return new dxQueryNode('CurrentBadgeCount', 'CurrentBadgeCount', 'Integer', $this);
 				case 'ClientAuthenticationToken':
 					return new dxQueryNode('ClientAuthenticationToken', 'ClientAuthenticationToken', 'Integer', $this);
 				case 'ClientAuthenticationTokenObject':
@@ -1987,6 +2042,7 @@ class PushRegistrationGen extends dxBaseClass implements IteratorAggregate {
      * @property-read dxQueryNode $RegistrationDateTime
      * @property-read dxQueryNode $RegistrationStatus
      * @property-read dxQueryNode $InternalUniqueId
+     * @property-read dxQueryNode $CurrentBadgeCount
      * @property-read dxQueryNode $ClientAuthenticationToken
      * @property-read dxQueryNodeClientAuthenticationToken $ClientAuthenticationTokenObject
      * @property-read dxQueryNode $SearchMetaInfo
@@ -2021,6 +2077,8 @@ class PushRegistrationGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNode('RegistrationStatus', 'RegistrationStatus', 'string', $this);
 				case 'InternalUniqueId':
 					return new dxQueryNode('InternalUniqueId', 'InternalUniqueId', 'string', $this);
+				case 'CurrentBadgeCount':
+					return new dxQueryNode('CurrentBadgeCount', 'CurrentBadgeCount', 'integer', $this);
 				case 'ClientAuthenticationToken':
 					return new dxQueryNode('ClientAuthenticationToken', 'ClientAuthenticationToken', 'integer', $this);
 				case 'ClientAuthenticationTokenObject':

@@ -24,6 +24,7 @@ function divbloxHandleException($e) {
         "Line" => $e->getLine(),
         "Trace" => $e->getTrace(),
         "Output" => $Output,);
+    error_log("divblox Exception. Details: ".json_encode($ErrorArray));
     die(json_encode($ErrorArray));
 }
 
@@ -733,7 +734,6 @@ abstract class FrameworkFunctions_base {
      * @param string $Title
      * @param string $Message
      * @param string $LaunchImage
-     * @param int $BadgeCount
      * @param string $Sound
      * @param int $NotificationId
      * @param string $Category
@@ -742,13 +742,12 @@ abstract class FrameworkFunctions_base {
      * @param array $ErrorInfo
      * @return bool
      */
-    public static function deliverPushPayload($InternalUniqueId = null,
-                                              $Priority = NativePushPriority::NORMAL_STR, /*Android only*/
-                                              $Title = 'A short string describing the purpose of the notification',
-                                              $Message = 'The text of the alert message',
+    public static function deliverSinglePushPayload($InternalUniqueId = null,
+                                              $Priority = NativePushPriority::HIGH_STR, /*Android only*/
+                                              $TitleStr = 'A short string describing the purpose of the notification',
+                                              $BodyStr = 'The text of the alert message',
                                               $LaunchImage = ''/*iOS Only: The filename of an image file in the app bundle, with or without the filename extension. The image is used as the launch image when users tap the action button or move the action slider*/,
-                                              $BadgeCount = 1,
-                                              $Sound = 'default'/* play default sound ... or "soundname"*/,
+                                              $SoundStr = 'default'/* play default sound ... or "soundname"*/,
                                               $NotificationId = 1/*unique ID for the message, used for grouping*/,
                                               $Category = 'identifier'/*iOS Only: Provide this key with a string value that represents the notification’s type*/,
                                               $CustomKey1 = '',
@@ -758,9 +757,74 @@ abstract class FrameworkFunctions_base {
             array_push($ErrorInfo,"Invalid internal id provided");
             return false;
         }
-        array_push($ErrorInfo,"Not implemented");
-        return false;
-        //TODO:Implement this
+        
+        $PushRegistrationObj = PushRegistration::LoadByInternalUniqueId($InternalUniqueId);
+        if (is_null($PushRegistrationObj)) {
+            array_push($ErrorInfo,"Invalid internal id provided. Push registration not found.");
+            return false;
+        }
+        $BadgeCountInt = 1;
+        if (is_numeric($PushRegistrationObj->CurrentBadgeCount)) {
+            if ($PushRegistrationObj->CurrentBadgeCount > 0) {
+                $BadgeCountInt += $PushRegistrationObj->CurrentBadgeCount;
+            }
+        }
+        $NotificationObj = array('title' => $TitleStr , 'body' => $BodyStr, 'sound' => $SoundStr, 'badge' => $BadgeCountInt);
+        $PostBodyArray = array('to' => $PushRegistrationObj->RegistrationId, 'notification' => $NotificationObj,'priority'=>'high');
+        $EncodedPostBodyArrayStr = json_encode($PostBodyArray);
+        $HeadersArray = array();
+        //header with content_type & api key
+        $HeadersArray[] = 'Content-Type: application/json';
+        $HeadersArray[] = 'Authorization: key='. FIREBASE_SERVER_KEY_STR;
+        $CurlObj = curl_init();
+        curl_setopt($CurlObj, CURLOPT_URL, FIREBASE_FCM_ENDPOINT_STR);
+        curl_setopt($CurlObj, CURLOPT_CUSTOMREQUEST,"POST");
+        curl_setopt($CurlObj, CURLOPT_POSTFIELDS, $EncodedPostBodyArrayStr);
+        curl_setopt($CurlObj, CURLOPT_HTTPHEADER, $HeadersArray);
+        curl_setopt($CurlObj, CURLOPT_RETURNTRANSFER,true);
+        //Send the request
+        $ResponseStr = curl_exec($CurlObj);
+        //Close request
+        $ErrorStr = curl_error($CurlObj);
+        curl_close($CurlObj);
+        if ($ResponseStr === FALSE) {
+            throw new Exception("FCM Send Error: $ErrorStr");
+        }
+        $PushRegistrationObj->CurrentBadgeCount = $BadgeCountInt;
+        $PushRegistrationObj->Save();
+        return true;
+    }
+    
+    /**
+     * @param array $PushTokenArray
+     * @param string $TitleStr
+     * @param string $BodyStr
+     * @throws Exception
+     */
+    public static function deliverBatchedPushPayload($PushTokenArray = [],
+                                                     $TitleStr = "Notification title",
+                                                     $BodyStr = "Notification body") {
+        $NotificationObj = array('title' => $TitleStr , 'body' => $BodyStr, 'sound' => 'default');
+        $PostBodyArray = array('registration_ids' => $PushTokenArray, 'notification' => $NotificationObj,'priority'=> NativePushPriority::HIGH_STR);
+        $EncodedPostBodyArrayStr = json_encode($PostBodyArray);
+        $HeadersArray = array();
+        //header with content_type & api key
+        $HeadersArray[] = 'Content-Type: application/json';
+        $HeadersArray[] = 'Authorization: key='. FIREBASE_SERVER_KEY_STR;
+        $CurlObj = curl_init();
+        curl_setopt($CurlObj, CURLOPT_URL, FIREBASE_FCM_ENDPOINT_STR);
+        curl_setopt($CurlObj, CURLOPT_CUSTOMREQUEST,"POST");
+        curl_setopt($CurlObj, CURLOPT_POSTFIELDS, $EncodedPostBodyArrayStr);
+        curl_setopt($CurlObj, CURLOPT_HTTPHEADER, $HeadersArray);
+        curl_setopt($CurlObj, CURLOPT_RETURNTRANSFER,true);
+        //Send the request
+        $ResponseStr = curl_exec($CurlObj);
+        //Close request
+        $ErrorStr = curl_error($CurlObj);
+        curl_close($CurlObj);
+        if ($ResponseStr === FALSE) {
+            throw new Exception("FCM Send Error: $ErrorStr");
+        }
     }
     //endregion
 }

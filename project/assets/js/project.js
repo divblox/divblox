@@ -9,6 +9,13 @@ let local_config = {
 	allow_feedback:true,
 	app_name:'divblox'
 };
+let native_config = {
+	init_complete:false,
+	push_notifications_enabled:true,
+	push_notifications_permissions_requested:false,
+	push_notification_firebase_sender_id:'XXXXXXXXXX',
+	cordova_plugin_push_instance:null
+};
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Safe to modify from here downwards
 let user_role_landing_pages = {
@@ -181,6 +188,7 @@ function createPushRegistration(registration_id,success_callback,failure_callbac
 		device_platform = device.platform;
 		device_os = device.version;
 	}
+	setItemInLocalStorage("PushRegistrationId",registration_id);
 	dxRequestInternal(getServerRootPath()+'project/assets/php/global_request_handler.php',
 		{f:'updatePushRegistration',
 			registration_id: registration_id,
@@ -200,7 +208,103 @@ function createPushRegistration(registration_id,success_callback,failure_callbac
  * here.
  */
 function doAfterInitActions() {
-	// Your functionality here...
+	if (!isNative()) {return;}
+	if (!native_config.init_complete) {
+		//JGL: Do all inits for native first load here...
+		initPushNotifications();
+		requestPushNotificationPermissions(); //JGL: Comment this out if you want to implement it somewhere other
+		// than the after init functions section. See requestPushNotificationPermissions() function doc
+		native_config.init_complete = true;
+	}
+	
+}
+
+/**
+ * This function is used to trigger the first request for push notification permissions. Call this function on a page
+ * that is dedicated to explaining to the user why we want to send push notifications.
+ * you can also simply call this from doAfterInitActions() if you don't plan on providing additional
+ * information to the user.
+ */
+function requestPushNotificationPermissions() {
+	if (!isNative()) {return;}
+	if (native_config.push_notifications_permissions_requested) {return;}
+	native_config.push_notifications_permissions_requested = true;
+	initPushNotifications();
+}
+
+/**
+ * This function is used to register the event handlers for push notifications once we have permission. Call this
+ * function after requestPushNotificationPermissions();
+ */
+function initPushNotifications() {
+	if (!isNative()) {return;}
+	if (!native_config.push_notifications_enabled) {return;}
+	if (!native_config.push_notifications_permissions_requested) {return;}
+	native_config.cordova_plugin_push_instance = PushNotification.init({
+		android: {
+			"senderID": native_config.push_notification_firebase_sender_id
+		},
+		/*browser: {
+            pushServiceURL: 'http://push.api.phonegap.com/v1/push'
+        },*/
+		ios: {
+			alert: 'true',
+			badge: true,
+			sound: 'true'
+		}/*,
+    windows: {}*/
+	});
+	native_config.cordova_plugin_push_instance.on('registration', (data) => {
+		// data.registrationId
+		//showAlert("Push registered...: "+data.registrationId,"info","OK",false);
+		createPushRegistration(data.registrationId,
+			function() {
+				//console.log("Push registration created");
+			},
+			function() {
+				//console.log("Push registration NOT created")
+			});
+	});
+	native_config.cordova_plugin_push_instance.on('notification', (data) => {
+		// data.message,
+		// data.title,
+		// data.count,
+		// data.sound,
+		// data.image,
+		// data.additionalData
+		handleReceivePushNotification(data);
+	});
+	native_config.cordova_plugin_push_instance.on('error', (e) => {
+		// e.message
+		console.log("Push error: "+e.message);
+	});
+}
+function setApplicationIconBadgeNumber(number) {
+	if (native_config.cordova_plugin_push_instance != null) {
+		native_config.cordova_plugin_push_instance.setApplicationIconBadgeNumber(
+			() => {
+				//console.log('setApplicationIconBadgeNumber success');
+			},
+			() => {
+				//console.log('setApplicationIconBadgeNumber error');
+			},
+			number
+		);
+	}
+}
+function getApplicationIconBadgeNumber(callback) {
+	if (native_config.cordova_plugin_push_instance != null) {
+		native_config.cordova_plugin_push_instance.getApplicationIconBadgeNumber(
+			n => {
+				//console.log('getApplicationIconBadgeNumber success', n);
+				callback(n);
+			},
+			() => {
+				//console.log('getApplicationIconBadgeNumber error');
+				callback(-1);
+			}
+		);
+	}
 }
 
 /**
