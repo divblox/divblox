@@ -218,7 +218,6 @@ function doAfterInitActions() {
 	}
 	
 }
-
 /**
  * This function is used to trigger the first request for push notification permissions. Call this function on a page
  * that is dedicated to explaining to the user why we want to send push notifications.
@@ -231,7 +230,6 @@ function requestPushNotificationPermissions() {
 	native_config.push_notifications_permissions_requested = true;
 	initPushNotifications();
 }
-
 /**
  * This function is used to register the event handlers for push notifications once we have permission. Call this
  * function after requestPushNotificationPermissions();
@@ -279,6 +277,10 @@ function initPushNotifications() {
 		console.log("Push error: "+e.message);
 	});
 }
+/**
+ * Can be used to set the badge number on the app icon for native apps
+ * @param number
+ */
 function setApplicationIconBadgeNumber(number) {
 	if (native_config.cordova_plugin_push_instance != null) {
 		native_config.cordova_plugin_push_instance.setApplicationIconBadgeNumber(
@@ -292,6 +294,10 @@ function setApplicationIconBadgeNumber(number) {
 		);
 	}
 }
+/**
+ * Can be used to get the current badge number on the app icon for native apps
+ * @param callback
+ */
 function getApplicationIconBadgeNumber(callback) {
 	if (native_config.cordova_plugin_push_instance != null) {
 		native_config.cordova_plugin_push_instance.getApplicationIconBadgeNumber(
@@ -306,7 +312,6 @@ function getApplicationIconBadgeNumber(callback) {
 		);
 	}
 }
-
 /**
  * @todo Any actions that should happen after authentication should be placed here
  */

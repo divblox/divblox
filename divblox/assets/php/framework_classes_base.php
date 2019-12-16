@@ -7907,6 +7907,12 @@ abstract class AccessManager_Base {
             return [AccessOperation::CREATE_STR,AccessOperation::READ_STR,AccessOperation::UPDATE_STR,AccessOperation::DELETE_STR];
             // JGL: By default, when logged in as divblox admin, you can access everything
         }
+        $AllAccessObjectArray = [
+            "PushRegistration"
+        ];
+        if (in_array($ObjectType, $AllAccessObjectArray)) {
+            return [AccessOperation::CREATE_STR,AccessOperation::READ_STR,AccessOperation::UPDATE_STR,AccessOperation::DELETE_STR];
+        }
         $CurrentObject = $ObjectType::Load($ObjectId);
         if (is_null($CurrentObject)) {
             return [AccessOperation::CREATE_STR,AccessOperation::READ_STR];

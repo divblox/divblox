@@ -639,7 +639,6 @@ abstract class FrameworkFunctions_base {
      * @param string $DeviceOs
      * @param null $RegistrationDateTime
      * @param string $Status
-     * @param null $AuthenticationToken
      * @param null $ErrorInfo
      * @return bool
      * @throws dxCallerException
@@ -651,14 +650,11 @@ abstract class FrameworkFunctions_base {
                                                   $DeviceOs = 'NOT SPECIFIED',
                                                   $RegistrationDateTime = null,
                                                   $Status = NativeDevicePushRegistrationStatus::ACTIVE_STR,
-                                                  $AuthenticationToken = null,
                                                   &$ErrorInfo = null) {
         $ErrorInfo = array();
         $isUpdating = false;
         $PushRegistrationObj = null;
         if (is_null($InternalUniqueId)) {
-            //JGL: This means we are creating a new Push Registration
-            $PushRegistrationObj = new PushRegistration();
             if (is_null($DeviceUuid)) {
                 array_push($ErrorInfo,"No device uuid provided");
                 return false;
@@ -666,6 +662,16 @@ abstract class FrameworkFunctions_base {
             if (is_null($DevicePlatform)) {
                 array_push($ErrorInfo,"No device platform provided");
                 return false;
+            }
+            $PushRegistrationObj = PushRegistration::QuerySingle(dxQ::AndCondition(
+                dxQ::Equal(dxQN::PushRegistration()->DeviceUuid, $DeviceUuid),
+                dxQ::Equal(dxQN::PushRegistration()->DevicePlatform, $DevicePlatform)
+            ));
+            if (!is_null($PushRegistrationObj)) {
+                $isUpdating = true;
+            } else {
+                //JGL: This means we are creating a new Push Registration
+                $PushRegistrationObj = new PushRegistration();
             }
         } else {
             $isUpdating = true;
@@ -679,12 +685,12 @@ abstract class FrameworkFunctions_base {
             array_push($ErrorInfo,"No registration id provided");
             return false;
         }
-
+        
         if (is_null($RegistrationDateTime)) {
             array_push($ErrorInfo,"No registration time provided");
             $RegistrationDateTime = dxDateTime::Now();
         }
-
+        
         if (!$isUpdating) {
             $PushRegistrationObj->DeviceUuid = $DeviceUuid;
             $PushRegistrationObj->DevicePlatform = $DevicePlatform;
@@ -694,19 +700,16 @@ abstract class FrameworkFunctions_base {
         }
         $PushRegistrationObj->RegistrationId = $RegistrationId;
         $PushRegistrationObj->RegistrationStatus = $Status;
-        if (is_null($AuthenticationToken)) {
-            array_push($ErrorInfo,"No authentication token provided");
-        } else {
-            $ClientAuthenticationTokenObj = self::getCurrentAuthTokenObject($AuthenticationToken);
-            if (!is_null($ClientAuthenticationTokenObj)) {
-                $PushRegistrationObj->ClientAuthenticationTokenObject = $ClientAuthenticationTokenObj;
-                if (!is_null($ClientAuthenticationTokenObj->ClientConnectionObject)) {
-                    if (!is_null($ClientAuthenticationTokenObj->ClientConnectionObject->AccountObject)) {
-                        $PushRegistrationObj->AccountObject = $ClientAuthenticationTokenObj->ClientConnectionObject->AccountObject;
-                    }
+        $ClientAuthenticationTokenObj = self::getCurrentAuthTokenObject(self::getCurrentAuthenticationToken());
+        if (!is_null($ClientAuthenticationTokenObj)) {
+            $PushRegistrationObj->ClientAuthenticationTokenObject = $ClientAuthenticationTokenObj;
+            if (!is_null($ClientAuthenticationTokenObj->ClientConnectionObject)) {
+                if (!is_null($ClientAuthenticationTokenObj->ClientConnectionObject->AccountObject)) {
+                    $PushRegistrationObj->AccountObject = $ClientAuthenticationTokenObj->ClientConnectionObject->AccountObject;
                 }
             }
         }
+        
         $PushRegistrationObj->Save(false,true);
         $ErrorInfo = [$PushRegistrationObj->Id];
         return true;

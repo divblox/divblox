@@ -22,7 +22,23 @@ if (typeof component_classes['system_authentication'] === "undefined") {
 				function(data_obj) {
 					setGlobalConstrainById("Account",data_obj.AccountId);
 					registerUserRole(data_obj.UserRole);
-					pageEventTriggered("authenticated",data_obj);
+					if (isNative()) {
+						let stored_push_registration = getItemInLocalStorage('PushRegistrationId');
+						if (stored_push_registration != null) {
+							createPushRegistration(stored_push_registration,
+								function() {
+									pageEventTriggered("authenticated",data_obj);
+								},
+								function(data) {
+									pageEventTriggered("authenticated",data_obj);
+								});
+						} else {
+							pageEventTriggered("authenticated",data_obj);
+						}
+					} else {
+						pageEventTriggered("authenticated",data_obj);
+					}
+					
 				}.bind(this),
 				function(data_obj) {
 					showAlert("Authentication failed! Please try again","error");

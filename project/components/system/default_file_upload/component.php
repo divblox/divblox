@@ -35,7 +35,7 @@ class DefaultFileUploadController extends ProjectComponentController {
             $FileDocumentObj->Path = $file["file"];
             $FileDocumentObj->UploadedFileName = $file["old_name"];
             $FileDocumentObj->FileType = $file["type"];
-            $FileDocumentObj->SizeInKilobytes = $file["size2"];
+            $FileDocumentObj->SizeInKilobytes = round(doubleval(preg_replace('/[^0-9.]+/', '', $file["size2"])),2);
             $FileDocumentObj->Save();
         }
         foreach($data as $key=>$value) {

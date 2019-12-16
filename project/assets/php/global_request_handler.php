@@ -82,11 +82,7 @@ function updatePushRegistration() {
     if (isset($_POST["registration_status"])) {
         $Status = $_POST["registration_status"];
     }
-    $AuthenticationToken = null;
-    if (isset($_POST["AuthenticationToken"])) {
-        $AuthenticationToken = $_POST["AuthenticationToken"];
-    }
-    if (!ProjectFunctions::updatePushRegistration($InternalUniqueId,$RegistrationId,$DeviceUuid,$DevicePlatform,$DeviceOs,$RegistrationDateTime,$Status,$AuthenticationToken,$ErrorInfo)) {
+    if (!ProjectFunctions::updatePushRegistration($InternalUniqueId,$RegistrationId,$DeviceUuid,$DevicePlatform,$DeviceOs,$RegistrationDateTime,$Status,$ErrorInfo)) {
         die(json_encode(array("Result" => "Failed","Message" => $ErrorInfo)));
     }
     die(json_encode(array("Result" => "Success","InternalId" => $ErrorInfo[0])));
