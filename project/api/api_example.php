@@ -10,15 +10,29 @@
  */
 require("../../divblox/divblox.php");
 // Start by declaring your operations and then calling the initApi function
-PublicApi::addApiOperation("dummyOperation",["Name","Surname"],"A string containing your full name");
-PublicApi::initApi("Example API to illustrate the basics of divblox APIs. Call the api with /dummyOperation/Name=ACoolName/Surname=ACoolSurname to see results");
+PublicApi::addApiOperation("dummyOperation",
+    ["first_name","last_name"],
+    ["Message" => "You called the example operation","FullName" => "[The resulting full name]"],
+    "Example Operation",
+    "This is simply an example api operation that takes a first name and a last name and concatenates them");
+PublicApi::addApiOperation("dummyOperation2",
+    [],
+    ["Message" => "Current system time is [system_time]"],
+    "Example Operation 2",
+    "A simple operation that returns the current system time");
+PublicApi::initApi("Example API endpoint to illustrate the basics of divblox APIs","Example Endpoint");
 
 // Operations
 function dummyOperation() {
-    $Name = PublicApi::getInputParameter("Name");
-    $Surname = PublicApi::getInputParameter("Surname");
-    PublicApi::addApiOutput("Additional Info","You called the dummy operation.");
-    PublicApi::addApiOutput("Message","This file shows how to create a divblox api and how to handle the api inputs and outputs. Result is $Name $Surname");
+    $Name = PublicApi::getInputParameter("first_name");
+    $Surname = PublicApi::getInputParameter("last_name");
+    PublicApi::addApiOutput("Message","You called the example operation.");
+    PublicApi::addApiOutput("FullName","$Name $Surname");
+    PublicApi::setApiResult(true); // You need to set this to true to indicate that the API executed successfully
+    PublicApi::printApiResult();
+}
+function dummyOperation2() {
+    PublicApi::addApiOutput("Message","Current system time is ".dxDateTime::Now()->format(DATE_TIME_FORMAT_PHP_STR.' H:i:s'));
     PublicApi::setApiResult(true); // You need to set this to true to indicate that the API executed successfully
     PublicApi::printApiResult();
 }

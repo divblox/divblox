@@ -10,6 +10,6 @@ abstract class DataModelData {
 	public static $ProjectEntitySingleRelationshipArray = array();
 	public static $UserRoleArray = array("Administrator","User");
     public static $ModuleArray = array(
-    "Main" => array("Account","AdditionalAccountInformation","AuditLogEntry","BackgroundProcess","BackgroundProcessUpdate","ClientAuthenticationToken","ClientConnection","EmailMessage","FileDocument","PageView","PasswordReset","PushRegistration","UserRole",));
+    "Main" => array("Account","AdditionalAccountInformation","AllowedApiOperation","ApiKey","ApiOperation","AuditLogEntry","BackgroundProcess","BackgroundProcessUpdate","ClientAuthenticationToken","ClientConnection","EmailMessage","FileDocument","PageView","PasswordReset","PushRegistration","UserRole",));
 }
 ?>

@@ -1,0 +1,53 @@
+<div xmlns="http://www.w3.org/1999/xhtml" id="ComponentWrapper" class="component-wrapper">
+    <div id="ComponentPlaceholder" class="component_placeholder component_placeholder_data_view">
+        <div id="ComponentFeedback"></div>
+    </div>
+    <div id="ComponentContent" class="component-content" style="display:none">
+        <div class="container-fluid container-no-gutters">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Api Key:</label>
+                            <input name="ApiKey" id="ApiKey" type="text" class="form-control" required="" />
+                            <div id="ApiKeyInvalidFeedback" class="invalid-feedback">
+                                Please provide an api key
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label>Valid From Date:</label>
+                            <input name="ValidFromDate" id="ValidFromDate" type="date" class="form-control" required="" />
+                            <div id="ValidFromDateInvalidFeedback" class="invalid-feedback">
+                                Please provide a valid from date
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label>Valid To Date:</label>
+                            <input name="ValidToDate" id="ValidToDate" type="date" class="form-control" />
+                        </div>
+                        <div class="col-md-12">
+                            <label>Notes:</label>
+                            <textarea name="Notes" id="Notes" rows="5" class="form-control"></textarea>
+                        </div>
+                        <div class="col-md-12">
+                            <label>Calling Entity Information:</label>
+                            <textarea name="CallingEntityInformation" id="CallingEntityInformation" rows="5" class="form-control"></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button id="btnSave" type="button" class="btn btn-primary fullwidth mt-1">Update</button>
+                        </div>
+                        <div class="col-md-6">
+                            <button id="btnDelete" type="button" class="btn btn-danger fullwidth mt-1">Delete</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h4>Allowed Operations</h4>
+                    <div xmlns="" id="5156I"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

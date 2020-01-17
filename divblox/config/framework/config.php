@@ -50,9 +50,9 @@ if (is_null($ModuleArray)) {
     error_log("Modules are not configured in environments.php");
     die(json_encode(array("Error" => 'Modules are not configured in environments.php. For a quick fix, delete the file environments.php')));
 }
-define("PHP_MIN_VERSION_REQUIRED","7.2");
+define("PHP_MIN_VERSION_REQUIRED","7.3");
 define("MARIADB_MIN_VERSION_REQUIRED","10.2");
-define("MYSQL_MIN_VERSION_REQUIRED","5.6.38");
+define("MYSQL_MIN_VERSION_REQUIRED","5.7");
 define("DIVBLOX_ADMIN_PASSWORD_STR","1");
 define("ENVIRONMENT_INSTANCE_STR",$CurrentEnvironmentInstanceName);
 define("APP_ENCODING_TYPE_STR", "UTF-8");

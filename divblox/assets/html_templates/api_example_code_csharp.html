@@ -1,0 +1,7 @@
+var client = new RestClient("{operation_endpoint}");
+client.Timeout = -1;
+var request = new RestRequest(Method.POST);
+request.AddHeader("Content-Type", "application/json");
+request.AddParameter("application/json", "{operation_inputs_json_escaped}",  ParameterType.RequestBody);
+IRestResponse response = client.Execute(request);
+Console.WriteLine(response.Content);

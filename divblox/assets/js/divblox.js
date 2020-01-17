@@ -12,10 +12,10 @@
  * divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "2.0.2";
-let bootstrap_version = "4.3.1";
+let dx_version = "2.1.0";
+let bootstrap_version = "4.4.1";
 let jquery_version = "3.4.1";
-let minimum_required_php_version = "7.2";
+let minimum_required_php_version = "7.3.8";
 let spa_mode = false;
 let debug_mode = true;
 let allow_feedback = false;
@@ -55,7 +55,7 @@ let dx_admin_roles = ["dxadmin","administrator"];
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 let dependency_array = [
-	"divblox/assets/js/bootstrap/4.3.1/bootstrap.bundle.min.js",
+	"divblox/assets/js/bootstrap/4.4.1/bootstrap.bundle.min.js",
 	"divblox/assets/js/sweetalert/sweetalert.min.js",
 	"project/assets/js/project.js",
 	"project/assets/js/momentjs/moment.js"

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no user-scalable=no">
+    <link rel="stylesheet" href="../../divblox/assets/css/bootstrap/4.4.1/bootstrap.min.css">
+    <link rel="stylesheet" href="../../divblox/assets/css/font-awesome.min.css">
+    <link rel="icon" href="../../project/assets/images/favicon.ico" />
+    <link rel="apple-touch-icon" href="../../project/assets/images/app_icon_192.jpg">
+    <link rel="apple-touch-icon" sizes="152x152" href="../../project/assets/images/app_icon_192.jpg">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../project/assets/images/app_icon_192.jpg">
+    <link rel="apple-touch-icon" sizes="167x167" href="../../project/assets/images/app_icon_192.jpg">
+    <title>API Documentation - {api_endpoint}</title>
+    <style>
+        pre {
+            display: block;
+            font-size: 87.5%;
+            color: #ffffff;
+            padding: 6px 12px;
+            background-color: #464646;
+            border-radius: 5px;
+        }
+        .ExampleCodePre {
+            display:none;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1>API Documentation - {api_endpoint}</h1>
+            <p>{introduction}</p>
+        </div>
+        <div class="col-12">
+            <h4>Available Operations:</h4>
+            <div class="accordion" id="OperationWrapper">
+                {operation_wrapper}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="../../divblox/assets/js/jquery/3.4.1/jquery.min.js"></script>
+<script type="text/javascript" src="../../divblox/assets/js/bootstrap/4.4.1/bootstrap.min.js"></script>
+<script>
+    $(".language-select").on("change", function() {
+        let selected_value = $(this).val();
+        $(".ExampleCodePre").hide();
+        $("."+$(this).val()).show();
+        $(".language-select").val("None");
+        $(this).val(selected_value);
+    });
+</script>
+</body>
+</html>

@@ -19,9 +19,9 @@
  * @property string $ClientIpAddress the value for strClientIpAddress 
  * @property string $ClientUserAgent the value for strClientUserAgent 
  * @property dxDateTime $UpdateDateTime the value for dttUpdateDateTime 
+ * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
  * @property integer $Account the value for intAccount 
  * @property string $SearchMetaInfo the value for strSearchMetaInfo 
- * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
  * @property integer $ObjectOwner the value for intObjectOwner 
  * @property Account $AccountObject the value for the Account object referenced by intAccount 
  * @property-read ClientAuthenticationToken $_ClientAuthenticationToken the value for the private _objClientAuthenticationToken (Read-Only) if set due to an expansion on the ClientAuthenticationToken.ClientConnection reverse relationship
@@ -69,6 +69,14 @@ class ClientConnectionGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
+     * Protected member variable that maps to the database column ClientConnection.LastUpdated
+     * @var string strLastUpdated
+     */
+    protected $strLastUpdated;
+    const LastUpdatedDefault = null;
+
+
+    /**
      * Protected member variable that maps to the database column ClientConnection.Account
      * @var integer intAccount
      */
@@ -82,14 +90,6 @@ class ClientConnectionGen extends dxBaseClass implements IteratorAggregate {
      */
     protected $strSearchMetaInfo;
     const SearchMetaInfoDefault = null;
-
-
-    /**
-     * Protected member variable that maps to the database column ClientConnection.LastUpdated
-     * @var string strLastUpdated
-     */
-    protected $strLastUpdated;
-    const LastUpdatedDefault = null;
 
 
     /**
@@ -154,9 +154,9 @@ class ClientConnectionGen extends dxBaseClass implements IteratorAggregate {
         $this->strClientIpAddress = ClientConnection::ClientIpAddressDefault;
         $this->strClientUserAgent = ClientConnection::ClientUserAgentDefault;
         $this->dttUpdateDateTime = (ClientConnection::UpdateDateTimeDefault === null)?null:new dxDateTime(ClientConnection::UpdateDateTimeDefault);
+        $this->strLastUpdated = ClientConnection::LastUpdatedDefault;
         $this->intAccount = ClientConnection::AccountDefault;
         $this->strSearchMetaInfo = ClientConnection::SearchMetaInfoDefault;
-        $this->strLastUpdated = ClientConnection::LastUpdatedDefault;
         $this->intObjectOwner = ClientConnection::ObjectOwnerDefault;
     }
 
@@ -498,9 +498,9 @@ class ClientConnectionGen extends dxBaseClass implements IteratorAggregate {
             $objBuilder->AddSelectItem($strTableName, 'ClientIpAddress', $strAliasPrefix . 'ClientIpAddress');
             $objBuilder->AddSelectItem($strTableName, 'ClientUserAgent', $strAliasPrefix . 'ClientUserAgent');
             $objBuilder->AddSelectItem($strTableName, 'UpdateDateTime', $strAliasPrefix . 'UpdateDateTime');
+            $objBuilder->AddSelectItem($strTableName, 'LastUpdated', $strAliasPrefix . 'LastUpdated');
             $objBuilder->AddSelectItem($strTableName, 'Account', $strAliasPrefix . 'Account');
             $objBuilder->AddSelectItem($strTableName, 'SearchMetaInfo', $strAliasPrefix . 'SearchMetaInfo');
-            $objBuilder->AddSelectItem($strTableName, 'LastUpdated', $strAliasPrefix . 'LastUpdated');
             $objBuilder->AddSelectItem($strTableName, 'ObjectOwner', $strAliasPrefix . 'ObjectOwner');
         }
     }
@@ -635,15 +635,15 @@ class ClientConnectionGen extends dxBaseClass implements IteratorAggregate {
         $strAlias = $strAliasPrefix . 'UpdateDateTime';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->dttUpdateDateTime = $objDbRow->GetColumn($strAliasName, 'DateTime');
+        $strAlias = $strAliasPrefix . 'LastUpdated';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->strLastUpdated = $objDbRow->GetColumn($strAliasName, 'VarChar');
         $strAlias = $strAliasPrefix . 'Account';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intAccount = $objDbRow->GetColumn($strAliasName, 'Integer');
         $strAlias = $strAliasPrefix . 'SearchMetaInfo';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->strSearchMetaInfo = $objDbRow->GetColumn($strAliasName, 'Blob');
-        $strAlias = $strAliasPrefix . 'LastUpdated';
-        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->strLastUpdated = $objDbRow->GetColumn($strAliasName, 'VarChar');
         $strAlias = $strAliasPrefix . 'ObjectOwner';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intObjectOwner = $objDbRow->GetColumn($strAliasName, 'Integer');
@@ -858,9 +858,9 @@ class ClientConnectionGen extends dxBaseClass implements IteratorAggregate {
             $ChangedArray = array_merge($ChangedArray,array("ClientIpAddress" => $this->strClientIpAddress));
             $ChangedArray = array_merge($ChangedArray,array("ClientUserAgent" => $this->strClientUserAgent));
             $ChangedArray = array_merge($ChangedArray,array("UpdateDateTime" => $this->dttUpdateDateTime));
+            $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
             $ChangedArray = array_merge($ChangedArray,array("Account" => $this->intAccount));
             $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
-            $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
             $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
             $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         } else {
@@ -898,6 +898,14 @@ class ClientConnectionGen extends dxBaseClass implements IteratorAggregate {
                 //$ChangedArray = array_merge($ChangedArray,array("UpdateDateTime" => "From: ".$ExistingValueStr." to: ".$this->dttUpdateDateTime));
             }
             $ExistingValueStr = "NULL";
+            if (!is_null($ExistingObj->LastUpdated)) {
+                $ExistingValueStr = $ExistingObj->LastUpdated;
+            }
+            if ($ExistingObj->LastUpdated != $this->strLastUpdated) {
+                $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => array("Before" => $ExistingValueStr,"After" => $this->strLastUpdated)));
+                //$ChangedArray = array_merge($ChangedArray,array("LastUpdated" => "From: ".$ExistingValueStr." to: ".$this->strLastUpdated));
+            }
+            $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->Account)) {
                 $ExistingValueStr = $ExistingObj->Account;
             }
@@ -912,14 +920,6 @@ class ClientConnectionGen extends dxBaseClass implements IteratorAggregate {
             if ($ExistingObj->SearchMetaInfo != $this->strSearchMetaInfo) {
                 $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => array("Before" => $ExistingValueStr,"After" => $this->strSearchMetaInfo)));
                 //$ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => "From: ".$ExistingValueStr." to: ".$this->strSearchMetaInfo));
-            }
-            $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->LastUpdated)) {
-                $ExistingValueStr = $ExistingObj->LastUpdated;
-            }
-            if ($ExistingObj->LastUpdated != $this->strLastUpdated) {
-                $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => array("Before" => $ExistingValueStr,"After" => $this->strLastUpdated)));
-                //$ChangedArray = array_merge($ChangedArray,array("LastUpdated" => "From: ".$ExistingValueStr." to: ".$this->strLastUpdated));
             }
             $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->ObjectOwner)) {
@@ -1041,9 +1041,9 @@ class ClientConnectionGen extends dxBaseClass implements IteratorAggregate {
         $ChangedArray = array_merge($ChangedArray,array("ClientIpAddress" => $this->strClientIpAddress));
         $ChangedArray = array_merge($ChangedArray,array("ClientUserAgent" => $this->strClientUserAgent));
         $ChangedArray = array_merge($ChangedArray,array("UpdateDateTime" => $this->dttUpdateDateTime));
+        $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
         $ChangedArray = array_merge($ChangedArray,array("Account" => $this->intAccount));
         $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
-        $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
         $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
         $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         try {
@@ -1125,9 +1125,9 @@ class ClientConnectionGen extends dxBaseClass implements IteratorAggregate {
         $this->strClientIpAddress = $objReloaded->strClientIpAddress;
         $this->strClientUserAgent = $objReloaded->strClientUserAgent;
         $this->dttUpdateDateTime = $objReloaded->dttUpdateDateTime;
+        $this->strLastUpdated = $objReloaded->strLastUpdated;
         $this->Account = $objReloaded->Account;
         $this->strSearchMetaInfo = $objReloaded->strSearchMetaInfo;
-        $this->strLastUpdated = $objReloaded->strLastUpdated;
         $this->intObjectOwner = $objReloaded->intObjectOwner;
     }
     ////////////////////
@@ -1174,6 +1174,13 @@ class ClientConnectionGen extends dxBaseClass implements IteratorAggregate {
                  */
                 return $this->dttUpdateDateTime;
 
+            case 'LastUpdated':
+                /**
+                 * Gets the value for strLastUpdated (Read-Only Timestamp)
+                 * @return string
+                 */
+                return $this->strLastUpdated;
+
             case 'Account':
                 /**
                  * Gets the value for intAccount 
@@ -1187,13 +1194,6 @@ class ClientConnectionGen extends dxBaseClass implements IteratorAggregate {
                  * @return string
                  */
                 return $this->strSearchMetaInfo;
-
-            case 'LastUpdated':
-                /**
-                 * Gets the value for strLastUpdated (Read-Only Timestamp)
-                 * @return string
-                 */
-                return $this->strLastUpdated;
 
             case 'ObjectOwner':
                 /**
@@ -1600,9 +1600,9 @@ class ClientConnectionGen extends dxBaseClass implements IteratorAggregate {
         $strToReturn .= '<element name="ClientIpAddress" type="xsd:string"/>';
         $strToReturn .= '<element name="ClientUserAgent" type="xsd:string"/>';
         $strToReturn .= '<element name="UpdateDateTime" type="xsd:dateTime"/>';
+        $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
         $strToReturn .= '<element name="AccountObject" type="xsd1:Account"/>';
         $strToReturn .= '<element name="SearchMetaInfo" type="xsd:string"/>';
-        $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
         $strToReturn .= '<element name="ObjectOwner" type="xsd:int"/>';
         $strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
         $strToReturn .= '</sequence></complexType>';
@@ -1635,13 +1635,13 @@ class ClientConnectionGen extends dxBaseClass implements IteratorAggregate {
             $objToReturn->strClientUserAgent = $objSoapObject->ClientUserAgent;
         if (property_exists($objSoapObject, 'UpdateDateTime'))
             $objToReturn->dttUpdateDateTime = new dxDateTime($objSoapObject->UpdateDateTime);
+        if (property_exists($objSoapObject, 'LastUpdated'))
+            $objToReturn->strLastUpdated = $objSoapObject->LastUpdated;
         if ((property_exists($objSoapObject, 'AccountObject')) &&
             ($objSoapObject->AccountObject))
             $objToReturn->AccountObject = Account::GetObjectFromSoapObject($objSoapObject->AccountObject);
         if (property_exists($objSoapObject, 'SearchMetaInfo'))
             $objToReturn->strSearchMetaInfo = $objSoapObject->SearchMetaInfo;
-        if (property_exists($objSoapObject, 'LastUpdated'))
-            $objToReturn->strLastUpdated = $objSoapObject->LastUpdated;
         if (property_exists($objSoapObject, 'ObjectOwner'))
             $objToReturn->intObjectOwner = $objSoapObject->ObjectOwner;
         if (property_exists($objSoapObject, '__blnRestored'))
@@ -1686,9 +1686,9 @@ class ClientConnectionGen extends dxBaseClass implements IteratorAggregate {
         $iArray['ClientIpAddress'] = $this->strClientIpAddress;
         $iArray['ClientUserAgent'] = $this->strClientUserAgent;
         $iArray['UpdateDateTime'] = $this->dttUpdateDateTime;
+        $iArray['LastUpdated'] = $this->strLastUpdated;
         $iArray['Account'] = $this->intAccount;
         $iArray['SearchMetaInfo'] = $this->strSearchMetaInfo;
-        $iArray['LastUpdated'] = $this->strLastUpdated;
         $iArray['ObjectOwner'] = $this->intObjectOwner;
         return new ArrayIterator($iArray);
     }
@@ -1728,10 +1728,10 @@ class ClientConnectionGen extends dxBaseClass implements IteratorAggregate {
      * @property-read dxQueryNode $ClientIpAddress
      * @property-read dxQueryNode $ClientUserAgent
      * @property-read dxQueryNode $UpdateDateTime
+     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $Account
      * @property-read dxQueryNodeAccount $AccountObject
      * @property-read dxQueryNode $SearchMetaInfo
-     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ObjectOwner
      *
      *
@@ -1753,14 +1753,14 @@ class ClientConnectionGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNode('ClientUserAgent', 'ClientUserAgent', 'VarChar', $this);
 				case 'UpdateDateTime':
 					return new dxQueryNode('UpdateDateTime', 'UpdateDateTime', 'DateTime', $this);
+				case 'LastUpdated':
+					return new dxQueryNode('LastUpdated', 'LastUpdated', 'VarChar', $this);
 				case 'Account':
 					return new dxQueryNode('Account', 'Account', 'Integer', $this);
 				case 'AccountObject':
 					return new dxQueryNodeAccount('Account', 'AccountObject', 'Integer', $this);
 				case 'SearchMetaInfo':
 					return new dxQueryNode('SearchMetaInfo', 'SearchMetaInfo', 'Blob', $this);
-				case 'LastUpdated':
-					return new dxQueryNode('LastUpdated', 'LastUpdated', 'VarChar', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'Integer', $this);
 				case 'ClientAuthenticationToken':
@@ -1784,10 +1784,10 @@ class ClientConnectionGen extends dxBaseClass implements IteratorAggregate {
      * @property-read dxQueryNode $ClientIpAddress
      * @property-read dxQueryNode $ClientUserAgent
      * @property-read dxQueryNode $UpdateDateTime
+     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $Account
      * @property-read dxQueryNodeAccount $AccountObject
      * @property-read dxQueryNode $SearchMetaInfo
-     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ObjectOwner
      *
      *
@@ -1809,14 +1809,14 @@ class ClientConnectionGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNode('ClientUserAgent', 'ClientUserAgent', 'string', $this);
 				case 'UpdateDateTime':
 					return new dxQueryNode('UpdateDateTime', 'UpdateDateTime', 'dxDateTime', $this);
+				case 'LastUpdated':
+					return new dxQueryNode('LastUpdated', 'LastUpdated', 'string', $this);
 				case 'Account':
 					return new dxQueryNode('Account', 'Account', 'integer', $this);
 				case 'AccountObject':
 					return new dxQueryNodeAccount('Account', 'AccountObject', 'integer', $this);
 				case 'SearchMetaInfo':
 					return new dxQueryNode('SearchMetaInfo', 'SearchMetaInfo', 'string', $this);
-				case 'LastUpdated':
-					return new dxQueryNode('LastUpdated', 'LastUpdated', 'string', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'integer', $this);
 				case 'ClientAuthenticationToken':

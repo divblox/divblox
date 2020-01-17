@@ -1,0 +1,13 @@
+var settings = {
+    "url": "{operation_endpoint}",
+    "method": "POST",
+    "timeout": 0,
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "data": JSON.stringify({operation_inputs_json}),
+};
+
+$.ajax(settings).done(function (response) {
+    console.log(response);
+});

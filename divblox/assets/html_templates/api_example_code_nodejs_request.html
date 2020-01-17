@@ -1,0 +1,13 @@
+var request = require('request');
+var options = {
+    'method': 'POST',
+    'url': '{operation_endpoint}',
+    'headers': {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({operation_inputs_json})
+};
+request(options, function (error, response) {
+    if (error) throw new Error(error);
+    console.log(response.body);
+});

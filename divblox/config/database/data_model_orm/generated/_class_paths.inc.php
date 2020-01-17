@@ -9,6 +9,21 @@
     ProjectFunctions::$ClassFile['dxquerynodeadditionalaccountinformation'] = DATA_MODEL_ORM_PATH_STR.'/AdditionalAccountInformation.class.php';
     ProjectFunctions::$ClassFile['dxreversereferencenodeadditionalaccountinformation'] = DATA_MODEL_ORM_PATH_STR.'/AdditionalAccountInformation.class.php';
 
+	// ClassPaths for the AllowedApiOperation class
+    ProjectFunctions::$ClassFile['allowedapioperation'] = DATA_MODEL_ORM_PATH_STR.'/AllowedApiOperation.class.php';
+    ProjectFunctions::$ClassFile['dxquerynodeallowedapioperation'] = DATA_MODEL_ORM_PATH_STR.'/AllowedApiOperation.class.php';
+    ProjectFunctions::$ClassFile['dxreversereferencenodeallowedapioperation'] = DATA_MODEL_ORM_PATH_STR.'/AllowedApiOperation.class.php';
+
+	// ClassPaths for the ApiKey class
+    ProjectFunctions::$ClassFile['apikey'] = DATA_MODEL_ORM_PATH_STR.'/ApiKey.class.php';
+    ProjectFunctions::$ClassFile['dxquerynodeapikey'] = DATA_MODEL_ORM_PATH_STR.'/ApiKey.class.php';
+    ProjectFunctions::$ClassFile['dxreversereferencenodeapikey'] = DATA_MODEL_ORM_PATH_STR.'/ApiKey.class.php';
+
+	// ClassPaths for the ApiOperation class
+    ProjectFunctions::$ClassFile['apioperation'] = DATA_MODEL_ORM_PATH_STR.'/ApiOperation.class.php';
+    ProjectFunctions::$ClassFile['dxquerynodeapioperation'] = DATA_MODEL_ORM_PATH_STR.'/ApiOperation.class.php';
+    ProjectFunctions::$ClassFile['dxreversereferencenodeapioperation'] = DATA_MODEL_ORM_PATH_STR.'/ApiOperation.class.php';
+
 	// ClassPaths for the AuditLogEntry class
     ProjectFunctions::$ClassFile['auditlogentry'] = DATA_MODEL_ORM_PATH_STR.'/AuditLogEntry.class.php';
     ProjectFunctions::$ClassFile['dxquerynodeauditlogentry'] = DATA_MODEL_ORM_PATH_STR.'/AuditLogEntry.class.php';

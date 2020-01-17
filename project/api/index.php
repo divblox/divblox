@@ -18,5 +18,5 @@
 header("Content-Type: text/plain");
 echo "divblox API root\r\n";
 echo "Usage:\r\n";
-echo "api/endpoint/operation/\r\n";
-echo "e.g: api/user/get/[id]\r\n";
+echo "/api/endpoint/operation\r\n";
+echo "e.g: /api/api_example/doc\r\n";

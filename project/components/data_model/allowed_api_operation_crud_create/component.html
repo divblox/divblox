@@ -1,0 +1,32 @@
+<div id="ComponentWrapper" class="component-wrapper">
+    <div id="ComponentPlaceholder" class="component_placeholder component_placeholder_data_view">
+        <div id="ComponentFeedback"></div>
+    </div>
+    <div id="ComponentContent" class="component-content" style="display:none">
+        <div class="container-fluid container-no-gutters">
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" type="checkbox" name="IsActive" id="IsActive">
+                        <label class="form-check-label">
+                            Is Active
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <label>Api Operation:</label>
+                    <select name="ApiOperation" id="ApiOperation" class="custom-select" required>
+                        <option value="">-Please Select-</option>
+                    </select>
+                    <div id="ApiOperationInvalidFeedback" class="invalid-feedback">
+                        Please select an api operation
+                    </div>
+                </div>
+                <div class="col-12">
+                    <button id="btnSave" type="button" class="btn btn-primary fullwidth mt-1">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

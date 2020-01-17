@@ -1,0 +1,85 @@
+<div class="card">
+    <div class="card-header" id="{operation_header_id}">
+        <h2 class="mb-0">
+            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#{operation_content_id}" aria-expanded="true" aria-controls="{operation_content_id}">
+                {operation_name}
+            </button>
+        </h2>
+    </div>
+
+    <div id="{operation_content_id}" class="collapse" aria-labelledby="{operation_header_id}" data-parent="#OperationWrapper">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12">
+                    {operation_description}
+                </div>
+                <div class="col-12 mt-3">
+                    <strong>Request URL</strong> <pre>{operation_endpoint}</pre>
+                    <i>{authentication_required_label}</i>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <strong>Input parameters</strong><hr>
+                    <pre><span style="margin-top: 5px;padding: 15px;background-color: lightgray;border-radius: 5px;display: block;color: #000;margin-bottom: -15px;">Content-Type: application/json</span>
+{operation_inputs}</pre>
+                </div>
+                <div class="col-md-6">
+                    <strong>Expected output</strong><hr>
+                    <pre><span style="margin-top: 5px;padding: 15px;background-color: lightgray;border-radius: 5px;display: block;color: #000;margin-bottom: -15px;">Content-Type: application/json</span>
+{operation_outputs}</pre>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <strong>Curl</strong>
+                    <pre>curl --location --request POST '{operation_endpoint}' {operation_curl_inputs}</pre>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-4">
+                    <strong>Example Code Generator</strong>
+                    <select class="custom-select language-select">
+                        <option value="None">-Select Language-</option>
+                        <option value="ExampleCodeC_{operation_header_id}">C - libcurl</option>
+                        <option value="ExampleCodeCSharp_{operation_header_id}">C# - RestSharp</option>
+                        <option value="ExampleCodeHttp_{operation_header_id}">HTTP</option>
+                        <option value="ExampleCodeJavaOkHttp_{operation_header_id}">Java - OkHttp</option>
+                        <option value="ExampleCodeJavaUnirest_{operation_header_id}">Java - Unirest</option>
+                        <option value="ExampleCodeJsFetch_{operation_header_id}">JavaScript - Fetch</option>
+                        <option value="ExampleCodeJquery_{operation_header_id}">JavaScript - jQuery</option>
+                        <option value="ExampleCodeJsXhr_{operation_header_id}">JavaScript - XHR</option>
+                        <option value="ExampleCodeNodeJsRequest_{operation_header_id}">NodeJs - Request</option>
+                        <option value="ExampleCodeObjectiveC_{operation_header_id}">Objective-C - NSURLSession</option>
+                        <option value="ExampleCodePhpCurl_{operation_header_id}">PHP - Curl</option>
+                        <option value="ExampleCodePhpHttp2_{operation_header_id}">PHP - HTTP_Request2</option>
+                        <option value="ExampleCodePhpPecl_{operation_header_id}">PHP - pecl_http</option>
+                        <option value="ExampleCodePythonRequests_{operation_header_id}">Python - Requests</option>
+                        <option value="ExampleCodeRuby_{operation_header_id}">Ruby - Net::HTTP</option>
+                        <option value="ExampleCodeSwift_{operation_header_id}">Swift - URLSession</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <pre class="ExampleCodePre ExampleCodeJsFetch_{operation_header_id}">{example_code_js_fetch}</pre>
+                    <pre class="ExampleCodePre ExampleCodeJsXhr_{operation_header_id}">{example_code_js_xhr}</pre>
+                    <pre class="ExampleCodePre ExampleCodeJquery_{operation_header_id}">{example_code_jquery}</pre>
+                    <pre class="ExampleCodePre ExampleCodePhpCurl_{operation_header_id}">{example_code_php_curl}</pre>
+                    <pre class="ExampleCodePre ExampleCodePhpHttp2_{operation_header_id}">{example_code_php_http2}</pre>
+                    <pre class="ExampleCodePre ExampleCodePhpPecl_{operation_header_id}">{example_code_php_pecl}</pre>
+                    <pre class="ExampleCodePre ExampleCodeHttp_{operation_header_id}">{example_code_http}</pre>
+                    <pre class="ExampleCodePre ExampleCodeSwift_{operation_header_id}">{example_code_swift}</pre>
+                    <pre class="ExampleCodePre ExampleCodeObjectiveC_{operation_header_id}">{example_code_objective_c}</pre>
+                    <pre class="ExampleCodePre ExampleCodeJavaOkHttp_{operation_header_id}">{example_code_java_okhttp}</pre>
+                    <pre class="ExampleCodePre ExampleCodeJavaUnirest_{operation_header_id}">{example_code_java_unirest}</pre>
+                    <pre class="ExampleCodePre ExampleCodeC_{operation_header_id}">{example_code_c}</pre>
+                    <pre class="ExampleCodePre ExampleCodeCSharp_{operation_header_id}">{example_code_csharp}</pre>
+                    <pre class="ExampleCodePre ExampleCodeNodeJsRequest_{operation_header_id}">{example_code_nodejs_request}</pre>
+                    <pre class="ExampleCodePre ExampleCodePythonRequests_{operation_header_id}">{example_code_python_requests}</pre>
+                    <pre class="ExampleCodePre ExampleCodeRuby_{operation_header_id}">{example_code_ruby}</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

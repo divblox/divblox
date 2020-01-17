@@ -7650,7 +7650,7 @@ class ComponentController_base {
             return;
         }
         $ClientAuthenticationTokenObj = ProjectFunctions::getCurrentAuthTokenObject($this->CurrentClientAuthenticationToken);
-            if (is_null($ClientAuthenticationTokenObj)) {
+        if (is_null($ClientAuthenticationTokenObj)) {
             $this->initializeNewAuthenticationToken();
         } else {
             $this->checkValidAuthenticationToken($ClientAuthenticationTokenObj);

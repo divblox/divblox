@@ -1,0 +1,12 @@
+import requests
+
+url = "{operation_endpoint}"
+
+payload = "{operation_inputs_json_escaped}"
+headers = {
+    'Content-Type': 'application/json'
+}
+
+response = requests.request("POST", url, headers=headers, data = payload)
+
+print(response.text.encode('utf8'))

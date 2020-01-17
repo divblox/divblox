@@ -24,6 +24,7 @@
  * @property string $AuditLogEntryDetail the value for strAuditLogEntryDetail 
  * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
  * @property integer $ObjectOwner the value for intObjectOwner 
+ * @property string $ApiKey the value for strApiKey 
  * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
  */
 class AuditLogEntryGen extends dxBaseClass implements IteratorAggregate {
@@ -108,6 +109,15 @@ class AuditLogEntryGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
+     * Protected member variable that maps to the database column AuditLogEntry.ApiKey
+     * @var string strApiKey
+     */
+    protected $strApiKey;
+    const ApiKeyMaxLength = 50;
+    const ApiKeyDefault = null;
+
+
+    /**
      * Protected array of virtual attributes for this object (e.g. extra/other calculated and/or non-object bound
      * columns from the run-time database query result for this object).  Used by InstantiateDbRow and
      * GetVirtualAttribute.
@@ -140,6 +150,7 @@ class AuditLogEntryGen extends dxBaseClass implements IteratorAggregate {
         $this->strAuditLogEntryDetail = AuditLogEntry::AuditLogEntryDetailDefault;
         $this->strLastUpdated = AuditLogEntry::LastUpdatedDefault;
         $this->intObjectOwner = AuditLogEntry::ObjectOwnerDefault;
+        $this->strApiKey = AuditLogEntry::ApiKeyDefault;
     }
 
     ///////////////////////////////
@@ -485,6 +496,7 @@ class AuditLogEntryGen extends dxBaseClass implements IteratorAggregate {
             $objBuilder->AddSelectItem($strTableName, 'AuditLogEntryDetail', $strAliasPrefix . 'AuditLogEntryDetail');
             $objBuilder->AddSelectItem($strTableName, 'LastUpdated', $strAliasPrefix . 'LastUpdated');
             $objBuilder->AddSelectItem($strTableName, 'ObjectOwner', $strAliasPrefix . 'ObjectOwner');
+            $objBuilder->AddSelectItem($strTableName, 'ApiKey', $strAliasPrefix . 'ApiKey');
         }
     }
     ///////////////////////////////
@@ -624,6 +636,9 @@ class AuditLogEntryGen extends dxBaseClass implements IteratorAggregate {
         $strAlias = $strAliasPrefix . 'ObjectOwner';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intObjectOwner = $objDbRow->GetColumn($strAliasName, 'Integer');
+        $strAlias = $strAliasPrefix . 'ApiKey';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->strApiKey = $objDbRow->GetColumn($strAliasName, 'VarChar');
 
         if (isset($objPreviousItemArray) && is_array($objPreviousItemArray)) {
             foreach ($objPreviousItemArray as $objPreviousItem) {
@@ -783,7 +798,8 @@ class AuditLogEntryGen extends dxBaseClass implements IteratorAggregate {
 							`UserEmail`,
 							`ObjectId`,
 							`AuditLogEntryDetail`,
-							`ObjectOwner`
+							`ObjectOwner`,
+							`ApiKey`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->dttEntryTimeStamp) . ',
 							' . $objDatabase->SqlVariable($this->strObjectName) . ',
@@ -791,7 +807,8 @@ class AuditLogEntryGen extends dxBaseClass implements IteratorAggregate {
 							' . $objDatabase->SqlVariable($this->strUserEmail) . ',
 							' . $objDatabase->SqlVariable($this->strObjectId) . ',
 							' . $objDatabase->SqlVariable($this->strAuditLogEntryDetail) . ',
-							' . $objDatabase->SqlVariable($this->intObjectOwner) . '
+							' . $objDatabase->SqlVariable($this->intObjectOwner) . ',
+							' . $objDatabase->SqlVariable($this->strApiKey) . '
 						)
                 ');
 					// Update Identity column and return its value
@@ -823,7 +840,8 @@ class AuditLogEntryGen extends dxBaseClass implements IteratorAggregate {
 							`UserEmail` = ' . $objDatabase->SqlVariable($this->strUserEmail) . ',
 							`ObjectId` = ' . $objDatabase->SqlVariable($this->strObjectId) . ',
 							`AuditLogEntryDetail` = ' . $objDatabase->SqlVariable($this->strAuditLogEntryDetail) . ',
-							`ObjectOwner` = ' . $objDatabase->SqlVariable($this->intObjectOwner) . '
+							`ObjectOwner` = ' . $objDatabase->SqlVariable($this->intObjectOwner) . ',
+							`ApiKey` = ' . $objDatabase->SqlVariable($this->strApiKey) . '
             WHERE
 							`Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
             }
@@ -943,6 +961,7 @@ class AuditLogEntryGen extends dxBaseClass implements IteratorAggregate {
         $this->strAuditLogEntryDetail = $objReloaded->strAuditLogEntryDetail;
         $this->strLastUpdated = $objReloaded->strLastUpdated;
         $this->intObjectOwner = $objReloaded->intObjectOwner;
+        $this->strApiKey = $objReloaded->strApiKey;
     }
     ////////////////////
     // PUBLIC OVERRIDERS
@@ -1022,6 +1041,13 @@ class AuditLogEntryGen extends dxBaseClass implements IteratorAggregate {
                  * @return integer
                  */
                 return $this->intObjectOwner;
+
+            case 'ApiKey':
+                /**
+                 * Gets the value for strApiKey 
+                 * @return string
+                 */
+                return $this->strApiKey;
 
 
             ///////////////////
@@ -1150,6 +1176,19 @@ class AuditLogEntryGen extends dxBaseClass implements IteratorAggregate {
                     throw $objExc;
                 }
 
+            case 'ApiKey':
+                /**
+                 * Sets the value for strApiKey 
+                 * @param string $mixValue
+                 * @return string
+                 */
+                try {
+                    return ($this->strApiKey = dxType::Cast($mixValue, dxType::String));
+                } catch (dxCallerException $objExc) {
+                    $objExc->IncrementOffset();
+                    throw $objExc;
+                }
+
 
             ///////////////////
             // Member Objects
@@ -1227,6 +1266,7 @@ class AuditLogEntryGen extends dxBaseClass implements IteratorAggregate {
         $strToReturn .= '<element name="AuditLogEntryDetail" type="xsd:string"/>';
         $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
         $strToReturn .= '<element name="ObjectOwner" type="xsd:int"/>';
+        $strToReturn .= '<element name="ApiKey" type="xsd:string"/>';
         $strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
         $strToReturn .= '</sequence></complexType>';
         return $strToReturn;
@@ -1267,6 +1307,8 @@ class AuditLogEntryGen extends dxBaseClass implements IteratorAggregate {
             $objToReturn->strLastUpdated = $objSoapObject->LastUpdated;
         if (property_exists($objSoapObject, 'ObjectOwner'))
             $objToReturn->intObjectOwner = $objSoapObject->ObjectOwner;
+        if (property_exists($objSoapObject, 'ApiKey'))
+            $objToReturn->strApiKey = $objSoapObject->ApiKey;
         if (property_exists($objSoapObject, '__blnRestored'))
             $objToReturn->__blnRestored = $objSoapObject->__blnRestored;
         return $objToReturn;
@@ -1310,6 +1352,7 @@ class AuditLogEntryGen extends dxBaseClass implements IteratorAggregate {
         $iArray['AuditLogEntryDetail'] = $this->strAuditLogEntryDetail;
         $iArray['LastUpdated'] = $this->strLastUpdated;
         $iArray['ObjectOwner'] = $this->intObjectOwner;
+        $iArray['ApiKey'] = $this->strApiKey;
         return new ArrayIterator($iArray);
     }
 
@@ -1353,6 +1396,7 @@ class AuditLogEntryGen extends dxBaseClass implements IteratorAggregate {
      * @property-read dxQueryNode $AuditLogEntryDetail
      * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ObjectOwner
+     * @property-read dxQueryNode $ApiKey
      *
      *
 
@@ -1382,6 +1426,8 @@ class AuditLogEntryGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNode('LastUpdated', 'LastUpdated', 'VarChar', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'Integer', $this);
+				case 'ApiKey':
+					return new dxQueryNode('ApiKey', 'ApiKey', 'VarChar', $this);
 
 				case '_PrimaryKeyNode':
 					return new dxQueryNode('Id', 'Id', 'Integer', $this);
@@ -1406,6 +1452,7 @@ class AuditLogEntryGen extends dxBaseClass implements IteratorAggregate {
      * @property-read dxQueryNode $AuditLogEntryDetail
      * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ObjectOwner
+     * @property-read dxQueryNode $ApiKey
      *
      *
 
@@ -1435,6 +1482,8 @@ class AuditLogEntryGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNode('LastUpdated', 'LastUpdated', 'string', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'integer', $this);
+				case 'ApiKey':
+					return new dxQueryNode('ApiKey', 'ApiKey', 'string', $this);
 
 				case '_PrimaryKeyNode':
 					return new dxQueryNode('Id', 'Id', 'integer', $this);

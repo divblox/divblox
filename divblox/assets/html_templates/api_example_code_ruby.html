@@ -1,0 +1,12 @@
+require "uri"
+require "net/http"
+
+url = URI("{operation_endpoint}")
+
+http = Net::HTTP.new(url.host, url.port);
+request = Net::HTTP::Post.new(url)
+request["Content-Type"] = "application/json"
+request.body = "{operation_inputs_json_escaped}"
+
+response = http.request(request)
+puts response.read_body

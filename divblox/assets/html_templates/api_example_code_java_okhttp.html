@@ -1,0 +1,9 @@
+OkHttpClient client = new OkHttpClient().newBuilder().build();
+MediaType mediaType = MediaType.parse("application/json");
+RequestBody body = RequestBody.create(mediaType, "{operation_inputs_json_escaped}");
+Request request = new Request.Builder()
+    .url("{operation_endpoint}")
+    .method("POST", body)
+    .addHeader("Content-Type", "application/json")
+    .build();
+Response response = client.newCall(request).execute();

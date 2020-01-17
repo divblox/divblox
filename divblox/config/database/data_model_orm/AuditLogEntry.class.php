@@ -31,6 +31,11 @@ class AuditLogEntry extends AuditLogEntryGen {
         // Get the Database Object for this Class
         $objDatabase = AuditLogEntry::GetDatabase();
         $mixToReturn = null;
+        if (isset($_SESSION["API_CALL_ACTIVE"])) {
+            if (isset($_SESSION["API_CALL_KEY"])) {
+                $this->strApiKey = $_SESSION["API_CALL_KEY"];
+            }
+        }
         if (!is_numeric($this->intObjectOwner)) {
             $this->intObjectOwner = ProjectFunctions::getCurrentAccountId();
         }
@@ -49,7 +54,8 @@ class AuditLogEntry extends AuditLogEntryGen {
 							`UserEmail`,
 							`ObjectId`,
 							`AuditLogEntryDetail`,
-							`ObjectOwner`
+							`ObjectOwner`,
+							`ApiKey`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->dttEntryTimeStamp) . ',
 							' . $objDatabase->SqlVariable($this->strObjectName) . ',
@@ -57,7 +63,8 @@ class AuditLogEntry extends AuditLogEntryGen {
 							' . $objDatabase->SqlVariable($this->strUserEmail) . ',
 							' . $objDatabase->SqlVariable($this->strObjectId) . ',
 							' . $objDatabase->SqlVariable($this->strAuditLogEntryDetail) . ',
-							' . $objDatabase->SqlVariable($this->intObjectOwner) . '
+							' . $objDatabase->SqlVariable($this->intObjectOwner) . ',
+							' . $objDatabase->SqlVariable($this->strApiKey) . '
 						)
                 ');
                 // Update Identity column and return its value
@@ -82,17 +89,18 @@ class AuditLogEntry extends AuditLogEntryGen {
 
                 // Perform the UPDATE query
                 $objDatabase->NonQuery('
-            UPDATE `AuditLogEntry` SET
-							`EntryTimeStamp` = ' . $objDatabase->SqlVariable($this->dttEntryTimeStamp) . ',
-							`ObjectName` = ' . $objDatabase->SqlVariable($this->strObjectName) . ',
-							`ModificationType` = ' . $objDatabase->SqlVariable($this->strModificationType) . ',
-							`UserEmail` = ' . $objDatabase->SqlVariable($this->strUserEmail) . ',
-							`ObjectId` = ' . $objDatabase->SqlVariable($this->strObjectId) . ',
-							`AuditLogEntryDetail` = ' . $objDatabase->SqlVariable($this->strAuditLogEntryDetail) . ',
-							`ObjectOwner` = ' . $objDatabase->SqlVariable($this->intObjectOwner) . '
-            WHERE
-							`Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
-            }
+                UPDATE `AuditLogEntry` SET
+                                `EntryTimeStamp` = ' . $objDatabase->SqlVariable($this->dttEntryTimeStamp) . ',
+                                `ObjectName` = ' . $objDatabase->SqlVariable($this->strObjectName) . ',
+                                `ModificationType` = ' . $objDatabase->SqlVariable($this->strModificationType) . ',
+                                `UserEmail` = ' . $objDatabase->SqlVariable($this->strUserEmail) . ',
+                                `ObjectId` = ' . $objDatabase->SqlVariable($this->strObjectId) . ',
+                                `AuditLogEntryDetail` = ' . $objDatabase->SqlVariable($this->strAuditLogEntryDetail) . ',
+                                `ObjectOwner` = ' . $objDatabase->SqlVariable($this->intObjectOwner) . ',
+                                `ApiKey` = ' . $objDatabase->SqlVariable($this->strApiKey) . '
+                WHERE
+                                `Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
+                }
 
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();

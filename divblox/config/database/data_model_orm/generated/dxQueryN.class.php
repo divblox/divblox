@@ -13,6 +13,24 @@ class dxQueryN {
         return new dxQueryNodeAdditionalAccountInformation('AdditionalAccountInformation', null, null);
     }
     /**
+     * @return dxQueryNodeAllowedApiOperation
+     */
+    static public function AllowedApiOperation() {
+        return new dxQueryNodeAllowedApiOperation('AllowedApiOperation', null, null);
+    }
+    /**
+     * @return dxQueryNodeApiKey
+     */
+    static public function ApiKey() {
+        return new dxQueryNodeApiKey('ApiKey', null, null);
+    }
+    /**
+     * @return dxQueryNodeApiOperation
+     */
+    static public function ApiOperation() {
+        return new dxQueryNodeApiOperation('ApiOperation', null, null);
+    }
+    /**
      * @return dxQueryNodeAuditLogEntry
      */
     static public function AuditLogEntry() {
