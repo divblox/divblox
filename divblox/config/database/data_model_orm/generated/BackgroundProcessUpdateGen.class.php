@@ -18,9 +18,9 @@
  * @property-read integer $Id the value for intId (Read-Only PK)
  * @property dxDateTime $UpdateDateTime the value for dttUpdateDateTime 
  * @property string $UpdateMessage the value for strUpdateMessage 
- * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
  * @property integer $BackgroundProcess the value for intBackgroundProcess 
  * @property string $SearchMetaInfo the value for strSearchMetaInfo 
+ * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
  * @property integer $ObjectOwner the value for intObjectOwner 
  * @property BackgroundProcess $BackgroundProcessObject the value for the BackgroundProcess object referenced by intBackgroundProcess 
  * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
@@ -56,14 +56,6 @@ class BackgroundProcessUpdateGen extends dxBaseClass implements IteratorAggregat
 
 
     /**
-     * Protected member variable that maps to the database column BackgroundProcessUpdate.LastUpdated
-     * @var string strLastUpdated
-     */
-    protected $strLastUpdated;
-    const LastUpdatedDefault = null;
-
-
-    /**
      * Protected member variable that maps to the database column BackgroundProcessUpdate.BackgroundProcess
      * @var integer intBackgroundProcess
      */
@@ -77,6 +69,14 @@ class BackgroundProcessUpdateGen extends dxBaseClass implements IteratorAggregat
      */
     protected $strSearchMetaInfo;
     const SearchMetaInfoDefault = null;
+
+
+    /**
+     * Protected member variable that maps to the database column BackgroundProcessUpdate.LastUpdated
+     * @var string strLastUpdated
+     */
+    protected $strLastUpdated;
+    const LastUpdatedDefault = null;
 
 
     /**
@@ -124,9 +124,9 @@ class BackgroundProcessUpdateGen extends dxBaseClass implements IteratorAggregat
         $this->intId = BackgroundProcessUpdate::IdDefault;
         $this->dttUpdateDateTime = (BackgroundProcessUpdate::UpdateDateTimeDefault === null)?null:new dxDateTime(BackgroundProcessUpdate::UpdateDateTimeDefault);
         $this->strUpdateMessage = BackgroundProcessUpdate::UpdateMessageDefault;
-        $this->strLastUpdated = BackgroundProcessUpdate::LastUpdatedDefault;
         $this->intBackgroundProcess = BackgroundProcessUpdate::BackgroundProcessDefault;
         $this->strSearchMetaInfo = BackgroundProcessUpdate::SearchMetaInfoDefault;
+        $this->strLastUpdated = BackgroundProcessUpdate::LastUpdatedDefault;
         $this->intObjectOwner = BackgroundProcessUpdate::ObjectOwnerDefault;
     }
 
@@ -467,9 +467,9 @@ class BackgroundProcessUpdateGen extends dxBaseClass implements IteratorAggregat
             $objBuilder->AddSelectItem($strTableName, 'Id', $strAliasPrefix . 'Id');
             $objBuilder->AddSelectItem($strTableName, 'UpdateDateTime', $strAliasPrefix . 'UpdateDateTime');
             $objBuilder->AddSelectItem($strTableName, 'UpdateMessage', $strAliasPrefix . 'UpdateMessage');
-            $objBuilder->AddSelectItem($strTableName, 'LastUpdated', $strAliasPrefix . 'LastUpdated');
             $objBuilder->AddSelectItem($strTableName, 'BackgroundProcess', $strAliasPrefix . 'BackgroundProcess');
             $objBuilder->AddSelectItem($strTableName, 'SearchMetaInfo', $strAliasPrefix . 'SearchMetaInfo');
+            $objBuilder->AddSelectItem($strTableName, 'LastUpdated', $strAliasPrefix . 'LastUpdated');
             $objBuilder->AddSelectItem($strTableName, 'ObjectOwner', $strAliasPrefix . 'ObjectOwner');
         }
     }
@@ -601,15 +601,15 @@ class BackgroundProcessUpdateGen extends dxBaseClass implements IteratorAggregat
         $strAlias = $strAliasPrefix . 'UpdateMessage';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->strUpdateMessage = $objDbRow->GetColumn($strAliasName, 'Blob');
-        $strAlias = $strAliasPrefix . 'LastUpdated';
-        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->strLastUpdated = $objDbRow->GetColumn($strAliasName, 'VarChar');
         $strAlias = $strAliasPrefix . 'BackgroundProcess';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intBackgroundProcess = $objDbRow->GetColumn($strAliasName, 'Integer');
         $strAlias = $strAliasPrefix . 'SearchMetaInfo';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->strSearchMetaInfo = $objDbRow->GetColumn($strAliasName, 'Blob');
+        $strAlias = $strAliasPrefix . 'LastUpdated';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->strLastUpdated = $objDbRow->GetColumn($strAliasName, 'VarChar');
         $strAlias = $strAliasPrefix . 'ObjectOwner';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intObjectOwner = $objDbRow->GetColumn($strAliasName, 'Integer');
@@ -808,9 +808,9 @@ class BackgroundProcessUpdateGen extends dxBaseClass implements IteratorAggregat
             $ChangedArray = array_merge($ChangedArray,array("Id" => $this->intId));
             $ChangedArray = array_merge($ChangedArray,array("UpdateDateTime" => $this->dttUpdateDateTime));
             $ChangedArray = array_merge($ChangedArray,array("UpdateMessage" => $this->strUpdateMessage));
-            $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
             $ChangedArray = array_merge($ChangedArray,array("BackgroundProcess" => $this->intBackgroundProcess));
             $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
+            $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
             $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
             $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         } else {
@@ -840,14 +840,6 @@ class BackgroundProcessUpdateGen extends dxBaseClass implements IteratorAggregat
                 //$ChangedArray = array_merge($ChangedArray,array("UpdateMessage" => "From: ".$ExistingValueStr." to: ".$this->strUpdateMessage));
             }
             $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->LastUpdated)) {
-                $ExistingValueStr = $ExistingObj->LastUpdated;
-            }
-            if ($ExistingObj->LastUpdated != $this->strLastUpdated) {
-                $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => array("Before" => $ExistingValueStr,"After" => $this->strLastUpdated)));
-                //$ChangedArray = array_merge($ChangedArray,array("LastUpdated" => "From: ".$ExistingValueStr." to: ".$this->strLastUpdated));
-            }
-            $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->BackgroundProcess)) {
                 $ExistingValueStr = $ExistingObj->BackgroundProcess;
             }
@@ -862,6 +854,14 @@ class BackgroundProcessUpdateGen extends dxBaseClass implements IteratorAggregat
             if ($ExistingObj->SearchMetaInfo != $this->strSearchMetaInfo) {
                 $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => array("Before" => $ExistingValueStr,"After" => $this->strSearchMetaInfo)));
                 //$ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => "From: ".$ExistingValueStr." to: ".$this->strSearchMetaInfo));
+            }
+            $ExistingValueStr = "NULL";
+            if (!is_null($ExistingObj->LastUpdated)) {
+                $ExistingValueStr = $ExistingObj->LastUpdated;
+            }
+            if ($ExistingObj->LastUpdated != $this->strLastUpdated) {
+                $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => array("Before" => $ExistingValueStr,"After" => $this->strLastUpdated)));
+                //$ChangedArray = array_merge($ChangedArray,array("LastUpdated" => "From: ".$ExistingValueStr." to: ".$this->strLastUpdated));
             }
             $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->ObjectOwner)) {
@@ -979,9 +979,9 @@ class BackgroundProcessUpdateGen extends dxBaseClass implements IteratorAggregat
         $ChangedArray = array_merge($ChangedArray,array("Id" => $this->intId));
         $ChangedArray = array_merge($ChangedArray,array("UpdateDateTime" => $this->dttUpdateDateTime));
         $ChangedArray = array_merge($ChangedArray,array("UpdateMessage" => $this->strUpdateMessage));
-        $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
         $ChangedArray = array_merge($ChangedArray,array("BackgroundProcess" => $this->intBackgroundProcess));
         $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
+        $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
         $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
         $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         try {
@@ -1062,9 +1062,9 @@ class BackgroundProcessUpdateGen extends dxBaseClass implements IteratorAggregat
         // Update $this's local variables to match
         $this->dttUpdateDateTime = $objReloaded->dttUpdateDateTime;
         $this->strUpdateMessage = $objReloaded->strUpdateMessage;
-        $this->strLastUpdated = $objReloaded->strLastUpdated;
         $this->BackgroundProcess = $objReloaded->BackgroundProcess;
         $this->strSearchMetaInfo = $objReloaded->strSearchMetaInfo;
+        $this->strLastUpdated = $objReloaded->strLastUpdated;
         $this->intObjectOwner = $objReloaded->intObjectOwner;
     }
     ////////////////////
@@ -1104,13 +1104,6 @@ class BackgroundProcessUpdateGen extends dxBaseClass implements IteratorAggregat
                  */
                 return $this->strUpdateMessage;
 
-            case 'LastUpdated':
-                /**
-                 * Gets the value for strLastUpdated (Read-Only Timestamp)
-                 * @return string
-                 */
-                return $this->strLastUpdated;
-
             case 'BackgroundProcess':
                 /**
                  * Gets the value for intBackgroundProcess 
@@ -1124,6 +1117,13 @@ class BackgroundProcessUpdateGen extends dxBaseClass implements IteratorAggregat
                  * @return string
                  */
                 return $this->strSearchMetaInfo;
+
+            case 'LastUpdated':
+                /**
+                 * Gets the value for strLastUpdated (Read-Only Timestamp)
+                 * @return string
+                 */
+                return $this->strLastUpdated;
 
             case 'ObjectOwner':
                 /**
@@ -1351,9 +1351,9 @@ class BackgroundProcessUpdateGen extends dxBaseClass implements IteratorAggregat
         $strToReturn .= '<element name="Id" type="xsd:int"/>';
         $strToReturn .= '<element name="UpdateDateTime" type="xsd:dateTime"/>';
         $strToReturn .= '<element name="UpdateMessage" type="xsd:string"/>';
-        $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
         $strToReturn .= '<element name="BackgroundProcessObject" type="xsd1:BackgroundProcess"/>';
         $strToReturn .= '<element name="SearchMetaInfo" type="xsd:string"/>';
+        $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
         $strToReturn .= '<element name="ObjectOwner" type="xsd:int"/>';
         $strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
         $strToReturn .= '</sequence></complexType>';
@@ -1384,13 +1384,13 @@ class BackgroundProcessUpdateGen extends dxBaseClass implements IteratorAggregat
             $objToReturn->dttUpdateDateTime = new dxDateTime($objSoapObject->UpdateDateTime);
         if (property_exists($objSoapObject, 'UpdateMessage'))
             $objToReturn->strUpdateMessage = $objSoapObject->UpdateMessage;
-        if (property_exists($objSoapObject, 'LastUpdated'))
-            $objToReturn->strLastUpdated = $objSoapObject->LastUpdated;
         if ((property_exists($objSoapObject, 'BackgroundProcessObject')) &&
             ($objSoapObject->BackgroundProcessObject))
             $objToReturn->BackgroundProcessObject = BackgroundProcess::GetObjectFromSoapObject($objSoapObject->BackgroundProcessObject);
         if (property_exists($objSoapObject, 'SearchMetaInfo'))
             $objToReturn->strSearchMetaInfo = $objSoapObject->SearchMetaInfo;
+        if (property_exists($objSoapObject, 'LastUpdated'))
+            $objToReturn->strLastUpdated = $objSoapObject->LastUpdated;
         if (property_exists($objSoapObject, 'ObjectOwner'))
             $objToReturn->intObjectOwner = $objSoapObject->ObjectOwner;
         if (property_exists($objSoapObject, '__blnRestored'))
@@ -1434,9 +1434,9 @@ class BackgroundProcessUpdateGen extends dxBaseClass implements IteratorAggregat
         $iArray['Id'] = $this->intId;
         $iArray['UpdateDateTime'] = $this->dttUpdateDateTime;
         $iArray['UpdateMessage'] = $this->strUpdateMessage;
-        $iArray['LastUpdated'] = $this->strLastUpdated;
         $iArray['BackgroundProcess'] = $this->intBackgroundProcess;
         $iArray['SearchMetaInfo'] = $this->strSearchMetaInfo;
+        $iArray['LastUpdated'] = $this->strLastUpdated;
         $iArray['ObjectOwner'] = $this->intObjectOwner;
         return new ArrayIterator($iArray);
     }
@@ -1475,10 +1475,10 @@ class BackgroundProcessUpdateGen extends dxBaseClass implements IteratorAggregat
      * @property-read dxQueryNode $Id
      * @property-read dxQueryNode $UpdateDateTime
      * @property-read dxQueryNode $UpdateMessage
-     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $BackgroundProcess
      * @property-read dxQueryNodeBackgroundProcess $BackgroundProcessObject
      * @property-read dxQueryNode $SearchMetaInfo
+     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ObjectOwner
      *
      *
@@ -1497,14 +1497,14 @@ class BackgroundProcessUpdateGen extends dxBaseClass implements IteratorAggregat
 					return new dxQueryNode('UpdateDateTime', 'UpdateDateTime', 'DateTime', $this);
 				case 'UpdateMessage':
 					return new dxQueryNode('UpdateMessage', 'UpdateMessage', 'Blob', $this);
-				case 'LastUpdated':
-					return new dxQueryNode('LastUpdated', 'LastUpdated', 'VarChar', $this);
 				case 'BackgroundProcess':
 					return new dxQueryNode('BackgroundProcess', 'BackgroundProcess', 'Integer', $this);
 				case 'BackgroundProcessObject':
 					return new dxQueryNodeBackgroundProcess('BackgroundProcess', 'BackgroundProcessObject', 'Integer', $this);
 				case 'SearchMetaInfo':
 					return new dxQueryNode('SearchMetaInfo', 'SearchMetaInfo', 'Blob', $this);
+				case 'LastUpdated':
+					return new dxQueryNode('LastUpdated', 'LastUpdated', 'VarChar', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'Integer', $this);
 
@@ -1525,10 +1525,10 @@ class BackgroundProcessUpdateGen extends dxBaseClass implements IteratorAggregat
      * @property-read dxQueryNode $Id
      * @property-read dxQueryNode $UpdateDateTime
      * @property-read dxQueryNode $UpdateMessage
-     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $BackgroundProcess
      * @property-read dxQueryNodeBackgroundProcess $BackgroundProcessObject
      * @property-read dxQueryNode $SearchMetaInfo
+     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ObjectOwner
      *
      *
@@ -1547,14 +1547,14 @@ class BackgroundProcessUpdateGen extends dxBaseClass implements IteratorAggregat
 					return new dxQueryNode('UpdateDateTime', 'UpdateDateTime', 'dxDateTime', $this);
 				case 'UpdateMessage':
 					return new dxQueryNode('UpdateMessage', 'UpdateMessage', 'string', $this);
-				case 'LastUpdated':
-					return new dxQueryNode('LastUpdated', 'LastUpdated', 'string', $this);
 				case 'BackgroundProcess':
 					return new dxQueryNode('BackgroundProcess', 'BackgroundProcess', 'integer', $this);
 				case 'BackgroundProcessObject':
 					return new dxQueryNodeBackgroundProcess('BackgroundProcess', 'BackgroundProcessObject', 'integer', $this);
 				case 'SearchMetaInfo':
 					return new dxQueryNode('SearchMetaInfo', 'SearchMetaInfo', 'string', $this);
+				case 'LastUpdated':
+					return new dxQueryNode('LastUpdated', 'LastUpdated', 'string', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'integer', $this);
 

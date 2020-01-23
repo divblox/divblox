@@ -5,6 +5,8 @@
  * your project will run will load this file
  * */
 include(FRAMEWORK_ROOT_STR."/assets/php/framework_classes.php");
+include(PROJECT_ROOT_STR.'/assets/php/component_role_based_access.class.php');
+include(PROJECT_ROOT_STR.'/assets/php/data_model_role_based_access.class.php');
 //region Project Access related
 
 /**
@@ -21,13 +23,21 @@ abstract class ProjectAccessManager extends AccessManager {
      */
     public static function getObjectAccess($AccountId = -1, $ObjectType = null, $ObjectId = -1) {
         $ReturnArray = parent::getObjectAccess($AccountId,$ObjectType,$ObjectId);
-        // TODO: Override your access here per object type or leave if no special functionality is required
-        if ($ObjectType == "Account") {
-            $AccountObj = Account::Load($AccountId);
-            if (is_null($AccountObj)) {
-                return $ReturnArray; // JGL: Return the default permissions (Create & Read)
+        // TODO: Override your specialized access here per object type or leave if no special functionality is required
+        $UserRoleStr = 'Anonymous';
+        $AccountObj = Account::Load($AccountId);
+        if (!is_null($AccountObj)) {
+            $UserRoleObj = $AccountObj->UserRoleObject;
+            if (!is_null($UserRoleObj)) {
+                $UserRoleStr = $UserRoleObj->Role;
             }
-            if ($AccountObj->Id == $ObjectId) {
+        }
+        if (in_array($ObjectType, DataModelRoleBasedAccess::$AccessArray['Any'])) {
+            return DataModelRoleBasedAccess::$AccessArray['Any'][$ObjectType];
+        }
+        
+        if ($ObjectType == "Account") {
+            if ($AccountId == $ObjectId) {
                 return [AccessOperation::READ_STR,AccessOperation::UPDATE_STR,AccessOperation::DELETE_STR];
             }
         }
@@ -41,23 +51,14 @@ abstract class ProjectAccessManager extends AccessManager {
                 }
             }
         }
-        //region Example override
-         // E.g Let's say that only administrators can delete objects of type AuditLogEntry:
-         /*if ($ObjectType == "AuditLogEntry") {
-             $AccountObj = Account::Load($AccountId);
-             if (is_null($AccountObj)) {
-                 return $ReturnArray; // JGL: Return the default permissions (Create & Read)
-             }
-             $UserRoleObj = $AccountObj->UserRoleObject;
-             if (is_null($UserRoleObj)) {
-                 return $ReturnArray; // JGL: Return the default permissions (Create & Read)
-             }
-             if ($UserRoleObj == "Administrator") {
-                 return [AccessOperation::CREATE_STR,AccessOperation::READ_STR,AccessOperation::UPDATE_STR,AccessOperation::DELETE_STR];
-             }
-         }*/
-         //endregion
-        return $ReturnArray;
+        
+        if (!isset(DataModelRoleBasedAccess::$AccessArray[$UserRoleStr])) {
+            return $ReturnArray;
+        }
+        if (!isset(DataModelRoleBasedAccess::$AccessArray[$UserRoleStr][$ObjectType])) {
+            return $ReturnArray;
+        }
+        return DataModelRoleBasedAccess::$AccessArray[$UserRoleStr][$ObjectType];
     }
 
     /**
@@ -68,41 +69,26 @@ abstract class ProjectAccessManager extends AccessManager {
      */
     public static function getComponentAccess($AccountId = -1, $ComponentName = '') {
         $InitialReturn = parent::getComponentAccess($AccountId,$ComponentName);
-        if ($InitialReturn == true) {
+        if ($InitialReturn == true) {return true;}
+        
+        if (DISABLE_COMPONENT_SECURITY_CHECKS_BOOL) {return true;}
+        
+        $UserRoleStr = 'Anonymous';
+        $AccountObj = Account::Load($AccountId);
+        if (!is_null($AccountObj)) {
+            $UserRoleObj = $AccountObj->UserRoleObject;
+            if (!is_null($UserRoleObj)) {
+                $UserRoleStr = $UserRoleObj->Role;
+            }
+        }
+        
+        if (!isset(ComponentRoleBasedAccess::$AccessArray[$UserRoleStr])) {
+            return false;
+        }
+        if (in_array($ComponentName, ComponentRoleBasedAccess::$AccessArray[$UserRoleStr])) {
             return true;
         }
-        if (DISABLE_COMPONENT_SECURITY_CHECKS_BOOL) {return true;}
-
-        // TODO: Override your access here per component or leave if no special functionality is required
-        $AnonymousComponentArray = ["authentication","account_registration"];
-        if (in_array($ComponentName, $AnonymousComponentArray)) {
-            return true; // JGL: Anyone can access these components
-        }
-        $AccountObj = Account::Load($AccountId);
-        if (is_null($AccountObj)) {
-            if (in_array($ComponentName, $AnonymousComponentArray)) {
-                return true; // JGL: Anyone can access these components
-            }
-            return false;
-        }
-        $UserRoleObj = $AccountObj->UserRoleObject;
-        if (is_null($UserRoleObj)) {
-            if (in_array($ComponentName, $AnonymousComponentArray)) {
-                return true; // JGL: Anyone can access these components
-            }
-            return false;
-        }
-        $UserRoleSpecificComponentArray = array(
-            "User" => ["current_user_profile_manager","profile_picture_uploader",
-                "account_additional_info_manager","account_additional_info_manager_data_series","account_additional_info_manager_create","account_additional_info_manager_update"],
-            //TODO: Add more as required here
-        );
-        if (array_key_exists($UserRoleObj->Role, $UserRoleSpecificComponentArray)) {
-            // JGL: Component access is defined for the user role, let's see if the specific component is allowed
-            if (in_array($ComponentName, $UserRoleSpecificComponentArray[$UserRoleObj->Role])) {
-                return true;
-            }
-        }
+        
         return $InitialReturn;
     }
 }

@@ -45,37 +45,7 @@ abstract class AccessManager extends AccessManager_Base {
      }
      public static function getComponentAccess($AccountId = -1, $ComponentName = '') {
          $InitialReturn = parent::getComponentAccess($AccountId,$ComponentName);
-         // TODO: Override base access (At framework level) here per page or leave if no special functionality is required
-         //region Example override
-         /*$AnonymousComponentArray = ["default.html"];
-         if (in_array($ComponentName, $AnonymousComponentArray)) {
-             return true; // JGL: Anyone can access these components
-         }
-         $AccountObj = Account::Load($AccountId);
-         if (is_null($AccountObj)) {
-             if (in_array($ComponentName, $AnonymousComponentArray)) {
-                 return true; // JGL: Anyone can access these components
-             }
-             return false;
-         }
-         $UserRoleObj = $AccountObj->UserRoleObject;
-         if (is_null($UserRoleObj)) {
-             if (in_array($ComponentName, $AnonymousComponentArray)) {
-                 return true; // JGL: Anyone can access these components
-             }
-             return false;
-         }
-         $UserRoleSpecificComponentArray = array(
-             "User" => ["sensitive_component1.html","sensitive_component2.html"],
-             //TODO: Add additionals here
-         );
-         if (array_key_exists($UserRoleObj->Role, $UserRoleSpecificComponentArray)) {
-             // JGL: Component access is defined for the user role, let's see if the specific component is allowed
-             if (in_array($ComponentName, $UserRoleSpecificComponentArray[$UserRoleObj->Role])) {
-                 return true;
-             }
-         }*/
-         //endregion
+         // Framework level overrides happen here...
          return $InitialReturn;
      }
 }

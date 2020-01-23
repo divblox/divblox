@@ -17,10 +17,10 @@
  * @subpackage GeneratedDataObjects
  * @property-read integer $Id the value for intId (Read-Only PK)
  * @property boolean $IsActive the value for blnIsActive 
- * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
  * @property integer $ApiKey the value for intApiKey 
  * @property string $SearchMetaInfo the value for strSearchMetaInfo 
  * @property integer $ApiOperation the value for intApiOperation 
+ * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
  * @property integer $ObjectOwner the value for intObjectOwner 
  * @property ApiKey $ApiKeyObject the value for the ApiKey object referenced by intApiKey 
  * @property ApiOperation $ApiOperationObject the value for the ApiOperation object referenced by intApiOperation 
@@ -49,14 +49,6 @@ class AllowedApiOperationGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
-     * Protected member variable that maps to the database column AllowedApiOperation.LastUpdated
-     * @var string strLastUpdated
-     */
-    protected $strLastUpdated;
-    const LastUpdatedDefault = null;
-
-
-    /**
      * Protected member variable that maps to the database column AllowedApiOperation.ApiKey
      * @var integer intApiKey
      */
@@ -78,6 +70,14 @@ class AllowedApiOperationGen extends dxBaseClass implements IteratorAggregate {
      */
     protected $intApiOperation;
     const ApiOperationDefault = null;
+
+
+    /**
+     * Protected member variable that maps to the database column AllowedApiOperation.LastUpdated
+     * @var string strLastUpdated
+     */
+    protected $strLastUpdated;
+    const LastUpdatedDefault = null;
 
 
     /**
@@ -134,10 +134,10 @@ class AllowedApiOperationGen extends dxBaseClass implements IteratorAggregate {
     public function Initialize() {
         $this->intId = AllowedApiOperation::IdDefault;
         $this->blnIsActive = AllowedApiOperation::IsActiveDefault;
-        $this->strLastUpdated = AllowedApiOperation::LastUpdatedDefault;
         $this->intApiKey = AllowedApiOperation::ApiKeyDefault;
         $this->strSearchMetaInfo = AllowedApiOperation::SearchMetaInfoDefault;
         $this->intApiOperation = AllowedApiOperation::ApiOperationDefault;
+        $this->strLastUpdated = AllowedApiOperation::LastUpdatedDefault;
         $this->intObjectOwner = AllowedApiOperation::ObjectOwnerDefault;
     }
 
@@ -477,10 +477,10 @@ class AllowedApiOperationGen extends dxBaseClass implements IteratorAggregate {
         } else {
             $objBuilder->AddSelectItem($strTableName, 'Id', $strAliasPrefix . 'Id');
             $objBuilder->AddSelectItem($strTableName, 'IsActive', $strAliasPrefix . 'IsActive');
-            $objBuilder->AddSelectItem($strTableName, 'LastUpdated', $strAliasPrefix . 'LastUpdated');
             $objBuilder->AddSelectItem($strTableName, 'ApiKey', $strAliasPrefix . 'ApiKey');
             $objBuilder->AddSelectItem($strTableName, 'SearchMetaInfo', $strAliasPrefix . 'SearchMetaInfo');
             $objBuilder->AddSelectItem($strTableName, 'ApiOperation', $strAliasPrefix . 'ApiOperation');
+            $objBuilder->AddSelectItem($strTableName, 'LastUpdated', $strAliasPrefix . 'LastUpdated');
             $objBuilder->AddSelectItem($strTableName, 'ObjectOwner', $strAliasPrefix . 'ObjectOwner');
         }
     }
@@ -609,9 +609,6 @@ class AllowedApiOperationGen extends dxBaseClass implements IteratorAggregate {
         $strAlias = $strAliasPrefix . 'IsActive';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->blnIsActive = $objDbRow->GetColumn($strAliasName, 'Bit');
-        $strAlias = $strAliasPrefix . 'LastUpdated';
-        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->strLastUpdated = $objDbRow->GetColumn($strAliasName, 'VarChar');
         $strAlias = $strAliasPrefix . 'ApiKey';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intApiKey = $objDbRow->GetColumn($strAliasName, 'Integer');
@@ -621,6 +618,9 @@ class AllowedApiOperationGen extends dxBaseClass implements IteratorAggregate {
         $strAlias = $strAliasPrefix . 'ApiOperation';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intApiOperation = $objDbRow->GetColumn($strAliasName, 'Integer');
+        $strAlias = $strAliasPrefix . 'LastUpdated';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->strLastUpdated = $objDbRow->GetColumn($strAliasName, 'VarChar');
         $strAlias = $strAliasPrefix . 'ObjectOwner';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intObjectOwner = $objDbRow->GetColumn($strAliasName, 'Integer');
@@ -857,10 +857,10 @@ class AllowedApiOperationGen extends dxBaseClass implements IteratorAggregate {
             $newAuditLogEntry->ModificationType = 'Create';
             $ChangedArray = array_merge($ChangedArray,array("Id" => $this->intId));
             $ChangedArray = array_merge($ChangedArray,array("IsActive" => $this->blnIsActive));
-            $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
             $ChangedArray = array_merge($ChangedArray,array("ApiKey" => $this->intApiKey));
             $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
             $ChangedArray = array_merge($ChangedArray,array("ApiOperation" => $this->intApiOperation));
+            $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
             $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
             $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         } else {
@@ -880,14 +880,6 @@ class AllowedApiOperationGen extends dxBaseClass implements IteratorAggregate {
             if ($ExistingObj->IsActive != $this->blnIsActive) {
                 $ChangedArray = array_merge($ChangedArray,array("IsActive" => array("Before" => $ExistingValueStr,"After" => $this->blnIsActive)));
                 //$ChangedArray = array_merge($ChangedArray,array("IsActive" => "From: ".$ExistingValueStr." to: ".$this->blnIsActive));
-            }
-            $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->LastUpdated)) {
-                $ExistingValueStr = $ExistingObj->LastUpdated;
-            }
-            if ($ExistingObj->LastUpdated != $this->strLastUpdated) {
-                $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => array("Before" => $ExistingValueStr,"After" => $this->strLastUpdated)));
-                //$ChangedArray = array_merge($ChangedArray,array("LastUpdated" => "From: ".$ExistingValueStr." to: ".$this->strLastUpdated));
             }
             $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->ApiKey)) {
@@ -912,6 +904,14 @@ class AllowedApiOperationGen extends dxBaseClass implements IteratorAggregate {
             if ($ExistingObj->ApiOperation != $this->intApiOperation) {
                 $ChangedArray = array_merge($ChangedArray,array("ApiOperation" => array("Before" => $ExistingValueStr,"After" => $this->intApiOperation)));
                 //$ChangedArray = array_merge($ChangedArray,array("ApiOperation" => "From: ".$ExistingValueStr." to: ".$this->intApiOperation));
+            }
+            $ExistingValueStr = "NULL";
+            if (!is_null($ExistingObj->LastUpdated)) {
+                $ExistingValueStr = $ExistingObj->LastUpdated;
+            }
+            if ($ExistingObj->LastUpdated != $this->strLastUpdated) {
+                $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => array("Before" => $ExistingValueStr,"After" => $this->strLastUpdated)));
+                //$ChangedArray = array_merge($ChangedArray,array("LastUpdated" => "From: ".$ExistingValueStr." to: ".$this->strLastUpdated));
             }
             $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->ObjectOwner)) {
@@ -1028,10 +1028,10 @@ class AllowedApiOperationGen extends dxBaseClass implements IteratorAggregate {
         $newAuditLogEntry->ModificationType = 'Delete';
         $ChangedArray = array_merge($ChangedArray,array("Id" => $this->intId));
         $ChangedArray = array_merge($ChangedArray,array("IsActive" => $this->blnIsActive));
-        $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
         $ChangedArray = array_merge($ChangedArray,array("ApiKey" => $this->intApiKey));
         $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
         $ChangedArray = array_merge($ChangedArray,array("ApiOperation" => $this->intApiOperation));
+        $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
         $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
         $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         try {
@@ -1111,10 +1111,10 @@ class AllowedApiOperationGen extends dxBaseClass implements IteratorAggregate {
 
         // Update $this's local variables to match
         $this->blnIsActive = $objReloaded->blnIsActive;
-        $this->strLastUpdated = $objReloaded->strLastUpdated;
         $this->ApiKey = $objReloaded->ApiKey;
         $this->strSearchMetaInfo = $objReloaded->strSearchMetaInfo;
         $this->ApiOperation = $objReloaded->ApiOperation;
+        $this->strLastUpdated = $objReloaded->strLastUpdated;
         $this->intObjectOwner = $objReloaded->intObjectOwner;
     }
     ////////////////////
@@ -1147,13 +1147,6 @@ class AllowedApiOperationGen extends dxBaseClass implements IteratorAggregate {
                  */
                 return $this->blnIsActive;
 
-            case 'LastUpdated':
-                /**
-                 * Gets the value for strLastUpdated (Read-Only Timestamp)
-                 * @return string
-                 */
-                return $this->strLastUpdated;
-
             case 'ApiKey':
                 /**
                  * Gets the value for intApiKey 
@@ -1174,6 +1167,13 @@ class AllowedApiOperationGen extends dxBaseClass implements IteratorAggregate {
                  * @return integer
                  */
                 return $this->intApiOperation;
+
+            case 'LastUpdated':
+                /**
+                 * Gets the value for strLastUpdated (Read-Only Timestamp)
+                 * @return string
+                 */
+                return $this->strLastUpdated;
 
             case 'ObjectOwner':
                 /**
@@ -1447,10 +1447,10 @@ class AllowedApiOperationGen extends dxBaseClass implements IteratorAggregate {
         $strToReturn = '<complexType name="AllowedApiOperation"><sequence>';
         $strToReturn .= '<element name="Id" type="xsd:int"/>';
         $strToReturn .= '<element name="IsActive" type="xsd:boolean"/>';
-        $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
         $strToReturn .= '<element name="ApiKeyObject" type="xsd1:ApiKey"/>';
         $strToReturn .= '<element name="SearchMetaInfo" type="xsd:string"/>';
         $strToReturn .= '<element name="ApiOperationObject" type="xsd1:ApiOperation"/>';
+        $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
         $strToReturn .= '<element name="ObjectOwner" type="xsd:int"/>';
         $strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
         $strToReturn .= '</sequence></complexType>';
@@ -1480,8 +1480,6 @@ class AllowedApiOperationGen extends dxBaseClass implements IteratorAggregate {
             $objToReturn->intId = $objSoapObject->Id;
         if (property_exists($objSoapObject, 'IsActive'))
             $objToReturn->blnIsActive = $objSoapObject->IsActive;
-        if (property_exists($objSoapObject, 'LastUpdated'))
-            $objToReturn->strLastUpdated = $objSoapObject->LastUpdated;
         if ((property_exists($objSoapObject, 'ApiKeyObject')) &&
             ($objSoapObject->ApiKeyObject))
             $objToReturn->ApiKeyObject = ApiKey::GetObjectFromSoapObject($objSoapObject->ApiKeyObject);
@@ -1490,6 +1488,8 @@ class AllowedApiOperationGen extends dxBaseClass implements IteratorAggregate {
         if ((property_exists($objSoapObject, 'ApiOperationObject')) &&
             ($objSoapObject->ApiOperationObject))
             $objToReturn->ApiOperationObject = ApiOperation::GetObjectFromSoapObject($objSoapObject->ApiOperationObject);
+        if (property_exists($objSoapObject, 'LastUpdated'))
+            $objToReturn->strLastUpdated = $objSoapObject->LastUpdated;
         if (property_exists($objSoapObject, 'ObjectOwner'))
             $objToReturn->intObjectOwner = $objSoapObject->ObjectOwner;
         if (property_exists($objSoapObject, '__blnRestored'))
@@ -1534,10 +1534,10 @@ class AllowedApiOperationGen extends dxBaseClass implements IteratorAggregate {
         ///////////////////
         $iArray['Id'] = $this->intId;
         $iArray['IsActive'] = $this->blnIsActive;
-        $iArray['LastUpdated'] = $this->strLastUpdated;
         $iArray['ApiKey'] = $this->intApiKey;
         $iArray['SearchMetaInfo'] = $this->strSearchMetaInfo;
         $iArray['ApiOperation'] = $this->intApiOperation;
+        $iArray['LastUpdated'] = $this->strLastUpdated;
         $iArray['ObjectOwner'] = $this->intObjectOwner;
         return new ArrayIterator($iArray);
     }
@@ -1575,12 +1575,12 @@ class AllowedApiOperationGen extends dxBaseClass implements IteratorAggregate {
      *
      * @property-read dxQueryNode $Id
      * @property-read dxQueryNode $IsActive
-     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ApiKey
      * @property-read dxQueryNodeApiKey $ApiKeyObject
      * @property-read dxQueryNode $SearchMetaInfo
      * @property-read dxQueryNode $ApiOperation
      * @property-read dxQueryNodeApiOperation $ApiOperationObject
+     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ObjectOwner
      *
      *
@@ -1597,8 +1597,6 @@ class AllowedApiOperationGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNode('Id', 'Id', 'Integer', $this);
 				case 'IsActive':
 					return new dxQueryNode('IsActive', 'IsActive', 'Bit', $this);
-				case 'LastUpdated':
-					return new dxQueryNode('LastUpdated', 'LastUpdated', 'VarChar', $this);
 				case 'ApiKey':
 					return new dxQueryNode('ApiKey', 'ApiKey', 'Integer', $this);
 				case 'ApiKeyObject':
@@ -1609,6 +1607,8 @@ class AllowedApiOperationGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNode('ApiOperation', 'ApiOperation', 'Integer', $this);
 				case 'ApiOperationObject':
 					return new dxQueryNodeApiOperation('ApiOperation', 'ApiOperationObject', 'Integer', $this);
+				case 'LastUpdated':
+					return new dxQueryNode('LastUpdated', 'LastUpdated', 'VarChar', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'Integer', $this);
 
@@ -1628,12 +1628,12 @@ class AllowedApiOperationGen extends dxBaseClass implements IteratorAggregate {
     /**
      * @property-read dxQueryNode $Id
      * @property-read dxQueryNode $IsActive
-     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ApiKey
      * @property-read dxQueryNodeApiKey $ApiKeyObject
      * @property-read dxQueryNode $SearchMetaInfo
      * @property-read dxQueryNode $ApiOperation
      * @property-read dxQueryNodeApiOperation $ApiOperationObject
+     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ObjectOwner
      *
      *
@@ -1650,8 +1650,6 @@ class AllowedApiOperationGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNode('Id', 'Id', 'integer', $this);
 				case 'IsActive':
 					return new dxQueryNode('IsActive', 'IsActive', 'boolean', $this);
-				case 'LastUpdated':
-					return new dxQueryNode('LastUpdated', 'LastUpdated', 'string', $this);
 				case 'ApiKey':
 					return new dxQueryNode('ApiKey', 'ApiKey', 'integer', $this);
 				case 'ApiKeyObject':
@@ -1662,6 +1660,8 @@ class AllowedApiOperationGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNode('ApiOperation', 'ApiOperation', 'integer', $this);
 				case 'ApiOperationObject':
 					return new dxQueryNodeApiOperation('ApiOperation', 'ApiOperationObject', 'integer', $this);
+				case 'LastUpdated':
+					return new dxQueryNode('LastUpdated', 'LastUpdated', 'string', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'integer', $this);
 

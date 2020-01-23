@@ -17,9 +17,9 @@
  * @subpackage GeneratedDataObjects
  * @property-read integer $Id the value for intId (Read-Only PK)
  * @property string $OperationName the value for strOperationName 
+ * @property string $CrudEntityName the value for strCrudEntityName 
  * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
  * @property integer $ObjectOwner the value for intObjectOwner 
- * @property string $CrudEntityName the value for strCrudEntityName 
  * @property-read AllowedApiOperation $_AllowedApiOperation the value for the private _objAllowedApiOperation (Read-Only) if set due to an expansion on the AllowedApiOperation.ApiOperation reverse relationship
  * @property-read AllowedApiOperation[] $_AllowedApiOperationArray the value for the private _objAllowedApiOperationArray (Read-Only) if set due to an ExpandAsArray on the AllowedApiOperation.ApiOperation reverse relationship
  * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
@@ -48,6 +48,15 @@ class ApiOperationGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
+     * Protected member variable that maps to the database column ApiOperation.CrudEntityName
+     * @var string strCrudEntityName
+     */
+    protected $strCrudEntityName;
+    const CrudEntityNameMaxLength = 150;
+    const CrudEntityNameDefault = null;
+
+
+    /**
      * Protected member variable that maps to the database column ApiOperation.LastUpdated
      * @var string strLastUpdated
      */
@@ -61,15 +70,6 @@ class ApiOperationGen extends dxBaseClass implements IteratorAggregate {
      */
     protected $intObjectOwner;
     const ObjectOwnerDefault = null;
-
-
-    /**
-     * Protected member variable that maps to the database column ApiOperation.CrudEntityName
-     * @var string strCrudEntityName
-     */
-    protected $strCrudEntityName;
-    const CrudEntityNameMaxLength = 150;
-    const CrudEntityNameDefault = null;
 
 
     /**
@@ -114,9 +114,9 @@ class ApiOperationGen extends dxBaseClass implements IteratorAggregate {
     public function Initialize() {
         $this->intId = ApiOperation::IdDefault;
         $this->strOperationName = ApiOperation::OperationNameDefault;
+        $this->strCrudEntityName = ApiOperation::CrudEntityNameDefault;
         $this->strLastUpdated = ApiOperation::LastUpdatedDefault;
         $this->intObjectOwner = ApiOperation::ObjectOwnerDefault;
-        $this->strCrudEntityName = ApiOperation::CrudEntityNameDefault;
     }
 
     ///////////////////////////////
@@ -455,9 +455,9 @@ class ApiOperationGen extends dxBaseClass implements IteratorAggregate {
         } else {
             $objBuilder->AddSelectItem($strTableName, 'Id', $strAliasPrefix . 'Id');
             $objBuilder->AddSelectItem($strTableName, 'OperationName', $strAliasPrefix . 'OperationName');
+            $objBuilder->AddSelectItem($strTableName, 'CrudEntityName', $strAliasPrefix . 'CrudEntityName');
             $objBuilder->AddSelectItem($strTableName, 'LastUpdated', $strAliasPrefix . 'LastUpdated');
             $objBuilder->AddSelectItem($strTableName, 'ObjectOwner', $strAliasPrefix . 'ObjectOwner');
-            $objBuilder->AddSelectItem($strTableName, 'CrudEntityName', $strAliasPrefix . 'CrudEntityName');
         }
     }
     ///////////////////////////////
@@ -585,15 +585,15 @@ class ApiOperationGen extends dxBaseClass implements IteratorAggregate {
         $strAlias = $strAliasPrefix . 'OperationName';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->strOperationName = $objDbRow->GetColumn($strAliasName, 'VarChar');
+        $strAlias = $strAliasPrefix . 'CrudEntityName';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->strCrudEntityName = $objDbRow->GetColumn($strAliasName, 'VarChar');
         $strAlias = $strAliasPrefix . 'LastUpdated';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->strLastUpdated = $objDbRow->GetColumn($strAliasName, 'VarChar');
         $strAlias = $strAliasPrefix . 'ObjectOwner';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intObjectOwner = $objDbRow->GetColumn($strAliasName, 'Integer');
-        $strAlias = $strAliasPrefix . 'CrudEntityName';
-        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->strCrudEntityName = $objDbRow->GetColumn($strAliasName, 'VarChar');
 
         if (isset($objPreviousItemArray) && is_array($objPreviousItemArray)) {
             foreach ($objPreviousItemArray as $objPreviousItem) {
@@ -764,9 +764,9 @@ class ApiOperationGen extends dxBaseClass implements IteratorAggregate {
             $newAuditLogEntry->ModificationType = 'Create';
             $ChangedArray = array_merge($ChangedArray,array("Id" => $this->intId));
             $ChangedArray = array_merge($ChangedArray,array("OperationName" => $this->strOperationName));
+            $ChangedArray = array_merge($ChangedArray,array("CrudEntityName" => $this->strCrudEntityName));
             $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
             $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
-            $ChangedArray = array_merge($ChangedArray,array("CrudEntityName" => $this->strCrudEntityName));
             $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         } else {
             $newAuditLogEntry->ModificationType = 'Update';
@@ -787,6 +787,14 @@ class ApiOperationGen extends dxBaseClass implements IteratorAggregate {
                 //$ChangedArray = array_merge($ChangedArray,array("OperationName" => "From: ".$ExistingValueStr." to: ".$this->strOperationName));
             }
             $ExistingValueStr = "NULL";
+            if (!is_null($ExistingObj->CrudEntityName)) {
+                $ExistingValueStr = $ExistingObj->CrudEntityName;
+            }
+            if ($ExistingObj->CrudEntityName != $this->strCrudEntityName) {
+                $ChangedArray = array_merge($ChangedArray,array("CrudEntityName" => array("Before" => $ExistingValueStr,"After" => $this->strCrudEntityName)));
+                //$ChangedArray = array_merge($ChangedArray,array("CrudEntityName" => "From: ".$ExistingValueStr." to: ".$this->strCrudEntityName));
+            }
+            $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->LastUpdated)) {
                 $ExistingValueStr = $ExistingObj->LastUpdated;
             }
@@ -802,14 +810,6 @@ class ApiOperationGen extends dxBaseClass implements IteratorAggregate {
                 $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => array("Before" => $ExistingValueStr,"After" => $this->intObjectOwner)));
                 //$ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => "From: ".$ExistingValueStr." to: ".$this->intObjectOwner));
             }
-            $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->CrudEntityName)) {
-                $ExistingValueStr = $ExistingObj->CrudEntityName;
-            }
-            if ($ExistingObj->CrudEntityName != $this->strCrudEntityName) {
-                $ChangedArray = array_merge($ChangedArray,array("CrudEntityName" => array("Before" => $ExistingValueStr,"After" => $this->strCrudEntityName)));
-                //$ChangedArray = array_merge($ChangedArray,array("CrudEntityName" => "From: ".$ExistingValueStr." to: ".$this->strCrudEntityName));
-            }
             $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         }
         try {
@@ -822,12 +822,12 @@ class ApiOperationGen extends dxBaseClass implements IteratorAggregate {
                 $objDatabase->NonQuery('
                 INSERT INTO `ApiOperation` (
 							`OperationName`,
-							`ObjectOwner`,
-							`CrudEntityName`
+							`CrudEntityName`,
+							`ObjectOwner`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->strOperationName) . ',
-							' . $objDatabase->SqlVariable($this->intObjectOwner) . ',
-							' . $objDatabase->SqlVariable($this->strCrudEntityName) . '
+							' . $objDatabase->SqlVariable($this->strCrudEntityName) . ',
+							' . $objDatabase->SqlVariable($this->intObjectOwner) . '
 						)
                 ');
 					// Update Identity column and return its value
@@ -854,8 +854,8 @@ class ApiOperationGen extends dxBaseClass implements IteratorAggregate {
             $objDatabase->NonQuery('
             UPDATE `ApiOperation` SET
 							`OperationName` = ' . $objDatabase->SqlVariable($this->strOperationName) . ',
-							`ObjectOwner` = ' . $objDatabase->SqlVariable($this->intObjectOwner) . ',
-							`CrudEntityName` = ' . $objDatabase->SqlVariable($this->strCrudEntityName) . '
+							`CrudEntityName` = ' . $objDatabase->SqlVariable($this->strCrudEntityName) . ',
+							`ObjectOwner` = ' . $objDatabase->SqlVariable($this->intObjectOwner) . '
             WHERE
 							`Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
             }
@@ -911,9 +911,9 @@ class ApiOperationGen extends dxBaseClass implements IteratorAggregate {
         $newAuditLogEntry->ModificationType = 'Delete';
         $ChangedArray = array_merge($ChangedArray,array("Id" => $this->intId));
         $ChangedArray = array_merge($ChangedArray,array("OperationName" => $this->strOperationName));
+        $ChangedArray = array_merge($ChangedArray,array("CrudEntityName" => $this->strCrudEntityName));
         $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
         $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
-        $ChangedArray = array_merge($ChangedArray,array("CrudEntityName" => $this->strCrudEntityName));
         $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         try {
             $newAuditLogEntry->Save();
@@ -992,9 +992,9 @@ class ApiOperationGen extends dxBaseClass implements IteratorAggregate {
 
         // Update $this's local variables to match
         $this->strOperationName = $objReloaded->strOperationName;
+        $this->strCrudEntityName = $objReloaded->strCrudEntityName;
         $this->strLastUpdated = $objReloaded->strLastUpdated;
         $this->intObjectOwner = $objReloaded->intObjectOwner;
-        $this->strCrudEntityName = $objReloaded->strCrudEntityName;
     }
     ////////////////////
     // PUBLIC OVERRIDERS
@@ -1026,6 +1026,13 @@ class ApiOperationGen extends dxBaseClass implements IteratorAggregate {
                  */
                 return $this->strOperationName;
 
+            case 'CrudEntityName':
+                /**
+                 * Gets the value for strCrudEntityName 
+                 * @return string
+                 */
+                return $this->strCrudEntityName;
+
             case 'LastUpdated':
                 /**
                  * Gets the value for strLastUpdated (Read-Only Timestamp)
@@ -1039,13 +1046,6 @@ class ApiOperationGen extends dxBaseClass implements IteratorAggregate {
                  * @return integer
                  */
                 return $this->intObjectOwner;
-
-            case 'CrudEntityName':
-                /**
-                 * Gets the value for strCrudEntityName 
-                 * @return string
-                 */
-                return $this->strCrudEntityName;
 
 
             ///////////////////
@@ -1112,19 +1112,6 @@ class ApiOperationGen extends dxBaseClass implements IteratorAggregate {
                     throw $objExc;
                 }
 
-            case 'ObjectOwner':
-                /**
-                 * Sets the value for intObjectOwner 
-                 * @param integer $mixValue
-                 * @return integer
-                 */
-                try {
-                    return ($this->intObjectOwner = dxType::Cast($mixValue, dxType::Integer));
-                } catch (dxCallerException $objExc) {
-                    $objExc->IncrementOffset();
-                    throw $objExc;
-                }
-
             case 'CrudEntityName':
                 /**
                  * Sets the value for strCrudEntityName 
@@ -1133,6 +1120,19 @@ class ApiOperationGen extends dxBaseClass implements IteratorAggregate {
                  */
                 try {
                     return ($this->strCrudEntityName = dxType::Cast($mixValue, dxType::String));
+                } catch (dxCallerException $objExc) {
+                    $objExc->IncrementOffset();
+                    throw $objExc;
+                }
+
+            case 'ObjectOwner':
+                /**
+                 * Sets the value for intObjectOwner 
+                 * @param integer $mixValue
+                 * @return integer
+                 */
+                try {
+                    return ($this->intObjectOwner = dxType::Cast($mixValue, dxType::Integer));
                 } catch (dxCallerException $objExc) {
                     $objExc->IncrementOffset();
                     throw $objExc;
@@ -1357,9 +1357,9 @@ class ApiOperationGen extends dxBaseClass implements IteratorAggregate {
         $strToReturn = '<complexType name="ApiOperation"><sequence>';
         $strToReturn .= '<element name="Id" type="xsd:int"/>';
         $strToReturn .= '<element name="OperationName" type="xsd:string"/>';
+        $strToReturn .= '<element name="CrudEntityName" type="xsd:string"/>';
         $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
         $strToReturn .= '<element name="ObjectOwner" type="xsd:int"/>';
-        $strToReturn .= '<element name="CrudEntityName" type="xsd:string"/>';
         $strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
         $strToReturn .= '</sequence></complexType>';
         return $strToReturn;
@@ -1386,12 +1386,12 @@ class ApiOperationGen extends dxBaseClass implements IteratorAggregate {
             $objToReturn->intId = $objSoapObject->Id;
         if (property_exists($objSoapObject, 'OperationName'))
             $objToReturn->strOperationName = $objSoapObject->OperationName;
+        if (property_exists($objSoapObject, 'CrudEntityName'))
+            $objToReturn->strCrudEntityName = $objSoapObject->CrudEntityName;
         if (property_exists($objSoapObject, 'LastUpdated'))
             $objToReturn->strLastUpdated = $objSoapObject->LastUpdated;
         if (property_exists($objSoapObject, 'ObjectOwner'))
             $objToReturn->intObjectOwner = $objSoapObject->ObjectOwner;
-        if (property_exists($objSoapObject, 'CrudEntityName'))
-            $objToReturn->strCrudEntityName = $objSoapObject->CrudEntityName;
         if (property_exists($objSoapObject, '__blnRestored'))
             $objToReturn->__blnRestored = $objSoapObject->__blnRestored;
         return $objToReturn;
@@ -1426,9 +1426,9 @@ class ApiOperationGen extends dxBaseClass implements IteratorAggregate {
         ///////////////////
         $iArray['Id'] = $this->intId;
         $iArray['OperationName'] = $this->strOperationName;
+        $iArray['CrudEntityName'] = $this->strCrudEntityName;
         $iArray['LastUpdated'] = $this->strLastUpdated;
         $iArray['ObjectOwner'] = $this->intObjectOwner;
-        $iArray['CrudEntityName'] = $this->strCrudEntityName;
         return new ArrayIterator($iArray);
     }
 
@@ -1465,9 +1465,9 @@ class ApiOperationGen extends dxBaseClass implements IteratorAggregate {
      *
      * @property-read dxQueryNode $Id
      * @property-read dxQueryNode $OperationName
+     * @property-read dxQueryNode $CrudEntityName
      * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ObjectOwner
-     * @property-read dxQueryNode $CrudEntityName
      *
      *
      * @property-read dxQueryReverseReferenceNodeAllowedApiOperation $AllowedApiOperation
@@ -1484,12 +1484,12 @@ class ApiOperationGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNode('Id', 'Id', 'Integer', $this);
 				case 'OperationName':
 					return new dxQueryNode('OperationName', 'OperationName', 'VarChar', $this);
+				case 'CrudEntityName':
+					return new dxQueryNode('CrudEntityName', 'CrudEntityName', 'VarChar', $this);
 				case 'LastUpdated':
 					return new dxQueryNode('LastUpdated', 'LastUpdated', 'VarChar', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'Integer', $this);
-				case 'CrudEntityName':
-					return new dxQueryNode('CrudEntityName', 'CrudEntityName', 'VarChar', $this);
 				case 'AllowedApiOperation':
 					return new dxQueryReverseReferenceNodeAllowedApiOperation($this, 'allowedapioperation', 'reverse_reference', 'ApiOperation', 'AllowedApiOperation');
 
@@ -1509,9 +1509,9 @@ class ApiOperationGen extends dxBaseClass implements IteratorAggregate {
     /**
      * @property-read dxQueryNode $Id
      * @property-read dxQueryNode $OperationName
+     * @property-read dxQueryNode $CrudEntityName
      * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ObjectOwner
-     * @property-read dxQueryNode $CrudEntityName
      *
      *
      * @property-read dxQueryReverseReferenceNodeAllowedApiOperation $AllowedApiOperation
@@ -1528,12 +1528,12 @@ class ApiOperationGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNode('Id', 'Id', 'integer', $this);
 				case 'OperationName':
 					return new dxQueryNode('OperationName', 'OperationName', 'string', $this);
+				case 'CrudEntityName':
+					return new dxQueryNode('CrudEntityName', 'CrudEntityName', 'string', $this);
 				case 'LastUpdated':
 					return new dxQueryNode('LastUpdated', 'LastUpdated', 'string', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'integer', $this);
-				case 'CrudEntityName':
-					return new dxQueryNode('CrudEntityName', 'CrudEntityName', 'string', $this);
 				case 'AllowedApiOperation':
 					return new dxQueryReverseReferenceNodeAllowedApiOperation($this, 'allowedapioperation', 'reverse_reference', 'ApiOperation', 'AllowedApiOperation');
 

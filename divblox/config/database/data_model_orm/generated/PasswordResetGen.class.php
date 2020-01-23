@@ -18,9 +18,9 @@
  * @property-read integer $Id the value for intId (Read-Only PK)
  * @property string $Token the value for strToken (Unique)
  * @property dxDateTime $CreatedDateTime the value for dttCreatedDateTime 
- * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
  * @property integer $Account the value for intAccount 
  * @property string $SearchMetaInfo the value for strSearchMetaInfo 
+ * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
  * @property integer $ObjectOwner the value for intObjectOwner 
  * @property Account $AccountObject the value for the Account object referenced by intAccount 
  * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
@@ -57,14 +57,6 @@ class PasswordResetGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
-     * Protected member variable that maps to the database column PasswordReset.LastUpdated
-     * @var string strLastUpdated
-     */
-    protected $strLastUpdated;
-    const LastUpdatedDefault = null;
-
-
-    /**
      * Protected member variable that maps to the database column PasswordReset.Account
      * @var integer intAccount
      */
@@ -78,6 +70,14 @@ class PasswordResetGen extends dxBaseClass implements IteratorAggregate {
      */
     protected $strSearchMetaInfo;
     const SearchMetaInfoDefault = null;
+
+
+    /**
+     * Protected member variable that maps to the database column PasswordReset.LastUpdated
+     * @var string strLastUpdated
+     */
+    protected $strLastUpdated;
+    const LastUpdatedDefault = null;
 
 
     /**
@@ -125,9 +125,9 @@ class PasswordResetGen extends dxBaseClass implements IteratorAggregate {
         $this->intId = PasswordReset::IdDefault;
         $this->strToken = PasswordReset::TokenDefault;
         $this->dttCreatedDateTime = (PasswordReset::CreatedDateTimeDefault === null)?null:new dxDateTime(PasswordReset::CreatedDateTimeDefault);
-        $this->strLastUpdated = PasswordReset::LastUpdatedDefault;
         $this->intAccount = PasswordReset::AccountDefault;
         $this->strSearchMetaInfo = PasswordReset::SearchMetaInfoDefault;
+        $this->strLastUpdated = PasswordReset::LastUpdatedDefault;
         $this->intObjectOwner = PasswordReset::ObjectOwnerDefault;
     }
 
@@ -468,9 +468,9 @@ class PasswordResetGen extends dxBaseClass implements IteratorAggregate {
             $objBuilder->AddSelectItem($strTableName, 'Id', $strAliasPrefix . 'Id');
             $objBuilder->AddSelectItem($strTableName, 'Token', $strAliasPrefix . 'Token');
             $objBuilder->AddSelectItem($strTableName, 'CreatedDateTime', $strAliasPrefix . 'CreatedDateTime');
-            $objBuilder->AddSelectItem($strTableName, 'LastUpdated', $strAliasPrefix . 'LastUpdated');
             $objBuilder->AddSelectItem($strTableName, 'Account', $strAliasPrefix . 'Account');
             $objBuilder->AddSelectItem($strTableName, 'SearchMetaInfo', $strAliasPrefix . 'SearchMetaInfo');
+            $objBuilder->AddSelectItem($strTableName, 'LastUpdated', $strAliasPrefix . 'LastUpdated');
             $objBuilder->AddSelectItem($strTableName, 'ObjectOwner', $strAliasPrefix . 'ObjectOwner');
         }
     }
@@ -602,15 +602,15 @@ class PasswordResetGen extends dxBaseClass implements IteratorAggregate {
         $strAlias = $strAliasPrefix . 'CreatedDateTime';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->dttCreatedDateTime = $objDbRow->GetColumn($strAliasName, 'DateTime');
-        $strAlias = $strAliasPrefix . 'LastUpdated';
-        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->strLastUpdated = $objDbRow->GetColumn($strAliasName, 'VarChar');
         $strAlias = $strAliasPrefix . 'Account';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intAccount = $objDbRow->GetColumn($strAliasName, 'Integer');
         $strAlias = $strAliasPrefix . 'SearchMetaInfo';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->strSearchMetaInfo = $objDbRow->GetColumn($strAliasName, 'Blob');
+        $strAlias = $strAliasPrefix . 'LastUpdated';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->strLastUpdated = $objDbRow->GetColumn($strAliasName, 'VarChar');
         $strAlias = $strAliasPrefix . 'ObjectOwner';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intObjectOwner = $objDbRow->GetColumn($strAliasName, 'Integer');
@@ -825,9 +825,9 @@ class PasswordResetGen extends dxBaseClass implements IteratorAggregate {
             $ChangedArray = array_merge($ChangedArray,array("Id" => $this->intId));
             $ChangedArray = array_merge($ChangedArray,array("Token" => $this->strToken));
             $ChangedArray = array_merge($ChangedArray,array("CreatedDateTime" => $this->dttCreatedDateTime));
-            $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
             $ChangedArray = array_merge($ChangedArray,array("Account" => $this->intAccount));
             $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
+            $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
             $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
             $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         } else {
@@ -857,14 +857,6 @@ class PasswordResetGen extends dxBaseClass implements IteratorAggregate {
                 //$ChangedArray = array_merge($ChangedArray,array("CreatedDateTime" => "From: ".$ExistingValueStr." to: ".$this->dttCreatedDateTime));
             }
             $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->LastUpdated)) {
-                $ExistingValueStr = $ExistingObj->LastUpdated;
-            }
-            if ($ExistingObj->LastUpdated != $this->strLastUpdated) {
-                $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => array("Before" => $ExistingValueStr,"After" => $this->strLastUpdated)));
-                //$ChangedArray = array_merge($ChangedArray,array("LastUpdated" => "From: ".$ExistingValueStr." to: ".$this->strLastUpdated));
-            }
-            $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->Account)) {
                 $ExistingValueStr = $ExistingObj->Account;
             }
@@ -879,6 +871,14 @@ class PasswordResetGen extends dxBaseClass implements IteratorAggregate {
             if ($ExistingObj->SearchMetaInfo != $this->strSearchMetaInfo) {
                 $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => array("Before" => $ExistingValueStr,"After" => $this->strSearchMetaInfo)));
                 //$ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => "From: ".$ExistingValueStr." to: ".$this->strSearchMetaInfo));
+            }
+            $ExistingValueStr = "NULL";
+            if (!is_null($ExistingObj->LastUpdated)) {
+                $ExistingValueStr = $ExistingObj->LastUpdated;
+            }
+            if ($ExistingObj->LastUpdated != $this->strLastUpdated) {
+                $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => array("Before" => $ExistingValueStr,"After" => $this->strLastUpdated)));
+                //$ChangedArray = array_merge($ChangedArray,array("LastUpdated" => "From: ".$ExistingValueStr." to: ".$this->strLastUpdated));
             }
             $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->ObjectOwner)) {
@@ -996,9 +996,9 @@ class PasswordResetGen extends dxBaseClass implements IteratorAggregate {
         $ChangedArray = array_merge($ChangedArray,array("Id" => $this->intId));
         $ChangedArray = array_merge($ChangedArray,array("Token" => $this->strToken));
         $ChangedArray = array_merge($ChangedArray,array("CreatedDateTime" => $this->dttCreatedDateTime));
-        $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
         $ChangedArray = array_merge($ChangedArray,array("Account" => $this->intAccount));
         $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
+        $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
         $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
         $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         try {
@@ -1079,9 +1079,9 @@ class PasswordResetGen extends dxBaseClass implements IteratorAggregate {
         // Update $this's local variables to match
         $this->strToken = $objReloaded->strToken;
         $this->dttCreatedDateTime = $objReloaded->dttCreatedDateTime;
-        $this->strLastUpdated = $objReloaded->strLastUpdated;
         $this->Account = $objReloaded->Account;
         $this->strSearchMetaInfo = $objReloaded->strSearchMetaInfo;
+        $this->strLastUpdated = $objReloaded->strLastUpdated;
         $this->intObjectOwner = $objReloaded->intObjectOwner;
     }
     ////////////////////
@@ -1121,13 +1121,6 @@ class PasswordResetGen extends dxBaseClass implements IteratorAggregate {
                  */
                 return $this->dttCreatedDateTime;
 
-            case 'LastUpdated':
-                /**
-                 * Gets the value for strLastUpdated (Read-Only Timestamp)
-                 * @return string
-                 */
-                return $this->strLastUpdated;
-
             case 'Account':
                 /**
                  * Gets the value for intAccount 
@@ -1141,6 +1134,13 @@ class PasswordResetGen extends dxBaseClass implements IteratorAggregate {
                  * @return string
                  */
                 return $this->strSearchMetaInfo;
+
+            case 'LastUpdated':
+                /**
+                 * Gets the value for strLastUpdated (Read-Only Timestamp)
+                 * @return string
+                 */
+                return $this->strLastUpdated;
 
             case 'ObjectOwner':
                 /**
@@ -1368,9 +1368,9 @@ class PasswordResetGen extends dxBaseClass implements IteratorAggregate {
         $strToReturn .= '<element name="Id" type="xsd:int"/>';
         $strToReturn .= '<element name="Token" type="xsd:string"/>';
         $strToReturn .= '<element name="CreatedDateTime" type="xsd:dateTime"/>';
-        $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
         $strToReturn .= '<element name="AccountObject" type="xsd1:Account"/>';
         $strToReturn .= '<element name="SearchMetaInfo" type="xsd:string"/>';
+        $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
         $strToReturn .= '<element name="ObjectOwner" type="xsd:int"/>';
         $strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
         $strToReturn .= '</sequence></complexType>';
@@ -1401,13 +1401,13 @@ class PasswordResetGen extends dxBaseClass implements IteratorAggregate {
             $objToReturn->strToken = $objSoapObject->Token;
         if (property_exists($objSoapObject, 'CreatedDateTime'))
             $objToReturn->dttCreatedDateTime = new dxDateTime($objSoapObject->CreatedDateTime);
-        if (property_exists($objSoapObject, 'LastUpdated'))
-            $objToReturn->strLastUpdated = $objSoapObject->LastUpdated;
         if ((property_exists($objSoapObject, 'AccountObject')) &&
             ($objSoapObject->AccountObject))
             $objToReturn->AccountObject = Account::GetObjectFromSoapObject($objSoapObject->AccountObject);
         if (property_exists($objSoapObject, 'SearchMetaInfo'))
             $objToReturn->strSearchMetaInfo = $objSoapObject->SearchMetaInfo;
+        if (property_exists($objSoapObject, 'LastUpdated'))
+            $objToReturn->strLastUpdated = $objSoapObject->LastUpdated;
         if (property_exists($objSoapObject, 'ObjectOwner'))
             $objToReturn->intObjectOwner = $objSoapObject->ObjectOwner;
         if (property_exists($objSoapObject, '__blnRestored'))
@@ -1451,9 +1451,9 @@ class PasswordResetGen extends dxBaseClass implements IteratorAggregate {
         $iArray['Id'] = $this->intId;
         $iArray['Token'] = $this->strToken;
         $iArray['CreatedDateTime'] = $this->dttCreatedDateTime;
-        $iArray['LastUpdated'] = $this->strLastUpdated;
         $iArray['Account'] = $this->intAccount;
         $iArray['SearchMetaInfo'] = $this->strSearchMetaInfo;
+        $iArray['LastUpdated'] = $this->strLastUpdated;
         $iArray['ObjectOwner'] = $this->intObjectOwner;
         return new ArrayIterator($iArray);
     }
@@ -1492,10 +1492,10 @@ class PasswordResetGen extends dxBaseClass implements IteratorAggregate {
      * @property-read dxQueryNode $Id
      * @property-read dxQueryNode $Token
      * @property-read dxQueryNode $CreatedDateTime
-     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $Account
      * @property-read dxQueryNodeAccount $AccountObject
      * @property-read dxQueryNode $SearchMetaInfo
+     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ObjectOwner
      *
      *
@@ -1514,14 +1514,14 @@ class PasswordResetGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNode('Token', 'Token', 'VarChar', $this);
 				case 'CreatedDateTime':
 					return new dxQueryNode('CreatedDateTime', 'CreatedDateTime', 'DateTime', $this);
-				case 'LastUpdated':
-					return new dxQueryNode('LastUpdated', 'LastUpdated', 'VarChar', $this);
 				case 'Account':
 					return new dxQueryNode('Account', 'Account', 'Integer', $this);
 				case 'AccountObject':
 					return new dxQueryNodeAccount('Account', 'AccountObject', 'Integer', $this);
 				case 'SearchMetaInfo':
 					return new dxQueryNode('SearchMetaInfo', 'SearchMetaInfo', 'Blob', $this);
+				case 'LastUpdated':
+					return new dxQueryNode('LastUpdated', 'LastUpdated', 'VarChar', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'Integer', $this);
 
@@ -1542,10 +1542,10 @@ class PasswordResetGen extends dxBaseClass implements IteratorAggregate {
      * @property-read dxQueryNode $Id
      * @property-read dxQueryNode $Token
      * @property-read dxQueryNode $CreatedDateTime
-     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $Account
      * @property-read dxQueryNodeAccount $AccountObject
      * @property-read dxQueryNode $SearchMetaInfo
+     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ObjectOwner
      *
      *
@@ -1564,14 +1564,14 @@ class PasswordResetGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNode('Token', 'Token', 'string', $this);
 				case 'CreatedDateTime':
 					return new dxQueryNode('CreatedDateTime', 'CreatedDateTime', 'dxDateTime', $this);
-				case 'LastUpdated':
-					return new dxQueryNode('LastUpdated', 'LastUpdated', 'string', $this);
 				case 'Account':
 					return new dxQueryNode('Account', 'Account', 'integer', $this);
 				case 'AccountObject':
 					return new dxQueryNodeAccount('Account', 'AccountObject', 'integer', $this);
 				case 'SearchMetaInfo':
 					return new dxQueryNode('SearchMetaInfo', 'SearchMetaInfo', 'string', $this);
+				case 'LastUpdated':
+					return new dxQueryNode('LastUpdated', 'LastUpdated', 'string', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'integer', $this);
 
