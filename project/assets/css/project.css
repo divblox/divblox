@@ -1,3 +1,12 @@
+/* --------------------------------------------Normalization----------------------------------------------------------*/
+/*Firefox default style shows a red border around required fields. This removes that.*/
+:not(output):-moz-ui-invalid {
+    box-shadow: none;
+}
+:not(output):-moz-ui-invalid:-moz-focusring {
+    box-shadow: none;
+}
+/* -------------------------------------------------------------------------------------------------------------------*/
 /* --------------------------------------------System Styles----------------------------------------------------------*/
 body {
     padding-bottom:100px; /*JGL: This improves usability on mobile devices*/

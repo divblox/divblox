@@ -12,7 +12,7 @@
  * divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "2.2.0";
+let dx_version = "2.2.1";
 let bootstrap_version = "4.4.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.3.8";
@@ -31,6 +31,7 @@ let dx_offline = false;
 let service_worker_update;
 let installPromptEvent;
 let element_loading_obj = {};
+let element_loading_state_obj = {};
 let registered_toasts = [];
 let updating_toasts = false;
 let global_vars = {};
@@ -43,6 +44,7 @@ let cache_scripts_loaded = [];
 let url_input_parameters = null;
 let is_native = false;
 let registered_event_handlers = [];
+let force_logout_occurred = false;
 if(window.jQuery === undefined) {
 	// JGL: We assume that we have jquery available here...
 	throw new Error("jQuery has not been loaded. Please ensure that jQuery is loaded before divblox");
@@ -60,6 +62,21 @@ let dependency_array = [
 	"project/assets/js/project.js",
 	"project/assets/js/momentjs/moment.js"
 ];
+
+/**
+ * Loads the divblox chat widget for the setup page
+ */
+function loadDxChatWidget() {
+	var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+	(function(){
+		var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+		s1.async=true;
+		s1.src='https://embed.tawk.to/5e2aa42bdaaca76c6fcfa354/default';
+		s1.charset='UTF-8';
+		s1.setAttribute('crossorigin','*');
+		s0.parentNode.insertBefore(s1,s0);
+	})();
+}
 /**
  * Must be called at load to ensure that divblox loads correctly for the current environment. This function will set all
  * required paths and load divblox dependencies
@@ -258,7 +275,7 @@ function checkFrameworkReady() {
 				$("#AppUpdateWrapper").removeClass("show");
 			});
 			window.addEventListener('beforeunload', function(e) {
-				if(dx_queue.length > 0) {
+				if((dx_queue.length > 0) && !force_logout_occurred) {
 					e.preventDefault(); //per the standard
 					e.returnValue = "You have attempted to leave this page. There are currently items waiting to be processed on the" +
 						" server. If you close this page now, those changes will be lost." +
@@ -270,6 +287,11 @@ function checkFrameworkReady() {
 						"  Are you sure you want to exit this page?"; //required for Chrome
 				}
 			});
+			if (typeof admin_mode !== "undefined") {
+				if (admin_mode) {
+					loadDxChatWidget();
+				}
+			}
 		});
 	}
 	if (isSpa()) {
@@ -895,7 +917,7 @@ function loadPageComponent(component_name,load_arguments,callback) {
 	unRegisterEventHandlers();
 	$(document).off();
 	$('body').off();
-	
+	force_logout_occurred = false;
 	if (!root_history_processing) {
 		addPageToRootHistory(component_name);
 	} else {
@@ -1420,7 +1442,13 @@ function addTriggerElementToLoadingElementArray(element,loading_text) {
 			loading_text = loading_text + '...';
 		}
 		trigger_element_id = element.attr("id");
+		if (typeof element_loading_state_obj[trigger_element_id] !== "undefined") {
+			if (element_loading_state_obj[trigger_element_id] === true) {
+				return trigger_element_id;
+			}
+		}
 		element_loading_obj[trigger_element_id] = element.html();
+		element_loading_state_obj[trigger_element_id] = true;
 		let loading_html = '<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"' +
 			' style="vertical-align: initial;""></span> '+loading_text;
 		element.html(loading_html);
@@ -1436,7 +1464,12 @@ function addTriggerElementToLoadingElementArray(element,loading_text) {
 function removeTriggerElementFromLoadingElementArray(trigger_element_id) {
 	if (typeof trigger_element_id !== "undefined") {
 		if (typeof element_loading_obj[trigger_element_id] !== "undefined") {
-			$("#"+trigger_element_id).html(element_loading_obj[trigger_element_id]).attr("disabled",false).removeClass("disabled");
+			$("#"+trigger_element_id).html(element_loading_obj[trigger_element_id]).attr("disabled",false).prop("disabled",false).removeClass("disabled");
+			if (typeof element_loading_state_obj[trigger_element_id] !== "undefined") {
+				if (element_loading_state_obj[trigger_element_id] === true) {
+					element_loading_state_obj[trigger_element_id] = false;
+				}
+			}
 		}
 	}
 }
@@ -1522,8 +1555,11 @@ function dxRequestInternalQueued(url,parameters,on_success,on_fail,trigger_eleme
 				}
 				if (typeof data_obj.ForceLogout !== "undefined") {
 					if (data_obj.ForceLogout) {
-						dxLog("A force logout was received. Full return: "+data);
-						logout();
+						if (!force_logout_occurred) {
+							dxLog("A force logout was received. Full return: "+data);
+							force_logout_occurred = true;
+							logout();
+						}
 						return;
 					}
 				}
