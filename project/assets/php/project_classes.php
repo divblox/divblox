@@ -32,7 +32,7 @@ abstract class ProjectAccessManager extends AccessManager {
                 $UserRoleStr = $UserRoleObj->Role;
             }
         }
-        if (in_array($ObjectType, DataModelRoleBasedAccess::$AccessArray['Any'])) {
+        if (array_key_exists($ObjectType, DataModelRoleBasedAccess::$AccessArray['Any'])) {
             return DataModelRoleBasedAccess::$AccessArray['Any'][$ObjectType];
         }
         
