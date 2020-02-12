@@ -1,1 +1,13 @@
-hSCJ7z2Q42LeZ57VyT6JV/WLV+azB8zkL3LqPsDUjFZvl05dO5HBzhRZvexhYdBwiOHCIqyyYqOm3tO9gVI53Z8n82BTvgEptWRgyO7pRzF1KevRjSJJmLBme/qj0AhpOg8Ou5p2p1u9zXt6WlM8a2tvSTG6vDHpfN02P16kyhDrEg3i3I2cHatCjgug0mOtk+1sxOQXg6T8vw7yJwWsfsSJ9cTd62ckJ3dYwGv6+IxPZ9yp3XM1g4O91g2mhyI4lgPXsJHGhZ6gkYFvNsv8kazls5nNHHbsxcIEwhMfnKolY3tY+C9Of6o/bUF/jhzllzyV87cVta5+YNf4jX7V9Iaa7EczN5yTlCpd3P5QqRqrAfG8yWiFkNCbRMH4YIl1FSK+JF5F2o57UExr8Kgi/keRctjSRMcIipjqMeowXLOX882LcgZbHzjAj4ZDLmWoe36y7foK4au8JbOciqjpA+veVo0YyUTabmYgYNwYeFLXOgloOft347zB71Capsr4zKr34DmBXvJREfrZila17jENcyqda/0Q6yMi51A4pKiIH1JSmifG7CJtyUFOuhqG59/caQzU/hqRxF9AjKL2vnpHSvpE5ktjykcyZaTssMHmqbGusk42jHNfUMP6wKmE1LfGVIh2sYYhfELvkriHbcqzWzGfkxXJ0zvuLAGCrCDV/Wl9QQcvTFImuwYibs9+iAKS8RirHCi6A8R/u0y78rK3U/mf2Rwi8OzyLTKg9JmcRc0bQp4LikSsWMyXus2pLGmk8V4MiG8klLWXv1vOA+i3X3b/K+SAMnWRDKvzWTzWHWtBN3ZH6AUsCdEy+KpNzxi/nR2rJWVUtz+kFZjAU20n0dfcST44kCYfaqbBO+Z4CyfuNlIUPEOxeRJYrMwpe1CvdcAn9BKQXCoDpoOUzrJi63rTCc6eD/EFx9S9LzUvYXoBgURovrNw0eKYvVabNldxUpNdehl36YSbmyWL3XyYkuETeBLuo9wSU7HX1jNLqsd+CDYKKksZC6XuOLf/IV+B3KBwCz5ZMrUVURFOe0Ev2CtI8cKL1eJB+JzxGLAn9hsLzEaMY3N+/8dw8tib1ELYcsTGEgnXkDDIblbZ1St8c9tsrMldZMxNTAQnSEhWrINXkCrVaMwjNEw8oDfrC+yfINI4EQwm4sMYZumQvUTNsoxtlAhvAKFG4P+is3h54lHnbn0MqacUXy3gLltg4FEPgCN9H5f3vZ/HdbyxM2ef5a66+x7qYYCjSu7RLN2hqtBhFbwiaVg7oiizlnk9sHUYANQFJ/b6RpNqMM971ay2M3C40MWj8y4fMolC17hGH1F2Tqg3wdNL45LEz0MAv+CvXCzc36znMu1kiSd8SHC/XRwhhe2HOhaCuZ+mF6Y1wiN9bWnmVoW01P2wdO8vsUg2o/dbCxH5E5rRdTpo205WaQVrJTseY3olcRCtIpbLzF2tHKfr8i5gvoqFwSLdVehq4Whv
+public function get[Relationship-ObjectName]List([component_class_name] $[component_class_name]Obj = null) {
+        if ([Relationship-ObjectName]::QueryCount(dxQ::All()) > 50) {
+            if (!is_null($[component_class_name]Obj) && !is_null($[component_class_name]Obj->[Relationship-ObjectName]Object)) {
+                // JGL: We only return the selected [Relationship-ObjectName], since the selectable list will be too big.
+                // In this case, the developer will need to implement select functionality to link another object
+                $ObjectArray = DatabaseHelper::getObjectArray('[Relationship-ObjectName]', array("Id","[Attribute-To-Display]"), "Id = '".$[component_class_name]Obj->[Relationship-ObjectName]Object->Id."'", null, 50, null, $ErrorInfo);
+                array_push($ObjectArray, array("Id" => "DATASET TOO LARGE"));
+                return $ObjectArray;
+            }
+        }
+        $ObjectArray = DatabaseHelper::getObjectArray('[Relationship-ObjectName]', array("Id","[Attribute-To-Display]"), null, null, 50, null, $ErrorInfo);
+        return $ObjectArray;
+    }

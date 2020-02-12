@@ -1,1 +1,43 @@
-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
+<div id="ComponentWrapper" class="component-wrapper">
+    <div id="ComponentPlaceholder" class="component_placeholder component_placeholder_general">
+        <div id="ComponentFeedback"></div>
+    </div>
+    <div id="ComponentContent" class="component-content" style="display:none">
+        <div class="container-fluid">
+            <div class="row mt-n4 crud-component-wrapper-data-list">
+                <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                    <div id="data_series_wrapper" style="display:none;">
+                        <div id="data_series"/>
+                        <div class="row">
+                            <div class="col-md-4"></div>
+                            <div class="col-md-4"></div>
+                            <div class="col-md-4">
+                                <button id="button_create" type="button" class="btn btn-outline-primary fullwidth mt-1"><i class="fa fa-plus" aria-hidden="true"></i> [EntityNameSplitted]</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="data_update_wrapper" style="display:none;">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <button id="button_update_back" type="button" class="btn btn-link crud-component-back-button-data-list"><i class="fa fa-long-arrow-left" aria-hidden="true"></i> Back</button>
+                            </div>
+                            <div class="col-md-4"></div>
+                            <div class="col-md-4"></div>
+                        </div>
+                        <div id="data_update"/>
+                    </div>
+                    <div id="data_create_wrapper" style="display:none;">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <button id="button_create_back" type="button" class="btn btn-link crud-component-back-button-data-list"><i class="fa fa-long-arrow-left" aria-hidden="true"></i> Back</button>
+                            </div>
+                            <div class="col-md-4"></div>
+                            <div class="col-md-4"></div>
+                        </div>
+                        <div id="data_create"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

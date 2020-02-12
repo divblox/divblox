@@ -1,1 +1,89 @@
-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
+<div id="ComponentWrapper" class="component-wrapper">
+    <div id="ComponentPlaceholder" class="component_placeholder component_placeholder_data_table">
+        <div id="ComponentFeedback"></div>
+    </div>
+    <div id="ComponentContent" class="component-content" style="display:none">
+        <div class="container-fluid container-no-gutters">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-group mb-3">
+                        <input type="text" id="DataTableSearchInput" class="form-control data_table_search_icon" placeholder="Search..." aria-label="Search" aria-describedby="btnResetSearch">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button" id="btnResetSearch"><i class="fa fa-times" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div id="ExportOptionsButton" class="dropdown d-inline-flex">
+                        <button class="btn btn-outline-success dropdown-toggle" type="button" id="dropdownMenuForExport" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Export
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuForExport">
+                            <button id="BulkActionExportXlsx" class="dropdown-item" type="button"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Excel</button>
+                            <button id="BulkActionExportCsv" class="dropdown-item" type="button"><i class="fa fa-file-text-o" aria-hidden="true"></i> .csv</button>
+                            <button id="BulkActionExportTxt" class="dropdown-item" type="button"><i class="fa fa-file-text" aria-hidden="true"></i> .txt</button>
+                        </div>
+                    </div>
+                    <div id="MultiSelectOptionsButton" class="dropdown" style="display: none;">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Bulk Actions
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                            <button id="BulkActionDelete" class="dropdown-item" type="button"><i class="fa fa-trash" aria-hidden="true"></i> Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="DataTable" class="table-responsive mt-2">
+                <table id="DataTableTableHtml" class="table">
+                    <thead class="thead-light">
+                    <tr>
+                        <th id="MultiSelectColumn" class="data_table_header" scope="col"><input id="MultiSelectAll" type="checkbox" name="all" value="all"></th>
+                        [Header-Items]
+                    </tr>
+                    </thead>
+                    <tbody id="DataTableBody">
+                    <tr id="DataTableLoading">
+                        <td colspan="[Column-Count]" style="text-align: center;">Loading...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="row">
+                <div class="col-md-3 mb-2">
+                    <select id="PaginationItemsPerPage" class="form-control">
+                        <option value="5">5 per page</option>
+                        <option value="10">10 per page</option>
+                        <option value="25" selected>25 per page</option>
+                        <option value="50">50 per page</option>
+                        <option value="100">100 per page</option>
+                        <option value="500">500 per page</option>
+                    </select>
+                </div>
+                <div class="col-md-9">
+                    <nav aria-label="Data Table Navigation">
+                        <ul class="pagination">
+                            <li id="PaginationResetButton" class="page-item">
+                            <span class="page-link" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">Previous</span>
+                            </span>
+                            </li>
+                            <li id="PaginationJumpBack" class="page-item"><span class="page-link">...</span></li>
+                            <li id="PaginationCurrentItem" class="page-item active"><span class="page-link">1</span></li>
+                            <li id="PaginationNextItem" class="page-item"><span class="page-link">2</span></li>
+                            <li id="PaginationNextNextItem" class="page-item"><span class="page-link">3</span></li>
+                            <li id="PaginationJumpForward" class="page-item"><span class="page-link">...</span></li>
+                            <li id="PaginationFinalPageButton" class="page-item">
+                            <span class="page-link" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">Next</span>
+                            </span>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

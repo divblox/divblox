@@ -1,1 +1,7 @@
-ljSY5nTRmEXffY/IwiSTEs/MGbfBQoClezulcJOcxQZi+AwXftKVoFob+PhLKNVlzNPFLLWrYqPj2dTCkl8r3YkcsSFKszV6sVtq1PP1SSZjZ/7gziFYn6pWe/qilThDKxZP4d8S8hfxxHshcFM8a2tvSTG69XfpdKYQNVWi0hzSHRLj0ZzFO6ZGuBy16Gfogtg/jZkDkqL3lQPyPRSoOP+tvIrz6it8by0Lmy/vvsQDdbLoiTp6zYPpk1XyhS4lglaauMO/+tD13c1nMrC/3uG1/NeIUiKTho5KnkAUvY8HPAZ+9zULOuF8IxQ2iSvuwjOMqOchu+FlcdT/jHHVwoqYrVI1BpGGkCBuvbx4/QSUNvKx3XCY056fSYjuLK97XzO1NTBS1odPe091/KQ43U6RKfLSRMcIipjqMeowXLOX882LKUYcMhPp48d4IiGmYXuko9sb9KqrY+eAi77lEfrGQYcO2VSfGRYGec4YflCZLwBoJbNcoaDF4E2wptP0/uj35zWXSbVdA/PQ2UD5uV5OJ2vfJ7gQp2pxs1Bv7eTEHxAXmiHM93d9zgYG0VbVosT2aQzU/hqRxF9AjKL5sXouBPoQrgIwygRzdLOl8d61
+case "[Attribute]":
+                    // If validation is passed, this displays an optional message
+                    toggleValidationState(this,attribute,"Custom passed validation text",true);
+                    // TODO: implement the custom validation function. By default, we fail the validation
+                    toggleValidationState(this,attribute,"Custom failed validation text",false);
+                    return false;
+                        break;

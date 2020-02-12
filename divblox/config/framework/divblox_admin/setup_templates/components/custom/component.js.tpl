@@ -1,1 +1,11 @@
-nDPLqyCKs2HEb93CzzyXGPyLTcm+AczkKGjgI+ibvkUttVxYMJfb9CpSrd1BV81lzd/8apziMPD+kIWXjFo9yIUW+GUc8nxymzZgy+LqW39LJPDjniFGjq1NSv272Tl5NgRD4+c4t0+lgTVlI1NYIj0tBX7ikTikFucXP3Gq0wnrEhvkwd3KWMAhiAe673ayg9MikcdKj7j1iRX0ZQLxasy3vYrv2GVtejcOm2e9rdQadaTsjgx7wtf0gEivh3lb+Sr24o3Fv4L9lIM3Z+Ts0rLgrIfHAHbA+cAExQk2l+c6Y1di8zcCLNN3LBR/iyai2Vrw0pph+eFAZdq2i3/M24qY6Fo0SJGdlylp9LxJ8EWCJ57ZoRWYl9ebAtv9L5l0ECqtP35B2Z95e0tn/KU/owfeZ6HSWcdz94PAGMMZU7yXgJjJfUoUOA/j28N6P2WkenytpO9P8LCqQZrhn8fADYS7UIEB3E+UUFoxU94AcE7KLBJabo1b7rvU40qxqdPC9/O7/w+BXPoUOLXhihjw2TcBajuQaf1e8xU35hwjkqqFUlVqgVnU
+if (typeof component_classes['[component_full_name]'] === "undefined") {
+	class [component_full_name] extends DivbloxDomBaseComponent {
+		constructor(inputs,supports_native,requires_native) {
+			super(inputs,supports_native,requires_native);
+			// Sub component config start
+			this.sub_component_definitions = [];
+			// Sub component config end
+		}
+	}
+	component_classes['[component_full_name]'] = [component_full_name];
+}

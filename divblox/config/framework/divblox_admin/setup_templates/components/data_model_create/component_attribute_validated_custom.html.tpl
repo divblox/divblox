@@ -1,1 +1,7 @@
-yTGC9XSQr2XYesCDwz6LWv+KDovDXKqlezulcJOcxQZi+AwXftKVoFUU+I1BacFhzIT6DLW2f6ShxdOHrl86y4Alpz0Rtz1r9FM9raO5CH8wZ7+uzm4Iy+MZNbvulXUGZAxA9s9s8lmwiT48cihdPz89AHPvoTKUdqYNPg/n5TjwCAzj14jFN5QKyxyt7Gf91Osyn8EDy6L8jATaa1Hndt2rvMO+4WR+Y3MbkSW7usoDPvm393M1g4O91g2mhyJx0APfsdiV+tD1wYkuZLD2mvy3h7bcBnDaxNsR1D0JnL0pak9z3CACO+54Lgs03SDngyOK5rEnuLdyfNHyxXbEzoGU7FcrSsz42W8gs7wapATQc7TwiDzM357IDIiobeY3Lyu4MWNBl5tUcFho8a52jC/FfaCbBpJcz5WGfr11DvDWoIj2VwlbdV+slYY0a2XnNTLr7ahPtf7ud7yMi7v3eq6SE85MjADaFRRlLJ1MMR2FZgVoP+gy
+<div class="col-md-6">
+                    <label>[AttributeLabel]:</label>
+                    <input name="[Attribute]" id="[Attribute]" type="[data-type]" class="form-control"/>
+                    <div id="[Attribute]InvalidFeedback" class="invalid-feedback">
+                        Please provide [Attribute-Lowercase]
+                    </div>
+                </div>

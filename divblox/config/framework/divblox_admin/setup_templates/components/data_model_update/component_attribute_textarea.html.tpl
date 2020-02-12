@@ -1,1 +1,4 @@
-yTGC9XSQr2XYesCDwz6LWv+KDovDXKqlezulcJOcxQZi+AwXftKVoFUU+I1BacFhzIT6DLW2f6ShxdOHrl86y4Alpz0Rtz1r9FM9raO5CH8wZ7+uzm4Iy+MZNbvulXUGZBFL/s55oFKwxDVgPRYhaRAOHWXovDW8IOM5eBKs2kSmJz/+wY/YMLxcjjX2vHCvgcNr3IBAxrXpnRL0dFPidc614p3z6X9+YTJa0XXF6IVPPPap3XM1g4O91g2mhz5+lEqJr/I=
+<div class="col-md-6">
+                    <label>[AttributeLabel]:</label>
+                    <textarea name="[Attribute]" id="[Attribute]" rows="5" class="form-control"/>
+                </div>

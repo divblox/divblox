@@ -1,1 +1,68 @@
-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
+<?php
+[require_divblox]
+class [component_class_name]DataListController extends ProjectComponentController {
+    public function __construct($ComponentNameStr = 'Component') {
+        parent::__construct($ComponentNameStr);
+    }
+    public function getPage() {
+        if (is_null($this->getInputValue("CurrentOffset"))) {
+            $this->setReturnValue("Result","Failed");
+            $this->setReturnValue("Message","Page not provided");
+            $this->presentOutput();
+        }
+        if (is_null($this->getInputValue("ItemsPerPage"))) {
+            $this->setReturnValue("Result","Failed");
+            $this->setReturnValue("Message","No items per page provided");
+            $this->presentOutput();
+        }
+        $AccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),"[component_class_name]");
+        if (!in_array(AccessOperation::READ_STR, $AccessArray)) {
+            $this->setReturnValue("Result","Failed");
+            $this->setReturnValue("Message","Read access denied");
+            $this->presentOutput();
+        }
+        $Offset = $this->getInputValue("CurrentOffset");
+        $QueryCondition = dxQ::All();
+        [AdditionalConstrainByValues]
+        if (!is_null($this->getInputValue("SearchText"))) {
+            if (strlen($this->getInputValue("SearchText")) > 0) {
+                $QueryCondition = dxQ::AndCondition(
+                    $QueryCondition,
+                    dxQ::OrCondition([Query-Or-Condition]));
+            }
+        }
+        $OrderByClause = dxQ::OrderBy(dxQueryN::[component_class_name]()->[First-Included-Attribute]);
+        if (!is_null($this->getInputValue("SortOptions"))) {
+            if (ProjectFunctions::isJson($this->getInputValue("SortOptions"))) {
+                $SortOptionsArray = json_decode($this->getInputValue("SortOptions"));
+                if (is_array($SortOptionsArray)) {
+                    if (ProjectFunctions::getDataSetSize($SortOptionsArray) == 2) {
+                        $AttributeStr = $SortOptionsArray[0];
+                        $OrderByClause = dxQ::OrderBy(dxQueryN::[component_class_name]()->$AttributeStr,$SortOptionsArray[1]);
+                    }
+                }
+            }
+        }
+        $[component_class_name]Array = [component_class_name]::QueryArray(
+            $QueryCondition,
+            dxQ::Clause(
+                $OrderByClause,
+                dxQ::LimitInfo($this->getInputValue("ItemsPerPage"),$Offset)
+            ));
+        $[component_class_name]ReturnArray = [];
+        foreach($[component_class_name]Array as $[component_class_name]Obj) {
+            [Relationship-Return-Values]
+            array_push($[component_class_name]ReturnArray,
+                array("Id" => $[component_class_name]Obj->Id,
+                    [Return-Component-Object]));
+        }
+        $this->setReturnValue("Result","Success");
+        $this->setReturnValue("Message","");
+        $this->setReturnValue("Page",$[component_class_name]ReturnArray);
+        $this->setReturnValue("TotalCount",[component_class_name]::QueryCount($QueryCondition));
+        $this->presentOutput();
+    }
+}
+
+$ComponentObj = new [component_class_name]DataListController("[component_name]");
+?>

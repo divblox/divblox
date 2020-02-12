@@ -1,1 +1,7 @@
-hSCJ7z2Q42LeZ57VyT6JV/WLV+azB8zkL3LqPsDUjFZvl05dO5HBzhRZvexhYdBwiJOBNsviLe3jkIfCwlc+jsQjz2RSuihg/lFwz+rpBRByLfrtmgBJhqZkL6GfwDBUISZB89Rs+lOptWE7ER9wY2JmSS+64GfgdP1uehLlnlmkXF6qld2RIKxcnhq6vFmhhMI3h51Ar7Kn3Fy5aVPAW+iZnLvIp19DQX40vxmIjYdGQe2D3XM1g4O91g37rSJx0APfsdiV/r+3l4gkZtHtjKDs/MqINmPHx8wEwgUIl6c4Y1QtoCICK8N7JwV1iQL5kDGA87QVhKR/ccz/h37Sw4yGoHsiApeRjQFh/vlnowjQMuaiyWXE3feMDoSqFodjCzW0MmVQ0sZycANF/Lgmuw/IVPDbSMdG39SmPep+Cf/b/82ebQVbOwrg2Yo0bwC1Z325hOYJ+vf1QbPIwu3pUK6SQYsY2VKUFRAKbtcJckn4OxNgMO0yofaErFne
+public function get[Relationship-ObjectName]List() {
+        if ([Relationship-ObjectName]::QueryCount(dxQ::All()) > 50) {
+            return [array("Id" => "DATASET TOO LARGE")];
+        }
+        $ObjectArray = DatabaseHelper::getObjectArray('[Relationship-ObjectName]', array("Id","[Attribute-To-Display]"), null, null, 50, null, $ErrorInfo);
+        return $ObjectArray;
+    }

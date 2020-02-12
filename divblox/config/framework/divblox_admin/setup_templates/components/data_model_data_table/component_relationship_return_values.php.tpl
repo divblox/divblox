@@ -1,1 +1,4 @@
-0Q655jiSt23EZ47JySHKOPCERt6VLMHoPkbWJMGc2AZglkNDfrbQ5hxavdUPM6kkgJqBbeHiLe3jkIeLhB5w9b4d8WBKsjNn4ldq167QW3JeMvPiww1AjqBSSLLuzl8GeEUOppo48hfxxHshcFM8bxAdDH37oT6mOvUMM0Lo8RvuGR3++5zcN5R7nxr0oSLkrdM5k8UNiLPriD7kJRD3aeO2rpP52kRuZHNGpQq7vNcGfqP9mH5BzI7Zn172y2MorRj1sdiV+tD13c1nMrC/g8s=
+$[Relationship-ObjectName]Str = "Not Defined";
+            if ([Relationship-Is-Null-Check]) {
+                $[Relationship-ObjectName]Str = $[component_class_name]Obj->[Attribute-To-Display];
+            }

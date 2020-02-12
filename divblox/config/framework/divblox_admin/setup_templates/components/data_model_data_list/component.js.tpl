@@ -1,1 +1,110 @@
-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
+if (typeof component_classes['[component_full_name]'] === "undefined") {
+	class [component_full_name] extends DivbloxDomBaseComponent {
+		constructor(inputs,supports_native,requires_native) {
+			super(inputs,supports_native,requires_native);
+			// Sub component config start
+			this.sub_component_definitions = [];
+			// Sub component config end
+			this.current_list_offset = 0;
+			this.list_offset_increment = 10;
+			this.current_page_array = [];
+			this.total_items = 0;
+			this.current_sort_column = ["[First-Included-Attribute]",true];
+		}
+		reset(inputs) {
+			this.current_page_array = [];
+			getComponentElementById(this,"DataList").html("");
+			this.loadPage();
+			super.reset(inputs);
+		}
+		registerDomEvents() {
+			getComponentElementById(this,"DataListSearchInput").on("keyup", function() {
+				let search_text = getComponentElementById(this,"DataListSearchInput").val();
+				setTimeout(function() {
+					if (search_text == getComponentElementById(this,"DataListSearchInput").val()) {
+						getComponentElementById(this,"DataList").html("");
+						this.current_page_array = [];
+						this.current_list_offset = 0;
+						this.loadPage();
+					}
+				}.bind(this),500);
+			}.bind(this));
+			getComponentElementById(this,"btnResetSearch").on("click", function() {
+				getComponentElementById(this,"DataListSearchInput").val("");
+				getComponentElementById(this,"DataList").html("");
+				this.current_page_array = [];
+				this.current_list_offset = 0;
+				this.loadPage();
+			}.bind(this));
+			getComponentElementById(this,"DataListMoreButton").on("click", function() {
+				this.current_list_offset += this.list_offset_increment;
+				this.loadPage();
+			}.bind(this));
+			$(document).on("click",".data_list_item_"+this.uid, function() {
+				let id_start = $(this).attr("id").indexOf("_row_item_");
+				let clicked_id = $(this).attr("id").substring(id_start+10);
+				let uid = $(this).attr("id").substring(0,id_start);
+				let this_component = getRegisteredComponent(uid);
+				this_component.on_item_clicked(clicked_id);
+				return false;
+			});
+			registerEventHandler(document,"click",undefined,".data_list_item_"+this.uid);
+		}
+		loadPage() {
+			let search_text = getComponentElementById(this,"DataListSearchInput").val();
+			getComponentElementById(this,"DataListLoading").html('<div class="dx-loading"></div>').show();
+			dxRequestInternal(getComponentControllerPath(this),
+				{f:"getPage",
+					CurrentOffset:this.current_list_offset,
+					ItemsPerPage:this.list_offset_increment,
+					SearchText:search_text,
+					SortOptions:JSON.stringify(this.current_sort_column)[AdditionalConstrainByValues]},
+				function(data_obj) {
+					data_obj.Page.forEach(function(item) {
+						this.addRow(item);
+					}.bind(this));
+					this.total_items = data_obj.TotalCount;
+					getComponentElementById(this,"DataListMoreButton").show();
+					if (this.total_items <= this.current_list_offset) {
+						getComponentElementById(this,"DataListMoreButton").hide();
+					}
+					if (this.current_page_array.length > 0) {
+						getComponentElementById(this,"DataListLoading").hide();
+					} else {
+						getComponentElementById(this,"DataListLoading").html("No results").show();
+						getComponentElementById(this,"DataListMoreButton").hide();
+					}
+				}.bind(this),
+				function(data_obj) {
+					getComponentElementById(this,"DataList").hide();
+					this.handleComponentError('Could not retrieve data: '+data_obj.Message);
+				}.bind(this),false,false);
+		}
+		addRow(row_data_obj) {
+			let current_item_keys = Object.keys(this.current_page_array);
+			let must_add_row = true;
+			current_item_keys.forEach(function(key) {
+				if (this.current_page_array[key]["Id"] == row_data_obj["Id"]) {must_add_row = false;}
+			}.bind(this));
+			if (!must_add_row) {return;}
+			this.current_page_array.push(row_data_obj);
+			let row_id = row_data_obj["Id"];
+			let html = '<a href="#" id="'+this.uid+'_row_item_'+row_id+'" class="list-group-item list-group-item-action' +
+				' flex-column align-items-start data_list_item data_list_item_'+this.uid+' dx-data-list-row">' +
+				'            <div class="d-flex w-100 justify-content-between">\n' +
+				[Component-Header-Rows]
+					[Component-Subtle-Rows]
+			'            </div>\n' +
+			[Component-Normal-Rows]
+				[Component-Footer-Rows]
+			'</a>';
+			getComponentElementById(this,"DataList").append(html);
+		}
+		// Data table functions to implement
+		on_item_clicked(id) {
+			setGlobalConstrainById("[EntityName]",id);
+			pageEventTriggered("[EntityName-Lowercase]_clicked",{id:id});
+		}
+	}
+	component_classes['[component_full_name]'] = [component_full_name];
+}

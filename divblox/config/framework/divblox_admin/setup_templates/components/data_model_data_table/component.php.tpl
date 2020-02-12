@@ -1,1 +1,93 @@
-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
+<?php
+[require_divblox]
+class [component_class_name]DataTableController extends ProjectComponentController {
+    public function __construct($ComponentNameStr = 'Component') {
+        parent::__construct($ComponentNameStr);
+    }
+    public function getPage() {
+        if (is_null($this->getInputValue("CurrentPage"))) {
+            $this->setReturnValue("Result","Failed");
+            $this->setReturnValue("Message","Page not provided");
+            $this->presentOutput();
+        }
+        if (is_null($this->getInputValue("ItemsPerPage"))) {
+            $this->setReturnValue("Result","Failed");
+            $this->setReturnValue("Message","No items per page provided");
+            $this->presentOutput();
+        }
+        $AccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),"[component_class_name]");
+        if (!in_array(AccessOperation::READ_STR, $AccessArray)) {
+            $this->setReturnValue("Result","Failed");
+            $this->setReturnValue("Message","Read access denied");
+            $this->presentOutput();
+        }
+        $Offset = ($this->getInputValue("CurrentPage") - 1) * $this->getInputValue("ItemsPerPage");
+        $QueryCondition = dxQ::All();
+        [AdditionalConstrainByValues]
+        if (!is_null($this->getInputValue("SearchText"))) {
+            if (strlen($this->getInputValue("SearchText")) > 0) {
+                $QueryCondition = dxQ::AndCondition(
+                    $QueryCondition,
+                    dxQ::OrCondition([Query-Or-Condition]));
+            }
+        }
+        $OrderByClause = dxQ::OrderBy(dxQueryN::[component_class_name]()->[First-Included-Attribute]);
+        if (!is_null($this->getInputValue("SortOptions"))) {
+            if (ProjectFunctions::isJson($this->getInputValue("SortOptions"))) {
+                $SortOptionsArray = json_decode($this->getInputValue("SortOptions"));
+                if (is_array($SortOptionsArray)) {
+                    if (ProjectFunctions::getDataSetSize($SortOptionsArray) == 2) {
+                        $AttributeStr = $SortOptionsArray[0];
+                        $OrderByClause = dxQ::OrderBy(dxQueryN::[component_class_name]()->$AttributeStr,$SortOptionsArray[1]);
+                    }
+                }
+            }
+        }
+        $[component_class_name]Array = [component_class_name]::QueryArray(
+            $QueryCondition,
+            dxQ::Clause(
+                $OrderByClause,
+                dxQ::LimitInfo($this->getInputValue("ItemsPerPage"),$Offset)
+            ));
+        $[component_class_name]ReturnArray = [];
+        foreach($[component_class_name]Array as $[component_class_name]Obj) {
+            [Relationship-Return-Values]
+            array_push($[component_class_name]ReturnArray,
+                array("Id" => $[component_class_name]Obj->Id,
+                    [Return-Component-Object]));
+        }
+        $this->setReturnValue("Result","Success");
+        $this->setReturnValue("Message","");
+        $this->setReturnValue("Page",$[component_class_name]ReturnArray);
+        $this->setReturnValue("TotalCount",[component_class_name]::QueryCount($QueryCondition));
+        $this->presentOutput();
+    }
+    public function deleteSelection() {
+        if (is_null($this->getInputValue("SelectedItemArray"))) {
+            $this->setReturnValue("Result","Failed");
+            $this->setReturnValue("Message","No items provided");
+            $this->presentOutput();
+        }
+        $AccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),"[component_class_name]");
+        if (!in_array(AccessOperation::DELETE_STR, $AccessArray)) {
+            $this->setReturnValue("Result","Failed");
+            $this->setReturnValue("Message","Delete permission denied");
+            $this->presentOutput();
+        }
+        $DeleteItemsArray = json_decode($this->getInputValue("SelectedItemArray"));
+        $DeleteCount = 0;
+        foreach($DeleteItemsArray as $item) {
+            $[component_class_name]ToDeleteObj = [component_class_name]::Load($item);
+            if (is_null($[component_class_name]ToDeleteObj)) {
+                continue;
+            }
+            $[component_class_name]ToDeleteObj->Delete();
+            $DeleteCount++;
+        }
+        $this->setReturnValue("Result","Success");
+        $this->setReturnValue("Message","$DeleteCount items deleted");
+        $this->presentOutput();
+    }
+}
+$ComponentObj = new [component_class_name]DataTableController("[component_name]");
+?>

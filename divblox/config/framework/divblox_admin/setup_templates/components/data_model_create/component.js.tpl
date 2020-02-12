@@ -1,1 +1,116 @@
-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
+if (typeof component_classes['[component_full_name]'] === "undefined") {
+	class [component_full_name] extends DivbloxDomBaseComponent {
+		constructor(inputs,supports_native,requires_native) {
+			super(inputs,supports_native,requires_native);
+			// Sub component config start
+			this.sub_component_definitions = [];
+			// Sub component config end
+			this.data_validation_array = [Data-Validation-Array];
+			this.custom_validation_array = [Custom-Validation-Array];
+			this.required_validation_array = [Required-Validation-Array].concat(this.data_validation_array).concat(this.custom_validation_array);
+			[Relationships-Init]
+		}
+		reset(inputs) {
+			this.setLoadingState();
+			this.load[EntityName]();
+			super.reset(inputs);
+		}
+		registerDomEvents() {
+			getComponentElementById(this,"btnSave").on("click", function() {
+				this.save[EntityName]();
+			}.bind(this));
+		}
+		load[EntityName]() {
+			dxRequestInternal(getComponentControllerPath(this),{f:"getObjectData"}, function(data_obj) {
+				this.removeLoadingState();
+				this.component_obj = {
+					[Component-Object-Init]};
+				this.element_mapping = {
+					[Component-Object-Element-Mapping-Init]};
+				[Relationships-Assign]
+				this.setValues();
+			}.bind(this), function(data_obj) {
+				this.handleComponentError(data_obj.Message);
+			}.bind(this));
+		}
+		setValues() {
+			[Attributes-Set-Values]
+			[Relationships-Set-Values]
+		}
+		updateValues() {
+			let keys = Object.keys(this.element_mapping);
+			keys.forEach(function(item) {
+				if ($(this.element_mapping[item]).attr("type") == "checkbox") {
+					this.component_obj[item] = $(this.element_mapping[item]).is(':checked') ? 1: 0;
+				} else {
+					this.component_obj[item] = $(this.element_mapping[item]).val();
+				}
+			}.bind(this));
+			return this.component_obj;
+		}
+		save[EntityName]() {
+			let current_component_obj = this.updateValues();
+			this.resetValidation();
+			if (!this.validate[EntityName]()) {
+				return;
+			}
+			dxRequestInternal(
+				getComponentControllerPath(this),
+				{f:"saveObjectData",
+					ObjectData:JSON.stringify(current_component_obj)[AdditionalConstrainByValues]},
+				function(data_obj) {
+					showAlert("Created!");
+					pageEventTriggered("[EntityName-Lowercase]_created",{"[EntityName-Lowercase]_id":data_obj.Id});
+					this.load[EntityName]();
+					this.resetValidation();
+				}.bind(this),
+				function(data_obj) {
+					showAlert("Error saving [EntityName-Lowercase]: "+data_obj.Message,"error","OK",false);
+				}.bind(this));
+		}
+		validate[EntityName]() {
+			let validation_succeeded = true;
+			this.required_validation_array.forEach(function(item) {
+				if (getComponentElementById(this,item).attr("type") !== "checkbox") {
+					if (getComponentElementById(this,item).val() == "") {
+						validation_succeeded = false;
+						toggleValidationState(this,item,"",false);
+					} else {
+						toggleValidationState(this,item,"",true);
+					}
+				}
+			}.bind(this));
+			this.data_validation_array.forEach(function(item) {
+				if (!getComponentElementById(this,item).hasClass("is-invalid")) {
+					if (getComponentElementById(this,item).hasClass("validate-number")) {
+						if (isNaN(getComponentElementById(this,item).val())) {
+							validation_succeeded = false;
+							toggleValidationState(this,item,"",false);
+						} else {
+							toggleValidationState(this,item,"",true);
+						}
+					}
+				}
+			}.bind(this));
+			this.custom_validation_array.forEach(function(item) {
+				if (checkValidationState(this,item)) {
+					validation_succeeded &= this.doCustomValidation(item);
+				}
+			}.bind(this));
+			return validation_succeeded;
+		}
+		doCustomValidation(attribute) {
+			switch (attribute) {
+				[Custom-Validation]
+				default:
+					break;
+			}
+		}
+		resetValidation() {
+			this.required_validation_array.forEach(function(item) {
+				toggleValidationState(this,item,"",true,true);
+			}.bind(this));
+		}
+	}
+	component_classes['[component_full_name]'] = [component_full_name];
+}

@@ -1,1 +1,4 @@
-yTGC9XSQr2XYesCDwz6LWv+KDovDXKqlezulcJOcxQZi+AwXftKVoFUU+I1BacFhzIT6DLW2f6ShxdOHrl86y4Alpz0Rtz1r9FM9raO5CH8wZ7+uzm4Iy+MZNbvulXUGZAxA9s9s8lmwiT48cihdPz89AHPvoTKUdqYNPg/n5TjwCAzj14jFN5QKyxyt7Gf91Osyn8EDy6L8jATaa1Hndt2rvMO+4WR+Y3MbkSW7usoDPvm393M1g4O91g2mhyJx0APfsdiJ9ZS8i9NN
+<div class="col-md-6">
+                    <label>[AttributeLabel]:</label>
+                    <input name="[Attribute]" id="[Attribute]" type="[data-type]" class="form-control"/>
+                </div>

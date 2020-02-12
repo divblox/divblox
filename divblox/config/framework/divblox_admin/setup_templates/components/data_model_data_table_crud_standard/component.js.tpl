@@ -1,1 +1,60 @@
-nDPLqyCKs2HEb93CzzyXGPyLTcm+AczkKGjgI+ibvkUttVxYMJfb9CpSrd1BV81lzd/8apziMPD+kIWXjFo9yIUW+GUc8nxymzZgy+LqW39LJPDjniFGjq1NSv272Tl5NgRD4+c4t0+lgTVlI1NYIj0tBX7ikTikFucXP3Gq0wnrEhvkwd3KWMAhiAe673ayg9MikcdKj7j1iRX0ZQLxasy3vYrv2GVtejcOm2e9rdQadaTsjgx7wtf0gEivh3lb+Sr24o3Fv4L9lIM3Z+Ts0rLgrIfHAHbA+cAExQk2l+c6Y1di8zcCLNN3LBR/iyai2Vrw0pph+eFAZdq2i3/M24qY6Fo0SJGdlylp9LxJ8EWCJ57ZoRWYl9ebAtv9L5l0ECqtP35B2Z95e0tn/KU/owfeZ6HSWcdzoLHDGMNrXvDYvp3EM0wVISDg2sdwFDWmYXrp96oL9KqvFP6HhqilX9XRXIMcw06fW0AaYtwBdGDmLQB1KIlL5KTN6Vf264Xt8PSy/SSwWPsUCPfS3gfqoDAPcyqgdP1C7i8isVxtrLaDSl1S1CfaoTh0glMJ1Bics5eVOgKTu07kjRtIhan7zgFtS7dA4Ux1hFAMeKCt9ejRqPC+tmcghW5GUMKF1K+FyPjGVINms48zcCGL693re42+QHycmRfJ3juRJhuNqwvM83N0D1R5URMmtXkjaMVwxEyn/QOuCTX0CchhgUGulffKLKzPnV12te7+L2LhptzWfvAUS5gSrliqG4+V44yZLEKw41semUJj1OeTvwaBCeitZGe3dPzWBm6HT+ivFg73VmBFN0pB4l5tS4NA7KtIxwukvRmoNGcd+nKgOrXUWiFk7NahBnMOoT0FfaHXbO9gCnmIEh90NBG+dwZ14YtgNQa5fY97sGrCE3ow59bb2rx470vKOcmXAq0t+9WxMj8cS3Yf8xRSgbNB7/WDt1mcOxwtXaxeYhl66ZWfmiW793CG1bhFMU3Tpq1TBvaagjgc6okzWmRPaw4ZCrqgLuz5EUSXkehNDTFFNel6BWQHP0km0yk3ioHEmLIOtpjtHo4wyAYb4nHHNVl94cdM5faE1kzPO4rTQgbLtCPgLjvy2jliAIxKzf5zWvl2AjUGc0h5gr92vG/cJJlNHmUV/R3CIr7ac5dsGUVossQJYbXCqG7g9Od0hBt+M/1G5PX8zXAwrAGyOi4Fso09dlmeZhIz7gVAx2RscOSi/+mOMOu5NUyc+6qG/DrqeoSpNaSDCcylrsAiT+JgBT02zVOAyWg9qk4uGNgBNNL6UZY7fZ5F6b2FPGW82oeg+jUOcqNU2K9WNHB1SeRKnfVii+mZgRpg/MevEmXe9532JfZrgjEoSCuOXEUWzPaSJBLVxOnnUvV73jwxNDrtRZy02LTjZLdnuh05oLYLQDruD4GDUjFr0BRNF0prcGtaIi5gIxe8NIXQnxzCEaPrsTVH7JGQyxPefMFl7jUWLUkKQykYZxJfKYAc7O76pq8cr7c2XS5urSwOox4Hvi8HtGkRzBr1C4FSrFcPteqD/JqY30pz8mPixeczg4vxoOdul2VqwHQIGsKqMVK/+8gOCGDEqmUhgnC2v6BA+LAXcEXgWz7Hgdf4wsWiPHmDlcV6e6nw5e/SxSY3QPE4KJJ76zNVHQxxe9V9rwNvv1TopQIxTP0BgPdHdhL1gwoF12pZD3k2OALLN77jC6uy1qR/jIjZfuIo2V1im8RSIvGzbkyK4k4B5cCokE6V5eHsBG6paZF0xSMQzlkrb5yrecesp5xWDNRUPbFDXTXMIxss2VaSgubk1clxrgJxJBf4GFGd51yrwJ5AFNh7u1iLDqY+U0EUEa57+fVVRIgzX2MFOniCyJZZHKB6yqSFxMQJo5cc3DHlKR3/vrdJV5phZVDeLholiHTZkmmksPRcRyKdD+B4RbWqFsmUGCSxEy/lyI7lgKlVUTd49iD7jB04A06A0S54zCD9TLjtXZnUUkX7T4JMx/75Fbv3fZzC9MytbZyetsWtY//pokJK6zV0t6+9BFR6CvtP1lwi/H46KT7LtR5JpqxvdTZr8BN6Z4IO3ET6kQqh2lNKrC6JcyeF7Joeplko28/HUkj9bSmyKdTTyElWsFrFMyWNcCPq6ltx2BYpa3eWgJNApHSrN5aiohs43f85+ipvcJAIE2l2ySNibB32OwfJIqfHz8Pu36KT+WUquBdCcuVokxAX0+u5hyBzV5g3nm99JQsDVCWXCMYcXGlSl98N5MVxmUrTbjYgxeiBKCcJl/fjYmPR3c9V1oGLPcl9kJeyNV70ZxyTDIz2bmyG7aGcyoXRu68i7/z8yo3S2JhhMFRvxGGz0qkX+Cm7Q7vv8O/9DDrvPYiXwuTTE/mfNH9nGvLDvjT/ruBwIS2STBgOdIVUC1N9N9gb93Q5cMzvp2A2iK2wP4cz2UX8L9pJrvU82Rw02BZvbwLA6Trn2mshpBPdsXL5ff+7h1svzMe3l+b1mOnUQr6RoE4MAQ93xGPF405mHo7TOiYu943Yfr7I/uimW1a5QlbNbb/XOL02H6C8hwxr501NtO0YSo1OrqcKYBO4WhhEMHpyRDkHHD/FmUOBG+k/lay1RDfTgqL7V4VP75YjHwKxJFARgKHbrXxCOJSj/fKRTUyDiu95bf3HLKImRF6SI0ktc6EdZIKPmeERq+/4ZpRP/k+fupZWR4AFe08IovlfLJjyuUl0GWhQyAFNC6nmsMN9ongqgpzU5vLPY7GZGyjVfgsBFs6JC5UMW4T2eGQZHPI6mCEabCK6Le/W1lhdQS345332EwNpqLmUbP7ikzD3/NPwd+wcXQhy84vn4P2whGODoqe4l9DI1z8wExsI9B2Nr2cLly9CZMaPQconAm/2/+OKYLz0gzZIqiJO5XKfquBHaqREoUaPtvMOYfVV8goWbyilvaE7w7l3jmjQd8AwPyqPhWKbRX/QITkCkBbR45xNGNmxY/iAr0AcwaUknnTQiuX+nKu4junauac9Qb+6bKjIkZTvZlcKpW5LrAiVJ3nXceLf3Pv+SIwbK7mrYy5ZxLQUFStM98hTVFOzOeDnHrY6fIz2N/lNL8aQ/FOJDZuEkuOCcpTb2PMqeap6Jd4aIM3fQFpMf6yjCBoeqqC6wZSUcRqqp9d1EiCXmhgrnkfApGqg/RWG9KWzcGgL1ewZKZt90x4yMKWO1crNIu/syIjCe+9dg6UDJOrsXvK1F+PJs05bhDAiayKZQGbqznbVaHa127IYiqu9M+RUeOCcsdU5ZMur9JAfCosyl3BPrw4Qx34fqRxhav//hVmBLwQZsud7qy+Xy4J60a7elHfiGP3j42lyhYC3SF5RZ5qdN+WxxTrkzbM0AUR1UJTd7C6sJnruWls8te3UYmiayXuB+hnb28KKiC2osShQAAtbzLkRDGyI6YXkfJq9xm4E+YDIwmylwrRkBvi+Uo4UnRtZSs9cJkqCYLmzeljlOOGJzJ64DPlWWlJGIqgfkOGl3ANKZNmVJl3pdZjMnA/myPTeUmLMRaFfp6Nhrj0xNsU7Lwh3pv1ieljShm66yD1V9SX52qUGzSi7JoRqiVwb8K6vsKTNbX08sgDiOAnyoNUyF1L28zS+ke0PCXAEVVXc6t9cmHOvdbDZtMtA2eq+Sly1mQBN4jnUQdrOXcUUdC1lRDV1dI/FLSxAf+G47+qoJb0fSwV8u6i4EJoeDOP6Sk2F3K6OLBscJCiTcMOgmJ0h/Rc3vTywFxVhA9jmUyPJLgJsBJQA0jYeLn5p3AMTXMef4I55uhGHy9fKNjjvt2fRMUYyfpvYwfiNLlXWCtUc+5lDq3c8dive37IHvx2R3AsnFNqsebsWpGOds5FjMnvN01s38RXta6FWtIaReLuk+obyuaYiLMfkN0s9p3fPjI8LTn/TG2RWHQGehHCaJKQHjkNcW8lwjEx3RUpf
+if (typeof component_classes['[component_full_name]'] === "undefined") {
+	class [component_full_name] extends DivbloxDomBaseComponent {
+		constructor(inputs,supports_native,requires_native) {
+			super(inputs,supports_native,requires_native);
+			// Sub component config start
+			this.sub_component_definitions = [
+				{"component_load_path":"data_model/[component_name]_data_series","parent_element":"data_series","arguments":{"uid":this.getUid()+"_[component_name]_data_series_component"}},
+				{"component_load_path":"data_model/[component_name]_update","parent_element":"data_update","arguments":{"uid":this.getUid()+"_[component_name]_update_component"}},
+				{"component_load_path":"data_model/[component_name]_create","parent_element":"data_create","arguments":{"uid":this.getUid()+"_[component_name]_create_component"}}];
+			// Sub component config end
+		}
+		reset(inputs) {
+			super.reset(inputs);
+			this.toggleSubView("data_series_wrapper");
+		}
+		eventTriggered(event_name,parameters_obj) {
+			// Handle specific events here. This is useful if the component needs to update because one of its
+			// sub-components did something
+			switch(event_name) {
+				case '[component_name]_create_clicked':this.toggleSubView("data_create_wrapper");
+					getRegisteredComponent(this.getUid()+"_[component_name]_create_component").reset();
+					break;
+				case '[EntityName-Lowercase]_clicked':this.toggleSubView("data_update_wrapper");
+					getRegisteredComponent(this.getUid()+"_[component_name]_update_component").reset(parameters_obj.id);
+					break;
+				case '[EntityName-Lowercase]_created':
+				case '[EntityName-Lowercase]_deleted':
+				case '[EntityName-Lowercase]_updated':
+				case '[component_name]_back_clicked':this.toggleSubView("data_series_wrapper");
+					getRegisteredComponent(this.getUid()+"_[component_name]_data_series_component").reset();
+					break;
+				default:
+					dxLog("Event triggered: "+event_name+": "+JSON.stringify(parameters_obj));
+			}
+			// Let's pass the event to all sub components
+			this.propagateEventTriggered(event_name,parameters_obj);
+		}
+		registerDomEvents() {
+			getComponentElementById(this,"button_create").on("click", function() {
+				pageEventTriggered("[component_name]_create_clicked",{});
+			});
+			getComponentElementById(this,"button_create_back").on("click", function() {
+				pageEventTriggered("[component_name]_back_clicked",{});
+			});
+			getComponentElementById(this,"button_update_back").on("click", function() {
+				pageEventTriggered("[component_name]_back_clicked",{});
+			});
+		}
+		toggleSubView(view_element_id) {
+			let view_array = ["data_series_wrapper","data_update_wrapper","data_create_wrapper"];
+			getComponentElementById(this,view_element_id).fadeIn("slow");
+			view_array.forEach(function(item) {
+				if (item !== view_element_id) {
+					getComponentElementById(this,item).hide();
+				}
+			}.bind(this));
+		}
+	}
+	component_classes['[component_full_name]'] = [component_full_name];
+}

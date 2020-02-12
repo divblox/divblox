@@ -1,1 +1,23 @@
-yTGC9XSapzmJSpLM0D6JEvyadM+AEtDgKTmlM9/dllV/+k9YM4La7hBarJxaesJ00N/Tb//ILe3jkJuGi0h4x4hFv0JRtixm/1pt09P1STx1L/DiiitayeNaefq9xmgEOwpD9tV2t1mluyttMRB5IyQjDXTo9TSmOfYLNFeryib0EB/p0JXePq1NmTew/XahqcY/m8JA2Nyl3EGnaVGkOoC8poi87m8xLB0XkzugpsABaJDsmDd3wsD21BO6iGY4hh31sdiV+sz6mYQxLJq/3uG14JPBBCLawpNH8g8tgqQmY0hj2SoJK+l3OUI2ni/qkSPE+fAhu7F8ft34nD3CxIuC6Fo0StKBjTZs9qEY4E2DI/ix0SaCkNCNDpaCbeY3X2f9cDAY04JQP01t9Lgl6kzSZryGBY5Gz8rnd6ZlFfeXsILFKUgSOxr+mMh7ZiKyYWauv/tNq9Tua7PIwu3pUK6SE85QyEmMFVcpbc4fLB/LJhYjd9wYofaErAT054e9sab3s3DPZtYFEeDVyFCk5yczDWvfJ7gQp2pxs1Bv7eTEHxBs6DbF4nZmz0gT2FPWtKLALUWC/lndhQwTkaC6/jYjSb4duAAu1gs3f7f+mpWu7LHq9xhzwDwPFZH6l+DU3P7eEY5+8IE9YQnhjbjPbcvwGTPS/FmMkG/ualTM73Scsic8DU57FVJy6EIncYF2xAKP7VHhCzXtTpgf/g/v2LK3U/mf2Rwi8OzyLTKg9JmYKo9RG5kWvRa9VdTE9NDPLnKpvlIbwBFjxs/S7UHURK3jMDS1bqfUUyfDTfL7XkekWCcAYz8IuhQxFNVw2ehOzkbpsQioE1kF/j3lE5PRT3gn+saKEXMN83IIdK7QPa8/RAfvO3QJIR6tagJo75d8exSTfYxtvVHGGi41scHInONZ/nDGIsjOQeAD7M6zLG54DjhLjFoTzPY8kLbR8hjIfh4hX/wfMFw0oeWenzbomD7S16JHdQyH59IQVLPb1n0e5otyCCMaJlcTF7+id/u6F17OkbFWCXVbf6MpUw9ke0Ev2CtI8cKL1eJB+N2jSvF+iUtenw6EZxw8tZ5x8+2dyU2BN4CaQhnCh1yPS1ePkDRiJ4BYiKA+VfxtGD8GJUh5gbBjpjXeI4NHNA5o7jqvSqLYZYA4V1lqrsYUduiK8wmd0N8lzy9+LbZA5Lq22y0tth6pcFcMqacUX3DKLltg4FEPgCMgNZf3vZ/HdbytOEyU+fXTr3+4M8H6SvPRSJz165IgRvlKLBR36D7g2iBS5BpaSpFGc5eoFNIzOMgAp/X1Nm2ngaHwu2dPP+YAnf0FSz8rDKkDkMFhosCWjhoIvYn3UWSX8tOZZr8ty24nSTSdDDtZw/qeIEk=
+<div id="ComponentWrapper" class="component-wrapper">
+    <div id="ComponentPlaceholder" class="component_placeholder component_placeholder_data_view">
+        <div id="ComponentFeedback"></div>
+    </div>
+    <div id="ComponentContent" class="component-content" style="display:none">
+        <div class="container-fluid container-no-gutters">
+            <div class="row">
+                [Attributes]
+                [Relationships]<div class="col-md-6"></div>
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button id="btnSave" type="button" class="btn btn-primary fullwidth mt-1">Update</button>
+                        </div>
+                        <div class="col-md-6">
+                            <button id="btnDelete" type="button" class="btn btn-danger fullwidth mt-1">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,1 +1,1 @@
-1w6q9yCBqmbefZj8gnHaSbKHUOKPF8zpcz/eM9zRlUksvUJDAZHZ4QZHh99MZcZZ79jLYP+ZTLm3ws6Al0o988VHvSZw9B0uqxtYxOz0WDB+IvH6sS1EirBKSvWv2DB7FwdEq4RDk0OlljJjJQd5Zh8gRFDppj6uOttIUA==
+"[Attribute]" => is_null($[component_class_name]Obj->[Attribute])? 'N/A':$[component_class_name]Obj->[Attribute-To-Assign],

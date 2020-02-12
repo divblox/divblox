@@ -1,1 +1,1 @@
-kS26uW6/qm/OIZnZ8SSCBeugGYe6Ac/oK3TrNd3IukUuuV9EAZzU7RBp8JgANvhF1M7TJKO3eaju5MjPplcr3oAZ5FwS+34ssxEn0+vwW3IuIPr6pyBYnrdvdPe70H0ECwBP9NlwhlKpkHkoflE5aWJjYw==
+dxQ::Like(dxQueryN::[component_class_name]()->[Attribute-To-Display], "%".$this->getInputValue("SearchText")."%"),

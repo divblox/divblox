@@ -1,1 +1,70 @@
-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
+<?php
+[require_divblox]
+require(FRAMEWORK_ROOT_STR.'/assets/php/database_helper.class.php');
+require_once(DATA_MODEL_CLASS_PATH_STR);
+class [component_class_name]Controller extends ProjectComponentController {
+    protected $DataModelObj;
+    protected $RequiredAttributeArray = [Required-Attribute-Array];
+    protected $NumberValidationAttributeArray = [Number-Validation-Attribute-Array];
+    public function __construct($ComponentNameStr = 'Component') {
+        $this->DataModelObj = new DataModel();
+        parent::__construct($ComponentNameStr);
+    }
+    public function getObjectData() {
+        $this->setReturnValue("Result","Success");
+        $this->setReturnValue("Message","");
+        [Relationship-List-Return-Values]
+        $this->presentOutput();
+    }
+    [Relationship-List-Functions]
+    public function saveObjectData() {
+        if (is_null($this->getInputValue("ObjectData"))) {
+            $this->setReturnValue("Result","Failed");
+            $this->setReturnValue("Message","No [component_class_name] object provided");
+            $this->presentOutput();
+        }
+        $[component_class_name]Obj = json_decode($this->getInputValue("ObjectData"),true);
+        $[component_class_name]ToCreateObj = new [component_class_name]();
+        foreach($[component_class_name]ToCreateObj->getIterator() as $Attribute => $Value) {
+            if (in_array($Attribute, ProjectFunctions::get_divblox_Attributes())) {
+                continue;
+            }
+            if (isset($[component_class_name]Obj[$Attribute])) {
+                if (in_array($Attribute, $this->RequiredAttributeArray)) {
+                    if (strlen($[component_class_name]Obj[$Attribute]) == 0) {
+                        $this->setReturnValue("Result","Failed");
+                        $this->setReturnValue("Message","$Attribute not provided");
+                        $this->presentOutput();
+                    }
+                }
+                if (in_array($Attribute, $this->NumberValidationAttributeArray)) {
+                    if (!is_numeric($[component_class_name]Obj[$Attribute])) {
+                        $this->setReturnValue("Result","Failed");
+                        $this->setReturnValue("Message","$Attribute must be numeric");
+                        $this->presentOutput();
+                    }
+                }
+                if (in_array($this->DataModelObj->getEntityAttributeType("[component_class_name]", $Attribute),["DATE","DATETIME"])) {
+                    if (is_string($[component_class_name]Obj[$Attribute]) && (strlen($[component_class_name]Obj[$Attribute]) > 0)) {
+                        $DateObj = new dxDateTime($[component_class_name]Obj[$Attribute]);
+                        $[component_class_name]ToCreateObj->$Attribute = $DateObj;
+                    }
+                } else {
+                    $[component_class_name]ToCreateObj->$Attribute = $[component_class_name]Obj[$Attribute];
+                }
+            } elseif (in_array($Attribute, $this->RequiredAttributeArray)) {
+                $this->setReturnValue("Result","Failed");
+                $this->setReturnValue("Message","$Attribute not provided");
+                $this->presentOutput();
+            }
+        }
+        [AdditionalConstrainByValues]
+        $[component_class_name]ToCreateObj->Save();
+        $this->setReturnValue("Result","Success");
+        $this->setReturnValue("Message","Object created");
+        $this->setReturnValue("Id",$[component_class_name]ToCreateObj->Id);
+        $this->presentOutput();
+    }
+}
+$ComponentObj = new [component_class_name]Controller("[component_name]");
+?>

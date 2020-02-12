@@ -1,1 +1,30 @@
-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
+<div id="ComponentWrapper" class="component-wrapper">
+    <div id="ComponentPlaceholder" class="component_placeholder component_placeholder_data_list">
+        <div id="ComponentFeedback"></div>
+    </div>
+    <div id="ComponentContent" class="component-content" style="display:none">
+        <div class="container-fluid container-no-gutters">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-group mb-3">
+                        <input type="text" id="DataListSearchInput" class="form-control data_table_search_icon" placeholder="Search..." aria-label="Search" aria-describedby="btnResetSearch">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button" id="btnResetSearch"><i class="fa fa-times" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="DataList" class="list-group"></div>
+            <div id="DataListLoading">
+                Loading...
+            </div>
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <button type="button" id="DataListMoreButton" class="btn btn-link fullwidth"><i class="fa fa-repeat" aria-hidden="true"></i> Load More</button>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+        </div>
+    </div>
+</div>

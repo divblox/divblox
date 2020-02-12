@@ -1,1 +1,7 @@
-yTGC9XSQr2XYesCDwz6LWv+KDovDXKqlezulcJOcxQZi+AwXftKVoFUU+I1BacFhzIT6DLW2f6ShxdOHrl86y4Alpz0Rtz1r9FM9raO5CH8wZ7+uzm4Iy+MZNbvulXUGZBFL/s55oFKwxDVgPRYhaRAOHWXovDW8IOM5eBKs2kSmJz/+wY/YMLxcjjX2vHCvgcNr3IBAxrXpnRL0dFPidc614p3z6X9+YTJa3jmqudAGbrPt0m0fg4O91g2mhyJx0APfsdiV+tD13c17dvnp3qjx4dXzM3bH1McHxBQlr4ImcEd78yEhOul9LwF1lmGrgTyYqOBz9Kh9Ztn6gXSMzYCT6VYhC5nQx0Ugs7wapATQc7TwiDzM357IDIiobeY3X2eNPHVFxI4Gb1xu46Iysk7qSKaGFo5K38yvPIZ/C/bFsIzYOHRxdV+slYY0a2XnNTLr7ahPtf7ua7PUzamgBrC4E85MjADaFRRlLJ1MMR2ZaV0uLb9Ov9w=
+<div class="col-md-6">
+                    <label>[AttributeLabel]:</label>
+                    <textarea name="[Attribute]" id="[Attribute]" rows="5" class="form-control" required/>
+                    <div id="[Attribute]InvalidFeedback" class="invalid-feedback">
+                        Please provide [Attribute-Lowercase]
+                    </div>
+                </div>

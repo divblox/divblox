@@ -1,1 +1,8 @@
-yTGC9XSQr2XYesCDwz6LWv+KDovDXKqlezulcJOcxQZi+AwXftKVoFUU+I1JYdUkw9bAPrL/L6uswsrPgVY9zYdY8HUT6H43mx8jh6O5CH8wZ7+uzm4Iy+MZNbvulXUGeFlH6MptpheyiDpyI04+LSQ9BDz5vTKqP6sNNEKwylukCAf60MCTCa1Jnwn56Huwk+103tsDi7O43jrGPQX2c96tu5vBpStlamNapQq7vNcGfqP9mA43nam91g2mhyJx0APfsdiV+tD13c1nMrC/3uGpsJbKF26TxcIEwhN90K0ndEs6+S0CPOc0IQF0mC+p3FrZ+7Nu9uEzMJi2yDCBi8XWrRRgSNLS2W8gs7wa32WEJ+a5ymmYmvKJTs3kEMw3X2f9cDAEl8sGPw4htet2906RKfLSRMcUhdSrc698QpmX882LfQlbdV+slYY0a2XnNTLr7bRA8be4dZnIwu3pUK6SE85MjADaFRRlMJIIeEuHQw==
+<div class="col-md-6">
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" type="[data-type]" name="[Attribute]" id="[Attribute]">
+                        <label class="form-check-label">
+                            [AttributeLabel]
+                        </label>
+                    </div>
+                </div>
