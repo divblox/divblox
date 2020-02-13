@@ -97,6 +97,7 @@ define("AUTHENTICATION_TOKEN_STR","auth_token_".str_replace(" ", "_", strtolower
 define("COMPONENT_BUILDER_EDITOR_THEME_STR","LIGHT");// Options are LIGHT or DARK
 define("SANDBOX_ACTIVE_BOOL",false); // If true, will disable certain setup page features
 define("DISABLE_COMPONENT_SECURITY_CHECKS_BOOL",false); // If true, will disable checking if a user should have access to a component. NB! THIS GIVES ACCESS TO ALL COMPONENTS TO ANY USER!!!
+define("SIMPLIFY_GENERATED_FILE_PERMISSIONS",false); // If true, this will set the file permissions on linux to 770 when generating code. Useful for development environments
 
 //Firebase configuration for push notifications
 //api_key in Firebase Console -> Project Settings -> CLOUD MESSAGING -> Server key
