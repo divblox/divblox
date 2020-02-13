@@ -72,7 +72,7 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
      * @var string strFileType
      */
     protected $strFileType;
-    const FileTypeMaxLength = 50;
+    const FileTypeMaxLength = 150;
     const FileTypeDefault = null;
 
 

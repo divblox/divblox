@@ -102,12 +102,14 @@ function isWritable($path) {
 
     fclose($handle);
 
-    if(!$rm) {
-        if (!chmod($path, 0666)) {
+    if (strpos(strtolower(PHP_OS),"linux") !== false) {
+        if(!$rm) {
+            if (!chmod($path, 0666)) {
+                unlink($path);
+                return false;
+            }
             unlink($path);
-            return false;
         }
-        unlink($path);
     }
 
     return true;
