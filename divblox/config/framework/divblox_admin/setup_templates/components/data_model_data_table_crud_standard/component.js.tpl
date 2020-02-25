@@ -9,8 +9,8 @@ if (typeof component_classes['[component_full_name]'] === "undefined") {
 				{"component_load_path":"data_model/[component_name]_create","parent_element":"data_create","arguments":{"uid":this.getUid()+"_[component_name]_create_component"}}];
 			// Sub component config end
 		}
-		reset(inputs) {
-			super.reset(inputs);
+		reset(inputs,propagate) {
+			super.reset(inputs,propagate);
 			this.toggleSubView("data_series_wrapper");
 		}
 		eventTriggered(event_name,parameters_obj) {
@@ -21,7 +21,7 @@ if (typeof component_classes['[component_full_name]'] === "undefined") {
 					getRegisteredComponent(this.getUid()+"_[component_name]_create_component").reset();
 					break;
 				case '[EntityName-Lowercase]_clicked':this.toggleSubView("data_update_wrapper");
-					getRegisteredComponent(this.getUid()+"_[component_name]_update_component").reset(parameters_obj.id);
+					getRegisteredComponent(this.getUid()+"_[component_name]_update_component").reset(parameters_obj.id,true);
 					break;
 				case '[EntityName-Lowercase]_created':
 				case '[EntityName-Lowercase]_deleted':

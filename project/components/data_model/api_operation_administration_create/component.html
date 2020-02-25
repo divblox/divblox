@@ -5,14 +5,19 @@
     <div id="ComponentContent" class="component-content" style="display:none">
         <div class="container-fluid container-no-gutters">
             <div class="row">
-                <div class="col-md-6">
-                    <label>Operation Name:</label>
-                    <input name="OperationName" id="OperationName" type="text" class="form-control" required/>
-                    <div id="OperationNameInvalidFeedback" class="invalid-feedback">
-                        Please provide an operation name
-                    </div>
+                <div id="OperationNameWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {OperationName}
+                </div>
+                <div id="CrudEntityNameWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {CrudEntityName}
                 </div>
                 
+                
+            </div>
+            <div id="AdditionalInputFieldsWrapper" class="row">
+                <!-- Fields that are included by the component, but not provided for by wrappers will be rendered here... -->
+            </div>
+            <div class="row">
                 <div class="col-md-6"></div>
                 <div class="col-md-6">
                     <div class="row">

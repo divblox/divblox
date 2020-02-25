@@ -1,4 +1,3 @@
-<div class="col-md-6">
-                    <label>[AttributeLabel]:</label>
-                    <input name="[Attribute]" id="[Attribute]" type="[data-type]" class="form-control"/>
+<div id="[Attribute]Wrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {[Attribute]}
                 </div>

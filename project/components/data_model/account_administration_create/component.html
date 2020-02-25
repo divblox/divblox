@@ -5,126 +5,91 @@
     <div id="ComponentContent" class="component-content" style="display:none">
         <div class="container-fluid container-no-gutters">
             <div class="row">
-                <div class="col-md-6">
-                    <label>First Name:</label>
-                    <input name="FirstName" id="FirstName" type="text" class="form-control" required/>
-                    <div id="FirstNameInvalidFeedback" class="invalid-feedback">
-                        Please provide a first name
-                    </div>
+                <div id="FirstNameWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {FirstName}
                 </div>
-                <div class="col-md-6">
-                    <label>Middle Names:</label>
-                    <input name="MiddleNames" id="MiddleNames" type="text" class="form-control"/>
+                <div id="MiddleNamesWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {MiddleNames}
                 </div>
-                <div class="col-md-6">
-                    <label>Last Name:</label>
-                    <input name="LastName" id="LastName" type="text" class="form-control"/>
+                <div id="LastNameWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {LastName}
                 </div>
-                <div class="col-md-6">
-                    <label>Email Address:</label>
-                    <input name="EmailAddress" id="EmailAddress" type="text" class="form-control" required/>
-                    <div id="EmailAddressInvalidFeedback" class="invalid-feedback">
-                        Please provide an email address
-                    </div>
+                <div id="EmailAddressWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {EmailAddress}
                 </div>
-                <div class="col-md-6">
-                    <label>Username:</label>
-                    <input name="Username" id="Username" type="text" class="form-control" required/>
-                    <div id="UsernameInvalidFeedback" class="invalid-feedback">
-                        Please provide an username
-                    </div>
+                <div id="UsernameWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {Username}
                 </div>
-                <div class="col-md-6">
-                    <label>Password:</label>
-                    <input name="Password" id="Password" type="text" class="form-control"/>
+                <div id="PasswordWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {Password}
                 </div>
-                <div class="col-md-6">
-                    <label>Maiden Name:</label>
-                    <input name="MaidenName" id="MaidenName" type="text" class="form-control"/>
+                <div id="MaidenNameWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {MaidenName}
                 </div>
-                <div class="col-md-6">
-                    <label>Profile Picture Path:</label>
-                    <input name="ProfilePicturePath" id="ProfilePicturePath" type="text" class="form-control"/>
+                <div id="ProfilePicturePathWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {ProfilePicturePath}
                 </div>
-                <div class="col-md-6">
-                    <label>Main Contact Number:</label>
-                    <input name="MainContactNumber" id="MainContactNumber" type="text" class="form-control"/>
+                <div id="MainContactNumberWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {MainContactNumber}
                 </div>
-                <div class="col-md-6">
-                    <label>Title:</label>
-                    <input name="Title" id="Title" type="text" class="form-control"/>
+                <div id="TitleWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {Title}
                 </div>
-                <div class="col-md-6">
-                    <label>Date Of Birth:</label>
-                    <input name="DateOfBirth" id="DateOfBirth" type="date" class="form-control"/>
+                <div id="DateOfBirthWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {DateOfBirth}
                 </div>
-                <div class="col-md-6">
-                    <label>Physical Address Line One:</label>
-                    <input name="PhysicalAddressLineOne" id="PhysicalAddressLineOne" type="text" class="form-control"/>
+                <div id="PhysicalAddressLineOneWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {PhysicalAddressLineOne}
                 </div>
-                <div class="col-md-6">
-                    <label>Physical Address Line Two:</label>
-                    <input name="PhysicalAddressLineTwo" id="PhysicalAddressLineTwo" type="text" class="form-control"/>
+                <div id="PhysicalAddressLineTwoWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {PhysicalAddressLineTwo}
                 </div>
-                <div class="col-md-6">
-                    <label>Physical Address Postal Code:</label>
-                    <input name="PhysicalAddressPostalCode" id="PhysicalAddressPostalCode" type="text" class="form-control"/>
+                <div id="PhysicalAddressPostalCodeWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {PhysicalAddressPostalCode}
                 </div>
-                <div class="col-md-6">
-                    <label>Physical Address Country:</label>
-                    <input name="PhysicalAddressCountry" id="PhysicalAddressCountry" type="text" class="form-control"/>
+                <div id="PhysicalAddressCountryWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {PhysicalAddressCountry}
                 </div>
-                <div class="col-md-6">
-                    <label>Postal Address Line One:</label>
-                    <input name="PostalAddressLineOne" id="PostalAddressLineOne" type="text" class="form-control"/>
+                <div id="PostalAddressLineOneWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {PostalAddressLineOne}
                 </div>
-                <div class="col-md-6">
-                    <label>Postal Address Line Two:</label>
-                    <input name="PostalAddressLineTwo" id="PostalAddressLineTwo" type="text" class="form-control"/>
+                <div id="PostalAddressLineTwoWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {PostalAddressLineTwo}
                 </div>
-                <div class="col-md-6">
-                    <label>Postal Address Postal Code:</label>
-                    <input name="PostalAddressPostalCode" id="PostalAddressPostalCode" type="text" class="form-control"/>
+                <div id="PostalAddressPostalCodeWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {PostalAddressPostalCode}
                 </div>
-                <div class="col-md-6">
-                    <label>Postal Address Country:</label>
-                    <input name="PostalAddressCountry" id="PostalAddressCountry" type="text" class="form-control"/>
+                <div id="PostalAddressCountryWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {PostalAddressCountry}
                 </div>
-                <div class="col-md-6">
-                    <label>Identification Number:</label>
-                    <input name="IdentificationNumber" id="IdentificationNumber" type="text" class="form-control"/>
+                <div id="IdentificationNumberWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {IdentificationNumber}
                 </div>
-                <div class="col-md-6">
-                    <label>Nickname:</label>
-                    <input name="Nickname" id="Nickname" type="text" class="form-control"/>
+                <div id="NicknameWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {Nickname}
                 </div>
-                <div class="col-md-6">
-                    <label>Status:</label>
-                    <input name="Status" id="Status" type="text" class="form-control"/>
+                <div id="StatusWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {Status}
                 </div>
-                <div class="col-md-6">
-                    <label>Gender:</label>
-                    <input name="Gender" id="Gender" type="text" class="form-control"/>
+                <div id="GenderWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {Gender}
                 </div>
-                <div class="col-md-6">
-                    <div class="form-check mt-3">
-                        <input class="form-check-input" type="checkbox" name="AccessBlocked" id="AccessBlocked">
-                        <label class="form-check-label">
-                            Access Blocked
-                        </label>
-                    </div>
+                <div id="AccessBlockedWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {AccessBlocked}
                 </div>
-                <div class="col-md-6">
-                    <label>Blocked Reason:</label>
-                    <textarea name="BlockedReason" id="BlockedReason" rows="5" class="form-control"/>
+                <div id="BlockedReasonWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {BlockedReason}
                 </div>
                 
-                <div class="col-md-6">
-                    <label>User Role:</label>
-                    <select name="UserRole" id="UserRole" class="custom-select">
-                        <option value="">-Please Select-</option>
-                    </select>
+                <div id="UserRoleWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {UserRole}
                 </div>
+                
+            </div>
+            <div id="AdditionalInputFieldsWrapper" class="row">
+                <!-- Fields that are included by the component, but not provided for by wrappers will be rendered here... -->
+            </div>
+            <div class="row">
                 <div class="col-md-6"></div>
                 <div class="col-md-6">
                     <div class="row">

@@ -435,7 +435,6 @@ abstract class EmailManager_Framework extends EmailManager_Base {
 
 }
 abstract class EmailSettings_Framework extends EmailSettings_Base {
-
 }
 //endregion
 ?>

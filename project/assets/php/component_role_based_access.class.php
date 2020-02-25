@@ -6,6 +6,7 @@ abstract class ComponentRoleBasedAccess {
             "authentication",
             "account_registration"],
         "User" => [
+            "my_profile",
             "current_user_profile_manager",
             "profile_picture_uploader",
             "account_additional_info_manager",

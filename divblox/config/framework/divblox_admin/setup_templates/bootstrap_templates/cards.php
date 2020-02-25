@@ -194,6 +194,7 @@ foreach($Options as $Key => $Value) {
 // [element_id]_card Related functionality
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 getComponentElementById(this,"[element_id]_btn-simple-card").on("click", function() {
+    // Example code that executes when the button is clicked
 	// Add the trigger element to the loading element array. This shows a loading animation on the trigger
     // element while it waits for a response or function return
     let element_id = addTriggerElementToLoadingElementArray($(this).attr("id"),"Nice Loading text");

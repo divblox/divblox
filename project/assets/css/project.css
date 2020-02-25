@@ -651,6 +651,9 @@ label {
 .dx-data-list-row {
 
 }
+.entity-instance-input-field {
+    display:none; /*This is an initialization for entity input fields.*/
+}
 /* -------------------------------------------------------------------------------------------------------------------*/
 /* -----------------------------Styles for the dx interpretation of bootstrap's Media object--------------------------*/
 .dx-media-image {

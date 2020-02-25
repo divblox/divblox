@@ -43,6 +43,21 @@ function divbloxErrorHandler($severity, $message, $file, $line) {
     throw new ErrorException($message, 0, $severity, $file, $line);
 }
 
+///region Divblox code gen related
+function handleBackendException($e) {
+    $ExceptionReflectionObj = new ReflectionObject($e);
+    $Output = ob_get_clean();
+    $ErrorArray = array("Result" => "Failed",
+        "Message" => $e->getMessage(),
+        "Type" => $ExceptionReflectionObj->getName(),
+        "File" => $e->getFile(),
+        "Line" => $e->getLine(),
+        "Trace" => $e->getTrace(),
+        "Output" => $Output,);
+    error_log("Handled backend exception: ".$e->getMessage());
+}
+//endregion
+
 //region Email related
 /**
  * A special exception handler used for PHPMailer to avoid returning to the client too early
@@ -58,7 +73,7 @@ function handleEmailException($e) {
         "Line" => $e->getLine(),
         "Trace" => $e->getTrace(),
         "Output" => $Output,);
-    error_log("Handled email exception");
+    error_log("Handled email exception: ".$e->getMessage());
 }
 //endregion
 
@@ -141,7 +156,8 @@ abstract class FrameworkFunctions_base {
      * @return bool
      */
     public static function isValidUrl($url) {
-        if ($url) {
+        if (is_null($url)) {return false;}
+        if (strlen($url) > 0) {
             if (!filter_var($url, FILTER_VALIDATE_URL) === false) {
                 return true;
             }
@@ -151,14 +167,16 @@ abstract class FrameworkFunctions_base {
     /**
      * This function posts to a url using curl and returns the content of the url
      * @param $url
-     * @param $fields_string provided as variable=value&variable=value
+     * @param $fields_string: Must be provided as variable=value&variable=value
      * @param string $client
      * @param int $DefaultTimeout The default amount of seconds to wait for a response from the remote server
      * @return mixed
      */
     public static function PostToUrl($url,$fields_string = '',$client = APP_NAME_STR,$DefaultTimeout = 120) {
-        if (!ProjectFunctions::isValidUrl($url))
+        if (!ProjectFunctions::isValidUrl($url)) {
+            error_log("Tried calling 'PostToUrl' with invalid url");
             return '';
+        }
         $options = array(
             CURLOPT_RETURNTRANSFER => true,   // return web page
             CURLOPT_HEADER         => false,  // don't return headers
@@ -173,6 +191,30 @@ abstract class FrameworkFunctions_base {
         $ch = curl_init($url);
         curl_setopt_array($ch, $options);
         $content  = curl_exec($ch);
+        curl_close($ch);
+        return $content;
+    }
+    /**
+     * This function posts to a url using curl and returns the content of the url
+     * @param $url: The url to post to
+     * @param $fields_string: Must be provided as variable=value&variable=value
+     * @param $ErrorInfo: Must be provided as variable=value&variable=value
+     * @return mixed
+     */
+    public static function PostToInternalUrl($url = '',$fields_string = '',&$ErrorInfo = '') {
+        $options = array(
+            CURLOPT_RETURNTRANSFER => true,   // return web page
+            CURLOPT_HEADER         => false,  // don't return headers
+            CURLOPT_FOLLOWLOCATION => true,   // follow redirects
+            CURLOPT_MAXREDIRS      => 10,     // stop after 10 redirects
+            CURLOPT_AUTOREFERER    => true,   // set referrer on redirect
+            CURLOPT_CONNECTTIMEOUT => 10,    // time-out on connect
+            CURLOPT_POSTFIELDS     => $fields_string,
+        );
+        $ch = curl_init($url);
+        curl_setopt_array($ch, $options);
+        $content  = curl_exec($ch);
+        $ErrorInfo = curl_error($ch);
         curl_close($ch);
         return $content;
     }

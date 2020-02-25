@@ -6,14 +6,12 @@
         <div class="container-fluid container-no-gutters">
             <div class="row">
                 <div class="col-md-6">
-                    <form id="DataTableSearchForm">
-                        <div class="input-group mb-3">
-                            <input type="text" id="DataTableSearchInput" class="form-control data_table_search_icon" placeholder="Search..." aria-label="Search" aria-describedby="btnResetSearch">
-                            <div class="input-group-append">
-                                <button class="btn btn-outline-secondary" type="button" id="btnResetSearch"><i class="fa fa-times" aria-hidden="true"></i></button>
-                            </div>
+                    <div class="input-group mb-3">
+                        <input type="text" id="DataTableSearchInput" class="form-control data_table_search_icon" placeholder="Search..." aria-label="Search" aria-describedby="btnResetSearch">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button" id="btnResetSearch"><i class="fa fa-times" aria-hidden="true"></i></button>
                         </div>
-                    </form>
+                    </div>
                 </div>
                 <div class="col-md-4">
                     <div id="ExportOptionsButton" class="dropdown d-inline-flex">
@@ -35,26 +33,21 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-md-2"></div>
             </div>
-            <div id="DataTable" class="table-responsive mt-2">
-                <table id="DataTableTableHtml" class="table">
-                    <thead class="thead-light">
-                    <tr>
-                        <th id="MultiSelectColumn" class="data_table_header" scope="col"><input id="MultiSelectAll" type="checkbox" name="all" value="all"></th>
-                        <th id="SortByFullName" class="data_table_header" scope="col">Full Name</th>
-                    <th id="SortByEmailAddress" class="data_table_header" scope="col">Email Address</th>
-                    <th id="SortByUsername" class="data_table_header" scope="col">Username</th>
-                    <th id="SortByProfilePicturePath" class="data_table_header" scope="col">Profile Picture Path</th>
-                    <th id="SortByAccessBlocked" class="data_table_header" scope="col">Access Blocked</th>
-                    <th id="SortByUserRole" class="data_table_header" scope="col">User Role</th>
-                    </tr>
-                    </thead>
-                    <tbody id="DataTableBody">
-                    <tr id="DataTableLoading">
-                        <td colspan="7" style="text-align: center;">Loading...</td>
-                    </tr>
-                    </tbody>
-                </table>
+            <div class="row">
+                <div class="col-12">
+                    <div id="DataTable" class="table-responsive mt-2">
+                        <table id="DataTableTableHtml" class="table">
+                            <thead class="thead-light">
+                                <tr id="DataTableHeaderHtml"></tr>
+                            </thead>
+                            <tbody id="DataTableBody">
+                                <tr id="DataTableLoading"></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
             <div class="row">
                 <div class="col-md-3 mb-2">

@@ -9,8 +9,8 @@ if (typeof component_classes['data_model_account_additional_info_manager'] === "
 				{"component_load_path":"data_model/account_additional_info_manager_create","parent_element":"data_create","arguments":{"uid":this.getUid()+"_account_additional_info_manager_create_component"}}];
 			// Sub component config end
 		}
-		reset(inputs) {
-			super.reset(inputs);
+		reset(inputs,propagate) {
+			super.reset(inputs,propagate);
 			this.toggleSubView("data_series_wrapper");
 		}
 		eventTriggered(event_name,parameters_obj) {
@@ -21,7 +21,7 @@ if (typeof component_classes['data_model_account_additional_info_manager'] === "
 					getRegisteredComponent(this.getUid()+"_account_additional_info_manager_create_component").reset();
 					break;
 				case 'additional_account_information_clicked':this.toggleSubView("data_update_wrapper");
-					getRegisteredComponent(this.getUid()+"_account_additional_info_manager_update_component").reset(parameters_obj.id);
+					getRegisteredComponent(this.getUid()+"_account_additional_info_manager_update_component").reset(parameters_obj.id,true);
 					break;
 				case 'additional_account_information_created':
 				case 'additional_account_information_deleted':

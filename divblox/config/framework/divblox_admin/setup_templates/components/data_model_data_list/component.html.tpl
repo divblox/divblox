@@ -13,10 +13,15 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-md-6"></div>
             </div>
-            <div id="DataList" class="list-group"></div>
-            <div id="DataListLoading">
-                Loading...
+            <div class="row">
+                <div class="col-12">
+                    <div id="DataList" class="list-group"></div>
+                    <div id="DataListLoading">
+                        Loading...
+                    </div>
+                </div>
             </div>
             <div class="row">
                 <div class="col-md-4"></div>

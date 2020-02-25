@@ -19,10 +19,10 @@ $Options['SimpleButtonGroup'] = '<div class="btn-group" role="group" aria-label=
 $OptionsJs = [];
 //If all button js is the same thing
 foreach($Options as $Key => $Value) {
-    $OptionsJs[$Key] = '
-// [element_id]_button-group Related functionality
+    $OptionsJs[$Key] = '// [element_id]_button-group Related functionality
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 getComponentElementById(this,"[element_id]_btn-group-left").on("click", function() {
+    // Example code that executes when the button is clicked
 	// Add the trigger element to the loading element array. This shows a loading animation on the trigger
     // element while it waits for a response or function return
     let element_id = addTriggerElementToLoadingElementArray($(this).attr("id"),"Nice Loading text");
@@ -33,6 +33,7 @@ getComponentElementById(this,"[element_id]_btn-group-left").on("click", function
     },3000);
 }.bind(this));
 getComponentElementById(this,"[element_id]_btn-group-middle").on("click", function() {
+    // Example code that executes when the button is clicked
 	// Add the trigger element to the loading element array. This shows a loading animation on the trigger
     // element while it waits for a response or function return
     let element_id = addTriggerElementToLoadingElementArray($(this).attr("id"),"Nice Loading text");
@@ -43,6 +44,7 @@ getComponentElementById(this,"[element_id]_btn-group-middle").on("click", functi
     },3000);
 }.bind(this));
 getComponentElementById(this,"[element_id]_btn-group-right").on("click", function() {
+    // Example code that executes when the button is clicked
 	// Add the trigger element to the loading element array. This shows a loading animation on the trigger
     // element while it waits for a response or function return
     let element_id = addTriggerElementToLoadingElementArray($(this).attr("id"),"Nice Loading text");

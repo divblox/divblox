@@ -33,21 +33,21 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-md-2"></div>
             </div>
-            <div id="DataTable" class="table-responsive mt-2">
-                <table id="DataTableTableHtml" class="table">
-                    <thead class="thead-light">
-                    <tr>
-                        <th id="MultiSelectColumn" class="data_table_header" scope="col"><input id="MultiSelectAll" type="checkbox" name="all" value="all"></th>
-                        [Header-Items]
-                    </tr>
-                    </thead>
-                    <tbody id="DataTableBody">
-                    <tr id="DataTableLoading">
-                        <td colspan="[Column-Count]" style="text-align: center;">Loading...</td>
-                    </tr>
-                    </tbody>
-                </table>
+            <div class="row">
+                <div class="col-12">
+                    <div id="DataTable" class="table-responsive mt-2">
+                        <table id="DataTableTableHtml" class="table">
+                            <thead class="thead-light">
+                                <tr id="DataTableHeaderHtml"></tr>
+                            </thead>
+                            <tbody id="DataTableBody">
+                                <tr id="DataTableLoading"></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
             <div class="row">
                 <div class="col-md-3 mb-2">

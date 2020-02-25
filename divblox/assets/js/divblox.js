@@ -12,7 +12,7 @@
  * divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "2.3.3";
+let dx_version = "2.4.0";
 let bootstrap_version = "4.4.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.3.8";
@@ -60,7 +60,8 @@ let dependency_array = [
 	"divblox/assets/js/bootstrap/4.4.1/bootstrap.bundle.min.js",
 	"divblox/assets/js/sweetalert/sweetalert.min.js",
 	"project/assets/js/project.js",
-	"project/assets/js/momentjs/moment.js"
+	"project/assets/js/momentjs/moment.js",
+	"project/assets/js/data_model.js",
 ];
 
 /**
@@ -420,6 +421,138 @@ function getValueFromAppState(item_key) {
  * divblox component and DOM related functions
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Responsible for rendering input fields consistently throughout the applications
+ * @type {{renderInputField: dx_renderer.renderInputField}}
+ */
+let dx_renderer = {
+	/**
+	 * Renders an input field as the content of a div specified in config_obj
+	 * @param config_obj {
+	 *          "WrapperId": "The dom id of the div that will wrap this field",
+	 *          "FieldId": "The dom id of the field that will be rendered",
+	 *          "MustValidate": [true|false],
+                "DisplayType": "[text|textarea|date|datetime-local|number|checkbox]",
+                "InputLabel": "The label to display with the input field",
+                "DefaultValue": "",
+                "Placeholder": "e.g Your input here...",
+                "Data": [null|reference to a list defined in data_lists.json],
+                "ValidationMessage": "Message to be displayed if the input field is validated",
+                "Rows": "Optional for when rendering a textarea: Defaults to 3",
+            }
+	 */
+	renderInputField: function(config_obj) {
+		let wrapper_node = $("#"+config_obj.WrapperId);
+		if (!wrapper_node.length) {
+			return;
+		}
+		if (typeof config_obj.DisplayType === "undefined") {
+			throw new Error("Invalid display type provided for dx_renderer.renderInputField");
+		}
+		if (typeof config_obj.FieldId === "undefined") {
+			throw new Error("Invalid FieldId provided for dx_renderer.renderInputField");
+		}
+		let complete_html = '';
+		let input_field_html = '';
+		let placeholder_str = '';
+		let default_value_str = '';
+		let validation_message_str = '';
+		let label_html = '';
+		if (typeof config_obj.InputLabel !== "undefined") {
+			label_html = '<label>'+config_obj.InputLabel+'</label>';
+		}
+		if (typeof config_obj.Placeholder !== "undefined") {
+			placeholder_str = ' placeholder="'+config_obj.Placeholder+'"';
+		}
+		if (typeof config_obj.DefaultValue !== "undefined") {
+			default_value_str = config_obj.DefaultValue;
+		}
+		if (typeof config_obj.ValidationMessage !== "undefined") {
+			validation_message_str = config_obj.ValidationMessage;
+		}
+		//ValidationMessage
+		switch(config_obj.DisplayType) {
+			case 'text':
+			case 'email':
+			case 'number':
+			case 'password':
+			case 'date':
+			case 'datetime-local':
+			case 'month':
+			case 'week':
+			case 'tel':
+			case 'url':
+			case 'time':
+			case 'color':
+				input_field_html = '<input id="'+config_obj.FieldId+'" type="'+config_obj.DisplayType+'" class="form-control"' +
+					''+placeholder_str+' value="'+default_value_str+'"/>';
+				if (typeof config_obj.MustValidate !== "undefined") {
+					if (config_obj.MustValidate) {
+						input_field_html += '<div id="'+config_obj.FieldId+'InvalidFeedback" class="invalid-feedback">\n' +
+							'' +validation_message_str+'</div>'
+					}
+				}
+				complete_html = label_html+input_field_html;
+				break;
+			case 'textarea':
+				let rows = 3;
+				if (typeof config_obj.Rows !== "undefined") {
+					rows = config_obj.Rows;
+				}
+				input_field_html = '<textarea class="form-control" id="'+config_obj.FieldId+'" rows="'+rows+'" value="'+default_value_str+'"></textarea>';
+				if (typeof config_obj.MustValidate !== "undefined") {
+					if (config_obj.MustValidate) {
+						input_field_html += '<div id="'+config_obj.FieldId+'InvalidFeedback" class="invalid-feedback">\n' +
+							'' +validation_message_str+'</div>'
+					}
+				}
+				complete_html = label_html+input_field_html;
+				break;
+			case 'list':
+				input_field_html = ' <select name="'+config_obj.FieldId+'" id="'+config_obj.FieldId+'" class="custom-select">\n' +
+					'                        <option value="">'+default_value_str+'</option>';
+				if (typeof config_obj.Data !== "undefined") {
+					let list_values = data_model.getDataList(config_obj.Data);
+					if (list_values.length > 0) {
+						list_values.forEach(function(item) {
+							input_field_html += '<option value="'+item+'">'+item+'</option>';
+						})
+					}
+				}
+				input_field_html += '</select>';
+				if (typeof config_obj.MustValidate !== "undefined") {
+					if (config_obj.MustValidate) {
+						input_field_html += '<div id="'+config_obj.FieldId+'InvalidFeedback" class="invalid-feedback">\n' +
+							'' +validation_message_str+'</div>'
+					}
+				}
+				complete_html = label_html+input_field_html;
+				break;
+			case 'checkbox':
+				input_field_html = '<input class="form-check-input" type="checkbox" name="'+config_obj.FieldId+'" id="'+config_obj.FieldId+'">';
+				if (typeof config_obj.MustValidate !== "undefined") {
+					if (config_obj.MustValidate) {
+						input_field_html += '<div id="'+config_obj.FieldId+'InvalidFeedback" class="invalid-feedback">\n' +
+							'' +validation_message_str+'</div>'
+					}
+				}
+				complete_html = '<div class="form-check mt-3">'+input_field_html+label_html+'</div>';
+				break;
+			default:
+				input_field_html = '<input id="'+config_obj.FieldId+'" type="'+config_obj.DisplayType+'" class="form-control"' +
+					''+placeholder_str+' value="'+default_value_str+'"/>';
+				if (typeof config_obj.MustValidate !== "undefined") {
+					if (config_obj.MustValidate) {
+						input_field_html += '<div id="'+config_obj.FieldId+'InvalidFeedback" class="invalid-feedback">\n' +
+							'' +validation_message_str+'</div>'
+					}
+				}
+				complete_html = label_html+input_field_html;
+		}
+		
+		wrapper_node.html(complete_html);
+	}
+};
 let dom_component_index_map = {};
 // JGL: Let's initialize the object that will contain relevant DOM info for our components that are rendered on the page
 let registered_component_array = {};
@@ -523,9 +656,13 @@ class DivbloxDomBaseComponent {
 	/**
 	 * A useful function to call to reset the component state
 	 * @param {Object} inputs The arguments to pass to the component
+	 * @param {boolean} propagate If true, will also reset all sub components
 	 */
-	reset(inputs) {
-		this.resetSubComponents(inputs);
+	reset(inputs,propagate) {
+		propagate = propagate || false;
+		if (propagate) {
+			this.resetSubComponents(inputs,true);
+		}
 	}
 	/**
 	 * Toggles the variable is_loading to true and displays the component loading state
@@ -547,10 +684,11 @@ class DivbloxDomBaseComponent {
 	/**
 	 * Calls the reset function for all of this component's sub components
 	 * @param inputs
+	 * @param propagate
 	 */
-	resetSubComponents(inputs) {
+	resetSubComponents(inputs,propagate) {
 		this.sub_component_objects.forEach(function(component) {
-			component.reset(inputs);
+			component.reset(inputs,propagate);
 		}.bind(this));
 	}
 	/**
@@ -729,6 +867,813 @@ class DivbloxDomBaseComponent {
 	 */
 	onNativeResume() {
 		//TODO: Implement this if required
+	}
+	/**
+	 * Just a helper function to reference on cancel of confirmation
+	 */
+	doNothing() {};
+}
+/**
+ * DivbloxDomEntityInstanceComponent is the base class that manages the component javascript for every entity
+ * instance (CREATE/UPDATE) component
+ */
+class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
+	constructor(inputs,supports_native,requires_native) {
+		super(inputs,supports_native,requires_native);
+		this.component_obj = {};
+		this.element_mapping = {};
+		this.included_attribute_array = [];
+		this.included_relationship_array = [];
+		this.data_validation_array = [];
+		this.custom_validation_array = [];
+		this.required_validation_array = [];
+		this.relationship_list_array = {};
+		this.constrain_by_array = [];
+		this.entity_name = undefined;
+		this.lowercase_entity_name = undefined;
+		// Call this.initCrudVariables("YourEntityName") in the implementing class
+	}
+	initCrudVariables(entity_name) {
+		this.required_validation_array = this.required_validation_array.concat(this.data_validation_array).concat(this.custom_validation_array);
+		this.entity_name = entity_name;
+		this.lowercase_entity_name =  entity_name.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toLowerCase();
+		this.renderInputFields();
+	}
+	renderInputFields() {
+		getComponentElementById(this,'AdditionalInputFieldsWrapper').html("");
+		this.included_attribute_array.forEach(function(attribute) {
+			let wrapper_id = attribute+"Wrapper";
+			let wrapper_node = getComponentElementById(this,wrapper_id);
+			if (!wrapper_node.length) {
+				wrapper_node = this.addDynamicIncludedField(attribute);
+			}
+			wrapper_node.show();
+			let entity_attribute_properties = data_model.getEntityAttributeProperties(this.entity_name,attribute);
+			let render_config_obj = {
+				...{
+					WrapperId: this.getUid()+"_"+wrapper_id,
+					FieldId: this.getUid()+"_"+attribute,
+					MustValidate: (this.required_validation_array.indexOf(attribute) > -1)
+					},
+				...entity_attribute_properties};
+			dx_renderer.renderInputField(render_config_obj);
+			
+		}.bind(this));
+		
+		this.included_relationship_array.forEach(function(relationship) {
+			let wrapper_id = relationship+"Wrapper";
+			let wrapper_node = getComponentElementById(this,wrapper_id);
+			if (!wrapper_node.length) {
+				wrapper_node = this.addDynamicIncludedField(relationship);
+			}
+			wrapper_node.show();
+			let entity_relationship_properties = data_model.getEntityRelationshipProperties(this.entity_name,relationship);
+			let render_config_obj = {
+				...{
+					WrapperId: this.getUid()+"_"+wrapper_id,
+					FieldId: this.getUid()+"_"+relationship,
+					MustValidate: (this.required_validation_array.indexOf(relationship) > -1)
+				},
+				...entity_relationship_properties};
+			dx_renderer.renderInputField(render_config_obj);
+		}.bind(this));
+	}
+	addDynamicIncludedField(field_name) {
+		let wrapper_id = field_name+"Wrapper";
+		let cb_class = '';
+		if (checkComponentBuilderActive()) {
+			cb_class = ' component-builder-column';
+		}
+		getComponentElementById(this,'AdditionalInputFieldsWrapper').append(
+			'<div id="'+this.getUid()+'_'+wrapper_id+'" class="col-sm-6' +
+			' col-md-4 col-xl-3 entity-instance-input-field'+cb_class+'"> {'+field_name+'}</div>');
+		return getComponentElementById(this,wrapper_id);
+	}
+	reset(inputs,propagate) {
+		this.setLoadingState();
+		this.loadEntity();
+		super.reset(inputs,propagate);
+	}
+	setEntityId(id) {
+		this.arguments["entity_id"] = id;
+	}
+	getEntityId() {
+		return this.getLoadArgument("entity_id");
+	}
+	registerDomEvents() {
+		getComponentElementById(this,"btnSave").on("click", function() {
+			this.saveEntity();
+		}.bind(this));
+		
+		getComponentElementById(this,"btnDelete").on("click", function() {
+			showAlert("Are you sure?","warning",["Cancel","Delete"],false,0,this.deleteEntity.bind(this),this.doNothing);
+		}.bind(this));
+		
+	}
+	loadEntity() {
+		dxRequestInternal(
+			getComponentControllerPath(this),
+			{f:"getObjectData", Id:this.getEntityId()},
+			function(data_obj) {
+			this.removeLoadingState();
+			let entity_obj = {};
+			if (typeof data_obj.Object !== "undefined") {
+				entity_obj = data_obj.Object;
+			}
+			this.component_obj = {};
+			this.element_mapping = {};
+				if (Object.keys(entity_obj).length > 0) {
+					this.component_obj = entity_obj;
+				}
+			this.included_attribute_array.forEach(function(attribute) {
+				if (Object.keys(entity_obj).length === 0) {
+					this.component_obj[attribute] = "";
+				}
+				this.element_mapping[attribute] = "#"+this.getUid()+"_"+attribute;
+			}.bind(this));
+			this.included_relationship_array.forEach(function(relationship) {
+				if (Object.keys(entity_obj).length === 0) {
+					this.component_obj[relationship] = "";
+				}
+				this.element_mapping[relationship] = "#"+this.getUid()+"_"+relationship;
+				this.relationship_list_array[relationship] = data_obj[relationship+"List"];
+			}.bind(this));
+			this.setValues();
+		}.bind(this), function(data_obj) {
+			this.handleComponentError(data_obj.Message);
+		}.bind(this));
+	}
+	setValues() {
+		this.included_attribute_array.forEach(function(attribute) {
+			let entity_attribute_properties = data_model.getEntityAttributeProperties(this.entity_name,attribute);
+			if (entity_attribute_properties.DisplayType === 'checkbox') {
+				getComponentElementById(this,attribute).prop("checked",entity_attribute_properties.DefaultValue);
+				if (typeof this.component_obj[attribute] !== "undefined") {
+					getComponentElementById(this,attribute).prop("checked",this.component_obj[attribute]);
+				}
+			} else {
+				getComponentElementById(this,attribute).val(getDataModelAttributeValue(entity_attribute_properties.DefaultValue));
+				if (typeof this.component_obj[attribute] !== "undefined") {
+					getComponentElementById(this,attribute).val(getDataModelAttributeValue(this.component_obj[attribute]));
+				}
+			}
+		}.bind(this));
+		
+		this.included_relationship_array.forEach(function(relationship) {
+			getComponentElementById(this,relationship).html('<option value="">-Please Select-</option>');
+			if (typeof this.relationship_list_array[relationship] === "object") {
+				let object_keys_relationship_list = Object.keys(this.relationship_list_array[relationship]);
+				if (object_keys_relationship_list.length > 0) {
+					this.relationship_list_array[relationship].forEach(function (RelationshipItem) {
+						if (RelationshipItem['Id'] == "DATASET TOO LARGE") {
+							dxLog("Data set too large for "+relationship+". Consider using another option to link the object");
+						} else {
+							getComponentElementById(this,relationship).append('<option value="'+RelationshipItem['Id']+'">'+RelationshipItem['DisplayValue']+'</option>');
+						}
+					}.bind(this));
+					if (typeof this.component_obj[relationship] !== "undefined") {
+						getComponentElementById(this,relationship).val(getDataModelAttributeValue(this.component_obj[relationship]));
+					}
+				}
+			}
+		}.bind(this));
+	}
+	updateValues() {
+		let keys = Object.keys(this.element_mapping);
+		keys.forEach(function(item) {
+			if ($(this.element_mapping[item]).attr("type") === "checkbox") {
+				this.component_obj[item] = $(this.element_mapping[item]).is(':checked') ? 1: 0;
+			} else {
+				this.component_obj[item] = $(this.element_mapping[item]).val();
+			}
+		}.bind(this));
+		return this.component_obj;
+	}
+	saveEntity() {
+		let current_component_obj = this.updateValues();
+		this.resetValidation();
+		if (!this.validateEntity()) {
+			return;
+		}
+		let parameters_obj = {f:"saveObjectData",
+			ObjectData:JSON.stringify(current_component_obj),
+			Id:this.getLoadArgument("entity_id")};
+		if (this.constrain_by_array.length > 0) {
+			this.constrain_by_array.forEach(function(relationship) {
+				parameters_obj['Constraining'+relationship+'Id'] = getGlobalConstrainById(relationship);
+			})
+		}
+		dxRequestInternal(
+			getComponentControllerPath(this),
+			parameters_obj,
+			function(data_obj) {
+			    if (this.getLoadArgument("entity_id") != null) {
+                    setGlobalConstrainById(this.entity_name,data_obj.Id);
+                    pageEventTriggered(this.lowercase_entity_name+"_updated",{"id":data_obj.Id});
+                } else {
+                    setGlobalConstrainById(this.entity_name,data_obj.Id);
+                    pageEventTriggered(this.lowercase_entity_name+"_created",{"id":data_obj.Id});
+                }
+				this.loadEntity();
+				this.resetValidation();
+			}.bind(this),
+			function(data_obj) {
+				showAlert("Error saving "+this.lowercase_entity_name+": "+data_obj.Message,"error","OK",false);
+			}.bind(this));
+	}
+	deleteEntity() {
+		dxRequestInternal(
+			getComponentControllerPath(this),
+			{f:"deleteObjectData",
+				Id:this.getLoadArgument("entity_id")},
+			function(data_obj) {
+				this.loadEntity();
+				pageEventTriggered(this.lowercase_entity_name+"_deleted");
+			}.bind(this),
+			function (data_obj) {
+				showAlert("Error deleting "+this.lowercase_entity_name+": "+data_obj.Message,"error","OK",false);
+			}.bind(this));
+	}
+	validateEntity() {
+		let validation_succeeded = true;
+		this.required_validation_array.forEach(function(item) {
+			if (getComponentElementById(this,item).attr("type") !== "checkbox") {
+				if (getComponentElementById(this,item).val() == "") {
+					validation_succeeded = false;
+					toggleValidationState(this,item,"",false);
+				} else {
+					toggleValidationState(this,item,"",true);
+				}
+			}
+		}.bind(this));
+		this.data_validation_array.forEach(function(item) {
+			if (!getComponentElementById(this,item).hasClass("is-invalid")) {
+				if (getComponentElementById(this,item).hasClass("validate-number")) {
+					if (isNaN(getComponentElementById(this,item).val())) {
+						validation_succeeded = false;
+						toggleValidationState(this,item,"",false);
+					} else {
+						toggleValidationState(this,item,"",true);
+					}
+				}
+			}
+		}.bind(this));
+		this.custom_validation_array.forEach(function(item) {
+			if (checkValidationState(this,item)) {
+				validation_succeeded &= this.doCustomValidation(item);
+			}
+		}.bind(this));
+		return validation_succeeded;
+	}
+	doCustomValidation(attribute) {
+		switch (attribute) {
+			default: return true;
+				break;
+		}
+	}
+	resetValidation() {
+		this.required_validation_array.forEach(function(item) {
+			toggleValidationState(this,item,"",true,true);
+		}.bind(this));
+	}
+}
+/**
+ * DivbloxDomEntityDataTableComponent is the base class that manages the component javascript for every entity
+ * data table component
+ */
+class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
+	constructor(inputs,supports_native,requires_native) {
+		super(inputs,supports_native,requires_native);
+		this.table_exporter = undefined;
+		// Data table export functionality provided by TableExport plugin.
+		// Documentation here: https://tableexport.v5.travismclarke.com/#tableexport
+		// Default properties:
+		/*
+        TableExport(document.getElementsByTagName("table"), {
+        headers: true,                      // (Boolean), display table headers (th or td elements) in the <thead>, (default: true)
+        footers: true,                      // (Boolean), display table footers (th or td elements) in the <tfoot>, (default: false)
+        formats: ["xlsx", "csv", "txt"],    // (String[]), filetype(s) for the export, (default: ['xlsx', 'csv', 'txt'])
+        filename: "id",                     // (id, String), filename for the downloaded file, (default: 'id')
+        bootstrap: false,                   // (Boolean), style buttons using bootstrap, (default: true)
+        exportButtons: true,                // (Boolean), automatically generate the built-in export buttons for each of the specified formats (default: true)
+        position: "bottom",                 // (top, bottom), position of the caption element relative to table, (default: 'bottom')
+        ignoreRows: null,                   // (Number, Number[]), row indices to exclude from the exported file(s) (default: null)
+        ignoreCols: null,                   // (Number, Number[]), column indices to exclude from the exported file(s) (default: null)
+        trimWhitespace: true,               // (Boolean), remove all leading/trailing newlines, spaces, and tabs from cell text in the exported file(s) (default: false)
+        RTL: false,                         // (Boolean), set direction of the worksheet to right-to-left (default: false)
+        sheetname: "id"                     // (id, String), sheet name for the exported spreadsheet, (default: 'id')
+        });
+        */
+		this.entity_name = undefined;
+		this.lowercase_entity_name = undefined;
+		this.current_page = 1;
+		this.current_page_array = [];
+		this.current_items_per_page = $("#"+this.uid+"_PaginationItemsPerPage").val();
+		this.total_items = 0;
+		this.total_pages = 0;
+		this.remaining_pages = 0;
+		this.included_attribute_array = [];
+		this.included_relationship_array = [];
+		this.constrain_by_array = [];
+		this.column_name_obj = {};
+		this.column_name_array = [];
+		this.current_sort_column = [];
+		this.selected_items_array = [];
+		// Call this.initDataTableVariables("YourEntityName") in the implementing class
+	}
+	initDataTableVariables(entity_name) {
+		this.entity_name = entity_name;
+		this.lowercase_entity_name =  entity_name.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toLowerCase();
+		
+		getComponentElementById(this,'DataTableHeaderHtml').html(
+			'<th id="'+this.getUid()+'_MultiSelectColumn" class="data_table_header" scope="col">\n' +
+			'<input id="'+this.getUid()+'_MultiSelectAll" type="checkbox" name="all" value="all">\n' +
+			'</th>');
+		
+		this.included_attribute_array.forEach(function(attribute) {
+			this.column_name_obj[attribute] = attribute.replace(/([a-z0-9])([A-Z])/g, '$1 $2');
+			getComponentElementById(this,'DataTableHeaderHtml').append(
+				'<th id="'+this.getUid()+'_SortBy'+attribute+'" class="data_table_header" scope="col">'+this.column_name_obj[attribute]+'</th>'
+			);
+		}.bind(this));
+		this.included_relationship_array.forEach(function(relationship) {
+			this.column_name_obj[relationship] = relationship.replace(/([a-z0-9])([A-Z])/g, '$1 $2');
+			getComponentElementById(this,'DataTableHeaderHtml').append(
+				'<th id="'+this.getUid()+'_SortBy'+relationship+'" class="data_table_header" scope="col">'+this.column_name_obj[relationship]+'</th>'
+			)
+		}.bind(this));
+		
+		this.column_name_array = Object.keys(this.column_name_obj);
+		this.current_sort_column = [this.column_name_array[0],true]; // Sort on first column, desc
+		//DataTableHeaderHtml
+	}
+	reset(inputs,propagate) {
+		this.loadPage();
+		super.reset(inputs,propagate);
+	}
+	loadPrerequisites(success_callback,fail_callback) {
+		dxGetScript(getRootPath()+'project/assets/js/tableexport/xlsx.core.min.js',function() {
+			dxGetScript(getRootPath()+'project/assets/js/tableexport/FileSaver.min.js',function() {
+				dxGetScript(getRootPath()+'project/assets/js/tableexport/tableexport.min.js',function() {
+					success_callback();
+				}.bind(this))
+			}.bind(this))
+		}.bind(this));
+	}
+	registerDomEvents() {
+		getComponentElementById(this,"BulkActionExportXlsx").on("click", function() {
+			let uid = this.getUid();
+			this.table_exporter = getComponentElementById(this,"DataTableTableHtml").tableExport({
+				exportButtons: false,
+				formats: ['xlsx'],
+				filename: "dx_xlsx_export_"+moment().format("YYYY-MM-DD_h_mm_ss"),
+			});
+			this.exportData(this.table_exporter.getExportData()[uid+'_DataTableTableHtml']['xlsx']);
+		}.bind(this));
+		getComponentElementById(this,"BulkActionExportCsv").on("click", function() {
+			let uid = this.getUid();
+			this.table_exporter = getComponentElementById(this,"DataTableTableHtml").tableExport({
+				exportButtons: false,
+				formats: ['csv'],
+				filename: "dx_csv_export_"+moment().format("YYYY-MM-DD_h_mm_ss"),
+			});
+			this.exportData(this.table_exporter.getExportData()[uid+'_DataTableTableHtml']['csv']);
+		}.bind(this));
+		getComponentElementById(this,"BulkActionExportTxt").on("click", function() {
+			let uid = this.getUid();
+			this.table_exporter = getComponentElementById(this,"DataTableTableHtml").tableExport({
+				exportButtons: false,
+				formats: ['txt'],
+				filename: "dx_txt_export_"+moment().format("YYYY-MM-DD_h_mm_ss"),
+			});
+			this.exportData(this.table_exporter.getExportData()[uid+'_DataTableTableHtml']['txt']);
+		}.bind(this));
+		getComponentElementById(this,"DataTableSearchInput").on("keyup", function() {
+			let search_text = getComponentElementById(this,"DataTableSearchInput").val();
+			setTimeout(function() {
+				if (search_text == getComponentElementById(this,"DataTableSearchInput").val()) {
+					this.current_page = 1;
+					this.loadPage();
+				}
+			}.bind(this),500);
+		}.bind(this));
+		getComponentElementById(this,"btnResetSearch").on("click", function() {
+			getComponentElementById(this,"DataTableSearchInput").val("");
+			this.loadPage();
+		}.bind(this));
+		getComponentElementById(this,"PaginationItemsPerPage").on("change", function() {
+			let uid = $(this).attr("id").replace("_PaginationItemsPerPage","");
+			let this_component = getRegisteredComponent(uid);
+			this_component.current_items_per_page = $(this).val();
+			this_component.loadPage();
+		});
+		getComponentElementById(this,"PaginationResetButton").on("click", function() {
+			if ($(this).hasClass("disabled")) {
+				return;
+			}
+			let uid = $(this).attr("id").replace("_PaginationResetButton","");
+			let this_component = getRegisteredComponent(uid);
+			this_component.current_page = 1;
+			this_component.loadPage();
+		});
+		getComponentElementById(this,"PaginationFinalPageButton").on("click", function() {
+			if ($(this).hasClass("disabled")) {
+				return;
+			}
+			let uid = $(this).attr("id").replace("_PaginationFinalPageButton","");
+			let this_component = getRegisteredComponent(uid);
+			this_component.current_page = this_component.total_pages;
+			this_component.loadPage();
+		});
+		getComponentElementById(this,"PaginationJumpBack").on("click", function() {
+			if ($(this).hasClass("disabled")) {
+				return;
+			}
+			let uid = $(this).attr("id").replace("_PaginationJumpBack","");
+			let this_component = getRegisteredComponent(uid);
+			this_component.current_page = this_component.current_page - 3;
+			if (this_component.current_page < 1) {
+				this_component.current_page = 1;
+			}
+			this_component.loadPage();
+		});
+		getComponentElementById(this,"PaginationJumpForward").on("click", function() {
+			if ($(this).hasClass("disabled")) {
+				return;
+			}
+			let uid = $(this).attr("id").replace("_PaginationJumpForward","");
+			let this_component = getRegisteredComponent(uid);
+			this_component.current_page = this_component.current_page + 3;
+			if (this_component.current_page > this_component.total_pages) {
+				this_component.current_page = this_component.total_pages;
+			}
+			this_component.loadPage();
+		});
+		getComponentElementById(this,"PaginationNextItem").on("click", function() {
+			this.current_page = this.current_page + 1;
+			if (this.current_page > this.total_pages) {
+				this.current_page = this.total_pages;
+			}
+			this.loadPage();
+		}.bind(this));
+		getComponentElementById(this,"PaginationNextNextItem").on("click", function() {
+			this.current_page = this.current_page + 2;
+			if (this.current_page > this.total_pages) {
+				this.current_page = this.total_pages;
+			}
+			this.loadPage();
+		}.bind(this));
+		getComponentElementById(this,"MultiSelectAll").on("click", function() {
+			let uid = $(this).attr("id").replace("_MultiSelectAll","");
+			let this_component = getRegisteredComponent(uid);
+			if ($(this).is(":checked")) {
+				this_component.selected_items_array = [];
+				$('.select_item_'+uid).each(function () {
+					let id_start = $(this).attr("id").indexOf("_select_item_");
+					let object_id = $(this).attr("id").substring(id_start+13);
+					this_component.selected_items_array.push(object_id);
+					$(this).prop("checked",true);
+				});
+				getComponentElementById(this_component,"MultiSelectOptionsButton").show().addClass("d-inline-flex");
+			} else {
+				this_component.selected_items_array = [];
+				$('.select_item_'+uid).each(function () {
+					$(this).prop("checked",false);
+				});
+				getComponentElementById(this_component,"MultiSelectOptionsButton").hide().removeClass("d-inline-flex");
+			}
+		});
+		getComponentElementById(this,"BulkActionDelete").on("click", function() {
+			showAlert("Are you sure?","warning",["Cancel","Delete"],false,0,this.deleteSelected.bind(this),this.doNothing);
+		}.bind(this));
+		$(document).on("click",".first-column_"+this.getUid(), function() {
+			let id_start = $(this).attr("id").indexOf("_row_item_");
+			let clicked_id = $(this).attr("id").substring(id_start+10);
+			let uid = $(this).attr("id").substring(0,id_start);
+			let this_component = getRegisteredComponent(uid);
+			this_component.on_item_clicked(clicked_id);
+			return false;
+		});
+		registerEventHandler(document,"click",undefined,".first-column_"+this.getUid());
+		$(document).on("click",".select_item_"+this.getUid(), function() {
+			let id_start = $(this).attr("id").indexOf("_select_item_");
+			let clicked_id = $(this).attr("id").substring(id_start+13);
+			let uid = $(this).attr("id").substring(0,id_start);
+			let this_component = getRegisteredComponent(uid);
+			if (this_component.selected_items_array.indexOf(clicked_id) != -1) {
+				this_component.selected_items_array.splice(this_component.selected_items_array.indexOf(clicked_id),1);
+			} else {
+				this_component.selected_items_array.push(clicked_id);
+			}
+			if (this_component.selected_items_array.length > 0) {
+				getComponentElementById(this_component,"MultiSelectOptionsButton").show().addClass("d-inline-flex");
+			} else {
+				getComponentElementById(this_component,"MultiSelectOptionsButton").hide().removeClass("d-inline-flex");
+			}
+		});
+		registerEventHandler(document,"click",undefined,".select_item_"+this.getUid());
+		this.column_name_array.forEach(function(item) {
+			let uid = this.getUid();
+			let column_name_array = Object.keys(this.column_name_obj);
+			$("#"+uid+"_SortBy"+item).on("click", function() {
+				if (typeof this.current_sort_column[1] !== "undefined") {
+					let sort_down = !this.current_sort_column[1];
+					this.current_sort_column = [item,sort_down];
+				} else {
+					this.current_sort_column = [item,true];
+				}
+				this.column_name_array.forEach(function(item_to_update) {
+					if (item_to_update == item) {
+						if (this.current_sort_column[1]) {
+							$("#"+uid+"_SortBy"+item_to_update).html(this.column_name_obj[item_to_update]+' <small><i class="fa' +
+								' fa-sort-alpha-asc" aria-hidden="true"></i></small>');
+						} else {
+							$("#"+uid+"_SortBy"+item_to_update).html(this.column_name_obj[item_to_update]+' <small><i class="fa' +
+								' fa-sort-alpha-desc" aria-hidden="true"></i></small>');
+						}
+					} else {
+						$("#"+uid+"_SortBy"+item_to_update).html(this.column_name_obj[item_to_update]);
+					}
+				}.bind(this));
+				this.loadPage();
+			}.bind(this));
+		}.bind(this));
+	}
+	exportData(table_exporter_data) {
+		this.table_exporter.export2file(
+			table_exporter_data.data,
+			table_exporter_data.mimeType,
+			table_exporter_data.filename,
+			table_exporter_data.fileExtension);
+	}
+	deleteSelected() {
+		dxRequestInternal(
+			getComponentControllerPath(this),
+			{f:"deleteSelection",
+				SelectedItemArray:JSON.stringify(this.selected_items_array)},
+			function(data_obj) {
+				getComponentElementById(this,"MultiSelectAll").prop("checked",false);
+				this.selected_items_array = [];
+				this.current_page = 1;
+				this.loadPage();
+				pageEventTriggered(this.lowercase_entity_name+"_selection_deleted",{});
+			}.bind(this),
+			function(data_obj) {
+				showAlert("Error deleting items: "+data_obj.Message,"error","OK",false);
+			}.bind(this));
+	}
+	loadPage() {
+		let uid = this.getUid();
+		let search_text = getComponentElementById(this,"DataTableSearchInput").val();
+		let max_columns = this.column_name_array.length+1;
+		getComponentElementById(this,"DataTableBody").html('<tr id="'+this.getUid()+'_DataTableLoading"><td' +
+			' colspan="'+max_columns+'"' +
+			'><div class="dx-loading"></div></td></tr>');
+		let parameters_obj = {f:"getPage",
+			CurrentPage:this.current_page,
+			ItemsPerPage:this.current_items_per_page,
+			SearchText:search_text,
+			SortOptions:JSON.stringify(this.current_sort_column)};
+		if (this.constrain_by_array.length > 0) {
+			this.constrain_by_array.forEach(function(relationship) {
+				parameters_obj['Constraining'+relationship+'Id'] = getGlobalConstrainById(relationship);
+			})
+		}
+		dxRequestInternal(getComponentControllerPath(this),
+			parameters_obj,
+			function(data_obj) {
+				getComponentElementById(this,"DataTableBody").html("");
+				data_obj.Page.forEach(function(item) {
+					this.addRow(item);
+				}.bind(this));
+				this.total_items = data_obj.TotalCount;
+				this.total_pages = 1+ Math.round(this.total_items / this.current_items_per_page);
+				this.remaining_pages = this.total_pages - this.current_page;
+				if (this.current_page_array.length > 0) {
+					getComponentElementById(this,"DataTableLoading").hide();
+				}
+				this.toggleNoResults();
+				if (this.current_page == 1) {
+					getComponentElementById(this,"PaginationResetButton").addClass("disabled");
+					getComponentElementById(this,"PaginationJumpBack").addClass("disabled");
+				} else {
+					getComponentElementById(this,"PaginationResetButton").removeClass("disabled");
+					getComponentElementById(this,"PaginationJumpBack").removeClass("disabled");
+				}
+				if (this.current_page == this.total_pages) {
+					getComponentElementById(this,"PaginationFinalPageButton").addClass("disabled");
+					getComponentElementById(this,"PaginationJumpForward").addClass("disabled");
+				} else {
+					getComponentElementById(this,"PaginationFinalPageButton").removeClass("disabled");
+					getComponentElementById(this,"PaginationJumpForward").removeClass("disabled");
+				}
+				if (this.remaining_pages > 0) {
+					getComponentElementById(this,"PaginationNextItem").show();
+				} else {
+					getComponentElementById(this,"PaginationNextItem").hide();
+				}
+				if (this.remaining_pages > 1) {
+					getComponentElementById(this,"PaginationNextNextItem").show();
+				} else {
+					getComponentElementById(this,"PaginationNextNextItem").hide();
+				}
+				let next_page = this.current_page+1;
+				let next_next_page = next_page+1;
+				getComponentElementById(this,"PaginationCurrentItem").html('<span class="page-link">'+this.current_page+'</span>');
+				getComponentElementById(this,"PaginationNextItem").html('<span class="page-link">'+next_page+'</span>');
+				getComponentElementById(this,"PaginationNextNextItem").html('<span class="page-link">'+next_next_page+'</span>');
+			}.bind(this),
+			function(data_obj) {
+				this.handleComponentError('Could not retrieve data: '+data_obj.Message);
+			}.bind(this),false,false);
+	}
+	addRow(row_data_obj) {
+		this.current_page_array.push(row_data_obj);
+		let uid = this.getUid();
+		let row_id = row_data_obj["Id"];
+		let checked_html = '';
+		// Doing it this way since indexOf and includes does not identify the items as being in the array...
+		this.selected_items_array.forEach(function(item) {if (item == row_id) {checked_html = ' checked';}});
+		if (this.selected_items_array.length > 0) {
+			getComponentElementById(this,"MultiSelectOptionsButton").show().addClass("d-inline-flex");
+		} else {
+			getComponentElementById(this,"MultiSelectOptionsButton").hide().removeClass("d-inline-flex");
+		}
+		let html = '<tr class="'+uid+'_row_item_'+row_id+' dx-data-table-row">';
+		let row_keys = Object.keys(row_data_obj);
+		let is_first = true;
+		row_keys.forEach(function(key) {
+			if (key != "Id") {
+				if (is_first) {
+					html += '<th scope="row"><a href="#" id="'+uid+'_row_item_'+row_id+'" class="data-table-first-column first-column_'+uid+'">'+row_data_obj[key]+'</a></th>';
+				} else {
+					html += '<td>'+row_data_obj[key]+'</td>';
+				}
+				is_first = false;
+			} else {
+				html += '<td><input id="'+uid+'_select_item_'+row_id+'" type="checkbox"' +
+					' class="select_item_'+uid+'" name="'+uid+'_select_item_'+row_id+'" value="'+uid+'_select_item_'+row_id+'"'+checked_html+'></td>';
+			}
+		});
+		html += '</tr>';
+		getComponentElementById(this,"DataTableBody").append(html);
+	}
+	on_item_clicked(id) {
+		setGlobalConstrainById(this.entity_name,id);
+		pageEventTriggered(this.lowercase_entity_name+"_clicked",{id:id});
+	}
+	toggleNoResults() {
+		let max_columns = this.column_name_array.length+1;
+		if (this.total_items == 0) {
+			getComponentElementById(this,"DataTableBody").html('<tr id="#'+this.getUid()+'_DataTableLoading"><td' +
+				' colspan="'+max_columns+'"' +
+				' style="text-align: center;">No results</td></tr>');
+			getComponentElementById(this,"DataTableLoading").show();
+		}
+	}
+}
+/**
+ * DivbloxDomEntityDataListComponent is the base class that manages the component javascript for every entity
+ * data list component
+ */
+class DivbloxDomEntityDataListComponent extends DivbloxDomBaseComponent {
+	constructor(inputs,supports_native,requires_native) {
+		super(inputs,supports_native,requires_native);
+		this.current_list_offset = 0;
+		this.list_offset_increment = 10;
+		this.current_page_array = [];
+		this.total_items = 0;
+		this.included_attributes_object = {};
+		this.included_relationships_object = {};
+		this.constrain_by_array = [];
+		this.included_all_object = {};
+		this.current_sort_column = [];
+	}
+	initDataListVariables(entity_name) {
+		this.entity_name = entity_name;
+		this.lowercase_entity_name =  entity_name.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toLowerCase();
+		this.included_all_object = {...this.included_attributes_object,...this.included_relationships_object};
+		let included_keys = Object.keys(this.included_all_object);
+		this.current_sort_column = [included_keys[0],true]; // Sort on first column, desc
+	}
+	reset(inputs,propagate) {
+		this.current_page_array = [];
+		getComponentElementById(this,"DataList").html("");
+		this.loadPage();
+		super.reset(inputs,propagate);
+	}
+	registerDomEvents() {
+		getComponentElementById(this,"DataListSearchInput").on("keyup", function() {
+			let search_text = getComponentElementById(this,"DataListSearchInput").val();
+			setTimeout(function() {
+				if (search_text == getComponentElementById(this,"DataListSearchInput").val()) {
+					getComponentElementById(this,"DataList").html("");
+					this.current_page_array = [];
+					this.current_list_offset = 0;
+					this.loadPage();
+				}
+			}.bind(this),500);
+		}.bind(this));
+		getComponentElementById(this,"btnResetSearch").on("click", function() {
+			getComponentElementById(this,"DataListSearchInput").val("");
+			getComponentElementById(this,"DataList").html("");
+			this.current_page_array = [];
+			this.current_list_offset = 0;
+			this.loadPage();
+		}.bind(this));
+		getComponentElementById(this,"DataListMoreButton").on("click", function() {
+			this.current_list_offset += this.list_offset_increment;
+			this.loadPage();
+		}.bind(this));
+		$(document).on("click",".data_list_item_"+this.uid, function() {
+			let id_start = $(this).attr("id").indexOf("_row_item_");
+			let clicked_id = $(this).attr("id").substring(id_start+10);
+			let uid = $(this).attr("id").substring(0,id_start);
+			let this_component = getRegisteredComponent(uid);
+			this_component.on_item_clicked(clicked_id);
+			return false;
+		});
+		registerEventHandler(document,"click",undefined,".data_list_item_"+this.uid);
+	}
+	loadPage() {
+		let search_text = getComponentElementById(this,"DataListSearchInput").val();
+		getComponentElementById(this,"DataListLoading").html('<div class="dx-loading"></div>').show();
+		let parameters_obj = {f:"getPage",
+			CurrentOffset:this.current_list_offset,
+			ItemsPerPage:this.list_offset_increment,
+			SearchText:search_text,
+			SortOptions:JSON.stringify(this.current_sort_column)};
+		if (this.constrain_by_array.length > 0) {
+			this.constrain_by_array.forEach(function(relationship) {
+				parameters_obj['Constraining'+relationship+'Id'] = getGlobalConstrainById(relationship);
+			})
+		}
+		dxRequestInternal(getComponentControllerPath(this),
+			parameters_obj,
+			function(data_obj) {
+				data_obj.Page.forEach(function(item) {
+					this.addRow(item);
+				}.bind(this));
+				this.total_items = data_obj.TotalCount;
+				getComponentElementById(this,"DataListMoreButton").show();
+				if (this.total_items <= this.current_list_offset) {
+					getComponentElementById(this,"DataListMoreButton").hide();
+				}
+				if (this.current_page_array.length > 0) {
+					getComponentElementById(this,"DataListLoading").hide();
+				} else {
+					getComponentElementById(this,"DataListLoading").html("No results").show();
+					getComponentElementById(this,"DataListMoreButton").hide();
+				}
+			}.bind(this),
+			function(data_obj) {
+				getComponentElementById(this,"DataList").hide();
+				this.handleComponentError('Could not retrieve data: '+data_obj.Message);
+			}.bind(this),false,false);
+	}
+	addRow(row_data_obj) {
+		let current_item_keys = Object.keys(this.current_page_array);
+		let must_add_row = true;
+		current_item_keys.forEach(function(key) {
+			if (this.current_page_array[key]["Id"] == row_data_obj["Id"]) {must_add_row = false;}
+		}.bind(this));
+		if (!must_add_row) {return;}
+		this.current_page_array.push(row_data_obj);
+		let row_id = row_data_obj["Id"];
+		let included_keys = Object.keys(this.included_all_object);
+		let wrapping_html = '<a href="#" id="'+this.getUid()+'_row_item_'+row_id+'" class="list-group-item' +
+			' list-group-item-action flex-column align-items-start data_list_item data_list_item_'+this.getUid()+' dx-data-list-row">';
+		let header_wrapping_html = '<div class="d-flex w-100 justify-content-between">';
+		
+		let header_components_html = '';
+		let subtle_components_html = '';
+		let normal_components_html = '';
+		let footer_components_html = '';
+		
+		included_keys.forEach(function(key) {
+			switch(this.included_all_object[key].toLowerCase()) {
+				case 'header': header_components_html += '<h5 class="mb-1">'+row_data_obj[key]+'</h5>';
+					break;
+				case 'subtle': subtle_components_html += '<small>'+row_data_obj[key]+'</small>';
+					break;
+				case 'normal': normal_components_html += '<p>'+row_data_obj[key]+'</p>';
+					break;
+				case 'footer': footer_components_html += '<small>'+row_data_obj[key]+'</small>';
+					break;
+				default: normal_components_html += '<p>'+row_data_obj[key]+'</p>';
+			}
+		}.bind(this));
+		
+		header_wrapping_html += header_components_html+subtle_components_html;
+		header_wrapping_html += '</div>';
+		
+		wrapping_html += header_wrapping_html+normal_components_html+footer_components_html;
+		wrapping_html += '</a>';
+		getComponentElementById(this,"DataList").append(wrapping_html);
+	}
+	on_item_clicked(id) {
+		setGlobalConstrainById(this.entity_name,id);
+		pageEventTriggered(this.lowercase_entity_name+"_clicked",{id:id});
 	}
 }
 /**
@@ -1545,36 +2490,32 @@ function dxRequestInternalQueued(url,parameters,on_success,on_fail,trigger_eleme
 		.done(function(data) {
 			dx_processing_queue = false;
 			dxProcessRequestQueue();
-			if (!isJsonString(data)) {
-				on_fail({"Result":"Failed","Message":"Returned value is not a valid JSON string","Returned":data});
-			} else {
-				let data_obj = JSON.parse(data);
-				if (typeof data_obj.AuthenticationToken !== "undefined") {
-					authentication_token = data_obj.AuthenticationToken;
-					updateAppState('dxAuthenticationToken',authentication_token);
-				}
-				if (typeof data_obj.ForceLogout !== "undefined") {
-					if (data_obj.ForceLogout) {
-						if (!force_logout_occurred) {
-							dxLog("A force logout was received. Full return: "+data);
-							force_logout_occurred = true;
-							logout();
-						}
-						return;
+			let data_obj = getJsonObject(data);
+			if (typeof data_obj.AuthenticationToken !== "undefined") {
+				updateAppState('dxAuthenticationToken',data_obj.AuthenticationToken);
+			}
+			if (typeof data_obj.ForceLogout !== "undefined") {
+				if (data_obj.ForceLogout) {
+					if (!force_logout_occurred) {
+						dxLog("A force logout was received. Full return: "+data);
+						force_logout_occurred = true;
+						logout();
 					}
+					return;
 				}
-				if (data_obj.Result != "Success") {
-					on_fail(data_obj);
-				} else {
-					on_success(data_obj);
-				}
+			}
+			if (data_obj.Result != "Success") {
+				on_fail(data_obj);
+			} else {
+				on_success(data_obj);
 			}
 			removeTriggerElementFromLoadingElementArray(trigger_element_id);
 		})
 		.fail(function(data) {
 			dx_processing_queue = false;
 			dxProcessRequestQueue();
-			on_fail(data);
+			let data_obj = getJsonObject(data);
+			on_fail(data_obj);
 			removeTriggerElementFromLoadingElementArray(trigger_element_id);
 		});
 	return this;
@@ -1632,7 +2573,7 @@ function dxGetScript(url,on_success,on_fail,force_cache) {
 			cache_scripts_requested.push(url);
 		}
 	}
-	if ((isNative() && (url.indexOf(".html") === -1))) {
+	if ((isNative() && (url.indexOf(".js") !== -1))) {
 		let len = $('script').filter(function () {
 			return ($(this).attr('src') == url);
 		}).length;
@@ -1778,6 +2719,51 @@ function isJsonString(input_string) {
 		return false;
 	}
 	return true;
+}
+/**
+ * Returns either a valid JSON object from the input or an empty object
+ * @param mixed_input: Can be json string or object
+ * @return {any}
+ */
+function getJsonObject(mixed_input) {
+	if (isJsonString(mixed_input)) {
+		return JSON.parse(mixed_input);
+	}
+	let return_obj = {};
+	try {
+		let encoded_string = JSON.stringify(mixed_input);
+		if (isJsonString(encoded_string)) {
+			return_obj = JSON.parse(encoded_string);
+		}
+	} catch (e) {
+		return return_obj;
+	}
+	return return_obj;
+}
+/**
+ * Assumes that the file at the specified path contains valid JSON and then loads it and returns it via the callback
+ * function
+ * @param file_path the path to the file containing JSON from project root
+ * @param callback the function that will be called with the JSON received
+ */
+function loadJsonFromFile(file_path,callback) {
+	if (typeof callback !== "function") {
+		callback = function () {
+			dxLog("No callback function was specified for loadJsonFromFile")
+		}
+	}
+	$.ajax({
+		'async': true,
+		'global': false,
+		'url': file_path,
+		'dataType': "json",
+		'success': function(data) {
+			callback(data);
+		},
+		'error': function() {
+			callback({});
+		}
+	});
 }
 /**
  * Gets the current url input parameters
@@ -2142,9 +3128,9 @@ function dxCheckCurrentUserRole(allowable_role_array,on_not_allowed,on_allowed) 
  * server. This function receives the current role
  */
 function getCurrentUserRole(callback) {
-	dxRequestSystem(getServerRootPath()+'project/assets/php/global_request_handler.php',{f:'getUserRole'},
-		function(data) {
-			let data_obj = JSON.parse(data);
+	dxRequestInternal(getServerRootPath()+'api/global_functions/getUserRole',
+		{},
+		function(data_obj) {
 			if (typeof data_obj.CurrentRole !== "undefined") {
 				updateAppState('dx_role',data_obj.CurrentRole.toLowerCase());
 				callback(data_obj.CurrentRole);
@@ -2152,7 +3138,7 @@ function getCurrentUserRole(callback) {
 				callback(undefined);
 			}
 		},
-		function(data) {
+		function(data_obj) {
 			callback(undefined);
 		});
 }

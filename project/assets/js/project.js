@@ -75,16 +75,19 @@ function presentOfflineRequestBlockedMessage() {
 	return "This request cannot be processed at this time because you are offline.";
 }
 /**
- * Logs out the current user by calling the global_request_handler.php script to clear the current session and
+ * Logs out the current user by calling api/global_functions/logoutCurrentAccount to clear the current session and
  * authentication token credentials
  */
 function logout() {
 	current_user_profile_picture_path = "";
     registerUserRole("anonymous");
-	dxRequestInternal(getRootPath()+"project/assets/php/global_request_handler.php",{f:"logoutCurrentAccount"},
+	dxRequestInternal(getServerRootPath()+"api/global_functions/logoutCurrentAccount",
+		{},
 		function(data_obj) {
-			if (data_obj.Result === "Success") {
+			if (data_obj.LogoutResult === true) {
 				loadUserRoleLandingPage("anonymous");
+			} else {
+				throw new Error("Could not logout user: "+JSON.stringify(data_obj));
 			}
 		},
 		function(data_obj) {
@@ -139,7 +142,8 @@ function getCurrentUserAttribute(attribute,callback) {
 	if (attribute === "ProfilePicturePath") {
 		attribute_to_return = getRootPath()+"project/assets/images/divblox_profile_picture_placeholder.svg";
 	}
-	dxRequestInternal(getServerRootPath()+'project/assets/php/global_request_handler.php',{f:'getCurrentAccountAttribute',attribute:attribute},
+	dxRequestInternal(getServerRootPath()+'api/global_functions/getCurrentAccountAttribute',
+		{attribute:attribute},
 		function(data_obj) {
 			if (typeof data_obj.Result === "undefined") {
 				callback(attribute_to_return);
@@ -189,9 +193,8 @@ function createPushRegistration(registration_id,success_callback,failure_callbac
 		device_os = device.version;
 	}
 	setItemInLocalStorage("PushRegistrationId",registration_id);
-	dxRequestInternal(getServerRootPath()+'project/assets/php/global_request_handler.php',
-		{f:'updatePushRegistration',
-			registration_id: registration_id,
+	dxRequestInternal(getServerRootPath()+'api/global_functions/updatePushRegistration',
+		{registration_id: registration_id,
 			device_uuid: device_uuid,
 			device_platform: device_platform,
 			device_os:device_os,
@@ -316,5 +319,4 @@ function getApplicationIconBadgeNumber(callback) {
  * @todo Any actions that should happen after authentication should be placed here
  */
 function doAfterAuthenticationActions() {
-
 }

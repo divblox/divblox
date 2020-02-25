@@ -5,27 +5,22 @@
     <div id="ComponentContent" class="component-content" style="display:none">
         <div class="container-fluid container-no-gutters">
             <div class="row">
-                <div class="col-md-6">
-                    <label>Type:</label>
-                    <select name="Type" id="Type" class="custom-select">
-                        <option value="">Other</option>
-                        <option value="Email Address">Email Address</option>
-                        <option value="Contact Number">Contact Number</option>
-                        <option value="Language Preference">Language Preference</option>
-                        <option value="Facebook">Facebook</option>
-                        <option value="Twitter">Twitter</option>
-                        <option value="Instagram">Instagram</option>
-                    </select>
-                    <label>Custom Label:</label>
-                    <input name="Label" id="Label" type="text" class="form-control"/>
+                <div id="TypeWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {Type}
                 </div>
-                <div class="col-md-6">
-                    <label>Value:</label>
-                    <textarea name="Value" id="Value" rows="5" class="form-control" required/>
-                    <div id="ValueInvalidFeedback" class="invalid-feedback">
-                        Please provide a value
-                    </div>
+                <div id="LabelWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {Label}
                 </div>
+                <div id="ValueWrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {Value}
+                </div>
+                
+                
+            </div>
+            <div id="AdditionalInputFieldsWrapper" class="row">
+                <!-- Fields that are included by the component, but not provided for by wrappers will be rendered here... -->
+            </div>
+            <div class="row">
                 <div class="col-md-6"></div>
                 <div class="col-md-6">
                     <div class="row">

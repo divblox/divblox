@@ -6,7 +6,13 @@
         <div class="container-fluid container-no-gutters">
             <div class="row">
                 [Attributes]
-                [Relationships]<div class="col-md-6"></div>
+                [Relationships]
+            </div>
+            <div id="AdditionalInputFieldsWrapper" class="row">
+                <!-- Fields that are included by the component, but not provided for by wrappers will be rendered here... -->
+            </div>
+            <div class="row">
+                <div class="col-md-6"></div>
                 <div class="col-md-6">
                     <div class="row">
                         <div class="col-md-6"></div>

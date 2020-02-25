@@ -95,7 +95,6 @@ abstract class ProjectAccessManager extends AccessManager {
 //endregion
 
 //region Component controller related
-
 /**
  * Class ProjectComponentController
  * Responsible for managing the project-level behaviour of all server-side component scripts
@@ -103,6 +102,321 @@ abstract class ProjectAccessManager extends AccessManager {
 class ProjectComponentController extends ComponentController {
     public function __construct($ComponentNameStr = 'Component') {
         parent::__construct($ComponentNameStr);
+    }
+}
+/**
+ * Class EntityInstanceComponentController
+ * Responsible for managing the project-level behaviour of all server-side entity create/update component scripts
+ */
+class EntityInstanceComponentController extends ProjectComponentController {
+    protected $DataModelObj;
+    protected $EntityNameStr = "";
+    protected $RelationshipListLimit = 100;
+    protected $IncludedAttributeArray = [];
+    protected $IncludedRelationshipArray = []; // Indicates the relationships to include, along with witch attribute to display. e.g. ["Account" => "FirstName"]
+    protected $ConstrainByArray = [];
+    protected $RequiredAttributeArray = [];
+    protected $NumberValidationAttributeArray = [];
+    protected $IsCreatingBool = false;
+    public function __construct($ComponentNameStr = 'Component') {
+        $this->DataModelObj = new DataModel();
+        parent::__construct($ComponentNameStr);
+    }
+    public function getObjectData() {
+        $EntityObj = $this->EntityNameStr::Load($this->getInputValue("Id",true));
+        $EntityJsonDecoded = array();
+        if (!is_null($EntityObj)) {
+            $EntityJsonDecoded = json_decode($EntityObj->getJson());
+        }
+        $this->setReturnValue("Object",$EntityJsonDecoded);
+        foreach ($this->IncludedRelationshipArray as $Relationship => $DisplayValue) {
+            $RelationshipList = $this->getRelationshipList($EntityObj,$Relationship);
+            $this->setReturnValue($Relationship."List",$RelationshipList);
+        }
+        $this->setReturnValue("Result","Success");
+        $this->setReturnValue("Message","");
+        $this->presentOutput();
+        
+    }
+    public function getRelationshipList($EntityObj = null,$RelationshipNameStr = null) {
+        $ReturnArray = [];
+        if (is_null($RelationshipNameStr)) {
+            return $ReturnArray;
+        }
+        if (!isset($this->IncludedRelationshipArray[$RelationshipNameStr])) {
+            return [];
+        }
+        $DisplayAttribute = $this->IncludedRelationshipArray[$RelationshipNameStr];
+        if ($RelationshipNameStr::QueryCount(dxQ::All()) > $this->RelationshipListLimit) {
+            if (!is_null($EntityObj)) {
+                if ($EntityObj->$RelationshipNameStr > 0) {
+                    $RelationshipObj = $RelationshipNameStr::Load($EntityObj->$RelationshipNameStr);
+                    if (!is_null($RelationshipObj)) {
+                        $ReturnArray[] = array("Id" => $EntityObj->$RelationshipNameStr,"DisplayValue"=>$RelationshipObj->$DisplayAttribute);
+                    }
+                }
+            }
+            $ReturnArray[] = array("Id" => "DATASET TOO LARGE");
+            return $ReturnArray;
+        }
+        $ObjectArray = $RelationshipNameStr::QueryArray(dxQ::All(),
+            dxQ::Clause(
+                dxQ::Select(dxQN::$RelationshipNameStr()->$DisplayAttribute),
+                dxQ::LimitInfo($this->RelationshipListLimit,0)
+            ));
+        
+        if (ProjectFunctions::getDataSetSize($ObjectArray) > 0) {
+            foreach ($ObjectArray as $item) {
+                $ReturnArray[] = array("Id" => $item->Id,"DisplayValue"=>$item->$DisplayAttribute);
+            }
+        }
+        return $ReturnArray;
+    }
+    public function saveObjectData() {
+        if (is_null($this->getInputValue("ObjectData"))) {
+            $this->setReturnValue("Result","Failed");
+            $this->setReturnValue("Message","No ".$this->EntityNameStr." object provided");
+            $this->presentOutput();
+        }
+        $EntityNodeNameStr = $this->EntityNameStr;
+        $InputEntityObj = json_decode($this->getInputValue("ObjectData"),true);
+        $EntityToUpdateObj = $EntityNodeNameStr::Load($this->getInputValue("Id",true));
+        if (is_null($EntityToUpdateObj)) {
+            $EntityToUpdateObj = new $EntityNodeNameStr();
+            $this->IsCreatingBool = true;
+        }
+        foreach($EntityToUpdateObj->getIterator() as $Attribute => $Value) {
+            if (in_array($Attribute, ProjectFunctions::get_divblox_Attributes())) {
+                continue;
+            }
+            if (isset($InputEntityObj[$Attribute])) {
+                if (in_array($Attribute, $this->RequiredAttributeArray)) {
+                    if (strlen($InputEntityObj[$Attribute]) == 0) {
+                        $this->setReturnValue("Result","Failed");
+                        $this->setReturnValue("Message","$Attribute not provided");
+                        $this->presentOutput();
+                    }
+                }
+                if (in_array($Attribute, $this->NumberValidationAttributeArray)) {
+                    if (!is_numeric($InputEntityObj[$Attribute])) {
+                        $this->setReturnValue("Result","Failed");
+                        $this->setReturnValue("Message","$Attribute must be numeric");
+                        $this->presentOutput();
+                    }
+                }
+                if (in_array($this->DataModelObj->getEntityAttributeType($this->EntityNameStr, $Attribute),["DATE","DATETIME"])) {
+                    if (is_string($InputEntityObj[$Attribute]) && (strlen($InputEntityObj[$Attribute]) > 0)) {
+                        $DateObj = new dxDateTime($InputEntityObj[$Attribute]);
+                        $EntityToUpdateObj->$Attribute = $DateObj;
+                    }
+                } else {
+                    if ($this->EntityNameStr == "Account") {
+                        if ($Attribute == "Password") {
+                            if (strlen($InputEntityObj[$Attribute]) > 0) {
+                                $EntityToUpdateObj->$Attribute = password_hash($InputEntityObj[$Attribute],PASSWORD_BCRYPT);
+                            }
+                        } else {
+                            $EntityToUpdateObj->$Attribute = $InputEntityObj[$Attribute];
+                        }
+                    } else {
+                        $EntityToUpdateObj->$Attribute = $InputEntityObj[$Attribute];
+                    }
+                }
+            } elseif (in_array($Attribute, $this->RequiredAttributeArray)) {
+                $this->setReturnValue("Result","Failed");
+                $this->setReturnValue("Message","$Attribute not provided");
+                $this->presentOutput();
+            }
+        }
+        if ((ProjectFunctions::getDataSetSize($this->ConstrainByArray) > 0) && $this->IsCreatingBool) {
+            foreach ($this->ConstrainByArray as $item) {
+                $ConstrainByObjStr = $item.'Object';
+                $EntityToUpdateObj->$ConstrainByObjStr = $item::Load($this->getInputValue('Constraining'.$item.'Id',true));
+            }
+        }
+        $EntityToUpdateObj->Save();
+        $this->assignAdditionalValuesAfterSave($EntityToUpdateObj);
+        $this->setReturnValue("Result","Success");
+        $this->setReturnValue("Message","Object updated");
+        $this->setReturnValue("Id",$EntityToUpdateObj->Id);
+        $this->presentOutput();
+    }
+    public function deleteObjectData() {
+        if (is_null($this->getInputValue("Id"))) {
+            $this->setReturnValue("Result","Failed");
+            $this->setReturnValue("Message","No ".$this->EntityNameStr." Id provided");
+            $this->presentOutput();
+        }
+        $EntityNodeNameStr = $this->EntityNameStr;
+        $EntityObj = $EntityNodeNameStr::Load($this->getInputValue("Id",true));
+        if (is_null($EntityObj)) {
+            $this->setReturnValue("Result","Failed");
+            $this->setReturnValue("Message",$this->EntityNameStr." not found");
+            $this->presentOutput();
+        } else {
+            $EntityObj->Delete();
+            $this->setReturnValue("Result","Success");
+            $this->setReturnValue("Message",$this->EntityNameStr." deleted");
+            $this->presentOutput();
+        }
+    }
+    public function assignAdditionalValuesAfterSave($EntityToUpdateObj = null) {
+        // JGL: This function is intended to be overridden in the child class for additional functionality
+        if (is_null($EntityToUpdateObj)) {
+            return;
+        }
+    }
+}
+/**
+ * Class EntityDataSeriesComponentController
+ * Responsible for managing the project-level behaviour of all server-side entity data table and list component scripts
+ */
+class EntityDataSeriesComponentController extends ProjectComponentController {
+    protected $DataModelObj;
+    protected $EntityNameStr = "";
+    protected $IncludedAttributeArray = [];
+    protected $IncludedRelationshipArray = []; // Indicates the relationships to include, along with witch attribute to display. e.g. ["Account" => "FirstName"]
+    protected $ConstrainByArray = [];
+    
+    public function __construct($ComponentNameStr = 'Component') {
+        $this->DataModelObj = new DataModel();
+        parent::__construct($ComponentNameStr);
+    }
+    public function getPage() {
+        error_log("Constrain by values: ".json_encode($this->ConstrainByArray));
+        $EntityNodeNameStr = $this->EntityNameStr;
+        $DefaultSortAttribute = $this->IncludedAttributeArray[0];
+        
+        if (is_null($this->getInputValue("ItemsPerPage"))) {
+            $this->setReturnValue("Result","Failed");
+            $this->setReturnValue("Message","No items per page provided");
+            $this->presentOutput();
+        }
+        $AccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),$this->EntityNameStr);
+        if (!in_array(AccessOperation::READ_STR, $AccessArray)) {
+            $this->setReturnValue("Result","Failed");
+            $this->setReturnValue("Message","Read access denied");
+            $this->presentOutput();
+        }
+        $Offset = $this->getInputValue("CurrentOffset",true);
+        if ($Offset < 0) {
+            $Offset = ($this->getInputValue("CurrentPage",true) - 1) * $this->getInputValue("ItemsPerPage",true);
+        }
+        if ($Offset < 0) {
+            $Offset = 0;
+        }
+        $QueryCondition = dxQ::All();
+    
+        foreach ($this->ConstrainByArray as $Relationship) {
+            $RelationshipNodeStr = $Relationship.'Object';
+            $QueryCondition = dxQ::AndCondition(
+                $QueryCondition,
+                dxQ::Equal(
+                    dxQN::$EntityNodeNameStr()->$RelationshipNodeStr->Id, $this->getInputValue('Constraining'.$Relationship.'Id',true)
+                )
+            );
+        }
+        
+        if (!is_null($this->getInputValue("SearchText"))) {
+            if (strlen($this->getInputValue("SearchText")) > 0) {
+                $SearchInputStr = "%".$this->getInputValue("SearchText")."%";
+                $QueryOrConditions = null;
+                foreach ($this->IncludedAttributeArray as $Attribute) {
+                    if (is_null($QueryOrConditions)) {
+                        $QueryOrConditions = dxQ::Like(dxQueryN::$EntityNodeNameStr()->$Attribute,$SearchInputStr);
+                    } else {
+                        $QueryOrConditions = dxQ::OrCondition($QueryOrConditions,
+                            dxQ::Like(dxQueryN::$EntityNodeNameStr()->$Attribute,$SearchInputStr));
+                    }
+                };
+                foreach ($this->IncludedRelationshipArray as $Relationship => $DisplayAttribute) {
+                    $RelationshipNodeStr = $Relationship.'Object';
+                    if (is_null($QueryOrConditions)) {
+                        $QueryOrConditions = dxQ::Like(dxQueryN::$EntityNodeNameStr()->$RelationshipNodeStr->$DisplayAttribute,$SearchInputStr);
+                    } else {
+                        $QueryOrConditions = dxQ::OrCondition($QueryOrConditions,
+                            dxQ::Like(dxQueryN::$EntityNodeNameStr()->$RelationshipNodeStr->$DisplayAttribute,$SearchInputStr));
+                    }
+                };
+            }
+        }
+        $OrderByClause = dxQ::OrderBy(dxQueryN::$EntityNodeNameStr()->$DefaultSortAttribute);
+        if (!is_null($this->getInputValue("SortOptions"))) {
+            if (ProjectFunctions::isJson($this->getInputValue("SortOptions"))) {
+                $SortOptionsArray = json_decode($this->getInputValue("SortOptions"));
+                if (is_array($SortOptionsArray)) {
+                    if (ProjectFunctions::getDataSetSize($SortOptionsArray) == 2) {
+                        $AttributeStr = $SortOptionsArray[0];
+                        $OrderByClause = dxQ::OrderBy(dxQueryN::$EntityNodeNameStr()->$AttributeStr,$SortOptionsArray[1]);
+                    }
+                }
+            }
+        }
+        $EntityArray = $EntityNodeNameStr::QueryArray(
+            $QueryCondition,
+            dxQ::Clause(
+                $OrderByClause,
+                dxQ::LimitInfo($this->getInputValue("ItemsPerPage",true),$Offset)
+            ));
+        $EntityReturnArray = [];
+        foreach($EntityArray as $EntityObj) {
+            $CompleteReturnArray = ["Id" => $EntityObj->Id];
+            foreach ($this->IncludedAttributeArray as $Attribute) {
+                if (in_array($this->DataModelObj->getEntityAttributeType($this->EntityNameStr, $Attribute),["DATE","DATETIME"])) {
+                    $CompleteReturnArray[$Attribute] = is_null($EntityObj->$Attribute)? 'N/A':$EntityObj->$Attribute->format(DATE_TIME_FORMAT_PHP_STR." H:i:s");
+                } else {
+                    $CompleteReturnArray[$Attribute] = is_null($EntityObj->$Attribute)? 'N/A':$EntityObj->$Attribute;
+                }
+            }
+            
+            foreach ($this->IncludedRelationshipArray as $Relationship => $DisplayAttribute) {
+                $RelationshipReturnStr = "N/A";
+                $RelationshipNodeStr = $this->DataModelObj->getEntityRelationshipPathAsNode($EntityObj,$this->EntityNameStr,$Relationship,[]);
+                if (!is_null($RelationshipNodeStr)) {
+                    if (!is_null($RelationshipNodeStr->$DisplayAttribute)) {
+                        if (in_array($this->DataModelObj->getEntityAttributeType($Relationship, $DisplayAttribute),["DATE","DATETIME"])) {
+                            $RelationshipReturnStr = $RelationshipNodeStr->$DisplayAttribute->format(DATE_TIME_FORMAT_PHP_STR." H:i:s");
+                        } else {
+                            $RelationshipReturnStr = is_null($RelationshipNodeStr->$DisplayAttribute)? 'N/A':$RelationshipNodeStr->$DisplayAttribute;
+                        }
+                    }
+                }
+                $CompleteReturnArray[$Relationship] = $RelationshipReturnStr;
+            }
+            array_push($EntityReturnArray,$CompleteReturnArray);
+        }
+        $this->setReturnValue("Result","Success");
+        $this->setReturnValue("Message","");
+        $this->setReturnValue("Page",$EntityReturnArray);
+        $this->setReturnValue("TotalCount",$EntityNodeNameStr::QueryCount($QueryCondition));
+        $this->presentOutput();
+    }
+    public function deleteSelection() {
+        $EntityNodeNameStr = $this->EntityNameStr;
+        if (is_null($this->getInputValue("SelectedItemArray"))) {
+            $this->setReturnValue("Result","Failed");
+            $this->setReturnValue("Message","No items provided");
+            $this->presentOutput();
+        }
+        $AccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),$this->EntityNameStr);
+        if (!in_array(AccessOperation::DELETE_STR, $AccessArray)) {
+            $this->setReturnValue("Result","Failed");
+            $this->setReturnValue("Message","Delete permission denied");
+            $this->presentOutput();
+        }
+        $DeleteItemsArray = json_decode($this->getInputValue("SelectedItemArray"));
+        $DeleteCount = 0;
+        foreach($DeleteItemsArray as $item) {
+            $EntityToDeleteObj = $EntityNodeNameStr::Load($item);
+            if (is_null($EntityToDeleteObj)) {
+                continue;
+            }
+            $EntityToDeleteObj->Delete();
+            $DeleteCount++;
+        }
+        $this->setReturnValue("Result","Success");
+        $this->setReturnValue("Message","$DeleteCount items deleted");
+        $this->presentOutput();
     }
 }
 //endregion
@@ -1276,6 +1590,13 @@ abstract class EmailManager extends EmailManager_Framework {
 }
 abstract class EmailSettings extends EmailSettings_Framework {
     public static $SMTPServer = 'smtp1.example.com';
+    public static $SMTPUsername = 'user@example.com';
+    public static $SMTPPassword = 'secret';
+    public static $SMTPPort = 587;
+    public static $SMTPDebugMode = \PHPMailer\PHPMailer\SMTP::DEBUG_OFF;// To enable verbose debug output, use DEBUG_SERVER
+    public static $SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;// Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` also accepted
+    public static $SMTPForceSecurityProtocol = false;
+    public static $SMTPAutoTLS = false;
 }
 //endregion
 ?>

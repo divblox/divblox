@@ -1,6 +1,3 @@
-<div class="col-md-6">
-                    <label>[RelationshipLabel]:</label>
-                    <select name="[Object-Name]" id="[Object-Name]" class="custom-select">
-                        <option value="">-Please Select-</option>
-                    </select>
+<div id="[Relationship]Wrapper" class="col-sm-6 col-md-4 col-xl-3 entity-instance-input-field">
+                    {[Relationship]}
                 </div>

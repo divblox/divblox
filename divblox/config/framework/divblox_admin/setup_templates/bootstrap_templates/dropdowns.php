@@ -99,6 +99,7 @@ foreach($Options as $Key => $Value) {
 // [element_id]_dropdowns Related functionality
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 getComponentElementById(this,"[element_id]_single_button").on("click", function() {
+    // Example code that executes when the button is clicked
 	// Add the trigger element to the loading element array. This shows a loading animation on the trigger
     // element while it waits for a response or function return
     let element_id = addTriggerElementToLoadingElementArray($(this).attr("id"),"Nice Loading text");
@@ -109,6 +110,7 @@ getComponentElementById(this,"[element_id]_single_button").on("click", function(
     },3000);
 }.bind(this));
 getComponentElementById(this,"[element_id]_another_action").on("click", function() {
+    // Example code that executes when the button is clicked
 	// Add the trigger element to the loading element array. This shows a loading animation on the trigger
     // element while it waits for a response or function return
     let element_id = addTriggerElementToLoadingElementArray($(this).attr("id"),"Nice Loading text");
@@ -119,6 +121,7 @@ getComponentElementById(this,"[element_id]_another_action").on("click", function
     },3000);
 }.bind(this));
 getComponentElementById(this,"[element_id]_something_else").on("click", function() {
+    // Example code that executes when the button is clicked
 	// Add the trigger element to the loading element array. This shows a loading animation on the trigger
     // element while it waits for a response or function return
     let element_id = addTriggerElementToLoadingElementArray($(this).attr("id"),"Nice Loading text");
@@ -129,6 +132,7 @@ getComponentElementById(this,"[element_id]_something_else").on("click", function
     },3000);
 }.bind(this));
 getComponentElementById(this,"[element_id]_separated_link").on("click", function() {
+    // Example code that executes when the button is clicked
 	// Add the trigger element to the loading element array. This shows a loading animation on the trigger
     // element while it waits for a response or function return
     let element_id = addTriggerElementToLoadingElementArray($(this).attr("id"),"Nice Loading text");

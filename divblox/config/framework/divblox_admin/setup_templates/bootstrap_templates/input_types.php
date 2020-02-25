@@ -9,53 +9,87 @@ if (isset($_POST['selected'])) {
 }
 $Options = [];
 
-// Form Controls Email
-$Options['FormControlEmail'] = '<form>
-    <div class="form-group">
-        <label for="[element_id]_FormControlInput">Email address</label>
-        <input id="[element_id]_FormControlInput" type="email" class="form-control" placeholder="name@example.com"/>
-    </div>
-</form>';
+// Form Controls Inputs
+$Options['FormControlText'] = '<div class="form-group">
+    <label for="[element_id]_FormControlInput">Input Text</label>
+    <input id="[element_id]_FormControlInput" type="text" class="form-control" placeholder="Text Input"/>
+</div>';
+$Options['FormControlEmail'] = '<div class="form-group">
+    <label for="[element_id]_FormControlInput">Email Address</label>
+    <input id="[element_id]_FormControlInput" type="email" class="form-control" placeholder="name@example.com"/>
+</div>';
+$Options['FormControlPassword'] = '<div class="form-group">
+    <label for="[element_id]_FormControlInput">Input Password</label>
+    <input id="[element_id]_FormControlInput" type="password" class="form-control" placeholder="Password Input"/>
+</div>';
+$Options['FormControlColor'] = '<div class="form-group">
+    <label for="[element_id]_FormControlInput">Input Color</label>
+    <input id="[element_id]_FormControlInput" type="color" class="form-control" placeholder="Color Input"/>
+</div>';
+$Options['FormControlDate'] = '<div class="form-group">
+    <label for="[element_id]_FormControlInput">Input Date</label>
+    <input id="[element_id]_FormControlInput" type="date" class="form-control" placeholder="Date Input"/>
+</div>';
+$Options['FormControlDateTimeLocal'] = '<div class="form-group">
+    <label for="[element_id]_FormControlInput">Input Date Time Local</label>
+    <input id="[element_id]_FormControlInput" type="datetime-local" class="form-control" placeholder="Date Time Input"/>
+</div>';
+$Options['FormControlMonth'] = '<div class="form-group">
+    <label for="[element_id]_FormControlInput">Input Month</label>
+    <input id="[element_id]_FormControlInput" type="month" class="form-control" placeholder="Month Input"/>
+</div>';
+$Options['FormControlWeek'] = '<div class="form-group">
+    <label for="[element_id]_FormControlInput">Input Week</label>
+    <input id="[element_id]_FormControlInput" type="week" class="form-control" placeholder="Week Input"/>
+</div>';
+$Options['FormControlNumber'] = '<div class="form-group">
+    <label for="[element_id]_FormControlInput">Input Number</label>
+    <input id="[element_id]_FormControlInput" type="number" class="form-control" placeholder="Number Input"/>
+</div>';
+$Options['FormControlTel'] = '<div class="form-group">
+    <label for="[element_id]_FormControlInput">Input Telephone</label>
+    <input id="[element_id]_FormControlInput" type="tel" class="form-control" placeholder="Telephone Input"/>
+</div>';
+$Options['FormControlTime'] = '<div class="form-group">
+    <label for="[element_id]_FormControlInput">Input Time</label>
+    <input id="[element_id]_FormControlInput" type="tel" class="form-control" placeholder="Time Input"/>
+</div>';
+$Options['FormControlUrl'] = '<div class="form-group">
+    <label for="[element_id]_FormControlInput">Input Url</label>
+    <input id="[element_id]_FormControlInput" type="url" class="form-control" placeholder="URL Input"/>
+</div>';
 // Form Control Group
-$Options['FormControlGroup'] = '<form> 
-    <div class="form-group">
-        <label for="[element_id]_FormControlSelect">Example select</label>
-        <select class="form-control" id="[element_id]_FormControlSelect">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-        </select>
-    </div>
-</form>';
+$Options['FormControlGroup'] = '<div class="form-group">
+    <label for="[element_id]_FormControlSelect">Example select</label>
+    <select class="form-control" id="[element_id]_FormControlSelect">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+    </select>
+   </div>';
 // Form Control Group Multiple
-$Options['FormControlGroupMultiple'] = '<form>
-    <div class="form-group">
-        <label for="[element_id]_FormControlSelect">Example multiple select</label>
-        <select multiple="true" class="form-control" id="[element_id]_FormControlSelect">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-        </select>
-    </div>
-</form>';
+$Options['FormControlGroupMultiple'] = '<div class="form-group">
+    <label for="[element_id]_FormControlSelect">Example multiple select</label>
+    <select multiple="true" class="form-control" id="[element_id]_FormControlSelect">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+    </select>
+</div>';
 // Form Control Text Area
-$Options['FormControlTextArea'] = '<form>
-    <div class="form-group">
-        <label for="[element_id]_FormControlTextArea">Example textarea</label>
-        <textarea class="form-control" id="[element_id]_FormControlTextArea" rows="3"></textarea>
-    </div>
-</form>';
+$Options['FormControlTextArea'] = '<div class="form-group">
+    <label for="[element_id]_FormControlTextArea">Example textarea</label>
+    <textarea class="form-control" id="[element_id]_FormControlTextArea" rows="3"></textarea>
+</div>';
 // Range Input / Slider
-$Options['RangeInput'] = '<form>
-    <div class="form-group">
-        <label for="[element_id]_FormControlRange">Example Range input</label>
-        <input type="range" class="form-control-range" id="[element_id]_FormControlRange"/>
-    </div>
-</form>';
+$Options['RangeInput'] = '<div class="form-group">
+    <label for="[element_id]_FormControlRange">Example Range input</label>
+    <input type="range" class="form-control-range" id="[element_id]_FormControlRange"/>
+</div>';
 // Check Boxes
 $Options['CheckBoxes'] = '<div>
     <div class="form-check">

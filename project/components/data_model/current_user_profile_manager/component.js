@@ -12,20 +12,16 @@ if (typeof component_classes['data_model_current_user_profile_manager'] === "und
 			this.required_validation_array = ['EmailAddress','Username',].concat(this.data_validation_array).concat(this.custom_validation_array);
 		}
 		reset(inputs) {
-			dxRequestInternal(getRootPath()+'project/assets/php/global_request_handler.php',{f:"getCurrentAccountId"},
-				function(data_obj) {
-					if (typeof data_obj.CurrentAccountId === "undefined") {
-						loadPageComponent("login");
-					} else if (data_obj.CurrentAccountId < 1) {
-						loadPageComponent("login");
-					} else {
-						this.setAccountId(data_obj.CurrentAccountId);
-						this.loadAccount();
-					}
-				}.bind(this),
-				function(data_obj) {
+			getCurrentUserAttribute("Id",function(attribute) {
+				if (attribute == null) {
 					loadPageComponent("login");
-				}.bind(this));
+				} else if (attribute < 1) {
+					loadPageComponent("login");
+				} else {
+					this.setAccountId(attribute);
+					this.loadAccount();
+				}
+			}.bind(this));
 			super.reset(inputs);
 		}
 		eventTriggered(event_name,parameters_obj) {

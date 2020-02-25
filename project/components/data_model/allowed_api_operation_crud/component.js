@@ -9,8 +9,8 @@ if (typeof component_classes['data_model_allowed_api_operation_crud'] === "undef
 				{"component_load_path":"data_model/allowed_api_operation_crud_create","parent_element":"data_create","arguments":{"uid":this.getUid()+"_allowed_api_operation_crud_create_component"}}];
 			// Sub component config end
 		}
-		reset(inputs) {
-			super.reset(inputs);
+		reset(inputs,propagate) {
+			super.reset(inputs,propagate);
 			this.toggleSubView("data_series_wrapper");
 		}
 		eventTriggered(event_name,parameters_obj) {

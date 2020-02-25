@@ -1,4 +1,5 @@
 <?php
+die("This script is being deprecated. All functions have been moved to /api/global_functions/. See /api/global_functions/doc for more information");
 require('../../../divblox/divblox.php');
 if (!isset($_POST["f"])) {
     die(json_encode(array("Result" => "Failed","Message" => "Invalid function")));
