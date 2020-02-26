@@ -7913,6 +7913,11 @@ abstract class AccessManager_Base {
         if (in_array($ObjectType, $AllAccessObjectArray)) {
             return [AccessOperation::CREATE_STR,AccessOperation::READ_STR,AccessOperation::UPDATE_STR,AccessOperation::DELETE_STR];
         }
+        
+        if (ProjectFunctions::getCurrentUserRole() == "Administrator") {
+            return [AccessOperation::CREATE_STR,AccessOperation::READ_STR,AccessOperation::UPDATE_STR,AccessOperation::DELETE_STR];
+        }
+        
         $CurrentObject = $ObjectType::Load($ObjectId);
         if (is_null($CurrentObject)) {
             return [AccessOperation::CREATE_STR,AccessOperation::READ_STR];
