@@ -12,7 +12,9 @@ abstract class ComponentRoleBasedAccess {
             "account_additional_info_manager",
             "account_additional_info_manager_data_series",
             "account_additional_info_manager_create",
-            "account_additional_info_manager_update"],
+            "account_additional_info_manager_update",
+            "ticket_crud_create",
+            "ticket_status_crud_create"],
         // Define an array for each additional user role in the system here.
     );
 }
