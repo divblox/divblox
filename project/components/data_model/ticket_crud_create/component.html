@@ -1,4 +1,4 @@
-<div xmlns="http://www.w3.org/1999/xhtml" id="ComponentWrapper" class="component-wrapper">
+<div id="ComponentWrapper" class="component-wrapper">
     <div id="ComponentPlaceholder" class="component_placeholder component_placeholder_data_view">
         <div id="ComponentFeedback"></div>
     </div>
@@ -24,15 +24,24 @@
                     <div id="TicketUniqueIdWrapper" class="entity-instance-input-field">
                         {TicketUniqueId}
                     </div>
-                    <div xmlns="" id="1sACl">
-                        <button type="button" id="1sACl_btn" class="btn btn-link">Generate UNique ID</button>
-                    </div>
                 </div>
                 <div class="col-sm-6 col-md-4 col-xl-3">
                     <div id="TicketStatusWrapper" class="entity-instance-input-field">
                         {TicketStatus}
                     </div>
                 </div>
+                
+                <div class="col-sm-6 col-md-4 col-xl-3">
+                    <div id="AccountWrapper" class="entity-instance-input-field">
+                        {Account}
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-4 col-xl-3">
+                    <div id="CategoryWrapper" class="entity-instance-input-field">
+                        {Category}
+                    </div>
+                </div>
+                
             </div>
             <div id="AdditionalInputFieldsWrapper" class="row">
                 <!-- Fields that are included by the component, but not provided for by wrappers will be rendered here... -->

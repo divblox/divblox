@@ -1,6 +1,6 @@
 <?php
 require(PROJECT_ROOT_STR.'/api/data_model/ApiCrudBase.class.php');
-class ApiCrudTicketStatus extends ApiCrudBase {
+class ApiCrudCategory extends ApiCrudBase {
     public static function initCrudApi($EntityNameStr = null) {
         parent::initCrudApi($EntityNameStr);
     }

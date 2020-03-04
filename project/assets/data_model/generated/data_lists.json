@@ -11,5 +11,11 @@
     "Value1",
     "Value2",
     "Value3"
+  ],
+  "TicketStatuses": [
+    "New",
+    "In Progress",
+    "Complete",
+    "Backlog"
   ]
 }

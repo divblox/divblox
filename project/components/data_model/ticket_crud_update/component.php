@@ -2,8 +2,8 @@
 require("../../../../divblox/divblox.php");
 class TicketController extends EntityInstanceComponentController {
     protected $EntityNameStr = "Ticket";
-    protected $IncludedAttributeArray = ["TicketName","TicketDescription","DueDate","TicketUniqueId",];
-    protected $IncludedRelationshipArray = ["TicketStatus" => "StatusLabel",];
+    protected $IncludedAttributeArray = ["TicketName","TicketDescription","DueDate","TicketUniqueId","TicketStatus",];
+    protected $IncludedRelationshipArray = ["Account" => "FullName","Category" => "CategoryLabel",];
     protected $ConstrainByArray = [];
     protected $RequiredAttributeArray = [];
     protected $NumberValidationAttributeArray = [];

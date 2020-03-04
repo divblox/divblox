@@ -499,6 +499,19 @@
             }
         }
     },
+    "Category": {
+        "Attributes": {
+            "CategoryLabel": {
+                "DisplayType": "text",
+                "InputLabel": "Category Label:",
+                "DefaultValue": "",
+                "Placeholder": "Category Label",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Category Label"
+            }
+        },
+        "Relationships": []
+    },
     "ClientAuthenticationToken": {
         "Attributes": {
             "Token": {
@@ -915,6 +928,14 @@
                 "Placeholder": "Ticket Unique Id",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Ticket Unique Id"
+            },
+            "TicketStatus": {
+                "DisplayType": "text",
+                "InputLabel": "Ticket Status:",
+                "DefaultValue": "",
+                "Placeholder": "Ticket Status",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Ticket Status"
             }
         },
         "Relationships": {
@@ -926,28 +947,15 @@
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Account"
             },
-            "TicketStatus": {
+            "Category": {
                 "DisplayType": "list",
-                "InputLabel": "Ticket Status:",
+                "InputLabel": "Category:",
                 "DefaultValue": "-Please Select-",
-                "Placeholder": "TicketStatus",
+                "Placeholder": "Category",
                 "Data": null,
-                "ValidationMessage": "Please provide a valid Ticket Status"
+                "ValidationMessage": "Please provide a valid Category"
             }
         }
-    },
-    "TicketStatus": {
-        "Attributes": {
-            "StatusLabel": {
-                "DisplayType": "text",
-                "InputLabel": "Status Label:",
-                "DefaultValue": "",
-                "Placeholder": "Status Label",
-                "Data": null,
-                "ValidationMessage": "Please provide a valid Status Label"
-            }
-        },
-        "Relationships": []
     },
     "UserRole": {
         "Attributes": {

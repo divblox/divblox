@@ -1,43 +1,36 @@
 <?php
 /**
- * The abstract TicketGen class defined here is
+ * The abstract CategoryGen class defined here is
  * code-generated and contains all the basic CRUD-type functionality as well as
  * basic methods to handle relationships and index-based loading.
  *
- * To use, you should use the Ticket subclass which
- * extends this TicketGen class.
+ * To use, you should use the Category subclass which
+ * extends this CategoryGen class.
  *
  * Because subsequent re-code generations will overwrite any changes to this
  * file, you should leave this file unaltered to prevent yourself from losing
  * any information or code changes.  All customizations should be done by
  * overriding existing or implementing new methods, properties and variables
- * in the Ticket class.
+ * in the Category class.
  *
  * @package divblox_app
  * @subpackage GeneratedDataObjects
  * @property-read integer $Id the value for intId (Read-Only PK)
- * @property string $TicketName the value for strTicketName 
- * @property string $TicketDescription the value for strTicketDescription 
- * @property dxDateTime $DueDate the value for dttDueDate 
- * @property string $TicketUniqueId the value for strTicketUniqueId (Unique)
+ * @property string $CategoryLabel the value for strCategoryLabel 
  * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
- * @property integer $Account the value for intAccount 
- * @property string $SearchMetaInfo the value for strSearchMetaInfo 
- * @property string $TicketStatus the value for strTicketStatus 
  * @property integer $ObjectOwner the value for intObjectOwner 
- * @property integer $Category the value for intCategory 
- * @property Account $AccountObject the value for the Account object referenced by intAccount 
- * @property Category $CategoryObject the value for the Category object referenced by intCategory 
+ * @property-read Ticket $_Ticket the value for the private _objTicket (Read-Only) if set due to an expansion on the Ticket.Category reverse relationship
+ * @property-read Ticket[] $_TicketArray the value for the private _objTicketArray (Read-Only) if set due to an ExpandAsArray on the Ticket.Category reverse relationship
  * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
  */
-class TicketGen extends dxBaseClass implements IteratorAggregate {
+class CategoryGen extends dxBaseClass implements IteratorAggregate {
 
     ///////////////////////////////////////////////////////////////////////
     // PROTECTED MEMBER VARIABLES and TEXT FIELD MAXLENGTHS (if applicable)
     ///////////////////////////////////////////////////////////////////////
 
     /**
-     * Protected member variable that maps to the database PK Identity column Ticket.Id
+     * Protected member variable that maps to the database PK Identity column Category.Id
      * @var integer intId
      */
     protected $intId;
@@ -45,41 +38,16 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
-     * Protected member variable that maps to the database column Ticket.TicketName
-     * @var string strTicketName
+     * Protected member variable that maps to the database column Category.CategoryLabel
+     * @var string strCategoryLabel
      */
-    protected $strTicketName;
-    const TicketNameMaxLength = 50;
-    const TicketNameDefault = null;
+    protected $strCategoryLabel;
+    const CategoryLabelMaxLength = 50;
+    const CategoryLabelDefault = null;
 
 
     /**
-     * Protected member variable that maps to the database column Ticket.TicketDescription
-     * @var string strTicketDescription
-     */
-    protected $strTicketDescription;
-    const TicketDescriptionDefault = null;
-
-
-    /**
-     * Protected member variable that maps to the database column Ticket.DueDate
-     * @var dxDateTime dttDueDate
-     */
-    protected $dttDueDate;
-    const DueDateDefault = null;
-
-
-    /**
-     * Protected member variable that maps to the database column Ticket.TicketUniqueId
-     * @var string strTicketUniqueId
-     */
-    protected $strTicketUniqueId;
-    const TicketUniqueIdMaxLength = 25;
-    const TicketUniqueIdDefault = null;
-
-
-    /**
-     * Protected member variable that maps to the database column Ticket.LastUpdated
+     * Protected member variable that maps to the database column Category.LastUpdated
      * @var string strLastUpdated
      */
     protected $strLastUpdated;
@@ -87,32 +55,7 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
-     * Protected member variable that maps to the database column Ticket.Account
-     * @var integer intAccount
-     */
-    protected $intAccount;
-    const AccountDefault = null;
-
-
-    /**
-     * Protected member variable that maps to the database column Ticket.SearchMetaInfo
-     * @var string strSearchMetaInfo
-     */
-    protected $strSearchMetaInfo;
-    const SearchMetaInfoDefault = null;
-
-
-    /**
-     * Protected member variable that maps to the database column Ticket.TicketStatus
-     * @var string strTicketStatus
-     */
-    protected $strTicketStatus;
-    const TicketStatusMaxLength = 25;
-    const TicketStatusDefault = null;
-
-
-    /**
-     * Protected member variable that maps to the database column Ticket.ObjectOwner
+     * Protected member variable that maps to the database column Category.ObjectOwner
      * @var integer intObjectOwner
      */
     protected $intObjectOwner;
@@ -120,12 +63,20 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
-     * Protected member variable that maps to the database column Ticket.Category
-     * @var integer intCategory
+     * Private member variable that stores a reference to a single Ticket object
+     * (of type Ticket), if this Category object was restored with
+     * an expansion on the Ticket association table.
+     * @var Ticket _objTicket;
      */
-    protected $intCategory;
-    const CategoryDefault = null;
+    private $_objTicket;
 
+    /**
+     * Private member variable that stores a reference to an array of Ticket objects
+     * (of type Ticket[]), if this Category object was restored with
+     * an ExpandAsArray on the Ticket association table.
+     * @var Ticket[] _objTicketArray;
+     */
+    private $_objTicketArray = null;
 
     /**
      * Protected array of virtual attributes for this object (e.g. extra/other calculated and/or non-object bound
@@ -146,42 +97,15 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
     // PROTECTED MEMBER OBJECTS
     ///////////////////////////////
 
-    /**
-     * Protected member variable that contains the object pointed by the reference
-     * in the database column Ticket.Account.
-     *
-     * NOTE: Always use the AccountObject property getter to correctly retrieve this Account object.
-     * (Because this class implements late binding, this variable reference MAY be null.)
-     * @var Account objAccountObject
-     */
-    protected $objAccountObject;
-
-    /**
-     * Protected member variable that contains the object pointed by the reference
-     * in the database column Ticket.Category.
-     *
-     * NOTE: Always use the CategoryObject property getter to correctly retrieve this Category object.
-     * (Because this class implements late binding, this variable reference MAY be null.)
-     * @var Category objCategoryObject
-     */
-    protected $objCategoryObject;
-
 
     /**
      * Initialize each property with default values from database definition
      */
     public function Initialize() {
-        $this->intId = Ticket::IdDefault;
-        $this->strTicketName = Ticket::TicketNameDefault;
-        $this->strTicketDescription = Ticket::TicketDescriptionDefault;
-        $this->dttDueDate = (Ticket::DueDateDefault === null)?null:new dxDateTime(Ticket::DueDateDefault);
-        $this->strTicketUniqueId = Ticket::TicketUniqueIdDefault;
-        $this->strLastUpdated = Ticket::LastUpdatedDefault;
-        $this->intAccount = Ticket::AccountDefault;
-        $this->strSearchMetaInfo = Ticket::SearchMetaInfoDefault;
-        $this->strTicketStatus = Ticket::TicketStatusDefault;
-        $this->intObjectOwner = Ticket::ObjectOwnerDefault;
-        $this->intCategory = Ticket::CategoryDefault;
+        $this->intId = Category::IdDefault;
+        $this->strCategoryLabel = Category::CategoryLabelDefault;
+        $this->strLastUpdated = Category::LastUpdatedDefault;
+        $this->intObjectOwner = Category::ObjectOwnerDefault;
     }
 
     ///////////////////////////////
@@ -197,24 +121,24 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Load a Ticket from PK Info
+     * Load a Category from PK Info
      * @param integer $intId
      * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
-     * @return Ticket
+     * @return Category
      */
     public static function Load($intId, $objOptionalClauses = null) {
         $strCacheKey = false;
         if (ProjectFunctions::$objCacheProvider && !$objOptionalClauses && ProjectFunctions::$Database[1]->Caching) {
-            $strCacheKey = ProjectFunctions::$objCacheProvider->CreateKey(ProjectFunctions::$Database[1]->Database, 'Ticket', $intId);
+            $strCacheKey = ProjectFunctions::$objCacheProvider->CreateKey(ProjectFunctions::$Database[1]->Database, 'Category', $intId);
             $objCachedObject = ProjectFunctions::$objCacheProvider->Get($strCacheKey);
             if ($objCachedObject !== false) {
                 return $objCachedObject;
             }
         }
         // Use QuerySingle to Perform the Query
-        $objToReturn = Ticket::QuerySingle(
+        $objToReturn = Category::QuerySingle(
             dxQuery::AndCondition(
-                dxQuery::Equal(dxQueryN::Ticket()->Id, $intId)
+                dxQuery::Equal(dxQueryN::Category()->Id, $intId)
             ),
             $objOptionalClauses
         );
@@ -225,17 +149,17 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Load all Tickets
+     * Load all Categories
      * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
-     * @return Ticket[]
+     * @return Category[]
      */
     public static function LoadAll($objOptionalClauses = null) {
         if (func_num_args() > 1) {
             throw new dxCallerException("LoadAll must be called with an array of optional clauses as a single argument");
         }
-        // Call Ticket::QueryArray to perform the LoadAll query
+        // Call Category::QueryArray to perform the LoadAll query
         try {
-            return Ticket::QueryArray(dxQuery::All(), $objOptionalClauses);
+            return Category::QueryArray(dxQuery::All(), $objOptionalClauses);
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();
             throw $objExc;
@@ -243,12 +167,12 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Count all Tickets
+     * Count all Categories
      * @return int
      */
     public static function CountAll() {
-        // Call Ticket::QueryCount to perform the CountAll query
-        return Ticket::QueryCount(dxQuery::All());
+        // Call Category::QueryCount to perform the CountAll query
+        return Category::QueryCount(dxQuery::All());
     }
 
     ///////////////////////////////
@@ -267,10 +191,10 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
      */
     protected static function BuildQueryStatement(&$objQueryBuilder, dxQueryCondition $objConditions, $objOptionalClauses, $mixParameterArray, $blnCountOnly) {
         // Get the Database Object for this Class
-        $objDatabase = Ticket::GetDatabase();
+        $objDatabase = Category::GetDatabase();
 
-        // Create/Build out the QueryBuilder object with Ticket-specific SELET and FROM fields
-        $objQueryBuilder = new dxQueryBuilder($objDatabase, 'Ticket');
+        // Create/Build out the QueryBuilder object with Category-specific SELET and FROM fields
+        $objQueryBuilder = new dxQueryBuilder($objDatabase, 'Category');
 
         $blnAddAllFieldsToSelect = true;
         if ($objDatabase->OnlyFullGroupBy) {
@@ -289,9 +213,9 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
             }
         }
         if ($blnAddAllFieldsToSelect) {
-            Ticket::GetSelectFields($objQueryBuilder, null, dxQuery::extractSelectClause($objOptionalClauses));
+            Category::GetSelectFields($objQueryBuilder, null, dxQuery::extractSelectClause($objOptionalClauses));
         }
-        $objQueryBuilder->AddFromItem('Ticket');
+        $objQueryBuilder->AddFromItem('Category');
 
         // Set "CountOnly" option (if applicable)
         if ($blnCountOnly)
@@ -338,23 +262,23 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Static divblox Query method to query for a single Ticket object.
+     * Static divblox Query method to query for a single Category object.
      * Uses BuildQueryStatment to perform most of the work.
      * @param dxQueryCondition $objConditions any conditions on the query, itself
      * @param dxQueryClause[] $objOptionalClausees additional optional dxQueryClause objects for this query
      * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
-     * @return Ticket the queried object
+     * @return Category the queried object
      */
     public static function QuerySingle(dxQueryCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
         // Get the Query Statement
         try {
-            $strQuery = Ticket::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+            $strQuery = Category::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();
             throw $objExc;
         }
 
-        // Perform the Query, Get the First Row, and Instantiate a new Ticket object
+        // Perform the Query, Get the First Row, and Instantiate a new Category object
         $objDbResult = $objQueryBuilder->Database->Query($strQuery);
 
         // Do we have to expand anything?
@@ -362,7 +286,7 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
             $objToReturn = array();
             $objPrevItemArray = array();
             while ($objDbRow = $objDbResult->GetNextRow()) {
-                $objItem = Ticket::InstantiateDbRow($objDbRow, null, $objQueryBuilder->ExpandAsArrayNode, $objPrevItemArray, $objQueryBuilder->ColumnAliasArray);
+                $objItem = Category::InstantiateDbRow($objDbRow, null, $objQueryBuilder->ExpandAsArrayNode, $objPrevItemArray, $objQueryBuilder->ColumnAliasArray);
                 if ($objItem) {
                     $objToReturn[] = $objItem;
                     $objPrevItemArray[$objItem->intId][] = $objItem;
@@ -379,22 +303,22 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
             $objDbRow = $objDbResult->GetNextRow();
             if(null === $objDbRow)
                 return null;
-            return Ticket::InstantiateDbRow($objDbRow, null, null, null, $objQueryBuilder->ColumnAliasArray);
+            return Category::InstantiateDbRow($objDbRow, null, null, null, $objQueryBuilder->ColumnAliasArray);
         }
     }
 
     /**
-     * Static divblox Query method to query for an array of Ticket objects.
+     * Static divblox Query method to query for an array of Category objects.
      * Uses BuildQueryStatment to perform most of the work.
      * @param dxQueryCondition $objConditions any conditions on the query, itself
      * @param dxQueryClause[] $objOptionalClausees additional optional dxQueryClause objects for this query
      * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
-     * @return Ticket[] the queried objects as an array
+     * @return Category[] the queried objects as an array
      */
     public static function QueryArray(dxQueryCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
         // Get the Query Statement
         try {
-            $strQuery = Ticket::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+            $strQuery = Category::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();
             throw $objExc;
@@ -402,7 +326,7 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
 
         // Perform the Query and Instantiate the Array Result
         $objDbResult = $objQueryBuilder->Database->Query($strQuery);
-        return Ticket::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNode, $objQueryBuilder->ColumnAliasArray);
+        return Category::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNode, $objQueryBuilder->ColumnAliasArray);
     }
 
     /**
@@ -416,7 +340,7 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
     public static function QueryCursor(dxQueryCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
         // Get the query statement
         try {
-            $strQuery = Ticket::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+            $strQuery = Category::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();
             throw $objExc;
@@ -431,7 +355,7 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Static divblox Query method to query for a count of Ticket objects.
+     * Static divblox Query method to query for a count of Category objects.
      * Uses BuildQueryStatment to perform most of the work.
      * @param dxQueryCondition $objConditions any conditions on the query, itself
      * @param dxQueryClause[] $objOptionalClausees additional optional dxQueryClause objects for this query
@@ -441,7 +365,7 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
     public static function QueryCount(dxQueryCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
         // Get the Query Statement
         try {
-            $strQuery = Ticket::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, true);
+            $strQuery = Category::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, true);
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();
             throw $objExc;
@@ -482,16 +406,16 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
 
     public static function QueryArrayCached(dxQueryCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null, $blnForceUpdate = false) {
         // Get the Database Object for this Class
-        $objDatabase = Ticket::GetDatabase();
+        $objDatabase = Category::GetDatabase();
 
-        $strQuery = Ticket::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+        $strQuery = Category::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
 
-        $objCache = new dxCache('dxquery/ticket', $strQuery);
+        $objCache = new dxCache('dxquery/category', $strQuery);
         $cacheData = $objCache->GetData();
 
         if (!$cacheData || $blnForceUpdate) {
             $objDbResult = $objQueryBuilder->Database->Query($strQuery);
-            $arrResult = Ticket::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNode, $objQueryBuilder->ColumnAliasArray);
+            $arrResult = Category::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNode, $objQueryBuilder->ColumnAliasArray);
             $objCache->SaveData(serialize($arrResult));
         } else {
             $arrResult = unserialize($cacheData);
@@ -501,7 +425,7 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Updates a dxQueryBuilder with the SELECT fields for this Ticket
+     * Updates a dxQueryBuilder with the SELECT fields for this Category
      * @param dxQueryBuilder $objBuilder the Query Builder object to update
      * @param string $strPrefix optional prefix to add to the SELECT fields
      */
@@ -510,7 +434,7 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
             $strTableName = $strPrefix;
             $strAliasPrefix = $strPrefix . '__';
         } else {
-            $strTableName = 'Ticket';
+            $strTableName = 'Category';
             $strAliasPrefix = '';
         }
 
@@ -519,16 +443,9 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
             $objSelect->AddSelectItems($objBuilder, $strTableName, $strAliasPrefix);
         } else {
             $objBuilder->AddSelectItem($strTableName, 'Id', $strAliasPrefix . 'Id');
-            $objBuilder->AddSelectItem($strTableName, 'TicketName', $strAliasPrefix . 'TicketName');
-            $objBuilder->AddSelectItem($strTableName, 'TicketDescription', $strAliasPrefix . 'TicketDescription');
-            $objBuilder->AddSelectItem($strTableName, 'DueDate', $strAliasPrefix . 'DueDate');
-            $objBuilder->AddSelectItem($strTableName, 'TicketUniqueId', $strAliasPrefix . 'TicketUniqueId');
+            $objBuilder->AddSelectItem($strTableName, 'CategoryLabel', $strAliasPrefix . 'CategoryLabel');
             $objBuilder->AddSelectItem($strTableName, 'LastUpdated', $strAliasPrefix . 'LastUpdated');
-            $objBuilder->AddSelectItem($strTableName, 'Account', $strAliasPrefix . 'Account');
-            $objBuilder->AddSelectItem($strTableName, 'SearchMetaInfo', $strAliasPrefix . 'SearchMetaInfo');
-            $objBuilder->AddSelectItem($strTableName, 'TicketStatus', $strAliasPrefix . 'TicketStatus');
             $objBuilder->AddSelectItem($strTableName, 'ObjectOwner', $strAliasPrefix . 'ObjectOwner');
-            $objBuilder->AddSelectItem($strTableName, 'Category', $strAliasPrefix . 'Category');
         }
     }
     ///////////////////////////////
@@ -613,16 +530,16 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Instantiate a Ticket from a Database Row.
+     * Instantiate a Category from a Database Row.
      * Takes in an optional strAliasPrefix, used in case another Object::InstantiateDbRow
-     * is calling this Ticket::InstantiateDbRow in order to perform
+     * is calling this Category::InstantiateDbRow in order to perform
      * early binding on referenced objects.
      * @param DatabaseRowBase $objDbRow
      * @param string $strAliasPrefix
      * @param dxQueryBaseNode $objExpandAsArrayNode
      * @param dxBaseClass $arrPreviousItem
      * @param string[] $strColumnAliasArray
-     * @return mixed Either a Ticket, or false to indicate the dbrow was used in an expansion, or null to indicate that this leaf is a duplicate.
+     * @return mixed Either a Category, or false to indicate the dbrow was used in an expansion, or null to indicate that this leaf is a duplicate.
     */
     public static function InstantiateDbRow($objDbRow, $strAliasPrefix = null, $objExpandAsArrayNode = null, $objPreviousItemArray = null, $strColumnAliasArray = array()) {
         // If blank row, return null
@@ -641,48 +558,27 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
                 is_array($objPreviousItemArray) &&
                 ProjectFunctions::getDataSetSize($objPreviousItemArray)) {
 
-            if (Ticket::ExpandArray ($objDbRow, $strAliasPrefix, $objExpandAsArrayNode, $objPreviousItemArray, $strColumnAliasArray)) {
+            if (Category::ExpandArray ($objDbRow, $strAliasPrefix, $objExpandAsArrayNode, $objPreviousItemArray, $strColumnAliasArray)) {
                 return false; // db row was used but no new object was created
             }
         }
 
-        // Create a new instance of the Ticket object
-        $objToReturn = new Ticket();
+        // Create a new instance of the Category object
+        $objToReturn = new Category();
         $objToReturn->__blnRestored = true;
 
         $strAlias = $strAliasPrefix . 'Id';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intId = $objDbRow->GetColumn($strAliasName, 'Integer');
-        $strAlias = $strAliasPrefix . 'TicketName';
+        $strAlias = $strAliasPrefix . 'CategoryLabel';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->strTicketName = $objDbRow->GetColumn($strAliasName, 'VarChar');
-        $strAlias = $strAliasPrefix . 'TicketDescription';
-        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->strTicketDescription = $objDbRow->GetColumn($strAliasName, 'Blob');
-        $strAlias = $strAliasPrefix . 'DueDate';
-        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->dttDueDate = $objDbRow->GetColumn($strAliasName, 'Date');
-        $strAlias = $strAliasPrefix . 'TicketUniqueId';
-        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->strTicketUniqueId = $objDbRow->GetColumn($strAliasName, 'VarChar');
+        $objToReturn->strCategoryLabel = $objDbRow->GetColumn($strAliasName, 'VarChar');
         $strAlias = $strAliasPrefix . 'LastUpdated';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->strLastUpdated = $objDbRow->GetColumn($strAliasName, 'VarChar');
-        $strAlias = $strAliasPrefix . 'Account';
-        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->intAccount = $objDbRow->GetColumn($strAliasName, 'Integer');
-        $strAlias = $strAliasPrefix . 'SearchMetaInfo';
-        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->strSearchMetaInfo = $objDbRow->GetColumn($strAliasName, 'Blob');
-        $strAlias = $strAliasPrefix . 'TicketStatus';
-        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->strTicketStatus = $objDbRow->GetColumn($strAliasName, 'VarChar');
         $strAlias = $strAliasPrefix . 'ObjectOwner';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intObjectOwner = $objDbRow->GetColumn($strAliasName, 'Integer');
-        $strAlias = $strAliasPrefix . 'Category';
-        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->intCategory = $objDbRow->GetColumn($strAliasName, 'Integer');
 
         if (isset($objPreviousItemArray) && is_array($objPreviousItemArray)) {
             foreach ($objPreviousItemArray as $objPreviousItem) {
@@ -711,34 +607,35 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
         }
 
         if (!$strAliasPrefix)
-            $strAliasPrefix = 'Ticket__';
+            $strAliasPrefix = 'Category__';
 
-        // Check for AccountObject Early Binding
-        $strAlias = $strAliasPrefix . 'Account__Id';
+
+
+
+        // Check for Ticket Virtual Binding
+        $strAlias = $strAliasPrefix . 'ticket__Id';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objExpansionNode = (empty($objExpansionAliasArray['ticket']) ? null : $objExpansionAliasArray['ticket']);
+        $blnExpanded = ($objExpansionNode && $objExpansionNode->ExpandAsArray);
+        if ($blnExpanded && null === $objToReturn->_objTicketArray)
+            $objToReturn->_objTicketArray = array();
         if (!is_null($objDbRow->GetColumn($strAliasName))) {
-            $objExpansionNode = (empty($objExpansionAliasArray['Account']) ? null : $objExpansionAliasArray['Account']);
-            $objToReturn->objAccountObject = Account::InstantiateDbRow($objDbRow, $strAliasPrefix . 'Account__', $objExpansionNode, null, $strColumnAliasArray);
+            if ($blnExpanded) {
+                $objToReturn->_objTicketArray[] = Ticket::InstantiateDbRow($objDbRow, $strAliasPrefix . 'ticket__', $objExpansionNode, null, $strColumnAliasArray);
+            } elseif (is_null($objToReturn->_objTicket)) {
+                $objToReturn->_objTicket = Ticket::InstantiateDbRow($objDbRow, $strAliasPrefix . 'ticket__', $objExpansionNode, null, $strColumnAliasArray);
+            }
         }
-        // Check for CategoryObject Early Binding
-        $strAlias = $strAliasPrefix . 'Category__Id';
-        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        if (!is_null($objDbRow->GetColumn($strAliasName))) {
-            $objExpansionNode = (empty($objExpansionAliasArray['Category']) ? null : $objExpansionAliasArray['Category']);
-            $objToReturn->objCategoryObject = Category::InstantiateDbRow($objDbRow, $strAliasPrefix . 'Category__', $objExpansionNode, null, $strColumnAliasArray);
-        }
-
-
 
         return $objToReturn;
     }
 
     /**
-     * Instantiate an array of Tickets from a Database Result
+     * Instantiate an array of Categories from a Database Result
      * @param DatabaseResultBase $objDbResult
      * @param dxQueryBaseNode $objExpandAsArrayNode
      * @param string[] $strColumnAliasArray
-     * @return Ticket[]
+     * @return Category[]
      */
     public static function InstantiateDbResult(dxDatabaseResultBase $objDbResult, $objExpandAsArrayNode = null, $strColumnAliasArray = null) {
         $objToReturn = array();
@@ -755,7 +652,7 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
             $objToReturn = array();
             $objPrevItemArray = array();
             while ($objDbRow = $objDbResult->GetNextRow()) {
-                $objItem = Ticket::InstantiateDbRow($objDbRow, null, $objExpandAsArrayNode, $objPrevItemArray, $strColumnAliasArray);
+                $objItem = Category::InstantiateDbRow($objDbRow, null, $objExpandAsArrayNode, $objPrevItemArray, $strColumnAliasArray);
                 if ($objItem) {
                     $objToReturn[] = $objItem;
                     $objPrevItemArray[$objItem->intId][] = $objItem;
@@ -763,7 +660,7 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
             }
         } else {
             while ($objDbRow = $objDbResult->GetNextRow())
-                $objToReturn[] = Ticket::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
+                $objToReturn[] = Category::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
         }
 
         return $objToReturn;
@@ -771,11 +668,11 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
-     * Instantiate a single Ticket object from a query cursor (e.g. a DB ResultSet).
+     * Instantiate a single Category object from a query cursor (e.g. a DB ResultSet).
      * Cursor is automatically moved to the "next row" of the result set.
      * Will return NULL if no cursor or if the cursor has no more rows in the resultset.
      * @param dxDatabaseResultBase $objDbResult cursor resource
-     * @return Ticket next row resulting from the query
+     * @return Category next row resulting from the query
      */
     public static function InstantiateCursor(dxDatabaseResultBase $objDbResult) {
         // If blank resultset, then return empty result
@@ -796,7 +693,7 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
         }
 
         // Load up the return result with a row and return it
-        return Ticket::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
+        return Category::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
     }
 
     ///////////////////////////////////////////////////
@@ -804,130 +701,18 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
     ///////////////////////////////////////////////////
 
     /**
-     * Load a single Ticket object,
+     * Load a single Category object,
      * by Id Index(es)
      * @param integer $intId
      * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
-     * @return Ticket
+     * @return Category
     */
     public static function LoadById($intId, $objOptionalClauses = null) {
-        return Ticket::QuerySingle(
+        return Category::QuerySingle(
             dxQuery::AndCondition(
-                dxQuery::Equal(dxQueryN::Ticket()->Id, $intId)
+                dxQuery::Equal(dxQueryN::Category()->Id, $intId)
             ),
             $objOptionalClauses
-        );
-    }
-
-    /**
-     * Load a single Ticket object,
-     * by TicketUniqueId Index(es)
-     * @param string $strTicketUniqueId
-     * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
-     * @return Ticket
-    */
-    public static function LoadByTicketUniqueId($strTicketUniqueId, $objOptionalClauses = null) {
-        return Ticket::QuerySingle(
-            dxQuery::AndCondition(
-                dxQuery::Equal(dxQueryN::Ticket()->TicketUniqueId, $strTicketUniqueId)
-            ),
-            $objOptionalClauses
-        );
-    }
-
-    /**
-     * Load an array of Ticket objects,
-     * by Account Index(es)
-     * @param integer $intAccount
-     * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
-     * @return Ticket[]
-    */
-    public static function LoadArrayByAccount($intAccount, $objOptionalClauses = null) {
-        // Call Ticket::QueryArray to perform the LoadArrayByAccount query
-        try {
-            return Ticket::QueryArray(
-                dxQuery::Equal(dxQueryN::Ticket()->Account, $intAccount),
-                $objOptionalClauses);
-        } catch (dxCallerException $objExc) {
-            $objExc->IncrementOffset();
-            throw $objExc;
-        }
-    }
-
-    /**
-     * Count Tickets
-     * by Account Index(es)
-     * @param integer $intAccount
-     * @return int
-    */
-    public static function CountByAccount($intAccount) {
-        // Call Ticket::QueryCount to perform the CountByAccount query
-        return Ticket::QueryCount(
-            dxQuery::Equal(dxQueryN::Ticket()->Account, $intAccount)
-        );
-    }
-
-    /**
-     * Load an array of Ticket objects,
-     * by TicketStatus Index(es)
-     * @param string $strTicketStatus
-     * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
-     * @return Ticket[]
-    */
-    public static function LoadArrayByTicketStatus($strTicketStatus, $objOptionalClauses = null) {
-        // Call Ticket::QueryArray to perform the LoadArrayByTicketStatus query
-        try {
-            return Ticket::QueryArray(
-                dxQuery::Equal(dxQueryN::Ticket()->TicketStatus, $strTicketStatus),
-                $objOptionalClauses);
-        } catch (dxCallerException $objExc) {
-            $objExc->IncrementOffset();
-            throw $objExc;
-        }
-    }
-
-    /**
-     * Count Tickets
-     * by TicketStatus Index(es)
-     * @param string $strTicketStatus
-     * @return int
-    */
-    public static function CountByTicketStatus($strTicketStatus) {
-        // Call Ticket::QueryCount to perform the CountByTicketStatus query
-        return Ticket::QueryCount(
-            dxQuery::Equal(dxQueryN::Ticket()->TicketStatus, $strTicketStatus)
-        );
-    }
-
-    /**
-     * Load an array of Ticket objects,
-     * by Category Index(es)
-     * @param integer $intCategory
-     * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
-     * @return Ticket[]
-    */
-    public static function LoadArrayByCategory($intCategory, $objOptionalClauses = null) {
-        // Call Ticket::QueryArray to perform the LoadArrayByCategory query
-        try {
-            return Ticket::QueryArray(
-                dxQuery::Equal(dxQueryN::Ticket()->Category, $intCategory),
-                $objOptionalClauses);
-        } catch (dxCallerException $objExc) {
-            $objExc->IncrementOffset();
-            throw $objExc;
-        }
-    }
-
-    /**
-     * Count Tickets
-     * by Category Index(es)
-     * @param integer $intCategory
-     * @return int
-    */
-    public static function CountByCategory($intCategory) {
-        // Call Ticket::QueryCount to perform the CountByCategory query
-        return Ticket::QueryCount(
-            dxQuery::Equal(dxQueryN::Ticket()->Category, $intCategory)
         );
     }
     ////////////////////////////////////////////////////
@@ -940,39 +725,32 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
     //////////////////////////
 
     /**
-    * Save this Ticket
+    * Save this Category
     * @param bool $blnForceInsert
     * @param bool $blnForceUpdate
     * @return int
     */
     public function Save($blnForceInsert = false, $blnForceUpdate = false) {
-        $ObjectAccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),"Ticket",$this->intId);
+        $ObjectAccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),"Category",$this->intId);
         // Get the Database Object for this Class
-        $objDatabase = Ticket::GetDatabase();
+        $objDatabase = Category::GetDatabase();
         $mixToReturn = null;
         if (!is_numeric($this->intObjectOwner)) {
             $this->intObjectOwner = ProjectFunctions::getCurrentAccountId();
         }
-        $ExistingObj = Ticket::Load($this->intId);
+        $ExistingObj = Category::Load($this->intId);
         $newAuditLogEntry = new AuditLogEntry();
         $ChangedArray = array();
         $newAuditLogEntry->EntryTimeStamp = dxDateTime::Now();
         $newAuditLogEntry->ObjectId = $this->intId;
-        $newAuditLogEntry->ObjectName = 'Ticket';
+        $newAuditLogEntry->ObjectName = 'Category';
         $newAuditLogEntry->UserEmail = ProjectFunctions::getCurrentUserEmailForAudit();
         if (!$ExistingObj) {
             $newAuditLogEntry->ModificationType = 'Create';
             $ChangedArray = array_merge($ChangedArray,array("Id" => $this->intId));
-            $ChangedArray = array_merge($ChangedArray,array("TicketName" => $this->strTicketName));
-            $ChangedArray = array_merge($ChangedArray,array("TicketDescription" => $this->strTicketDescription));
-            $ChangedArray = array_merge($ChangedArray,array("DueDate" => $this->dttDueDate));
-            $ChangedArray = array_merge($ChangedArray,array("TicketUniqueId" => $this->strTicketUniqueId));
+            $ChangedArray = array_merge($ChangedArray,array("CategoryLabel" => $this->strCategoryLabel));
             $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
-            $ChangedArray = array_merge($ChangedArray,array("Account" => $this->intAccount));
-            $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
-            $ChangedArray = array_merge($ChangedArray,array("TicketStatus" => $this->strTicketStatus));
             $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
-            $ChangedArray = array_merge($ChangedArray,array("Category" => $this->intCategory));
             $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         } else {
             $newAuditLogEntry->ModificationType = 'Update';
@@ -985,36 +763,12 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
                 //$ChangedArray = array_merge($ChangedArray,array("Id" => "From: ".$ExistingValueStr." to: ".$this->intId));
             }
             $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->TicketName)) {
-                $ExistingValueStr = $ExistingObj->TicketName;
+            if (!is_null($ExistingObj->CategoryLabel)) {
+                $ExistingValueStr = $ExistingObj->CategoryLabel;
             }
-            if ($ExistingObj->TicketName != $this->strTicketName) {
-                $ChangedArray = array_merge($ChangedArray,array("TicketName" => array("Before" => $ExistingValueStr,"After" => $this->strTicketName)));
-                //$ChangedArray = array_merge($ChangedArray,array("TicketName" => "From: ".$ExistingValueStr." to: ".$this->strTicketName));
-            }
-            $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->TicketDescription)) {
-                $ExistingValueStr = $ExistingObj->TicketDescription;
-            }
-            if ($ExistingObj->TicketDescription != $this->strTicketDescription) {
-                $ChangedArray = array_merge($ChangedArray,array("TicketDescription" => array("Before" => $ExistingValueStr,"After" => $this->strTicketDescription)));
-                //$ChangedArray = array_merge($ChangedArray,array("TicketDescription" => "From: ".$ExistingValueStr." to: ".$this->strTicketDescription));
-            }
-            $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->DueDate)) {
-                $ExistingValueStr = $ExistingObj->DueDate;
-            }
-            if ($ExistingObj->DueDate != $this->dttDueDate) {
-                $ChangedArray = array_merge($ChangedArray,array("DueDate" => array("Before" => $ExistingValueStr,"After" => $this->dttDueDate)));
-                //$ChangedArray = array_merge($ChangedArray,array("DueDate" => "From: ".$ExistingValueStr." to: ".$this->dttDueDate));
-            }
-            $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->TicketUniqueId)) {
-                $ExistingValueStr = $ExistingObj->TicketUniqueId;
-            }
-            if ($ExistingObj->TicketUniqueId != $this->strTicketUniqueId) {
-                $ChangedArray = array_merge($ChangedArray,array("TicketUniqueId" => array("Before" => $ExistingValueStr,"After" => $this->strTicketUniqueId)));
-                //$ChangedArray = array_merge($ChangedArray,array("TicketUniqueId" => "From: ".$ExistingValueStr." to: ".$this->strTicketUniqueId));
+            if ($ExistingObj->CategoryLabel != $this->strCategoryLabel) {
+                $ChangedArray = array_merge($ChangedArray,array("CategoryLabel" => array("Before" => $ExistingValueStr,"After" => $this->strCategoryLabel)));
+                //$ChangedArray = array_merge($ChangedArray,array("CategoryLabel" => "From: ".$ExistingValueStr." to: ".$this->strCategoryLabel));
             }
             $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->LastUpdated)) {
@@ -1025,30 +779,6 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
                 //$ChangedArray = array_merge($ChangedArray,array("LastUpdated" => "From: ".$ExistingValueStr." to: ".$this->strLastUpdated));
             }
             $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->Account)) {
-                $ExistingValueStr = $ExistingObj->Account;
-            }
-            if ($ExistingObj->Account != $this->intAccount) {
-                $ChangedArray = array_merge($ChangedArray,array("Account" => array("Before" => $ExistingValueStr,"After" => $this->intAccount)));
-                //$ChangedArray = array_merge($ChangedArray,array("Account" => "From: ".$ExistingValueStr." to: ".$this->intAccount));
-            }
-            $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->SearchMetaInfo)) {
-                $ExistingValueStr = $ExistingObj->SearchMetaInfo;
-            }
-            if ($ExistingObj->SearchMetaInfo != $this->strSearchMetaInfo) {
-                $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => array("Before" => $ExistingValueStr,"After" => $this->strSearchMetaInfo)));
-                //$ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => "From: ".$ExistingValueStr." to: ".$this->strSearchMetaInfo));
-            }
-            $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->TicketStatus)) {
-                $ExistingValueStr = $ExistingObj->TicketStatus;
-            }
-            if ($ExistingObj->TicketStatus != $this->strTicketStatus) {
-                $ChangedArray = array_merge($ChangedArray,array("TicketStatus" => array("Before" => $ExistingValueStr,"After" => $this->strTicketStatus)));
-                //$ChangedArray = array_merge($ChangedArray,array("TicketStatus" => "From: ".$ExistingValueStr." to: ".$this->strTicketStatus));
-            }
-            $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->ObjectOwner)) {
                 $ExistingValueStr = $ExistingObj->ObjectOwner;
             }
@@ -1056,78 +786,49 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
                 $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => array("Before" => $ExistingValueStr,"After" => $this->intObjectOwner)));
                 //$ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => "From: ".$ExistingValueStr." to: ".$this->intObjectOwner));
             }
-            $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->Category)) {
-                $ExistingValueStr = $ExistingObj->Category;
-            }
-            if ($ExistingObj->Category != $this->intCategory) {
-                $ChangedArray = array_merge($ChangedArray,array("Category" => array("Before" => $ExistingValueStr,"After" => $this->intCategory)));
-                //$ChangedArray = array_merge($ChangedArray,array("Category" => "From: ".$ExistingValueStr." to: ".$this->intCategory));
-            }
             $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         }
         try {
             if ((!$this->__blnRestored) || ($blnForceInsert)) {
                 if (!in_array(AccessOperation::CREATE_STR,$ObjectAccessArray)) {
                     // This user is not allowed to create an object of this type
-                    throw new Exception("User is not allowed to perform operation ".AccessOperation::CREATE_STR." on entity of type 'Ticket'. Allowed access is ".json_encode($ObjectAccessArray));
+                    throw new Exception("User is not allowed to perform operation ".AccessOperation::CREATE_STR." on entity of type 'Category'. Allowed access is ".json_encode($ObjectAccessArray));
                 }
                 // Perform an INSERT query
                 $objDatabase->NonQuery('
-                INSERT INTO `Ticket` (
-							`TicketName`,
-							`TicketDescription`,
-							`DueDate`,
-							`TicketUniqueId`,
-							`Account`,
-							`SearchMetaInfo`,
-							`TicketStatus`,
-							`ObjectOwner`,
-							`Category`
+                INSERT INTO `Category` (
+							`CategoryLabel`,
+							`ObjectOwner`
 						) VALUES (
-							' . $objDatabase->SqlVariable($this->strTicketName) . ',
-							' . $objDatabase->SqlVariable($this->strTicketDescription) . ',
-							' . $objDatabase->SqlVariable($this->dttDueDate) . ',
-							' . $objDatabase->SqlVariable($this->strTicketUniqueId) . ',
-							' . $objDatabase->SqlVariable($this->intAccount) . ',
-							' . $objDatabase->SqlVariable($this->strSearchMetaInfo) . ',
-							' . $objDatabase->SqlVariable($this->strTicketStatus) . ',
-							' . $objDatabase->SqlVariable($this->intObjectOwner) . ',
-							' . $objDatabase->SqlVariable($this->intCategory) . '
+							' . $objDatabase->SqlVariable($this->strCategoryLabel) . ',
+							' . $objDatabase->SqlVariable($this->intObjectOwner) . '
 						)
                 ');
 					// Update Identity column and return its value
-                $mixToReturn = $this->intId = $objDatabase->InsertId('Ticket', 'Id');
+                $mixToReturn = $this->intId = $objDatabase->InsertId('Category', 'Id');
             } else {
                 // Perform an UPDATE query
                 // First checking for Optimistic Locking constraints (if applicable)
                 if (!in_array(AccessOperation::UPDATE_STR,$ObjectAccessArray)) {
                     // This user is not allowed to create an object of this type
-                    throw new Exception("User is not allowed to perform operation ".AccessOperation::UPDATE_STR." on entity of type 'Ticket'. Allowed access is ".json_encode($ObjectAccessArray));
+                    throw new Exception("User is not allowed to perform operation ".AccessOperation::UPDATE_STR." on entity of type 'Category'. Allowed access is ".json_encode($ObjectAccessArray));
                 }
                 if (!$blnForceUpdate) {
                     // Perform the Optimistic Locking check
                     $objResult = $objDatabase->Query('
-                    SELECT `LastUpdated` FROM `Ticket` WHERE
+                    SELECT `LastUpdated` FROM `Category` WHERE
 							`Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
 
                 $objRow = $objResult->FetchArray();
                 if ($objRow[0] != $this->strLastUpdated)
-                    throw new dxOptimisticLockingException('Ticket');
+                    throw new dxOptimisticLockingException('Category');
             }
 
             // Perform the UPDATE query
             $objDatabase->NonQuery('
-            UPDATE `Ticket` SET
-							`TicketName` = ' . $objDatabase->SqlVariable($this->strTicketName) . ',
-							`TicketDescription` = ' . $objDatabase->SqlVariable($this->strTicketDescription) . ',
-							`DueDate` = ' . $objDatabase->SqlVariable($this->dttDueDate) . ',
-							`TicketUniqueId` = ' . $objDatabase->SqlVariable($this->strTicketUniqueId) . ',
-							`Account` = ' . $objDatabase->SqlVariable($this->intAccount) . ',
-							`SearchMetaInfo` = ' . $objDatabase->SqlVariable($this->strSearchMetaInfo) . ',
-							`TicketStatus` = ' . $objDatabase->SqlVariable($this->strTicketStatus) . ',
-							`ObjectOwner` = ' . $objDatabase->SqlVariable($this->intObjectOwner) . ',
-							`Category` = ' . $objDatabase->SqlVariable($this->intCategory) . '
+            UPDATE `Category` SET
+							`CategoryLabel` = ' . $objDatabase->SqlVariable($this->strCategoryLabel) . ',
+							`ObjectOwner` = ' . $objDatabase->SqlVariable($this->intObjectOwner) . '
             WHERE
 							`Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
             }
@@ -1140,14 +841,14 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
             $newAuditLogEntry->ObjectId = $this->intId;
             $newAuditLogEntry->Save();
         } catch(dxCallerException $e) {
-            error_log('Could not save audit log while saving Ticket. Details: '.$newAuditLogEntry->getJson().'<br>Error details: '.$e->getMessage());
+            error_log('Could not save audit log while saving Category. Details: '.$newAuditLogEntry->getJson().'<br>Error details: '.$e->getMessage());
         }
         // Update __blnRestored and any Non-Identity PK Columns (if applicable)
         $this->__blnRestored = true;
 
         // Update Local Timestamp
         $objResult = $objDatabase->Query('SELECT `LastUpdated` FROM
-                                            `Ticket` WHERE
+                                            `Category` WHERE
                 							`Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
 
         $objRow = $objResult->FetchArray();
@@ -1159,50 +860,43 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
         return $mixToReturn;
     }
     /**
-     * Delete this Ticket
+     * Delete this Category
      * @return void
      */
     public function Delete() {
         if ((is_null($this->intId)))
-            throw new dxUndefinedPrimaryKeyException('Cannot delete this Ticket with an unset primary key.');
+            throw new dxUndefinedPrimaryKeyException('Cannot delete this Category with an unset primary key.');
 
-        $ObjectAccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),"Ticket",$this->intId);
+        $ObjectAccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),"Category",$this->intId);
         if (!in_array(AccessOperation::DELETE_STR,$ObjectAccessArray)) {
             // This user is not allowed to delete an object of this type
-            throw new Exception("User is not allowed to perform operation ".AccessOperation::DELETE_STR." on entity of type 'Ticket'. Allowed access is ".json_encode($ObjectAccessArray));
+            throw new Exception("User is not allowed to perform operation ".AccessOperation::DELETE_STR." on entity of type 'Category'. Allowed access is ".json_encode($ObjectAccessArray));
         }
 
         // Get the Database Object for this Class
-        $objDatabase = Ticket::GetDatabase();
+        $objDatabase = Category::GetDatabase();
         $newAuditLogEntry = new AuditLogEntry();
         $ChangedArray = array();
         $newAuditLogEntry->EntryTimeStamp = dxDateTime::Now();
         $newAuditLogEntry->ObjectId = $this->intId;
-        $newAuditLogEntry->ObjectName = 'Ticket';
+        $newAuditLogEntry->ObjectName = 'Category';
         $newAuditLogEntry->UserEmail = ProjectFunctions::getCurrentUserEmailForAudit();
         $newAuditLogEntry->ModificationType = 'Delete';
         $ChangedArray = array_merge($ChangedArray,array("Id" => $this->intId));
-        $ChangedArray = array_merge($ChangedArray,array("TicketName" => $this->strTicketName));
-        $ChangedArray = array_merge($ChangedArray,array("TicketDescription" => $this->strTicketDescription));
-        $ChangedArray = array_merge($ChangedArray,array("DueDate" => $this->dttDueDate));
-        $ChangedArray = array_merge($ChangedArray,array("TicketUniqueId" => $this->strTicketUniqueId));
+        $ChangedArray = array_merge($ChangedArray,array("CategoryLabel" => $this->strCategoryLabel));
         $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
-        $ChangedArray = array_merge($ChangedArray,array("Account" => $this->intAccount));
-        $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
-        $ChangedArray = array_merge($ChangedArray,array("TicketStatus" => $this->strTicketStatus));
         $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
-        $ChangedArray = array_merge($ChangedArray,array("Category" => $this->intCategory));
         $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         try {
             $newAuditLogEntry->Save();
         } catch(dxCallerException $e) {
-            error_log('Could not save audit log while deleting Ticket. Details: '.$newAuditLogEntry->getJson().'<br>Error details: '.$e->getMessage());
+            error_log('Could not save audit log while deleting Category. Details: '.$newAuditLogEntry->getJson().'<br>Error details: '.$e->getMessage());
         }
 
         // Perform the SQL Query
         $objDatabase->NonQuery('
             DELETE FROM
-                `Ticket`
+                `Category`
             WHERE
                 `Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
 
@@ -1210,28 +904,28 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Delete this Ticket ONLY from the cache
+     * Delete this Category ONLY from the cache
      * @return void
      */
     public function DeleteCache() {
         if (ProjectFunctions::$objCacheProvider && ProjectFunctions::$Database[1]->Caching) {
-            $strCacheKey = ProjectFunctions::$objCacheProvider->CreateKey(ProjectFunctions::$Database[1]->Database, 'Ticket', $this->intId);
+            $strCacheKey = ProjectFunctions::$objCacheProvider->CreateKey(ProjectFunctions::$Database[1]->Database, 'Category', $this->intId);
             ProjectFunctions::$objCacheProvider->Delete($strCacheKey);
         }
     }
 
     /**
-     * Delete all Tickets
+     * Delete all Categories
      * @return void
      */
     public static function DeleteAll() {
         // Get the Database Object for this Class
-        $objDatabase = Ticket::GetDatabase();
+        $objDatabase = Category::GetDatabase();
 
         // Perform the Query
         $objDatabase->NonQuery('
             DELETE FROM
-                `Ticket`');
+                `Category`');
 
         if (ProjectFunctions::$objCacheProvider && ProjectFunctions::$Database[1]->Caching) {
             ProjectFunctions::$objCacheProvider->DeleteAll();
@@ -1239,46 +933,39 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Truncate Ticket table
+     * Truncate Category table
      * @return void
      */
     public static function Truncate() {
         // Get the Database Object for this Class
-        $objDatabase = Ticket::GetDatabase();
+        $objDatabase = Category::GetDatabase();
 
         // Perform the Query
         $objDatabase->NonQuery('
-            TRUNCATE `Ticket`');
+            TRUNCATE `Category`');
 
         if (ProjectFunctions::$objCacheProvider && ProjectFunctions::$Database[1]->Caching) {
             ProjectFunctions::$objCacheProvider->DeleteAll();
         }
     }
     /**
-     * Reload this Ticket from the database.
+     * Reload this Category from the database.
      * @return void
      */
     public function Reload() {
         // Make sure we are actually Restored from the database
         if (!$this->__blnRestored)
-            throw new dxCallerException('Cannot call Reload() on a new, unsaved Ticket object.');
+            throw new dxCallerException('Cannot call Reload() on a new, unsaved Category object.');
 
         $this->DeleteCache();
 
         // Reload the Object
-        $objReloaded = Ticket::Load($this->intId);
+        $objReloaded = Category::Load($this->intId);
 
         // Update $this's local variables to match
-        $this->strTicketName = $objReloaded->strTicketName;
-        $this->strTicketDescription = $objReloaded->strTicketDescription;
-        $this->dttDueDate = $objReloaded->dttDueDate;
-        $this->strTicketUniqueId = $objReloaded->strTicketUniqueId;
+        $this->strCategoryLabel = $objReloaded->strCategoryLabel;
         $this->strLastUpdated = $objReloaded->strLastUpdated;
-        $this->Account = $objReloaded->Account;
-        $this->strSearchMetaInfo = $objReloaded->strSearchMetaInfo;
-        $this->strTicketStatus = $objReloaded->strTicketStatus;
         $this->intObjectOwner = $objReloaded->intObjectOwner;
-        $this->Category = $objReloaded->Category;
     }
     ////////////////////
     // PUBLIC OVERRIDERS
@@ -1303,33 +990,12 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
                  */
                 return $this->intId;
 
-            case 'TicketName':
+            case 'CategoryLabel':
                 /**
-                 * Gets the value for strTicketName 
+                 * Gets the value for strCategoryLabel 
                  * @return string
                  */
-                return $this->strTicketName;
-
-            case 'TicketDescription':
-                /**
-                 * Gets the value for strTicketDescription 
-                 * @return string
-                 */
-                return $this->strTicketDescription;
-
-            case 'DueDate':
-                /**
-                 * Gets the value for dttDueDate 
-                 * @return dxDateTime
-                 */
-                return $this->dttDueDate;
-
-            case 'TicketUniqueId':
-                /**
-                 * Gets the value for strTicketUniqueId (Unique)
-                 * @return string
-                 */
-                return $this->strTicketUniqueId;
+                return $this->strCategoryLabel;
 
             case 'LastUpdated':
                 /**
@@ -1338,27 +1004,6 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
                  */
                 return $this->strLastUpdated;
 
-            case 'Account':
-                /**
-                 * Gets the value for intAccount 
-                 * @return integer
-                 */
-                return $this->intAccount;
-
-            case 'SearchMetaInfo':
-                /**
-                 * Gets the value for strSearchMetaInfo 
-                 * @return string
-                 */
-                return $this->strSearchMetaInfo;
-
-            case 'TicketStatus':
-                /**
-                 * Gets the value for strTicketStatus 
-                 * @return string
-                 */
-                return $this->strTicketStatus;
-
             case 'ObjectOwner':
                 /**
                  * Gets the value for intObjectOwner 
@@ -1366,50 +1011,31 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
                  */
                 return $this->intObjectOwner;
 
-            case 'Category':
-                /**
-                 * Gets the value for intCategory 
-                 * @return integer
-                 */
-                return $this->intCategory;
-
 
             ///////////////////
             // Member Objects
             ///////////////////
-            case 'AccountObject':
-                /**
-                 * Gets the value for the Account object referenced by intAccount 
-                 * @return Account
-                 */
-                try {
-                    if ((!$this->objAccountObject) && (!is_null($this->intAccount)))
-                        $this->objAccountObject = Account::Load($this->intAccount);
-                    return $this->objAccountObject;
-                } catch (dxCallerException $objExc) {
-                    $objExc->IncrementOffset();
-                    throw $objExc;
-                }
-
-            case 'CategoryObject':
-                /**
-                 * Gets the value for the Category object referenced by intCategory 
-                 * @return Category
-                 */
-                try {
-                    if ((!$this->objCategoryObject) && (!is_null($this->intCategory)))
-                        $this->objCategoryObject = Category::Load($this->intCategory);
-                    return $this->objCategoryObject;
-                } catch (dxCallerException $objExc) {
-                    $objExc->IncrementOffset();
-                    throw $objExc;
-                }
-
 
             ////////////////////////////
             // Virtual Object References (Many to Many and Reverse References)
             // (If restored via a "Many-to" expansion)
             ////////////////////////////
+
+            case '_Ticket':
+                /**
+                 * Gets the value for the private _objTicket (Read-Only)
+                 * if set due to an expansion on the Ticket.Category reverse relationship
+                 * @return Ticket
+                 */
+                return $this->_objTicket;
+
+            case '_TicketArray':
+                /**
+                 * Gets the value for the private _objTicketArray (Read-Only)
+                 * if set due to an ExpandAsArray on the Ticket.Category reverse relationship
+                 * @return Ticket[]
+                 */
+                return $this->_objTicketArray;
 
 
             case '__Restored':
@@ -1437,93 +1063,14 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
             ///////////////////
             // Member Variables
             ///////////////////
-            case 'TicketName':
+            case 'CategoryLabel':
                 /**
-                 * Sets the value for strTicketName 
+                 * Sets the value for strCategoryLabel 
                  * @param string $mixValue
                  * @return string
                  */
                 try {
-                    return ($this->strTicketName = dxType::Cast($mixValue, dxType::String));
-                } catch (dxCallerException $objExc) {
-                    $objExc->IncrementOffset();
-                    throw $objExc;
-                }
-
-            case 'TicketDescription':
-                /**
-                 * Sets the value for strTicketDescription 
-                 * @param string $mixValue
-                 * @return string
-                 */
-                try {
-                    return ($this->strTicketDescription = dxType::Cast($mixValue, dxType::String));
-                } catch (dxCallerException $objExc) {
-                    $objExc->IncrementOffset();
-                    throw $objExc;
-                }
-
-            case 'DueDate':
-                /**
-                 * Sets the value for dttDueDate 
-                 * @param dxDateTime $mixValue
-                 * @return dxDateTime
-                 */
-                try {
-                    return ($this->dttDueDate = dxType::Cast($mixValue, dxType::DateTime));
-                } catch (dxCallerException $objExc) {
-                    $objExc->IncrementOffset();
-                    throw $objExc;
-                }
-
-            case 'TicketUniqueId':
-                /**
-                 * Sets the value for strTicketUniqueId (Unique)
-                 * @param string $mixValue
-                 * @return string
-                 */
-                try {
-                    return ($this->strTicketUniqueId = dxType::Cast($mixValue, dxType::String));
-                } catch (dxCallerException $objExc) {
-                    $objExc->IncrementOffset();
-                    throw $objExc;
-                }
-
-            case 'Account':
-                /**
-                 * Sets the value for intAccount 
-                 * @param integer $mixValue
-                 * @return integer
-                 */
-                try {
-                    $this->objAccountObject = null;
-                    return ($this->intAccount = dxType::Cast($mixValue, dxType::Integer));
-                } catch (dxCallerException $objExc) {
-                    $objExc->IncrementOffset();
-                    throw $objExc;
-                }
-
-            case 'SearchMetaInfo':
-                /**
-                 * Sets the value for strSearchMetaInfo 
-                 * @param string $mixValue
-                 * @return string
-                 */
-                try {
-                    return ($this->strSearchMetaInfo = dxType::Cast($mixValue, dxType::String));
-                } catch (dxCallerException $objExc) {
-                    $objExc->IncrementOffset();
-                    throw $objExc;
-                }
-
-            case 'TicketStatus':
-                /**
-                 * Sets the value for strTicketStatus 
-                 * @param string $mixValue
-                 * @return string
-                 */
-                try {
-                    return ($this->strTicketStatus = dxType::Cast($mixValue, dxType::String));
+                    return ($this->strCategoryLabel = dxType::Cast($mixValue, dxType::String));
                 } catch (dxCallerException $objExc) {
                     $objExc->IncrementOffset();
                     throw $objExc;
@@ -1542,88 +1089,10 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
                     throw $objExc;
                 }
 
-            case 'Category':
-                /**
-                 * Sets the value for intCategory 
-                 * @param integer $mixValue
-                 * @return integer
-                 */
-                try {
-                    $this->objCategoryObject = null;
-                    return ($this->intCategory = dxType::Cast($mixValue, dxType::Integer));
-                } catch (dxCallerException $objExc) {
-                    $objExc->IncrementOffset();
-                    throw $objExc;
-                }
-
 
             ///////////////////
             // Member Objects
             ///////////////////
-            case 'AccountObject':
-                /**
-                 * Sets the value for the Account object referenced by intAccount 
-                 * @param Account $mixValue
-                 * @return Account
-                 */
-                if (is_null($mixValue)) {
-                    $this->intAccount = null;
-                    $this->objAccountObject = null;
-                    return null;
-                } else {
-                    // Make sure $mixValue actually is a Account object
-                    try {
-                        $mixValue = dxType::Cast($mixValue, 'Account');
-                    } catch (dxInvalidCastException $objExc) {
-                        $objExc->IncrementOffset();
-                        throw $objExc;
-                    }
-
-                    // Make sure $mixValue is a SAVED Account object
-                    if (is_null($mixValue->Id))
-                        throw new dxCallerException('Unable to set an unsaved AccountObject for this Ticket');
-
-                    // Update Local Member Variables
-                    $this->objAccountObject = $mixValue;
-                    $this->intAccount = $mixValue->Id;
-
-                    // Return $mixValue
-                    return $mixValue;
-                }
-                break;
-
-            case 'CategoryObject':
-                /**
-                 * Sets the value for the Category object referenced by intCategory 
-                 * @param Category $mixValue
-                 * @return Category
-                 */
-                if (is_null($mixValue)) {
-                    $this->intCategory = null;
-                    $this->objCategoryObject = null;
-                    return null;
-                } else {
-                    // Make sure $mixValue actually is a Category object
-                    try {
-                        $mixValue = dxType::Cast($mixValue, 'Category');
-                    } catch (dxInvalidCastException $objExc) {
-                        $objExc->IncrementOffset();
-                        throw $objExc;
-                    }
-
-                    // Make sure $mixValue is a SAVED Category object
-                    if (is_null($mixValue->Id))
-                        throw new dxCallerException('Unable to set an unsaved CategoryObject for this Ticket');
-
-                    // Update Local Member Variables
-                    $this->objCategoryObject = $mixValue;
-                    $this->intCategory = $mixValue->Id;
-
-                    // Return $mixValue
-                    return $mixValue;
-                }
-                break;
-
             default:
                 try {
                     return parent::__set($strName, $mixValue);
@@ -1650,6 +1119,155 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
 
 
 
+    // Related Objects' Methods for Ticket
+    //-------------------------------------------------------------------
+
+    /**
+     * Gets all associated Tickets as an array of Ticket objects
+     * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
+     * @return Ticket[]
+    */
+    public function GetTicketArray($objOptionalClauses = null) {
+        if ((is_null($this->intId)))
+            return array();
+
+        try {
+            return Ticket::LoadArrayByCategory($this->intId, $objOptionalClauses);
+        } catch (dxCallerException $objExc) {
+            $objExc->IncrementOffset();
+            throw $objExc;
+        }
+    }
+
+    /**
+     * Counts all associated Tickets
+     * @return int
+    */
+    public function CountTickets() {
+        if ((is_null($this->intId)))
+            return 0;
+
+        return Ticket::CountByCategory($this->intId);
+    }
+
+    /**
+     * Associates a Ticket
+     * @param Ticket $objTicket
+     * @return void
+    */
+    public function AssociateTicket(Ticket $objTicket) {
+        if ((is_null($this->intId)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call AssociateTicket on this unsaved Category.');
+        if ((is_null($objTicket->Id)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call AssociateTicket on this Category with an unsaved Ticket.');
+
+        // Get the Database Object for this Class
+        $objDatabase = Category::GetDatabase();
+
+        // Perform the SQL Query
+        $objDatabase->NonQuery('
+            UPDATE
+                `Ticket`
+            SET
+                `Category` = ' . $objDatabase->SqlVariable($this->intId) . '
+            WHERE
+                `Id` = ' . $objDatabase->SqlVariable($objTicket->Id) . '
+        ');
+    }
+
+    /**
+     * Unassociates a Ticket
+     * @param Ticket $objTicket
+     * @return void
+    */
+    public function UnassociateTicket(Ticket $objTicket) {
+        if ((is_null($this->intId)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateTicket on this unsaved Category.');
+        if ((is_null($objTicket->Id)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateTicket on this Category with an unsaved Ticket.');
+
+        // Get the Database Object for this Class
+        $objDatabase = Category::GetDatabase();
+
+        // Perform the SQL Query
+        $objDatabase->NonQuery('
+            UPDATE
+                `Ticket`
+            SET
+                `Category` = null
+            WHERE
+                `Id` = ' . $objDatabase->SqlVariable($objTicket->Id) . ' AND
+                `Category` = ' . $objDatabase->SqlVariable($this->intId) . '
+        ');
+    }
+
+    /**
+     * Unassociates all Tickets
+     * @return void
+    */
+    public function UnassociateAllTickets() {
+        if ((is_null($this->intId)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateTicket on this unsaved Category.');
+
+        // Get the Database Object for this Class
+        $objDatabase = Category::GetDatabase();
+
+        // Perform the SQL Query
+        $objDatabase->NonQuery('
+            UPDATE
+                `Ticket`
+            SET
+                `Category` = null
+            WHERE
+                `Category` = ' . $objDatabase->SqlVariable($this->intId) . '
+        ');
+    }
+
+    /**
+     * Deletes an associated Ticket
+     * @param Ticket $objTicket
+     * @return void
+    */
+    public function DeleteAssociatedTicket(Ticket $objTicket) {
+        if ((is_null($this->intId)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateTicket on this unsaved Category.');
+        if ((is_null($objTicket->Id)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateTicket on this Category with an unsaved Ticket.');
+
+        // Get the Database Object for this Class
+        $objDatabase = Category::GetDatabase();
+
+        // Perform the SQL Query
+        $objDatabase->NonQuery('
+            DELETE FROM
+                `Ticket`
+            WHERE
+                `Id` = ' . $objDatabase->SqlVariable($objTicket->Id) . ' AND
+                `Category` = ' . $objDatabase->SqlVariable($this->intId) . '
+        ');
+    }
+
+    /**
+     * Deletes all associated Tickets
+     * @return void
+    */
+    public function DeleteAllTickets() {
+        if ((is_null($this->intId)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateTicket on this unsaved Category.');
+
+        // Get the Database Object for this Class
+        $objDatabase = Category::GetDatabase();
+
+        // Perform the SQL Query
+        $objDatabase->NonQuery('
+            DELETE FROM
+                `Ticket`
+            WHERE
+                `Category` = ' . $objDatabase->SqlVariable($this->intId) . '
+        ');
+    }
+
+
     
 ///////////////////////////////
     // METHODS TO EXTRACT INFO ABOUT THE CLASS
@@ -1660,7 +1278,7 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
      * @return string Name of the table from which this class has been created.
      */
     public static function GetTableName() {
-        return "Ticket";
+        return "Category";
     }
 
     /**
@@ -1668,7 +1286,7 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
      * @return string Name of the table from which this class has been created.
      */
     public static function GetDatabaseName() {
-        return ProjectFunctions::$Database[Ticket::GetDatabaseIndex()]->Database;
+        return ProjectFunctions::$Database[Category::GetDatabaseIndex()]->Database;
     }
 
     /**
@@ -1687,28 +1305,19 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
     ////////////////////////////////////////
 
     public static function GetSoapComplexTypeXml() {
-        $strToReturn = '<complexType name="Ticket"><sequence>';
+        $strToReturn = '<complexType name="Category"><sequence>';
         $strToReturn .= '<element name="Id" type="xsd:int"/>';
-        $strToReturn .= '<element name="TicketName" type="xsd:string"/>';
-        $strToReturn .= '<element name="TicketDescription" type="xsd:string"/>';
-        $strToReturn .= '<element name="DueDate" type="xsd:dateTime"/>';
-        $strToReturn .= '<element name="TicketUniqueId" type="xsd:string"/>';
+        $strToReturn .= '<element name="CategoryLabel" type="xsd:string"/>';
         $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
-        $strToReturn .= '<element name="AccountObject" type="xsd1:Account"/>';
-        $strToReturn .= '<element name="SearchMetaInfo" type="xsd:string"/>';
-        $strToReturn .= '<element name="TicketStatus" type="xsd:string"/>';
         $strToReturn .= '<element name="ObjectOwner" type="xsd:int"/>';
-        $strToReturn .= '<element name="CategoryObject" type="xsd1:Category"/>';
         $strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
         $strToReturn .= '</sequence></complexType>';
         return $strToReturn;
     }
 
     public static function AlterSoapComplexTypeArray(&$strComplexTypeArray) {
-        if (!array_key_exists('Ticket', $strComplexTypeArray)) {
-            $strComplexTypeArray['Ticket'] = Ticket::GetSoapComplexTypeXml();
-            Account::AlterSoapComplexTypeArray($strComplexTypeArray);
-            Category::AlterSoapComplexTypeArray($strComplexTypeArray);
+        if (!array_key_exists('Category', $strComplexTypeArray)) {
+            $strComplexTypeArray['Category'] = Category::GetSoapComplexTypeXml();
         }
     }
 
@@ -1716,37 +1325,21 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
         $objArrayToReturn = array();
 
         foreach ($objSoapArray as $objSoapObject)
-            array_push($objArrayToReturn, Ticket::GetObjectFromSoapObject($objSoapObject));
+            array_push($objArrayToReturn, Category::GetObjectFromSoapObject($objSoapObject));
 
         return $objArrayToReturn;
     }
 
     public static function GetObjectFromSoapObject($objSoapObject) {
-        $objToReturn = new Ticket();
+        $objToReturn = new Category();
         if (property_exists($objSoapObject, 'Id'))
             $objToReturn->intId = $objSoapObject->Id;
-        if (property_exists($objSoapObject, 'TicketName'))
-            $objToReturn->strTicketName = $objSoapObject->TicketName;
-        if (property_exists($objSoapObject, 'TicketDescription'))
-            $objToReturn->strTicketDescription = $objSoapObject->TicketDescription;
-        if (property_exists($objSoapObject, 'DueDate'))
-            $objToReturn->dttDueDate = new dxDateTime($objSoapObject->DueDate);
-        if (property_exists($objSoapObject, 'TicketUniqueId'))
-            $objToReturn->strTicketUniqueId = $objSoapObject->TicketUniqueId;
+        if (property_exists($objSoapObject, 'CategoryLabel'))
+            $objToReturn->strCategoryLabel = $objSoapObject->CategoryLabel;
         if (property_exists($objSoapObject, 'LastUpdated'))
             $objToReturn->strLastUpdated = $objSoapObject->LastUpdated;
-        if ((property_exists($objSoapObject, 'AccountObject')) &&
-            ($objSoapObject->AccountObject))
-            $objToReturn->AccountObject = Account::GetObjectFromSoapObject($objSoapObject->AccountObject);
-        if (property_exists($objSoapObject, 'SearchMetaInfo'))
-            $objToReturn->strSearchMetaInfo = $objSoapObject->SearchMetaInfo;
-        if (property_exists($objSoapObject, 'TicketStatus'))
-            $objToReturn->strTicketStatus = $objSoapObject->TicketStatus;
         if (property_exists($objSoapObject, 'ObjectOwner'))
             $objToReturn->intObjectOwner = $objSoapObject->ObjectOwner;
-        if ((property_exists($objSoapObject, 'CategoryObject')) &&
-            ($objSoapObject->CategoryObject))
-            $objToReturn->CategoryObject = Category::GetObjectFromSoapObject($objSoapObject->CategoryObject);
         if (property_exists($objSoapObject, '__blnRestored'))
             $objToReturn->__blnRestored = $objSoapObject->__blnRestored;
         return $objToReturn;
@@ -1759,22 +1352,12 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
         $objArrayToReturn = array();
 
         foreach ($objArray as $objObject)
-            array_push($objArrayToReturn, Ticket::GetSoapObjectFromObject($objObject, true));
+            array_push($objArrayToReturn, Category::GetSoapObjectFromObject($objObject, true));
 
         return unserialize(serialize($objArrayToReturn));
     }
 
     public static function GetSoapObjectFromObject($objObject, $blnBindRelatedObjects) {
-        if ($objObject->dttDueDate)
-            $objObject->dttDueDate = $objObject->dttDueDate->qFormat(dxDateTime::FormatSoap);
-        if ($objObject->objAccountObject)
-            $objObject->objAccountObject = Account::GetSoapObjectFromObject($objObject->objAccountObject, false);
-        else if (!$blnBindRelatedObjects)
-            $objObject->intAccount = null;
-        if ($objObject->objCategoryObject)
-            $objObject->objCategoryObject = Category::GetSoapObjectFromObject($objObject->objCategoryObject, false);
-        else if (!$blnBindRelatedObjects)
-            $objObject->intCategory = null;
         return $objObject;
     }
 
@@ -1790,16 +1373,9 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
         // Member Variables
         ///////////////////
         $iArray['Id'] = $this->intId;
-        $iArray['TicketName'] = $this->strTicketName;
-        $iArray['TicketDescription'] = $this->strTicketDescription;
-        $iArray['DueDate'] = $this->dttDueDate;
-        $iArray['TicketUniqueId'] = $this->strTicketUniqueId;
+        $iArray['CategoryLabel'] = $this->strCategoryLabel;
         $iArray['LastUpdated'] = $this->strLastUpdated;
-        $iArray['Account'] = $this->intAccount;
-        $iArray['SearchMetaInfo'] = $this->strSearchMetaInfo;
-        $iArray['TicketStatus'] = $this->strTicketStatus;
         $iArray['ObjectOwner'] = $this->intObjectOwner;
-        $iArray['Category'] = $this->intCategory;
         return new ArrayIterator($iArray);
     }
 
@@ -1835,55 +1411,31 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
      * @uses dxQueryNode
      *
      * @property-read dxQueryNode $Id
-     * @property-read dxQueryNode $TicketName
-     * @property-read dxQueryNode $TicketDescription
-     * @property-read dxQueryNode $DueDate
-     * @property-read dxQueryNode $TicketUniqueId
+     * @property-read dxQueryNode $CategoryLabel
      * @property-read dxQueryNode $LastUpdated
-     * @property-read dxQueryNode $Account
-     * @property-read dxQueryNodeAccount $AccountObject
-     * @property-read dxQueryNode $SearchMetaInfo
-     * @property-read dxQueryNode $TicketStatus
      * @property-read dxQueryNode $ObjectOwner
-     * @property-read dxQueryNode $Category
-     * @property-read dxQueryNodeCategory $CategoryObject
      *
      *
+     * @property-read dxQueryReverseReferenceNodeTicket $Ticket
 
      * @property-read dxQueryNode $_PrimaryKeyNode
      **/
-	class dxQueryNodeTicket extends dxQueryNode {
-		protected $strTableName = 'Ticket';
+	class dxQueryNodeCategory extends dxQueryNode {
+		protected $strTableName = 'Category';
 		protected $strPrimaryKey = 'Id';
-		protected $strClassName = 'Ticket';
+		protected $strClassName = 'Category';
 		public function __get($strName) {
 			switch ($strName) {
 				case 'Id':
 					return new dxQueryNode('Id', 'Id', 'Integer', $this);
-				case 'TicketName':
-					return new dxQueryNode('TicketName', 'TicketName', 'VarChar', $this);
-				case 'TicketDescription':
-					return new dxQueryNode('TicketDescription', 'TicketDescription', 'Blob', $this);
-				case 'DueDate':
-					return new dxQueryNode('DueDate', 'DueDate', 'Date', $this);
-				case 'TicketUniqueId':
-					return new dxQueryNode('TicketUniqueId', 'TicketUniqueId', 'VarChar', $this);
+				case 'CategoryLabel':
+					return new dxQueryNode('CategoryLabel', 'CategoryLabel', 'VarChar', $this);
 				case 'LastUpdated':
 					return new dxQueryNode('LastUpdated', 'LastUpdated', 'VarChar', $this);
-				case 'Account':
-					return new dxQueryNode('Account', 'Account', 'Integer', $this);
-				case 'AccountObject':
-					return new dxQueryNodeAccount('Account', 'AccountObject', 'Integer', $this);
-				case 'SearchMetaInfo':
-					return new dxQueryNode('SearchMetaInfo', 'SearchMetaInfo', 'Blob', $this);
-				case 'TicketStatus':
-					return new dxQueryNode('TicketStatus', 'TicketStatus', 'VarChar', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'Integer', $this);
-				case 'Category':
-					return new dxQueryNode('Category', 'Category', 'Integer', $this);
-				case 'CategoryObject':
-					return new dxQueryNodeCategory('Category', 'CategoryObject', 'Integer', $this);
+				case 'Ticket':
+					return new dxQueryReverseReferenceNodeTicket($this, 'ticket', 'reverse_reference', 'Category', 'Ticket');
 
 				case '_PrimaryKeyNode':
 					return new dxQueryNode('Id', 'Id', 'Integer', $this);
@@ -1900,55 +1452,31 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
 
     /**
      * @property-read dxQueryNode $Id
-     * @property-read dxQueryNode $TicketName
-     * @property-read dxQueryNode $TicketDescription
-     * @property-read dxQueryNode $DueDate
-     * @property-read dxQueryNode $TicketUniqueId
+     * @property-read dxQueryNode $CategoryLabel
      * @property-read dxQueryNode $LastUpdated
-     * @property-read dxQueryNode $Account
-     * @property-read dxQueryNodeAccount $AccountObject
-     * @property-read dxQueryNode $SearchMetaInfo
-     * @property-read dxQueryNode $TicketStatus
      * @property-read dxQueryNode $ObjectOwner
-     * @property-read dxQueryNode $Category
-     * @property-read dxQueryNodeCategory $CategoryObject
      *
      *
+     * @property-read dxQueryReverseReferenceNodeTicket $Ticket
 
      * @property-read dxQueryNode $_PrimaryKeyNode
      **/
-	class dxQueryReverseReferenceNodeTicket extends dxQueryReverseReferenceNode {
-		protected $strTableName = 'Ticket';
+	class dxQueryReverseReferenceNodeCategory extends dxQueryReverseReferenceNode {
+		protected $strTableName = 'Category';
 		protected $strPrimaryKey = 'Id';
-		protected $strClassName = 'Ticket';
+		protected $strClassName = 'Category';
 		public function __get($strName) {
 			switch ($strName) {
 				case 'Id':
 					return new dxQueryNode('Id', 'Id', 'integer', $this);
-				case 'TicketName':
-					return new dxQueryNode('TicketName', 'TicketName', 'string', $this);
-				case 'TicketDescription':
-					return new dxQueryNode('TicketDescription', 'TicketDescription', 'string', $this);
-				case 'DueDate':
-					return new dxQueryNode('DueDate', 'DueDate', 'dxDateTime', $this);
-				case 'TicketUniqueId':
-					return new dxQueryNode('TicketUniqueId', 'TicketUniqueId', 'string', $this);
+				case 'CategoryLabel':
+					return new dxQueryNode('CategoryLabel', 'CategoryLabel', 'string', $this);
 				case 'LastUpdated':
 					return new dxQueryNode('LastUpdated', 'LastUpdated', 'string', $this);
-				case 'Account':
-					return new dxQueryNode('Account', 'Account', 'integer', $this);
-				case 'AccountObject':
-					return new dxQueryNodeAccount('Account', 'AccountObject', 'integer', $this);
-				case 'SearchMetaInfo':
-					return new dxQueryNode('SearchMetaInfo', 'SearchMetaInfo', 'string', $this);
-				case 'TicketStatus':
-					return new dxQueryNode('TicketStatus', 'TicketStatus', 'string', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'integer', $this);
-				case 'Category':
-					return new dxQueryNode('Category', 'Category', 'integer', $this);
-				case 'CategoryObject':
-					return new dxQueryNodeCategory('Category', 'CategoryObject', 'integer', $this);
+				case 'Ticket':
+					return new dxQueryReverseReferenceNodeTicket($this, 'ticket', 'reverse_reference', 'Category', 'Ticket');
 
 				case '_PrimaryKeyNode':
 					return new dxQueryNode('Id', 'Id', 'integer', $this);

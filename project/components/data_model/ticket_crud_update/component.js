@@ -5,8 +5,8 @@ if (typeof component_classes['data_model_ticket_crud_update'] === "undefined") {
 			// Sub component config start
 			this.sub_component_definitions = [];
 			// Sub component config end
-			this.included_attribute_array = ['TicketName','TicketDescription','DueDate','TicketUniqueId',];
-			this.included_relationship_array = ['TicketStatus',];
+			this.included_attribute_array = ['TicketName','TicketDescription','DueDate','TicketUniqueId','TicketStatus',];
+			this.included_relationship_array = ['Account','Category',];
 			this.constrain_by_array = [];
 			this.data_validation_array = [];
 			this.custom_validation_array = [];

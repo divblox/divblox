@@ -39,6 +39,11 @@
     ProjectFunctions::$ClassFile['dxquerynodebackgroundprocessupdate'] = DATA_MODEL_ORM_PATH_STR.'/BackgroundProcessUpdate.class.php';
     ProjectFunctions::$ClassFile['dxreversereferencenodebackgroundprocessupdate'] = DATA_MODEL_ORM_PATH_STR.'/BackgroundProcessUpdate.class.php';
 
+	// ClassPaths for the Category class
+    ProjectFunctions::$ClassFile['category'] = DATA_MODEL_ORM_PATH_STR.'/Category.class.php';
+    ProjectFunctions::$ClassFile['dxquerynodecategory'] = DATA_MODEL_ORM_PATH_STR.'/Category.class.php';
+    ProjectFunctions::$ClassFile['dxreversereferencenodecategory'] = DATA_MODEL_ORM_PATH_STR.'/Category.class.php';
+
 	// ClassPaths for the ClientAuthenticationToken class
     ProjectFunctions::$ClassFile['clientauthenticationtoken'] = DATA_MODEL_ORM_PATH_STR.'/ClientAuthenticationToken.class.php';
     ProjectFunctions::$ClassFile['dxquerynodeclientauthenticationtoken'] = DATA_MODEL_ORM_PATH_STR.'/ClientAuthenticationToken.class.php';
@@ -78,11 +83,6 @@
     ProjectFunctions::$ClassFile['ticket'] = DATA_MODEL_ORM_PATH_STR.'/Ticket.class.php';
     ProjectFunctions::$ClassFile['dxquerynodeticket'] = DATA_MODEL_ORM_PATH_STR.'/Ticket.class.php';
     ProjectFunctions::$ClassFile['dxreversereferencenodeticket'] = DATA_MODEL_ORM_PATH_STR.'/Ticket.class.php';
-
-	// ClassPaths for the TicketStatus class
-    ProjectFunctions::$ClassFile['ticketstatus'] = DATA_MODEL_ORM_PATH_STR.'/TicketStatus.class.php';
-    ProjectFunctions::$ClassFile['dxquerynodeticketstatus'] = DATA_MODEL_ORM_PATH_STR.'/TicketStatus.class.php';
-    ProjectFunctions::$ClassFile['dxreversereferencenodeticketstatus'] = DATA_MODEL_ORM_PATH_STR.'/TicketStatus.class.php';
 
 	// ClassPaths for the UserRole class
     ProjectFunctions::$ClassFile['userrole'] = DATA_MODEL_ORM_PATH_STR.'/UserRole.class.php';
