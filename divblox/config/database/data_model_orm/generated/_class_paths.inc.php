@@ -74,6 +74,16 @@
     ProjectFunctions::$ClassFile['dxquerynodepushregistration'] = DATA_MODEL_ORM_PATH_STR.'/PushRegistration.class.php';
     ProjectFunctions::$ClassFile['dxreversereferencenodepushregistration'] = DATA_MODEL_ORM_PATH_STR.'/PushRegistration.class.php';
 
+	// ClassPaths for the Ticket class
+    ProjectFunctions::$ClassFile['ticket'] = DATA_MODEL_ORM_PATH_STR.'/Ticket.class.php';
+    ProjectFunctions::$ClassFile['dxquerynodeticket'] = DATA_MODEL_ORM_PATH_STR.'/Ticket.class.php';
+    ProjectFunctions::$ClassFile['dxreversereferencenodeticket'] = DATA_MODEL_ORM_PATH_STR.'/Ticket.class.php';
+
+	// ClassPaths for the TicketStatus class
+    ProjectFunctions::$ClassFile['ticketstatus'] = DATA_MODEL_ORM_PATH_STR.'/TicketStatus.class.php';
+    ProjectFunctions::$ClassFile['dxquerynodeticketstatus'] = DATA_MODEL_ORM_PATH_STR.'/TicketStatus.class.php';
+    ProjectFunctions::$ClassFile['dxreversereferencenodeticketstatus'] = DATA_MODEL_ORM_PATH_STR.'/TicketStatus.class.php';
+
 	// ClassPaths for the UserRole class
     ProjectFunctions::$ClassFile['userrole'] = DATA_MODEL_ORM_PATH_STR.'/UserRole.class.php';
     ProjectFunctions::$ClassFile['dxquerynodeuserrole'] = DATA_MODEL_ORM_PATH_STR.'/UserRole.class.php';

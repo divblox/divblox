@@ -91,6 +91,18 @@ class dxQueryN {
         return new dxQueryNodePushRegistration('PushRegistration', null, null);
     }
     /**
+     * @return dxQueryNodeTicket
+     */
+    static public function Ticket() {
+        return new dxQueryNodeTicket('Ticket', null, null);
+    }
+    /**
+     * @return dxQueryNodeTicketStatus
+     */
+    static public function TicketStatus() {
+        return new dxQueryNodeTicketStatus('TicketStatus', null, null);
+    }
+    /**
      * @return dxQueryNodeUserRole
      */
     static public function UserRole() {

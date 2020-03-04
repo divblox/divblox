@@ -882,6 +882,73 @@
             }
         }
     },
+    "Ticket": {
+        "Attributes": {
+            "TicketName": {
+                "DisplayType": "text",
+                "InputLabel": "Ticket Name:",
+                "DefaultValue": "",
+                "Placeholder": "Ticket Name",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Ticket Name"
+            },
+            "TicketDescription": {
+                "DisplayType": "textarea",
+                "InputLabel": "Ticket Description:",
+                "DefaultValue": "",
+                "Placeholder": "Ticket Description",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Ticket Description"
+            },
+            "DueDate": {
+                "DisplayType": "date",
+                "InputLabel": "Due Date:",
+                "DefaultValue": "",
+                "Placeholder": "Due Date",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Due Date"
+            },
+            "TicketUniqueId": {
+                "DisplayType": "text",
+                "InputLabel": "Ticket Unique Id:",
+                "DefaultValue": "",
+                "Placeholder": "Ticket Unique Id",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Ticket Unique Id"
+            }
+        },
+        "Relationships": {
+            "Account": {
+                "DisplayType": "list",
+                "InputLabel": "Account:",
+                "DefaultValue": "-Please Select-",
+                "Placeholder": "Account",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Account"
+            },
+            "TicketStatus": {
+                "DisplayType": "list",
+                "InputLabel": "Ticket Status:",
+                "DefaultValue": "-Please Select-",
+                "Placeholder": "TicketStatus",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Ticket Status"
+            }
+        }
+    },
+    "TicketStatus": {
+        "Attributes": {
+            "StatusLabel": {
+                "DisplayType": "text",
+                "InputLabel": "Status Label:",
+                "DefaultValue": "",
+                "Placeholder": "Status Label",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Status Label"
+            }
+        },
+        "Relationships": []
+    },
     "UserRole": {
         "Attributes": {
             "Role": {
