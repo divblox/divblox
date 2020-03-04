@@ -3,41 +3,47 @@
         "Attributes": {
             "FullName": {
                 "DisplayType": "text",
+                "InputLabel": "Full Name:",
                 "DefaultValue": "",
-                "Placeholder": "FullName",
+                "Placeholder": "Full Name",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Full Name"
             },
             "FirstName": {
                 "DisplayType": "text",
+                "InputLabel": "First Name:",
                 "DefaultValue": "",
-                "Placeholder": "FirstName",
+                "Placeholder": "First Name",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid First Name"
             },
             "MiddleNames": {
                 "DisplayType": "text",
+                "InputLabel": "Middle Names:",
                 "DefaultValue": "",
-                "Placeholder": "MiddleNames",
+                "Placeholder": "Middle Names",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Middle Names"
             },
             "LastName": {
                 "DisplayType": "text",
+                "InputLabel": "Last Name:",
                 "DefaultValue": "",
-                "Placeholder": "LastName",
+                "Placeholder": "Last Name",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Last Name"
             },
             "EmailAddress": {
                 "DisplayType": "text",
+                "InputLabel": "Email Address:",
                 "DefaultValue": "",
-                "Placeholder": "EmailAddress",
+                "Placeholder": "Email Address",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Email Address"
             },
             "Username": {
                 "DisplayType": "text",
+                "InputLabel": "Username:",
                 "DefaultValue": "",
                 "Placeholder": "Username",
                 "Data": null,
@@ -45,6 +51,7 @@
             },
             "Password": {
                 "DisplayType": "text",
+                "InputLabel": "Password:",
                 "DefaultValue": "",
                 "Placeholder": "Password",
                 "Data": null,
@@ -52,27 +59,31 @@
             },
             "MaidenName": {
                 "DisplayType": "text",
+                "InputLabel": "Maiden Name:",
                 "DefaultValue": "",
-                "Placeholder": "MaidenName",
+                "Placeholder": "Maiden Name",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Maiden Name"
             },
             "ProfilePicturePath": {
                 "DisplayType": "text",
+                "InputLabel": "Profile Picture Path:",
                 "DefaultValue": "",
-                "Placeholder": "ProfilePicturePath",
+                "Placeholder": "Profile Picture Path",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Profile Picture Path"
             },
             "MainContactNumber": {
                 "DisplayType": "text",
+                "InputLabel": "Main Contact Number:",
                 "DefaultValue": "",
-                "Placeholder": "MainContactNumber",
+                "Placeholder": "Main Contact Number",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Main Contact Number"
             },
             "Title": {
                 "DisplayType": "text",
+                "InputLabel": "Title:",
                 "DefaultValue": "",
                 "Placeholder": "Title",
                 "Data": null,
@@ -80,76 +91,87 @@
             },
             "DateOfBirth": {
                 "DisplayType": "date",
+                "InputLabel": "Date Of Birth:",
                 "DefaultValue": "",
-                "Placeholder": "DateOfBirth",
+                "Placeholder": "Date Of Birth",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Date Of Birth"
             },
             "PhysicalAddressLineOne": {
                 "DisplayType": "text",
+                "InputLabel": "Physical Address Line One:",
                 "DefaultValue": "",
-                "Placeholder": "PhysicalAddressLineOne",
+                "Placeholder": "Physical Address Line One",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Physical Address Line One"
             },
             "PhysicalAddressLineTwo": {
                 "DisplayType": "text",
+                "InputLabel": "Physical Address Line Two:",
                 "DefaultValue": "",
-                "Placeholder": "PhysicalAddressLineTwo",
+                "Placeholder": "Physical Address Line Two",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Physical Address Line Two"
             },
             "PhysicalAddressPostalCode": {
                 "DisplayType": "text",
+                "InputLabel": "Physical Address Postal Code:",
                 "DefaultValue": "",
-                "Placeholder": "PhysicalAddressPostalCode",
+                "Placeholder": "Physical Address Postal Code",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Physical Address Postal Code"
             },
             "PhysicalAddressCountry": {
                 "DisplayType": "text",
+                "InputLabel": "Physical Address Country:",
                 "DefaultValue": "",
-                "Placeholder": "PhysicalAddressCountry",
+                "Placeholder": "Physical Address Country",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Physical Address Country"
             },
             "PostalAddressLineOne": {
                 "DisplayType": "text",
+                "InputLabel": "Postal Address Line One:",
                 "DefaultValue": "",
-                "Placeholder": "PostalAddressLineOne",
+                "Placeholder": "Postal Address Line One",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Postal Address Line One"
             },
             "PostalAddressLineTwo": {
                 "DisplayType": "text",
+                "InputLabel": "Postal Address Line Two:",
                 "DefaultValue": "",
-                "Placeholder": "PostalAddressLineTwo",
+                "Placeholder": "Postal Address Line Two",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Postal Address Line Two"
             },
             "PostalAddressPostalCode": {
                 "DisplayType": "text",
+                "InputLabel": "Postal Address Postal Code:",
                 "DefaultValue": "",
-                "Placeholder": "PostalAddressPostalCode",
+                "Placeholder": "Postal Address Postal Code",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Postal Address Postal Code"
             },
             "PostalAddressCountry": {
                 "DisplayType": "text",
+                "InputLabel": "Postal Address Country:",
                 "DefaultValue": "",
-                "Placeholder": "PostalAddressCountry",
+                "Placeholder": "Postal Address Country",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Postal Address Country"
             },
             "IdentificationNumber": {
                 "DisplayType": "text",
+                "InputLabel": "Identification Number:",
                 "DefaultValue": "",
-                "Placeholder": "IdentificationNumber",
+                "Placeholder": "Identification Number",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Identification Number"
             },
             "Nickname": {
                 "DisplayType": "text",
+                "InputLabel": "Nickname:",
                 "DefaultValue": "",
                 "Placeholder": "Nickname",
                 "Data": null,
@@ -157,6 +179,7 @@
             },
             "Status": {
                 "DisplayType": "text",
+                "InputLabel": "Status:",
                 "DefaultValue": "",
                 "Placeholder": "Status",
                 "Data": null,
@@ -164,6 +187,7 @@
             },
             "Gender": {
                 "DisplayType": "text",
+                "InputLabel": "Gender:",
                 "DefaultValue": "",
                 "Placeholder": "Gender",
                 "Data": null,
@@ -171,21 +195,28 @@
             },
             "AccessBlocked": {
                 "DisplayType": "checkbox",
-                "DefaultValue": "",
-                "Placeholder": "AccessBlocked",
+                "InputLabel": "Access Blocked",
+                "DefaultValue": true,
+                "Placeholder": "Access Blocked",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Access Blocked"
             },
             "BlockedReason": {
                 "DisplayType": "textarea",
+                "InputLabel": "Blocked Reason:",
                 "DefaultValue": "",
-                "Placeholder": "BlockedReason",
+                "Placeholder": "Blocked Reason",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Blocked Reason"
             }
         },
         "Relationships": {
             "UserRole": {
+                "DisplayType": "list",
+                "InputLabel": "User Role:",
+                "DefaultValue": "-Please Select-",
+                "Placeholder": "UserRole",
+                "Data": null,
                 "ValidationMessage": "Please provide a valid User Role"
             }
         }
@@ -194,6 +225,7 @@
         "Attributes": {
             "Type": {
                 "DisplayType": "text",
+                "InputLabel": "Type:",
                 "DefaultValue": "",
                 "Placeholder": "Type",
                 "Data": null,
@@ -201,6 +233,7 @@
             },
             "Label": {
                 "DisplayType": "text",
+                "InputLabel": "Label:",
                 "DefaultValue": "",
                 "Placeholder": "Label",
                 "Data": null,
@@ -208,6 +241,7 @@
             },
             "Value": {
                 "DisplayType": "textarea",
+                "InputLabel": "Value:",
                 "DefaultValue": "",
                 "Placeholder": "Value",
                 "Data": null,
@@ -216,6 +250,11 @@
         },
         "Relationships": {
             "Account": {
+                "DisplayType": "list",
+                "InputLabel": "Account:",
+                "DefaultValue": "-Please Select-",
+                "Placeholder": "Account",
+                "Data": null,
                 "ValidationMessage": "Please provide a valid Account"
             }
         }
@@ -224,17 +263,28 @@
         "Attributes": {
             "IsActive": {
                 "DisplayType": "checkbox",
-                "DefaultValue": "",
-                "Placeholder": "IsActive",
+                "InputLabel": "Is Active",
+                "DefaultValue": true,
+                "Placeholder": "Is Active",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Is Active"
             }
         },
         "Relationships": {
             "ApiKey": {
+                "DisplayType": "list",
+                "InputLabel": "Api Key:",
+                "DefaultValue": "-Please Select-",
+                "Placeholder": "ApiKey",
+                "Data": null,
                 "ValidationMessage": "Please provide a valid Api Key"
             },
             "ApiOperation": {
+                "DisplayType": "list",
+                "InputLabel": "Api Operation:",
+                "DefaultValue": "-Please Select-",
+                "Placeholder": "ApiOperation",
+                "Data": null,
                 "ValidationMessage": "Please provide a valid Api Operation"
             }
         }
@@ -243,27 +293,31 @@
         "Attributes": {
             "ApiKey": {
                 "DisplayType": "text",
+                "InputLabel": "Api Key:",
                 "DefaultValue": "",
-                "Placeholder": "ApiKey",
+                "Placeholder": "Api Key",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Api Key"
             },
             "ValidFromDate": {
                 "DisplayType": "date",
+                "InputLabel": "Valid From Date:",
                 "DefaultValue": "",
-                "Placeholder": "ValidFromDate",
+                "Placeholder": "Valid From Date",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Valid From Date"
             },
             "ValidToDate": {
                 "DisplayType": "date",
+                "InputLabel": "Valid To Date:",
                 "DefaultValue": "",
-                "Placeholder": "ValidToDate",
+                "Placeholder": "Valid To Date",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Valid To Date"
             },
             "Notes": {
                 "DisplayType": "textarea",
+                "InputLabel": "Notes:",
                 "DefaultValue": "",
                 "Placeholder": "Notes",
                 "Data": null,
@@ -271,8 +325,9 @@
             },
             "CallingEntityInformation": {
                 "DisplayType": "textarea",
+                "InputLabel": "Calling Entity Information:",
                 "DefaultValue": "",
-                "Placeholder": "CallingEntityInformation",
+                "Placeholder": "Calling Entity Information",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Calling Entity Information"
             }
@@ -283,15 +338,17 @@
         "Attributes": {
             "OperationName": {
                 "DisplayType": "text",
+                "InputLabel": "Operation Name:",
                 "DefaultValue": "",
-                "Placeholder": "OperationName",
+                "Placeholder": "Operation Name",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Operation Name"
             },
             "CrudEntityName": {
                 "DisplayType": "text",
+                "InputLabel": "Crud Entity Name:",
                 "DefaultValue": "",
-                "Placeholder": "CrudEntityName",
+                "Placeholder": "Crud Entity Name",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Crud Entity Name"
             }
@@ -302,50 +359,57 @@
         "Attributes": {
             "EntryTimeStamp": {
                 "DisplayType": "datetime-local",
+                "InputLabel": "Entry Time Stamp:",
                 "DefaultValue": "",
-                "Placeholder": "EntryTimeStamp",
+                "Placeholder": "Entry Time Stamp",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Entry Time Stamp"
             },
             "ObjectName": {
                 "DisplayType": "text",
+                "InputLabel": "Object Name:",
                 "DefaultValue": "",
-                "Placeholder": "ObjectName",
+                "Placeholder": "Object Name",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Object Name"
             },
             "ModificationType": {
                 "DisplayType": "text",
+                "InputLabel": "Modification Type:",
                 "DefaultValue": "",
-                "Placeholder": "ModificationType",
+                "Placeholder": "Modification Type",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Modification Type"
             },
             "UserEmail": {
                 "DisplayType": "text",
+                "InputLabel": "User Email:",
                 "DefaultValue": "",
-                "Placeholder": "UserEmail",
+                "Placeholder": "User Email",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid User Email"
             },
             "ObjectId": {
                 "DisplayType": "textarea",
+                "InputLabel": "Object Id:",
                 "DefaultValue": "",
-                "Placeholder": "ObjectId",
+                "Placeholder": "Object Id",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Object Id"
             },
             "AuditLogEntryDetail": {
                 "DisplayType": "textarea",
+                "InputLabel": "Audit Log Entry Detail:",
                 "DefaultValue": "",
-                "Placeholder": "AuditLogEntryDetail",
+                "Placeholder": "Audit Log Entry Detail",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Audit Log Entry Detail"
             },
             "ApiKey": {
                 "DisplayType": "text",
+                "InputLabel": "Api Key:",
                 "DefaultValue": "",
-                "Placeholder": "ApiKey",
+                "Placeholder": "Api Key",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Api Key"
             }
@@ -356,27 +420,31 @@
         "Attributes": {
             "PId": {
                 "DisplayType": "text",
+                "InputLabel": "P Id:",
                 "DefaultValue": "",
-                "Placeholder": "PId",
+                "Placeholder": "P Id",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid P Id"
             },
             "UserId": {
                 "DisplayType": "text",
+                "InputLabel": "User Id:",
                 "DefaultValue": "",
-                "Placeholder": "UserId",
+                "Placeholder": "User Id",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid User Id"
             },
             "UpdateDateTime": {
                 "DisplayType": "datetime-local",
+                "InputLabel": "Update Date Time:",
                 "DefaultValue": "",
-                "Placeholder": "UpdateDateTime",
+                "Placeholder": "Update Date Time",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Update Date Time"
             },
             "Status": {
                 "DisplayType": "text",
+                "InputLabel": "Status:",
                 "DefaultValue": "",
                 "Placeholder": "Status",
                 "Data": null,
@@ -384,6 +452,7 @@
             },
             "Summary": {
                 "DisplayType": "textarea",
+                "InputLabel": "Summary:",
                 "DefaultValue": "",
                 "Placeholder": "Summary",
                 "Data": null,
@@ -391,8 +460,9 @@
             },
             "StartDateTime": {
                 "DisplayType": "datetime-local",
+                "InputLabel": "Start Date Time:",
                 "DefaultValue": "",
-                "Placeholder": "StartDateTime",
+                "Placeholder": "Start Date Time",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Start Date Time"
             }
@@ -403,21 +473,28 @@
         "Attributes": {
             "UpdateDateTime": {
                 "DisplayType": "datetime-local",
+                "InputLabel": "Update Date Time:",
                 "DefaultValue": "",
-                "Placeholder": "UpdateDateTime",
+                "Placeholder": "Update Date Time",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Update Date Time"
             },
             "UpdateMessage": {
                 "DisplayType": "textarea",
+                "InputLabel": "Update Message:",
                 "DefaultValue": "",
-                "Placeholder": "UpdateMessage",
+                "Placeholder": "Update Message",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Update Message"
             }
         },
         "Relationships": {
             "BackgroundProcess": {
+                "DisplayType": "list",
+                "InputLabel": "Background Process:",
+                "DefaultValue": "-Please Select-",
+                "Placeholder": "BackgroundProcess",
+                "Data": null,
                 "ValidationMessage": "Please provide a valid Background Process"
             }
         }
@@ -426,6 +503,7 @@
         "Attributes": {
             "Token": {
                 "DisplayType": "text",
+                "InputLabel": "Token:",
                 "DefaultValue": "",
                 "Placeholder": "Token",
                 "Data": null,
@@ -433,21 +511,28 @@
             },
             "UpdateDateTime": {
                 "DisplayType": "datetime-local",
+                "InputLabel": "Update Date Time:",
                 "DefaultValue": "",
-                "Placeholder": "UpdateDateTime",
+                "Placeholder": "Update Date Time",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Update Date Time"
             },
             "ExpiredToken": {
                 "DisplayType": "text",
+                "InputLabel": "Expired Token:",
                 "DefaultValue": "",
-                "Placeholder": "ExpiredToken",
+                "Placeholder": "Expired Token",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Expired Token"
             }
         },
         "Relationships": {
             "ClientConnection": {
+                "DisplayType": "list",
+                "InputLabel": "Client Connection:",
+                "DefaultValue": "-Please Select-",
+                "Placeholder": "ClientConnection",
+                "Data": null,
                 "ValidationMessage": "Please provide a valid Client Connection"
             }
         }
@@ -456,28 +541,36 @@
         "Attributes": {
             "ClientIpAddress": {
                 "DisplayType": "text",
+                "InputLabel": "Client Ip Address:",
                 "DefaultValue": "",
-                "Placeholder": "ClientIpAddress",
+                "Placeholder": "Client Ip Address",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Client Ip Address"
             },
             "ClientUserAgent": {
                 "DisplayType": "text",
+                "InputLabel": "Client User Agent:",
                 "DefaultValue": "",
-                "Placeholder": "ClientUserAgent",
+                "Placeholder": "Client User Agent",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Client User Agent"
             },
             "UpdateDateTime": {
                 "DisplayType": "datetime-local",
+                "InputLabel": "Update Date Time:",
                 "DefaultValue": "",
-                "Placeholder": "UpdateDateTime",
+                "Placeholder": "Update Date Time",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Update Date Time"
             }
         },
         "Relationships": {
             "Account": {
+                "DisplayType": "list",
+                "InputLabel": "Account:",
+                "DefaultValue": "-Please Select-",
+                "Placeholder": "Account",
+                "Data": null,
                 "ValidationMessage": "Please provide a valid Account"
             }
         }
@@ -486,27 +579,31 @@
         "Attributes": {
             "SentDate": {
                 "DisplayType": "datetime-local",
+                "InputLabel": "Sent Date:",
                 "DefaultValue": "",
-                "Placeholder": "SentDate",
+                "Placeholder": "Sent Date",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Sent Date"
             },
             "FromAddress": {
                 "DisplayType": "textarea",
+                "InputLabel": "From Address:",
                 "DefaultValue": "",
-                "Placeholder": "FromAddress",
+                "Placeholder": "From Address",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid From Address"
             },
             "ReplyEmail": {
                 "DisplayType": "textarea",
+                "InputLabel": "Reply Email:",
                 "DefaultValue": "",
-                "Placeholder": "ReplyEmail",
+                "Placeholder": "Reply Email",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Reply Email"
             },
             "Recipients": {
                 "DisplayType": "textarea",
+                "InputLabel": "Recipients:",
                 "DefaultValue": "",
                 "Placeholder": "Recipients",
                 "Data": null,
@@ -514,6 +611,7 @@
             },
             "Cc": {
                 "DisplayType": "textarea",
+                "InputLabel": "Cc:",
                 "DefaultValue": "",
                 "Placeholder": "Cc",
                 "Data": null,
@@ -521,6 +619,7 @@
             },
             "Bcc": {
                 "DisplayType": "textarea",
+                "InputLabel": "Bcc:",
                 "DefaultValue": "",
                 "Placeholder": "Bcc",
                 "Data": null,
@@ -528,6 +627,7 @@
             },
             "Subject": {
                 "DisplayType": "textarea",
+                "InputLabel": "Subject:",
                 "DefaultValue": "",
                 "Placeholder": "Subject",
                 "Data": null,
@@ -535,13 +635,15 @@
             },
             "EmailMessage": {
                 "DisplayType": "textarea",
+                "InputLabel": "Email Message:",
                 "DefaultValue": "",
-                "Placeholder": "EmailMessage",
+                "Placeholder": "Email Message",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Email Message"
             },
             "Attachments": {
                 "DisplayType": "textarea",
+                "InputLabel": "Attachments:",
                 "DefaultValue": "",
                 "Placeholder": "Attachments",
                 "Data": null,
@@ -549,8 +651,9 @@
             },
             "ErrorInfo": {
                 "DisplayType": "textarea",
+                "InputLabel": "Error Info:",
                 "DefaultValue": "",
-                "Placeholder": "ErrorInfo",
+                "Placeholder": "Error Info",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Error Info"
             }
@@ -561,13 +664,15 @@
         "Attributes": {
             "FileName": {
                 "DisplayType": "text",
+                "InputLabel": "File Name:",
                 "DefaultValue": "",
-                "Placeholder": "FileName",
+                "Placeholder": "File Name",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid File Name"
             },
             "Path": {
                 "DisplayType": "text",
+                "InputLabel": "Path:",
                 "DefaultValue": "",
                 "Placeholder": "Path",
                 "Data": null,
@@ -575,29 +680,33 @@
             },
             "UploadedFileName": {
                 "DisplayType": "text",
+                "InputLabel": "Uploaded File Name:",
                 "DefaultValue": "",
-                "Placeholder": "UploadedFileName",
+                "Placeholder": "Uploaded File Name",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Uploaded File Name"
             },
             "FileType": {
                 "DisplayType": "text",
+                "InputLabel": "File Type:",
                 "DefaultValue": "",
-                "Placeholder": "FileType",
+                "Placeholder": "File Type",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid File Type"
             },
             "SizeInKilobytes": {
                 "DisplayType": "number",
+                "InputLabel": "Size In Kilobytes:",
                 "DefaultValue": "",
-                "Placeholder": "SizeInKilobytes",
+                "Placeholder": "Size In Kilobytes",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Size In Kilobytes"
             },
             "CreatedDate": {
                 "DisplayType": "datetime-local",
+                "InputLabel": "Created Date:",
                 "DefaultValue": "",
-                "Placeholder": "CreatedDate",
+                "Placeholder": "Created Date",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Created Date"
             }
@@ -608,41 +717,47 @@
         "Attributes": {
             "TimeStamped": {
                 "DisplayType": "datetime-local",
+                "InputLabel": "Time Stamped:",
                 "DefaultValue": "",
-                "Placeholder": "TimeStamped",
+                "Placeholder": "Time Stamped",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Time Stamped"
             },
             "IPAddress": {
                 "DisplayType": "text",
+                "InputLabel": "IP Address:",
                 "DefaultValue": "",
-                "Placeholder": "IPAddress",
+                "Placeholder": "IP Address",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid IP Address"
             },
             "PageDetails": {
                 "DisplayType": "text",
+                "InputLabel": "Page Details:",
                 "DefaultValue": "",
-                "Placeholder": "PageDetails",
+                "Placeholder": "Page Details",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Page Details"
             },
             "UserAgentDetails": {
                 "DisplayType": "textarea",
+                "InputLabel": "User Agent Details:",
                 "DefaultValue": "",
-                "Placeholder": "UserAgentDetails",
+                "Placeholder": "User Agent Details",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid User Agent Details"
             },
             "UserRole": {
                 "DisplayType": "text",
+                "InputLabel": "User Role:",
                 "DefaultValue": "",
-                "Placeholder": "UserRole",
+                "Placeholder": "User Role",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid User Role"
             },
             "Username": {
                 "DisplayType": "text",
+                "InputLabel": "Username:",
                 "DefaultValue": "",
                 "Placeholder": "Username",
                 "Data": null,
@@ -655,6 +770,7 @@
         "Attributes": {
             "Token": {
                 "DisplayType": "text",
+                "InputLabel": "Token:",
                 "DefaultValue": "",
                 "Placeholder": "Token",
                 "Data": null,
@@ -662,14 +778,20 @@
             },
             "CreatedDateTime": {
                 "DisplayType": "datetime-local",
+                "InputLabel": "Created Date Time:",
                 "DefaultValue": "",
-                "Placeholder": "CreatedDateTime",
+                "Placeholder": "Created Date Time",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Created Date Time"
             }
         },
         "Relationships": {
             "Account": {
+                "DisplayType": "list",
+                "InputLabel": "Account:",
+                "DefaultValue": "-Please Select-",
+                "Placeholder": "Account",
+                "Data": null,
                 "ValidationMessage": "Please provide a valid Account"
             }
         }
@@ -678,66 +800,84 @@
         "Attributes": {
             "RegistrationId": {
                 "DisplayType": "textarea",
+                "InputLabel": "Registration Id:",
                 "DefaultValue": "",
-                "Placeholder": "RegistrationId",
+                "Placeholder": "Registration Id",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Registration Id"
             },
             "DeviceUuid": {
                 "DisplayType": "text",
+                "InputLabel": "Device Uuid:",
                 "DefaultValue": "",
-                "Placeholder": "DeviceUuid",
+                "Placeholder": "Device Uuid",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Device Uuid"
             },
             "DevicePlatform": {
                 "DisplayType": "text",
+                "InputLabel": "Device Platform:",
                 "DefaultValue": "",
-                "Placeholder": "DevicePlatform",
+                "Placeholder": "Device Platform",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Device Platform"
             },
             "DeviceOs": {
                 "DisplayType": "text",
+                "InputLabel": "Device Os:",
                 "DefaultValue": "",
-                "Placeholder": "DeviceOs",
+                "Placeholder": "Device Os",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Device Os"
             },
             "RegistrationDateTime": {
                 "DisplayType": "datetime-local",
+                "InputLabel": "Registration Date Time:",
                 "DefaultValue": "",
-                "Placeholder": "RegistrationDateTime",
+                "Placeholder": "Registration Date Time",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Registration Date Time"
             },
             "RegistrationStatus": {
                 "DisplayType": "text",
+                "InputLabel": "Registration Status:",
                 "DefaultValue": "",
-                "Placeholder": "RegistrationStatus",
+                "Placeholder": "Registration Status",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Registration Status"
             },
             "InternalUniqueId": {
                 "DisplayType": "text",
+                "InputLabel": "Internal Unique Id:",
                 "DefaultValue": "",
-                "Placeholder": "InternalUniqueId",
+                "Placeholder": "Internal Unique Id",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Internal Unique Id"
             },
             "CurrentBadgeCount": {
                 "DisplayType": "number",
+                "InputLabel": "Current Badge Count:",
                 "DefaultValue": "",
-                "Placeholder": "CurrentBadgeCount",
+                "Placeholder": "Current Badge Count",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Current Badge Count"
             }
         },
         "Relationships": {
             "ClientAuthenticationToken": {
+                "DisplayType": "list",
+                "InputLabel": "Client Authentication Token:",
+                "DefaultValue": "-Please Select-",
+                "Placeholder": "ClientAuthenticationToken",
+                "Data": null,
                 "ValidationMessage": "Please provide a valid Client Authentication Token"
             },
             "Account": {
+                "DisplayType": "list",
+                "InputLabel": "Account:",
+                "DefaultValue": "-Please Select-",
+                "Placeholder": "Account",
+                "Data": null,
                 "ValidationMessage": "Please provide a valid Account"
             }
         }
@@ -746,6 +886,7 @@
         "Attributes": {
             "Role": {
                 "DisplayType": "text",
+                "InputLabel": "Role:",
                 "DefaultValue": "",
                 "Placeholder": "Role",
                 "Data": null,

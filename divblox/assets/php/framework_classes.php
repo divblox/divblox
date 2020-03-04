@@ -65,6 +65,7 @@ abstract class PublicApi_Base {
     public static $AuthenticationToken;
     public static $UserAgent;
     public static function initApi($ApiDescriptionStr = "API Description",$EndPointNameStr = "API Endpoint") {
+        self::setDefaultContentType();
         $_SESSION["API_CALL_ACTIVE"] = 1;
         $_SESSION["API_CALL_KEY"] = self::getInputParameter("api_key");
         self::$ApiResultArray["Result"] = "Failed";
@@ -305,6 +306,9 @@ abstract class PublicApi_Base {
     }
     public static function setApiResult($SuccessBool = false) {
         self::$ApiResultArray["Result"] = $SuccessBool?"Success":"Failed";
+    }
+    public static function setDefaultContentType() {
+        header("Content-Type: application/json");
     }
     public static function printApiResult() {
         echo json_encode(self::$ApiResultArray);
