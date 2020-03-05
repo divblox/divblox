@@ -55,6 +55,8 @@
  * @property-read PasswordReset[] $_PasswordResetArray the value for the private _objPasswordResetArray (Read-Only) if set due to an ExpandAsArray on the PasswordReset.Account reverse relationship
  * @property-read PushRegistration $_PushRegistration the value for the private _objPushRegistration (Read-Only) if set due to an expansion on the PushRegistration.Account reverse relationship
  * @property-read PushRegistration[] $_PushRegistrationArray the value for the private _objPushRegistrationArray (Read-Only) if set due to an ExpandAsArray on the PushRegistration.Account reverse relationship
+ * @property-read Ticket $_Ticket the value for the private _objTicket (Read-Only) if set due to an expansion on the Ticket.Account reverse relationship
+ * @property-read Ticket[] $_TicketArray the value for the private _objTicketArray (Read-Only) if set due to an ExpandAsArray on the Ticket.Account reverse relationship
  * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
  */
 class AccountGen extends dxBaseClass implements IteratorAggregate {
@@ -397,6 +399,22 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
      * @var PushRegistration[] _objPushRegistrationArray;
      */
     private $_objPushRegistrationArray = null;
+
+    /**
+     * Private member variable that stores a reference to a single Ticket object
+     * (of type Ticket), if this Account object was restored with
+     * an expansion on the Ticket association table.
+     * @var Ticket _objTicket;
+     */
+    private $_objTicket;
+
+    /**
+     * Private member variable that stores a reference to an array of Ticket objects
+     * (of type Ticket[]), if this Account object was restored with
+     * an ExpandAsArray on the Ticket association table.
+     * @var Ticket[] _objTicketArray;
+     */
+    private $_objTicketArray = null;
 
     /**
      * Protected array of virtual attributes for this object (e.g. extra/other calculated and/or non-object bound
@@ -1141,6 +1159,21 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
                 $objToReturn->_objPushRegistrationArray[] = PushRegistration::InstantiateDbRow($objDbRow, $strAliasPrefix . 'pushregistration__', $objExpansionNode, null, $strColumnAliasArray);
             } elseif (is_null($objToReturn->_objPushRegistration)) {
                 $objToReturn->_objPushRegistration = PushRegistration::InstantiateDbRow($objDbRow, $strAliasPrefix . 'pushregistration__', $objExpansionNode, null, $strColumnAliasArray);
+            }
+        }
+
+        // Check for Ticket Virtual Binding
+        $strAlias = $strAliasPrefix . 'ticket__Id';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objExpansionNode = (empty($objExpansionAliasArray['ticket']) ? null : $objExpansionAliasArray['ticket']);
+        $blnExpanded = ($objExpansionNode && $objExpansionNode->ExpandAsArray);
+        if ($blnExpanded && null === $objToReturn->_objTicketArray)
+            $objToReturn->_objTicketArray = array();
+        if (!is_null($objDbRow->GetColumn($strAliasName))) {
+            if ($blnExpanded) {
+                $objToReturn->_objTicketArray[] = Ticket::InstantiateDbRow($objDbRow, $strAliasPrefix . 'ticket__', $objExpansionNode, null, $strColumnAliasArray);
+            } elseif (is_null($objToReturn->_objTicket)) {
+                $objToReturn->_objTicket = Ticket::InstantiateDbRow($objDbRow, $strAliasPrefix . 'ticket__', $objExpansionNode, null, $strColumnAliasArray);
             }
         }
 
@@ -2231,6 +2264,22 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
                  */
                 return $this->_objPushRegistrationArray;
 
+            case '_Ticket':
+                /**
+                 * Gets the value for the private _objTicket (Read-Only)
+                 * if set due to an expansion on the Ticket.Account reverse relationship
+                 * @return Ticket
+                 */
+                return $this->_objTicket;
+
+            case '_TicketArray':
+                /**
+                 * Gets the value for the private _objTicketArray (Read-Only)
+                 * if set due to an ExpandAsArray on the Ticket.Account reverse relationship
+                 * @return Ticket[]
+                 */
+                return $this->_objTicketArray;
+
 
             case '__Restored':
                 return $this->__blnRestored;
@@ -3293,6 +3342,155 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
     }
 
 
+    // Related Objects' Methods for Ticket
+    //-------------------------------------------------------------------
+
+    /**
+     * Gets all associated Tickets as an array of Ticket objects
+     * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
+     * @return Ticket[]
+    */
+    public function GetTicketArray($objOptionalClauses = null) {
+        if ((is_null($this->intId)))
+            return array();
+
+        try {
+            return Ticket::LoadArrayByAccount($this->intId, $objOptionalClauses);
+        } catch (dxCallerException $objExc) {
+            $objExc->IncrementOffset();
+            throw $objExc;
+        }
+    }
+
+    /**
+     * Counts all associated Tickets
+     * @return int
+    */
+    public function CountTickets() {
+        if ((is_null($this->intId)))
+            return 0;
+
+        return Ticket::CountByAccount($this->intId);
+    }
+
+    /**
+     * Associates a Ticket
+     * @param Ticket $objTicket
+     * @return void
+    */
+    public function AssociateTicket(Ticket $objTicket) {
+        if ((is_null($this->intId)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call AssociateTicket on this unsaved Account.');
+        if ((is_null($objTicket->Id)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call AssociateTicket on this Account with an unsaved Ticket.');
+
+        // Get the Database Object for this Class
+        $objDatabase = Account::GetDatabase();
+
+        // Perform the SQL Query
+        $objDatabase->NonQuery('
+            UPDATE
+                `Ticket`
+            SET
+                `Account` = ' . $objDatabase->SqlVariable($this->intId) . '
+            WHERE
+                `Id` = ' . $objDatabase->SqlVariable($objTicket->Id) . '
+        ');
+    }
+
+    /**
+     * Unassociates a Ticket
+     * @param Ticket $objTicket
+     * @return void
+    */
+    public function UnassociateTicket(Ticket $objTicket) {
+        if ((is_null($this->intId)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateTicket on this unsaved Account.');
+        if ((is_null($objTicket->Id)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateTicket on this Account with an unsaved Ticket.');
+
+        // Get the Database Object for this Class
+        $objDatabase = Account::GetDatabase();
+
+        // Perform the SQL Query
+        $objDatabase->NonQuery('
+            UPDATE
+                `Ticket`
+            SET
+                `Account` = null
+            WHERE
+                `Id` = ' . $objDatabase->SqlVariable($objTicket->Id) . ' AND
+                `Account` = ' . $objDatabase->SqlVariable($this->intId) . '
+        ');
+    }
+
+    /**
+     * Unassociates all Tickets
+     * @return void
+    */
+    public function UnassociateAllTickets() {
+        if ((is_null($this->intId)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateTicket on this unsaved Account.');
+
+        // Get the Database Object for this Class
+        $objDatabase = Account::GetDatabase();
+
+        // Perform the SQL Query
+        $objDatabase->NonQuery('
+            UPDATE
+                `Ticket`
+            SET
+                `Account` = null
+            WHERE
+                `Account` = ' . $objDatabase->SqlVariable($this->intId) . '
+        ');
+    }
+
+    /**
+     * Deletes an associated Ticket
+     * @param Ticket $objTicket
+     * @return void
+    */
+    public function DeleteAssociatedTicket(Ticket $objTicket) {
+        if ((is_null($this->intId)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateTicket on this unsaved Account.');
+        if ((is_null($objTicket->Id)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateTicket on this Account with an unsaved Ticket.');
+
+        // Get the Database Object for this Class
+        $objDatabase = Account::GetDatabase();
+
+        // Perform the SQL Query
+        $objDatabase->NonQuery('
+            DELETE FROM
+                `Ticket`
+            WHERE
+                `Id` = ' . $objDatabase->SqlVariable($objTicket->Id) . ' AND
+                `Account` = ' . $objDatabase->SqlVariable($this->intId) . '
+        ');
+    }
+
+    /**
+     * Deletes all associated Tickets
+     * @return void
+    */
+    public function DeleteAllTickets() {
+        if ((is_null($this->intId)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateTicket on this unsaved Account.');
+
+        // Get the Database Object for this Class
+        $objDatabase = Account::GetDatabase();
+
+        // Perform the SQL Query
+        $objDatabase->NonQuery('
+            DELETE FROM
+                `Ticket`
+            WHERE
+                `Account` = ' . $objDatabase->SqlVariable($this->intId) . '
+        ');
+    }
+
+
     
 ///////////////////////////////
     // METHODS TO EXTRACT INFO ABOUT THE CLASS
@@ -3589,6 +3787,7 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
      * @property-read dxQueryReverseReferenceNodeClientConnection $ClientConnection
      * @property-read dxQueryReverseReferenceNodePasswordReset $PasswordReset
      * @property-read dxQueryReverseReferenceNodePushRegistration $PushRegistration
+     * @property-read dxQueryReverseReferenceNodeTicket $Ticket
 
      * @property-read dxQueryNode $_PrimaryKeyNode
      **/
@@ -3670,6 +3869,8 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryReverseReferenceNodePasswordReset($this, 'passwordreset', 'reverse_reference', 'Account', 'PasswordReset');
 				case 'PushRegistration':
 					return new dxQueryReverseReferenceNodePushRegistration($this, 'pushregistration', 'reverse_reference', 'Account', 'PushRegistration');
+				case 'Ticket':
+					return new dxQueryReverseReferenceNodeTicket($this, 'ticket', 'reverse_reference', 'Account', 'Ticket');
 
 				case '_PrimaryKeyNode':
 					return new dxQueryNode('Id', 'Id', 'Integer', $this);
@@ -3723,6 +3924,7 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
      * @property-read dxQueryReverseReferenceNodeClientConnection $ClientConnection
      * @property-read dxQueryReverseReferenceNodePasswordReset $PasswordReset
      * @property-read dxQueryReverseReferenceNodePushRegistration $PushRegistration
+     * @property-read dxQueryReverseReferenceNodeTicket $Ticket
 
      * @property-read dxQueryNode $_PrimaryKeyNode
      **/
@@ -3804,6 +4006,8 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryReverseReferenceNodePasswordReset($this, 'passwordreset', 'reverse_reference', 'Account', 'PasswordReset');
 				case 'PushRegistration':
 					return new dxQueryReverseReferenceNodePushRegistration($this, 'pushregistration', 'reverse_reference', 'Account', 'PushRegistration');
+				case 'Ticket':
+					return new dxQueryReverseReferenceNodeTicket($this, 'ticket', 'reverse_reference', 'Account', 'Ticket');
 
 				case '_PrimaryKeyNode':
 					return new dxQueryNode('Id', 'Id', 'integer', $this);

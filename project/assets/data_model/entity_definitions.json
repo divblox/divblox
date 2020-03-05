@@ -30,20 +30,5 @@
         "ValidationMessage": "Please provide a valid Api Key"
       }
     }
-  },
-  "Ticket": {
-    "Attributes": {
-      "TicketName": {
-        "DisplayType": "textarea"
-      },
-      "TicketStatus": {
-          "DisplayType": "list",
-          "InputLabel": "Ticket Status:",
-          "DefaultValue": "-Please Select-",
-          "Placeholder": "Ticket Status",
-          "Data": "TicketStatuses",
-          "ValidationMessage": "Please provide a valid Ticket Status"
-      }
-    }
   }
 }
