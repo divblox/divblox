@@ -9,7 +9,7 @@ if (typeof component_classes['pages_new_ticket'] === "undefined") {
             // Sub component config end
 		}
 		reset(inputs) {
-			setActivePage("page_component_name","Page Title");
+			setActivePage("new_ticket","New Ticket");
 			super.reset(inputs);
 		}
 	}

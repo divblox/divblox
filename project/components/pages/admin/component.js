@@ -10,7 +10,7 @@ if (typeof component_classes['pages_admin'] === "undefined") {
             // Sub component config end
 		}
 		reset(inputs) {
-			setActivePage("page_component_name","Page Title");
+			setActivePage("admin","Admin");
 			super.reset(inputs);
 		}
 	}
