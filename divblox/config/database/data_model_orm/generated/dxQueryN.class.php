@@ -49,12 +49,6 @@ class dxQueryN {
         return new dxQueryNodeBackgroundProcessUpdate('BackgroundProcessUpdate', null, null);
     }
     /**
-     * @return dxQueryNodeCategory
-     */
-    static public function Category() {
-        return new dxQueryNodeCategory('Category', null, null);
-    }
-    /**
      * @return dxQueryNodeClientAuthenticationToken
      */
     static public function ClientAuthenticationToken() {
@@ -95,12 +89,6 @@ class dxQueryN {
      */
     static public function PushRegistration() {
         return new dxQueryNodePushRegistration('PushRegistration', null, null);
-    }
-    /**
-     * @return dxQueryNodeTicket
-     */
-    static public function Ticket() {
-        return new dxQueryNodeTicket('Ticket', null, null);
     }
     /**
      * @return dxQueryNodeUserRole
