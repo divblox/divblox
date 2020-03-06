@@ -499,6 +499,19 @@
             }
         }
     },
+    "Category": {
+        "Attributes": {
+            "CategoryLabel": {
+                "DisplayType": "text",
+                "InputLabel": "Category Label:",
+                "DefaultValue": "",
+                "Placeholder": "Category Label",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Category Label"
+            }
+        },
+        "Relationships": []
+    },
     "ClientAuthenticationToken": {
         "Attributes": {
             "Token": {
@@ -879,6 +892,68 @@
                 "Placeholder": "Account",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Account"
+            }
+        }
+    },
+    "Ticket": {
+        "Attributes": {
+            "TicketName": {
+                "DisplayType": "text",
+                "InputLabel": "Ticket Name:",
+                "DefaultValue": "",
+                "Placeholder": "Ticket Name",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Ticket Name"
+            },
+            "TicketDescription": {
+                "DisplayType": "textarea",
+                "InputLabel": "Ticket Description:",
+                "DefaultValue": "",
+                "Placeholder": "Ticket Description",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Ticket Description"
+            },
+            "TicketDueDate": {
+                "DisplayType": "date",
+                "InputLabel": "Ticket Due Date:",
+                "DefaultValue": "",
+                "Placeholder": "Ticket Due Date",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Ticket Due Date"
+            },
+            "TicketStatus": {
+                "DisplayType": "text",
+                "InputLabel": "Ticket Status:",
+                "DefaultValue": "",
+                "Placeholder": "Ticket Status",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Ticket Status"
+            },
+            "TicketUniqueId": {
+                "DisplayType": "text",
+                "InputLabel": "Ticket Unique Id:",
+                "DefaultValue": "",
+                "Placeholder": "Ticket Unique Id",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Ticket Unique Id"
+            }
+        },
+        "Relationships": {
+            "Account": {
+                "DisplayType": "list",
+                "InputLabel": "Account:",
+                "DefaultValue": "-Please Select-",
+                "Placeholder": "Account",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Account"
+            },
+            "Category": {
+                "DisplayType": "list",
+                "InputLabel": "Category:",
+                "DefaultValue": "-Please Select-",
+                "Placeholder": "Category",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Category"
             }
         }
     },

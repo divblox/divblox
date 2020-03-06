@@ -19,9 +19,9 @@
  * @property string $Type the value for strType 
  * @property string $Label the value for strLabel 
  * @property string $Value the value for strValue 
+ * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
  * @property integer $Account the value for intAccount 
  * @property string $SearchMetaInfo the value for strSearchMetaInfo 
- * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
  * @property integer $ObjectOwner the value for intObjectOwner 
  * @property Account $AccountObject the value for the Account object referenced by intAccount 
  * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
@@ -67,6 +67,14 @@ class AdditionalAccountInformationGen extends dxBaseClass implements IteratorAgg
 
 
     /**
+     * Protected member variable that maps to the database column AdditionalAccountInformation.LastUpdated
+     * @var string strLastUpdated
+     */
+    protected $strLastUpdated;
+    const LastUpdatedDefault = null;
+
+
+    /**
      * Protected member variable that maps to the database column AdditionalAccountInformation.Account
      * @var integer intAccount
      */
@@ -80,14 +88,6 @@ class AdditionalAccountInformationGen extends dxBaseClass implements IteratorAgg
      */
     protected $strSearchMetaInfo;
     const SearchMetaInfoDefault = null;
-
-
-    /**
-     * Protected member variable that maps to the database column AdditionalAccountInformation.LastUpdated
-     * @var string strLastUpdated
-     */
-    protected $strLastUpdated;
-    const LastUpdatedDefault = null;
 
 
     /**
@@ -136,9 +136,9 @@ class AdditionalAccountInformationGen extends dxBaseClass implements IteratorAgg
         $this->strType = AdditionalAccountInformation::TypeDefault;
         $this->strLabel = AdditionalAccountInformation::LabelDefault;
         $this->strValue = AdditionalAccountInformation::ValueDefault;
+        $this->strLastUpdated = AdditionalAccountInformation::LastUpdatedDefault;
         $this->intAccount = AdditionalAccountInformation::AccountDefault;
         $this->strSearchMetaInfo = AdditionalAccountInformation::SearchMetaInfoDefault;
-        $this->strLastUpdated = AdditionalAccountInformation::LastUpdatedDefault;
         $this->intObjectOwner = AdditionalAccountInformation::ObjectOwnerDefault;
     }
 
@@ -480,9 +480,9 @@ class AdditionalAccountInformationGen extends dxBaseClass implements IteratorAgg
             $objBuilder->AddSelectItem($strTableName, 'Type', $strAliasPrefix . 'Type');
             $objBuilder->AddSelectItem($strTableName, 'Label', $strAliasPrefix . 'Label');
             $objBuilder->AddSelectItem($strTableName, 'Value', $strAliasPrefix . 'Value');
+            $objBuilder->AddSelectItem($strTableName, 'LastUpdated', $strAliasPrefix . 'LastUpdated');
             $objBuilder->AddSelectItem($strTableName, 'Account', $strAliasPrefix . 'Account');
             $objBuilder->AddSelectItem($strTableName, 'SearchMetaInfo', $strAliasPrefix . 'SearchMetaInfo');
-            $objBuilder->AddSelectItem($strTableName, 'LastUpdated', $strAliasPrefix . 'LastUpdated');
             $objBuilder->AddSelectItem($strTableName, 'ObjectOwner', $strAliasPrefix . 'ObjectOwner');
         }
     }
@@ -617,15 +617,15 @@ class AdditionalAccountInformationGen extends dxBaseClass implements IteratorAgg
         $strAlias = $strAliasPrefix . 'Value';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->strValue = $objDbRow->GetColumn($strAliasName, 'Blob');
+        $strAlias = $strAliasPrefix . 'LastUpdated';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->strLastUpdated = $objDbRow->GetColumn($strAliasName, 'VarChar');
         $strAlias = $strAliasPrefix . 'Account';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intAccount = $objDbRow->GetColumn($strAliasName, 'Integer');
         $strAlias = $strAliasPrefix . 'SearchMetaInfo';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->strSearchMetaInfo = $objDbRow->GetColumn($strAliasName, 'Blob');
-        $strAlias = $strAliasPrefix . 'LastUpdated';
-        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->strLastUpdated = $objDbRow->GetColumn($strAliasName, 'VarChar');
         $strAlias = $strAliasPrefix . 'ObjectOwner';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intObjectOwner = $objDbRow->GetColumn($strAliasName, 'Integer');
@@ -825,9 +825,9 @@ class AdditionalAccountInformationGen extends dxBaseClass implements IteratorAgg
             $ChangedArray = array_merge($ChangedArray,array("Type" => $this->strType));
             $ChangedArray = array_merge($ChangedArray,array("Label" => $this->strLabel));
             $ChangedArray = array_merge($ChangedArray,array("Value" => $this->strValue));
+            $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
             $ChangedArray = array_merge($ChangedArray,array("Account" => $this->intAccount));
             $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
-            $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
             $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
             $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         } else {
@@ -865,6 +865,14 @@ class AdditionalAccountInformationGen extends dxBaseClass implements IteratorAgg
                 //$ChangedArray = array_merge($ChangedArray,array("Value" => "From: ".$ExistingValueStr." to: ".$this->strValue));
             }
             $ExistingValueStr = "NULL";
+            if (!is_null($ExistingObj->LastUpdated)) {
+                $ExistingValueStr = $ExistingObj->LastUpdated;
+            }
+            if ($ExistingObj->LastUpdated != $this->strLastUpdated) {
+                $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => array("Before" => $ExistingValueStr,"After" => $this->strLastUpdated)));
+                //$ChangedArray = array_merge($ChangedArray,array("LastUpdated" => "From: ".$ExistingValueStr." to: ".$this->strLastUpdated));
+            }
+            $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->Account)) {
                 $ExistingValueStr = $ExistingObj->Account;
             }
@@ -879,14 +887,6 @@ class AdditionalAccountInformationGen extends dxBaseClass implements IteratorAgg
             if ($ExistingObj->SearchMetaInfo != $this->strSearchMetaInfo) {
                 $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => array("Before" => $ExistingValueStr,"After" => $this->strSearchMetaInfo)));
                 //$ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => "From: ".$ExistingValueStr." to: ".$this->strSearchMetaInfo));
-            }
-            $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->LastUpdated)) {
-                $ExistingValueStr = $ExistingObj->LastUpdated;
-            }
-            if ($ExistingObj->LastUpdated != $this->strLastUpdated) {
-                $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => array("Before" => $ExistingValueStr,"After" => $this->strLastUpdated)));
-                //$ChangedArray = array_merge($ChangedArray,array("LastUpdated" => "From: ".$ExistingValueStr." to: ".$this->strLastUpdated));
             }
             $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->ObjectOwner)) {
@@ -1008,9 +1008,9 @@ class AdditionalAccountInformationGen extends dxBaseClass implements IteratorAgg
         $ChangedArray = array_merge($ChangedArray,array("Type" => $this->strType));
         $ChangedArray = array_merge($ChangedArray,array("Label" => $this->strLabel));
         $ChangedArray = array_merge($ChangedArray,array("Value" => $this->strValue));
+        $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
         $ChangedArray = array_merge($ChangedArray,array("Account" => $this->intAccount));
         $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
-        $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
         $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
         $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         try {
@@ -1092,9 +1092,9 @@ class AdditionalAccountInformationGen extends dxBaseClass implements IteratorAgg
         $this->strType = $objReloaded->strType;
         $this->strLabel = $objReloaded->strLabel;
         $this->strValue = $objReloaded->strValue;
+        $this->strLastUpdated = $objReloaded->strLastUpdated;
         $this->Account = $objReloaded->Account;
         $this->strSearchMetaInfo = $objReloaded->strSearchMetaInfo;
-        $this->strLastUpdated = $objReloaded->strLastUpdated;
         $this->intObjectOwner = $objReloaded->intObjectOwner;
     }
     ////////////////////
@@ -1141,6 +1141,13 @@ class AdditionalAccountInformationGen extends dxBaseClass implements IteratorAgg
                  */
                 return $this->strValue;
 
+            case 'LastUpdated':
+                /**
+                 * Gets the value for strLastUpdated (Read-Only Timestamp)
+                 * @return string
+                 */
+                return $this->strLastUpdated;
+
             case 'Account':
                 /**
                  * Gets the value for intAccount 
@@ -1154,13 +1161,6 @@ class AdditionalAccountInformationGen extends dxBaseClass implements IteratorAgg
                  * @return string
                  */
                 return $this->strSearchMetaInfo;
-
-            case 'LastUpdated':
-                /**
-                 * Gets the value for strLastUpdated (Read-Only Timestamp)
-                 * @return string
-                 */
-                return $this->strLastUpdated;
 
             case 'ObjectOwner':
                 /**
@@ -1402,9 +1402,9 @@ class AdditionalAccountInformationGen extends dxBaseClass implements IteratorAgg
         $strToReturn .= '<element name="Type" type="xsd:string"/>';
         $strToReturn .= '<element name="Label" type="xsd:string"/>';
         $strToReturn .= '<element name="Value" type="xsd:string"/>';
+        $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
         $strToReturn .= '<element name="AccountObject" type="xsd1:Account"/>';
         $strToReturn .= '<element name="SearchMetaInfo" type="xsd:string"/>';
-        $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
         $strToReturn .= '<element name="ObjectOwner" type="xsd:int"/>';
         $strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
         $strToReturn .= '</sequence></complexType>';
@@ -1437,13 +1437,13 @@ class AdditionalAccountInformationGen extends dxBaseClass implements IteratorAgg
             $objToReturn->strLabel = $objSoapObject->Label;
         if (property_exists($objSoapObject, 'Value'))
             $objToReturn->strValue = $objSoapObject->Value;
+        if (property_exists($objSoapObject, 'LastUpdated'))
+            $objToReturn->strLastUpdated = $objSoapObject->LastUpdated;
         if ((property_exists($objSoapObject, 'AccountObject')) &&
             ($objSoapObject->AccountObject))
             $objToReturn->AccountObject = Account::GetObjectFromSoapObject($objSoapObject->AccountObject);
         if (property_exists($objSoapObject, 'SearchMetaInfo'))
             $objToReturn->strSearchMetaInfo = $objSoapObject->SearchMetaInfo;
-        if (property_exists($objSoapObject, 'LastUpdated'))
-            $objToReturn->strLastUpdated = $objSoapObject->LastUpdated;
         if (property_exists($objSoapObject, 'ObjectOwner'))
             $objToReturn->intObjectOwner = $objSoapObject->ObjectOwner;
         if (property_exists($objSoapObject, '__blnRestored'))
@@ -1486,9 +1486,9 @@ class AdditionalAccountInformationGen extends dxBaseClass implements IteratorAgg
         $iArray['Type'] = $this->strType;
         $iArray['Label'] = $this->strLabel;
         $iArray['Value'] = $this->strValue;
+        $iArray['LastUpdated'] = $this->strLastUpdated;
         $iArray['Account'] = $this->intAccount;
         $iArray['SearchMetaInfo'] = $this->strSearchMetaInfo;
-        $iArray['LastUpdated'] = $this->strLastUpdated;
         $iArray['ObjectOwner'] = $this->intObjectOwner;
         return new ArrayIterator($iArray);
     }
@@ -1528,10 +1528,10 @@ class AdditionalAccountInformationGen extends dxBaseClass implements IteratorAgg
      * @property-read dxQueryNode $Type
      * @property-read dxQueryNode $Label
      * @property-read dxQueryNode $Value
+     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $Account
      * @property-read dxQueryNodeAccount $AccountObject
      * @property-read dxQueryNode $SearchMetaInfo
-     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ObjectOwner
      *
      *
@@ -1552,14 +1552,14 @@ class AdditionalAccountInformationGen extends dxBaseClass implements IteratorAgg
 					return new dxQueryNode('Label', 'Label', 'VarChar', $this);
 				case 'Value':
 					return new dxQueryNode('Value', 'Value', 'Blob', $this);
+				case 'LastUpdated':
+					return new dxQueryNode('LastUpdated', 'LastUpdated', 'VarChar', $this);
 				case 'Account':
 					return new dxQueryNode('Account', 'Account', 'Integer', $this);
 				case 'AccountObject':
 					return new dxQueryNodeAccount('Account', 'AccountObject', 'Integer', $this);
 				case 'SearchMetaInfo':
 					return new dxQueryNode('SearchMetaInfo', 'SearchMetaInfo', 'Blob', $this);
-				case 'LastUpdated':
-					return new dxQueryNode('LastUpdated', 'LastUpdated', 'VarChar', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'Integer', $this);
 
@@ -1581,10 +1581,10 @@ class AdditionalAccountInformationGen extends dxBaseClass implements IteratorAgg
      * @property-read dxQueryNode $Type
      * @property-read dxQueryNode $Label
      * @property-read dxQueryNode $Value
+     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $Account
      * @property-read dxQueryNodeAccount $AccountObject
      * @property-read dxQueryNode $SearchMetaInfo
-     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ObjectOwner
      *
      *
@@ -1605,14 +1605,14 @@ class AdditionalAccountInformationGen extends dxBaseClass implements IteratorAgg
 					return new dxQueryNode('Label', 'Label', 'string', $this);
 				case 'Value':
 					return new dxQueryNode('Value', 'Value', 'string', $this);
+				case 'LastUpdated':
+					return new dxQueryNode('LastUpdated', 'LastUpdated', 'string', $this);
 				case 'Account':
 					return new dxQueryNode('Account', 'Account', 'integer', $this);
 				case 'AccountObject':
 					return new dxQueryNodeAccount('Account', 'AccountObject', 'integer', $this);
 				case 'SearchMetaInfo':
 					return new dxQueryNode('SearchMetaInfo', 'SearchMetaInfo', 'string', $this);
-				case 'LastUpdated':
-					return new dxQueryNode('LastUpdated', 'LastUpdated', 'string', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'integer', $this);
 

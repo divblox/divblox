@@ -10,5 +10,20 @@
  */
 include(FRAMEWORK_ROOT_STR.'/assets/php/framework_functions_base.php');
 abstract class FrameworkFunctions extends FrameworkFunctions_base {
+    public static function getNewTaskUniqueId() {
+        $CandidateStr = self::generateRandomString(24);
+        $DoneBool = false;
+        while(!$DoneBool) {
+            // Divblox query language to load a ticket from the database,
+            // based on the UniqueId field
+            $ExistingTicketCount = Ticket::LoadByTicketUniqueId($CandidateStr);
+            if ($ExistingTicketCount == 0) {
+                $DoneBool = true;
+            } else {
+                $CandidateStr = self::generateRandomString(24);
+            }
+        }
+        return $CandidateStr;
+    }
 
 }

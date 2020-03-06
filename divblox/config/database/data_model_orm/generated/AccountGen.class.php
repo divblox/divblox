@@ -42,9 +42,9 @@
  * @property string $Gender the value for strGender 
  * @property boolean $AccessBlocked the value for blnAccessBlocked 
  * @property string $BlockedReason the value for strBlockedReason 
+ * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
  * @property integer $UserRole the value for intUserRole 
  * @property string $SearchMetaInfo the value for strSearchMetaInfo 
- * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
  * @property integer $ObjectOwner the value for intObjectOwner 
  * @property UserRole $UserRoleObject the value for the UserRole object referenced by intUserRole 
  * @property-read AdditionalAccountInformation $_AdditionalAccountInformation the value for the private _objAdditionalAccountInformation (Read-Only) if set due to an expansion on the AdditionalAccountInformation.Account reverse relationship
@@ -55,6 +55,8 @@
  * @property-read PasswordReset[] $_PasswordResetArray the value for the private _objPasswordResetArray (Read-Only) if set due to an ExpandAsArray on the PasswordReset.Account reverse relationship
  * @property-read PushRegistration $_PushRegistration the value for the private _objPushRegistration (Read-Only) if set due to an expansion on the PushRegistration.Account reverse relationship
  * @property-read PushRegistration[] $_PushRegistrationArray the value for the private _objPushRegistrationArray (Read-Only) if set due to an ExpandAsArray on the PushRegistration.Account reverse relationship
+ * @property-read Ticket $_Ticket the value for the private _objTicket (Read-Only) if set due to an expansion on the Ticket.Account reverse relationship
+ * @property-read Ticket[] $_TicketArray the value for the private _objTicketArray (Read-Only) if set due to an ExpandAsArray on the Ticket.Account reverse relationship
  * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
  */
 class AccountGen extends dxBaseClass implements IteratorAggregate {
@@ -303,6 +305,14 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
+     * Protected member variable that maps to the database column Account.LastUpdated
+     * @var string strLastUpdated
+     */
+    protected $strLastUpdated;
+    const LastUpdatedDefault = null;
+
+
+    /**
      * Protected member variable that maps to the database column Account.UserRole
      * @var integer intUserRole
      */
@@ -316,14 +326,6 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
      */
     protected $strSearchMetaInfo;
     const SearchMetaInfoDefault = null;
-
-
-    /**
-     * Protected member variable that maps to the database column Account.LastUpdated
-     * @var string strLastUpdated
-     */
-    protected $strLastUpdated;
-    const LastUpdatedDefault = null;
 
 
     /**
@@ -399,6 +401,22 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
     private $_objPushRegistrationArray = null;
 
     /**
+     * Private member variable that stores a reference to a single Ticket object
+     * (of type Ticket), if this Account object was restored with
+     * an expansion on the Ticket association table.
+     * @var Ticket _objTicket;
+     */
+    private $_objTicket;
+
+    /**
+     * Private member variable that stores a reference to an array of Ticket objects
+     * (of type Ticket[]), if this Account object was restored with
+     * an ExpandAsArray on the Ticket association table.
+     * @var Ticket[] _objTicketArray;
+     */
+    private $_objTicketArray = null;
+
+    /**
      * Protected array of virtual attributes for this object (e.g. extra/other calculated and/or non-object bound
      * columns from the run-time database query result for this object).  Used by InstantiateDbRow and
      * GetVirtualAttribute.
@@ -459,9 +477,9 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
         $this->strGender = Account::GenderDefault;
         $this->blnAccessBlocked = Account::AccessBlockedDefault;
         $this->strBlockedReason = Account::BlockedReasonDefault;
+        $this->strLastUpdated = Account::LastUpdatedDefault;
         $this->intUserRole = Account::UserRoleDefault;
         $this->strSearchMetaInfo = Account::SearchMetaInfoDefault;
-        $this->strLastUpdated = Account::LastUpdatedDefault;
         $this->intObjectOwner = Account::ObjectOwnerDefault;
     }
 
@@ -826,9 +844,9 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
             $objBuilder->AddSelectItem($strTableName, 'Gender', $strAliasPrefix . 'Gender');
             $objBuilder->AddSelectItem($strTableName, 'AccessBlocked', $strAliasPrefix . 'AccessBlocked');
             $objBuilder->AddSelectItem($strTableName, 'BlockedReason', $strAliasPrefix . 'BlockedReason');
+            $objBuilder->AddSelectItem($strTableName, 'LastUpdated', $strAliasPrefix . 'LastUpdated');
             $objBuilder->AddSelectItem($strTableName, 'UserRole', $strAliasPrefix . 'UserRole');
             $objBuilder->AddSelectItem($strTableName, 'SearchMetaInfo', $strAliasPrefix . 'SearchMetaInfo');
-            $objBuilder->AddSelectItem($strTableName, 'LastUpdated', $strAliasPrefix . 'LastUpdated');
             $objBuilder->AddSelectItem($strTableName, 'ObjectOwner', $strAliasPrefix . 'ObjectOwner');
         }
     }
@@ -1032,15 +1050,15 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
         $strAlias = $strAliasPrefix . 'BlockedReason';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->strBlockedReason = $objDbRow->GetColumn($strAliasName, 'Blob');
+        $strAlias = $strAliasPrefix . 'LastUpdated';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->strLastUpdated = $objDbRow->GetColumn($strAliasName, 'VarChar');
         $strAlias = $strAliasPrefix . 'UserRole';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intUserRole = $objDbRow->GetColumn($strAliasName, 'Integer');
         $strAlias = $strAliasPrefix . 'SearchMetaInfo';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->strSearchMetaInfo = $objDbRow->GetColumn($strAliasName, 'Blob');
-        $strAlias = $strAliasPrefix . 'LastUpdated';
-        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->strLastUpdated = $objDbRow->GetColumn($strAliasName, 'VarChar');
         $strAlias = $strAliasPrefix . 'ObjectOwner';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intObjectOwner = $objDbRow->GetColumn($strAliasName, 'Integer');
@@ -1141,6 +1159,21 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
                 $objToReturn->_objPushRegistrationArray[] = PushRegistration::InstantiateDbRow($objDbRow, $strAliasPrefix . 'pushregistration__', $objExpansionNode, null, $strColumnAliasArray);
             } elseif (is_null($objToReturn->_objPushRegistration)) {
                 $objToReturn->_objPushRegistration = PushRegistration::InstantiateDbRow($objDbRow, $strAliasPrefix . 'pushregistration__', $objExpansionNode, null, $strColumnAliasArray);
+            }
+        }
+
+        // Check for Ticket Virtual Binding
+        $strAlias = $strAliasPrefix . 'ticket__Id';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objExpansionNode = (empty($objExpansionAliasArray['ticket']) ? null : $objExpansionAliasArray['ticket']);
+        $blnExpanded = ($objExpansionNode && $objExpansionNode->ExpandAsArray);
+        if ($blnExpanded && null === $objToReturn->_objTicketArray)
+            $objToReturn->_objTicketArray = array();
+        if (!is_null($objDbRow->GetColumn($strAliasName))) {
+            if ($blnExpanded) {
+                $objToReturn->_objTicketArray[] = Ticket::InstantiateDbRow($objDbRow, $strAliasPrefix . 'ticket__', $objExpansionNode, null, $strColumnAliasArray);
+            } elseif (is_null($objToReturn->_objTicket)) {
+                $objToReturn->_objTicket = Ticket::InstantiateDbRow($objDbRow, $strAliasPrefix . 'ticket__', $objExpansionNode, null, $strColumnAliasArray);
             }
         }
 
@@ -1339,9 +1372,9 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
             $ChangedArray = array_merge($ChangedArray,array("Gender" => $this->strGender));
             $ChangedArray = array_merge($ChangedArray,array("AccessBlocked" => $this->blnAccessBlocked));
             $ChangedArray = array_merge($ChangedArray,array("BlockedReason" => $this->strBlockedReason));
+            $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
             $ChangedArray = array_merge($ChangedArray,array("UserRole" => $this->intUserRole));
             $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
-            $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
             $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
             $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         } else {
@@ -1563,6 +1596,14 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
                 //$ChangedArray = array_merge($ChangedArray,array("BlockedReason" => "From: ".$ExistingValueStr." to: ".$this->strBlockedReason));
             }
             $ExistingValueStr = "NULL";
+            if (!is_null($ExistingObj->LastUpdated)) {
+                $ExistingValueStr = $ExistingObj->LastUpdated;
+            }
+            if ($ExistingObj->LastUpdated != $this->strLastUpdated) {
+                $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => array("Before" => $ExistingValueStr,"After" => $this->strLastUpdated)));
+                //$ChangedArray = array_merge($ChangedArray,array("LastUpdated" => "From: ".$ExistingValueStr." to: ".$this->strLastUpdated));
+            }
+            $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->UserRole)) {
                 $ExistingValueStr = $ExistingObj->UserRole;
             }
@@ -1577,14 +1618,6 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
             if ($ExistingObj->SearchMetaInfo != $this->strSearchMetaInfo) {
                 $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => array("Before" => $ExistingValueStr,"After" => $this->strSearchMetaInfo)));
                 //$ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => "From: ".$ExistingValueStr." to: ".$this->strSearchMetaInfo));
-            }
-            $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->LastUpdated)) {
-                $ExistingValueStr = $ExistingObj->LastUpdated;
-            }
-            if ($ExistingObj->LastUpdated != $this->strLastUpdated) {
-                $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => array("Before" => $ExistingValueStr,"After" => $this->strLastUpdated)));
-                //$ChangedArray = array_merge($ChangedArray,array("LastUpdated" => "From: ".$ExistingValueStr." to: ".$this->strLastUpdated));
             }
             $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->ObjectOwner)) {
@@ -1798,9 +1831,9 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
         $ChangedArray = array_merge($ChangedArray,array("Gender" => $this->strGender));
         $ChangedArray = array_merge($ChangedArray,array("AccessBlocked" => $this->blnAccessBlocked));
         $ChangedArray = array_merge($ChangedArray,array("BlockedReason" => $this->strBlockedReason));
+        $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
         $ChangedArray = array_merge($ChangedArray,array("UserRole" => $this->intUserRole));
         $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
-        $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
         $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
         $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         try {
@@ -1905,9 +1938,9 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
         $this->strGender = $objReloaded->strGender;
         $this->blnAccessBlocked = $objReloaded->blnAccessBlocked;
         $this->strBlockedReason = $objReloaded->strBlockedReason;
+        $this->strLastUpdated = $objReloaded->strLastUpdated;
         $this->UserRole = $objReloaded->UserRole;
         $this->strSearchMetaInfo = $objReloaded->strSearchMetaInfo;
-        $this->strLastUpdated = $objReloaded->strLastUpdated;
         $this->intObjectOwner = $objReloaded->intObjectOwner;
     }
     ////////////////////
@@ -2115,6 +2148,13 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
                  */
                 return $this->strBlockedReason;
 
+            case 'LastUpdated':
+                /**
+                 * Gets the value for strLastUpdated (Read-Only Timestamp)
+                 * @return string
+                 */
+                return $this->strLastUpdated;
+
             case 'UserRole':
                 /**
                  * Gets the value for intUserRole 
@@ -2128,13 +2168,6 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
                  * @return string
                  */
                 return $this->strSearchMetaInfo;
-
-            case 'LastUpdated':
-                /**
-                 * Gets the value for strLastUpdated (Read-Only Timestamp)
-                 * @return string
-                 */
-                return $this->strLastUpdated;
 
             case 'ObjectOwner':
                 /**
@@ -2230,6 +2263,22 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
                  * @return PushRegistration[]
                  */
                 return $this->_objPushRegistrationArray;
+
+            case '_Ticket':
+                /**
+                 * Gets the value for the private _objTicket (Read-Only)
+                 * if set due to an expansion on the Ticket.Account reverse relationship
+                 * @return Ticket
+                 */
+                return $this->_objTicket;
+
+            case '_TicketArray':
+                /**
+                 * Gets the value for the private _objTicketArray (Read-Only)
+                 * if set due to an ExpandAsArray on the Ticket.Account reverse relationship
+                 * @return Ticket[]
+                 */
+                return $this->_objTicketArray;
 
 
             case '__Restored':
@@ -3293,6 +3342,155 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
     }
 
 
+    // Related Objects' Methods for Ticket
+    //-------------------------------------------------------------------
+
+    /**
+     * Gets all associated Tickets as an array of Ticket objects
+     * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
+     * @return Ticket[]
+    */
+    public function GetTicketArray($objOptionalClauses = null) {
+        if ((is_null($this->intId)))
+            return array();
+
+        try {
+            return Ticket::LoadArrayByAccount($this->intId, $objOptionalClauses);
+        } catch (dxCallerException $objExc) {
+            $objExc->IncrementOffset();
+            throw $objExc;
+        }
+    }
+
+    /**
+     * Counts all associated Tickets
+     * @return int
+    */
+    public function CountTickets() {
+        if ((is_null($this->intId)))
+            return 0;
+
+        return Ticket::CountByAccount($this->intId);
+    }
+
+    /**
+     * Associates a Ticket
+     * @param Ticket $objTicket
+     * @return void
+    */
+    public function AssociateTicket(Ticket $objTicket) {
+        if ((is_null($this->intId)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call AssociateTicket on this unsaved Account.');
+        if ((is_null($objTicket->Id)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call AssociateTicket on this Account with an unsaved Ticket.');
+
+        // Get the Database Object for this Class
+        $objDatabase = Account::GetDatabase();
+
+        // Perform the SQL Query
+        $objDatabase->NonQuery('
+            UPDATE
+                `Ticket`
+            SET
+                `Account` = ' . $objDatabase->SqlVariable($this->intId) . '
+            WHERE
+                `Id` = ' . $objDatabase->SqlVariable($objTicket->Id) . '
+        ');
+    }
+
+    /**
+     * Unassociates a Ticket
+     * @param Ticket $objTicket
+     * @return void
+    */
+    public function UnassociateTicket(Ticket $objTicket) {
+        if ((is_null($this->intId)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateTicket on this unsaved Account.');
+        if ((is_null($objTicket->Id)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateTicket on this Account with an unsaved Ticket.');
+
+        // Get the Database Object for this Class
+        $objDatabase = Account::GetDatabase();
+
+        // Perform the SQL Query
+        $objDatabase->NonQuery('
+            UPDATE
+                `Ticket`
+            SET
+                `Account` = null
+            WHERE
+                `Id` = ' . $objDatabase->SqlVariable($objTicket->Id) . ' AND
+                `Account` = ' . $objDatabase->SqlVariable($this->intId) . '
+        ');
+    }
+
+    /**
+     * Unassociates all Tickets
+     * @return void
+    */
+    public function UnassociateAllTickets() {
+        if ((is_null($this->intId)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateTicket on this unsaved Account.');
+
+        // Get the Database Object for this Class
+        $objDatabase = Account::GetDatabase();
+
+        // Perform the SQL Query
+        $objDatabase->NonQuery('
+            UPDATE
+                `Ticket`
+            SET
+                `Account` = null
+            WHERE
+                `Account` = ' . $objDatabase->SqlVariable($this->intId) . '
+        ');
+    }
+
+    /**
+     * Deletes an associated Ticket
+     * @param Ticket $objTicket
+     * @return void
+    */
+    public function DeleteAssociatedTicket(Ticket $objTicket) {
+        if ((is_null($this->intId)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateTicket on this unsaved Account.');
+        if ((is_null($objTicket->Id)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateTicket on this Account with an unsaved Ticket.');
+
+        // Get the Database Object for this Class
+        $objDatabase = Account::GetDatabase();
+
+        // Perform the SQL Query
+        $objDatabase->NonQuery('
+            DELETE FROM
+                `Ticket`
+            WHERE
+                `Id` = ' . $objDatabase->SqlVariable($objTicket->Id) . ' AND
+                `Account` = ' . $objDatabase->SqlVariable($this->intId) . '
+        ');
+    }
+
+    /**
+     * Deletes all associated Tickets
+     * @return void
+    */
+    public function DeleteAllTickets() {
+        if ((is_null($this->intId)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateTicket on this unsaved Account.');
+
+        // Get the Database Object for this Class
+        $objDatabase = Account::GetDatabase();
+
+        // Perform the SQL Query
+        $objDatabase->NonQuery('
+            DELETE FROM
+                `Ticket`
+            WHERE
+                `Account` = ' . $objDatabase->SqlVariable($this->intId) . '
+        ');
+    }
+
+
     
 ///////////////////////////////
     // METHODS TO EXTRACT INFO ABOUT THE CLASS
@@ -3358,9 +3556,9 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
         $strToReturn .= '<element name="Gender" type="xsd:string"/>';
         $strToReturn .= '<element name="AccessBlocked" type="xsd:boolean"/>';
         $strToReturn .= '<element name="BlockedReason" type="xsd:string"/>';
+        $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
         $strToReturn .= '<element name="UserRoleObject" type="xsd1:UserRole"/>';
         $strToReturn .= '<element name="SearchMetaInfo" type="xsd:string"/>';
-        $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
         $strToReturn .= '<element name="ObjectOwner" type="xsd:int"/>';
         $strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
         $strToReturn .= '</sequence></complexType>';
@@ -3439,13 +3637,13 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
             $objToReturn->blnAccessBlocked = $objSoapObject->AccessBlocked;
         if (property_exists($objSoapObject, 'BlockedReason'))
             $objToReturn->strBlockedReason = $objSoapObject->BlockedReason;
+        if (property_exists($objSoapObject, 'LastUpdated'))
+            $objToReturn->strLastUpdated = $objSoapObject->LastUpdated;
         if ((property_exists($objSoapObject, 'UserRoleObject')) &&
             ($objSoapObject->UserRoleObject))
             $objToReturn->UserRoleObject = UserRole::GetObjectFromSoapObject($objSoapObject->UserRoleObject);
         if (property_exists($objSoapObject, 'SearchMetaInfo'))
             $objToReturn->strSearchMetaInfo = $objSoapObject->SearchMetaInfo;
-        if (property_exists($objSoapObject, 'LastUpdated'))
-            $objToReturn->strLastUpdated = $objSoapObject->LastUpdated;
         if (property_exists($objSoapObject, 'ObjectOwner'))
             $objToReturn->intObjectOwner = $objSoapObject->ObjectOwner;
         if (property_exists($objSoapObject, '__blnRestored'))
@@ -3513,9 +3711,9 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
         $iArray['Gender'] = $this->strGender;
         $iArray['AccessBlocked'] = $this->blnAccessBlocked;
         $iArray['BlockedReason'] = $this->strBlockedReason;
+        $iArray['LastUpdated'] = $this->strLastUpdated;
         $iArray['UserRole'] = $this->intUserRole;
         $iArray['SearchMetaInfo'] = $this->strSearchMetaInfo;
-        $iArray['LastUpdated'] = $this->strLastUpdated;
         $iArray['ObjectOwner'] = $this->intObjectOwner;
         return new ArrayIterator($iArray);
     }
@@ -3578,10 +3776,10 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
      * @property-read dxQueryNode $Gender
      * @property-read dxQueryNode $AccessBlocked
      * @property-read dxQueryNode $BlockedReason
+     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $UserRole
      * @property-read dxQueryNodeUserRole $UserRoleObject
      * @property-read dxQueryNode $SearchMetaInfo
-     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ObjectOwner
      *
      *
@@ -3589,6 +3787,7 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
      * @property-read dxQueryReverseReferenceNodeClientConnection $ClientConnection
      * @property-read dxQueryReverseReferenceNodePasswordReset $PasswordReset
      * @property-read dxQueryReverseReferenceNodePushRegistration $PushRegistration
+     * @property-read dxQueryReverseReferenceNodeTicket $Ticket
 
      * @property-read dxQueryNode $_PrimaryKeyNode
      **/
@@ -3652,14 +3851,14 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNode('AccessBlocked', 'AccessBlocked', 'Bit', $this);
 				case 'BlockedReason':
 					return new dxQueryNode('BlockedReason', 'BlockedReason', 'Blob', $this);
+				case 'LastUpdated':
+					return new dxQueryNode('LastUpdated', 'LastUpdated', 'VarChar', $this);
 				case 'UserRole':
 					return new dxQueryNode('UserRole', 'UserRole', 'Integer', $this);
 				case 'UserRoleObject':
 					return new dxQueryNodeUserRole('UserRole', 'UserRoleObject', 'Integer', $this);
 				case 'SearchMetaInfo':
 					return new dxQueryNode('SearchMetaInfo', 'SearchMetaInfo', 'Blob', $this);
-				case 'LastUpdated':
-					return new dxQueryNode('LastUpdated', 'LastUpdated', 'VarChar', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'Integer', $this);
 				case 'AdditionalAccountInformation':
@@ -3670,6 +3869,8 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryReverseReferenceNodePasswordReset($this, 'passwordreset', 'reverse_reference', 'Account', 'PasswordReset');
 				case 'PushRegistration':
 					return new dxQueryReverseReferenceNodePushRegistration($this, 'pushregistration', 'reverse_reference', 'Account', 'PushRegistration');
+				case 'Ticket':
+					return new dxQueryReverseReferenceNodeTicket($this, 'ticket', 'reverse_reference', 'Account', 'Ticket');
 
 				case '_PrimaryKeyNode':
 					return new dxQueryNode('Id', 'Id', 'Integer', $this);
@@ -3712,10 +3913,10 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
      * @property-read dxQueryNode $Gender
      * @property-read dxQueryNode $AccessBlocked
      * @property-read dxQueryNode $BlockedReason
+     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $UserRole
      * @property-read dxQueryNodeUserRole $UserRoleObject
      * @property-read dxQueryNode $SearchMetaInfo
-     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ObjectOwner
      *
      *
@@ -3723,6 +3924,7 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
      * @property-read dxQueryReverseReferenceNodeClientConnection $ClientConnection
      * @property-read dxQueryReverseReferenceNodePasswordReset $PasswordReset
      * @property-read dxQueryReverseReferenceNodePushRegistration $PushRegistration
+     * @property-read dxQueryReverseReferenceNodeTicket $Ticket
 
      * @property-read dxQueryNode $_PrimaryKeyNode
      **/
@@ -3786,14 +3988,14 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNode('AccessBlocked', 'AccessBlocked', 'boolean', $this);
 				case 'BlockedReason':
 					return new dxQueryNode('BlockedReason', 'BlockedReason', 'string', $this);
+				case 'LastUpdated':
+					return new dxQueryNode('LastUpdated', 'LastUpdated', 'string', $this);
 				case 'UserRole':
 					return new dxQueryNode('UserRole', 'UserRole', 'integer', $this);
 				case 'UserRoleObject':
 					return new dxQueryNodeUserRole('UserRole', 'UserRoleObject', 'integer', $this);
 				case 'SearchMetaInfo':
 					return new dxQueryNode('SearchMetaInfo', 'SearchMetaInfo', 'string', $this);
-				case 'LastUpdated':
-					return new dxQueryNode('LastUpdated', 'LastUpdated', 'string', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'integer', $this);
 				case 'AdditionalAccountInformation':
@@ -3804,6 +4006,8 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryReverseReferenceNodePasswordReset($this, 'passwordreset', 'reverse_reference', 'Account', 'PasswordReset');
 				case 'PushRegistration':
 					return new dxQueryReverseReferenceNodePushRegistration($this, 'pushregistration', 'reverse_reference', 'Account', 'PushRegistration');
+				case 'Ticket':
+					return new dxQueryReverseReferenceNodeTicket($this, 'ticket', 'reverse_reference', 'Account', 'Ticket');
 
 				case '_PrimaryKeyNode':
 					return new dxQueryNode('Id', 'Id', 'integer', $this);
