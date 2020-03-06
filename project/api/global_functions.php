@@ -55,6 +55,8 @@ function getCurrentAccountAttribute() {
                 if (strtolower($CandidateStr) != 'anonymous') {
                     if (!file_exists(DOCUMENT_ROOT_STR.SUBDIRECTORY_STR.$CandidateStr)) {
                         PublicApi::addApiOutput("Attribute",null);
+                    } else {
+                        PublicApi::addApiOutput("Attribute",$CandidateStr);
                     }
                 } else {
                     PublicApi::addApiOutput("Attribute",null);
