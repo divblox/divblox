@@ -16,6 +16,7 @@
     "New",
     "In Progress",
     "Complete",
-    "Backlog"
+    "Backlog",
+    "Urgent"
   ]
 }
