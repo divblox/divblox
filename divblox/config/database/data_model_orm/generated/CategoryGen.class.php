@@ -1,36 +1,37 @@
 <?php
 /**
- * The abstract UserRoleGen class defined here is
+ * The abstract CategoryGen class defined here is
  * code-generated and contains all the basic CRUD-type functionality as well as
  * basic methods to handle relationships and index-based loading.
  *
- * To use, you should use the UserRole subclass which
- * extends this UserRoleGen class.
+ * To use, you should use the Category subclass which
+ * extends this CategoryGen class.
  *
  * Because subsequent re-code generations will overwrite any changes to this
  * file, you should leave this file unaltered to prevent yourself from losing
  * any information or code changes.  All customizations should be done by
  * overriding existing or implementing new methods, properties and variables
- * in the UserRole class.
+ * in the Category class.
  *
  * @package divblox_app
  * @subpackage GeneratedDataObjects
  * @property-read integer $Id the value for intId (Read-Only PK)
- * @property string $Role the value for strRole (Unique)
+ * @property string $CategoryName the value for strCategoryName 
+ * @property string $CategoryTotal the value for strCategoryTotal 
  * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
  * @property integer $ObjectOwner the value for intObjectOwner 
- * @property-read Account $_Account the value for the private _objAccount (Read-Only) if set due to an expansion on the Account.UserRole reverse relationship
- * @property-read Account[] $_AccountArray the value for the private _objAccountArray (Read-Only) if set due to an ExpandAsArray on the Account.UserRole reverse relationship
+ * @property-read Expense $_Expense the value for the private _objExpense (Read-Only) if set due to an expansion on the Expense.Category reverse relationship
+ * @property-read Expense[] $_ExpenseArray the value for the private _objExpenseArray (Read-Only) if set due to an ExpandAsArray on the Expense.Category reverse relationship
  * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
  */
-class UserRoleGen extends dxBaseClass implements IteratorAggregate {
+class CategoryGen extends dxBaseClass implements IteratorAggregate {
 
     ///////////////////////////////////////////////////////////////////////
     // PROTECTED MEMBER VARIABLES and TEXT FIELD MAXLENGTHS (if applicable)
     ///////////////////////////////////////////////////////////////////////
 
     /**
-     * Protected member variable that maps to the database PK Identity column UserRole.Id
+     * Protected member variable that maps to the database PK Identity column Category.Id
      * @var integer intId
      */
     protected $intId;
@@ -38,16 +39,24 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
-     * Protected member variable that maps to the database column UserRole.Role
-     * @var string strRole
+     * Protected member variable that maps to the database column Category.CategoryName
+     * @var string strCategoryName
      */
-    protected $strRole;
-    const RoleMaxLength = 50;
-    const RoleDefault = null;
+    protected $strCategoryName;
+    const CategoryNameMaxLength = 50;
+    const CategoryNameDefault = null;
 
 
     /**
-     * Protected member variable that maps to the database column UserRole.LastUpdated
+     * Protected member variable that maps to the database column Category.CategoryTotal
+     * @var string strCategoryTotal
+     */
+    protected $strCategoryTotal;
+    const CategoryTotalDefault = null;
+
+
+    /**
+     * Protected member variable that maps to the database column Category.LastUpdated
      * @var string strLastUpdated
      */
     protected $strLastUpdated;
@@ -55,7 +64,7 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
-     * Protected member variable that maps to the database column UserRole.ObjectOwner
+     * Protected member variable that maps to the database column Category.ObjectOwner
      * @var integer intObjectOwner
      */
     protected $intObjectOwner;
@@ -63,20 +72,20 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
-     * Private member variable that stores a reference to a single Account object
-     * (of type Account), if this UserRole object was restored with
-     * an expansion on the Account association table.
-     * @var Account _objAccount;
+     * Private member variable that stores a reference to a single Expense object
+     * (of type Expense), if this Category object was restored with
+     * an expansion on the Expense association table.
+     * @var Expense _objExpense;
      */
-    private $_objAccount;
+    private $_objExpense;
 
     /**
-     * Private member variable that stores a reference to an array of Account objects
-     * (of type Account[]), if this UserRole object was restored with
-     * an ExpandAsArray on the Account association table.
-     * @var Account[] _objAccountArray;
+     * Private member variable that stores a reference to an array of Expense objects
+     * (of type Expense[]), if this Category object was restored with
+     * an ExpandAsArray on the Expense association table.
+     * @var Expense[] _objExpenseArray;
      */
-    private $_objAccountArray = null;
+    private $_objExpenseArray = null;
 
     /**
      * Protected array of virtual attributes for this object (e.g. extra/other calculated and/or non-object bound
@@ -102,10 +111,11 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
      * Initialize each property with default values from database definition
      */
     public function Initialize() {
-        $this->intId = UserRole::IdDefault;
-        $this->strRole = UserRole::RoleDefault;
-        $this->strLastUpdated = UserRole::LastUpdatedDefault;
-        $this->intObjectOwner = UserRole::ObjectOwnerDefault;
+        $this->intId = Category::IdDefault;
+        $this->strCategoryName = Category::CategoryNameDefault;
+        $this->strCategoryTotal = Category::CategoryTotalDefault;
+        $this->strLastUpdated = Category::LastUpdatedDefault;
+        $this->intObjectOwner = Category::ObjectOwnerDefault;
     }
 
     ///////////////////////////////
@@ -121,24 +131,24 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Load a UserRole from PK Info
+     * Load a Category from PK Info
      * @param integer $intId
      * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
-     * @return UserRole
+     * @return Category
      */
     public static function Load($intId, $objOptionalClauses = null) {
         $strCacheKey = false;
         if (ProjectFunctions::$objCacheProvider && !$objOptionalClauses && ProjectFunctions::$Database[1]->Caching) {
-            $strCacheKey = ProjectFunctions::$objCacheProvider->CreateKey(ProjectFunctions::$Database[1]->Database, 'UserRole', $intId);
+            $strCacheKey = ProjectFunctions::$objCacheProvider->CreateKey(ProjectFunctions::$Database[1]->Database, 'Category', $intId);
             $objCachedObject = ProjectFunctions::$objCacheProvider->Get($strCacheKey);
             if ($objCachedObject !== false) {
                 return $objCachedObject;
             }
         }
         // Use QuerySingle to Perform the Query
-        $objToReturn = UserRole::QuerySingle(
+        $objToReturn = Category::QuerySingle(
             dxQuery::AndCondition(
-                dxQuery::Equal(dxQueryN::UserRole()->Id, $intId)
+                dxQuery::Equal(dxQueryN::Category()->Id, $intId)
             ),
             $objOptionalClauses
         );
@@ -149,17 +159,17 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Load all UserRoles
+     * Load all Categories
      * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
-     * @return UserRole[]
+     * @return Category[]
      */
     public static function LoadAll($objOptionalClauses = null) {
         if (func_num_args() > 1) {
             throw new dxCallerException("LoadAll must be called with an array of optional clauses as a single argument");
         }
-        // Call UserRole::QueryArray to perform the LoadAll query
+        // Call Category::QueryArray to perform the LoadAll query
         try {
-            return UserRole::QueryArray(dxQuery::All(), $objOptionalClauses);
+            return Category::QueryArray(dxQuery::All(), $objOptionalClauses);
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();
             throw $objExc;
@@ -167,12 +177,12 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Count all UserRoles
+     * Count all Categories
      * @return int
      */
     public static function CountAll() {
-        // Call UserRole::QueryCount to perform the CountAll query
-        return UserRole::QueryCount(dxQuery::All());
+        // Call Category::QueryCount to perform the CountAll query
+        return Category::QueryCount(dxQuery::All());
     }
 
     ///////////////////////////////
@@ -191,10 +201,10 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
      */
     protected static function BuildQueryStatement(&$objQueryBuilder, dxQueryCondition $objConditions, $objOptionalClauses, $mixParameterArray, $blnCountOnly) {
         // Get the Database Object for this Class
-        $objDatabase = UserRole::GetDatabase();
+        $objDatabase = Category::GetDatabase();
 
-        // Create/Build out the QueryBuilder object with UserRole-specific SELET and FROM fields
-        $objQueryBuilder = new dxQueryBuilder($objDatabase, 'UserRole');
+        // Create/Build out the QueryBuilder object with Category-specific SELET and FROM fields
+        $objQueryBuilder = new dxQueryBuilder($objDatabase, 'Category');
 
         $blnAddAllFieldsToSelect = true;
         if ($objDatabase->OnlyFullGroupBy) {
@@ -213,9 +223,9 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
             }
         }
         if ($blnAddAllFieldsToSelect) {
-            UserRole::GetSelectFields($objQueryBuilder, null, dxQuery::extractSelectClause($objOptionalClauses));
+            Category::GetSelectFields($objQueryBuilder, null, dxQuery::extractSelectClause($objOptionalClauses));
         }
-        $objQueryBuilder->AddFromItem('UserRole');
+        $objQueryBuilder->AddFromItem('Category');
 
         // Set "CountOnly" option (if applicable)
         if ($blnCountOnly)
@@ -262,23 +272,23 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Static divblox Query method to query for a single UserRole object.
+     * Static divblox Query method to query for a single Category object.
      * Uses BuildQueryStatment to perform most of the work.
      * @param dxQueryCondition $objConditions any conditions on the query, itself
      * @param dxQueryClause[] $objOptionalClausees additional optional dxQueryClause objects for this query
      * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
-     * @return UserRole the queried object
+     * @return Category the queried object
      */
     public static function QuerySingle(dxQueryCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
         // Get the Query Statement
         try {
-            $strQuery = UserRole::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+            $strQuery = Category::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();
             throw $objExc;
         }
 
-        // Perform the Query, Get the First Row, and Instantiate a new UserRole object
+        // Perform the Query, Get the First Row, and Instantiate a new Category object
         $objDbResult = $objQueryBuilder->Database->Query($strQuery);
 
         // Do we have to expand anything?
@@ -286,7 +296,7 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
             $objToReturn = array();
             $objPrevItemArray = array();
             while ($objDbRow = $objDbResult->GetNextRow()) {
-                $objItem = UserRole::InstantiateDbRow($objDbRow, null, $objQueryBuilder->ExpandAsArrayNode, $objPrevItemArray, $objQueryBuilder->ColumnAliasArray);
+                $objItem = Category::InstantiateDbRow($objDbRow, null, $objQueryBuilder->ExpandAsArrayNode, $objPrevItemArray, $objQueryBuilder->ColumnAliasArray);
                 if ($objItem) {
                     $objToReturn[] = $objItem;
                     $objPrevItemArray[$objItem->intId][] = $objItem;
@@ -303,22 +313,22 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
             $objDbRow = $objDbResult->GetNextRow();
             if(null === $objDbRow)
                 return null;
-            return UserRole::InstantiateDbRow($objDbRow, null, null, null, $objQueryBuilder->ColumnAliasArray);
+            return Category::InstantiateDbRow($objDbRow, null, null, null, $objQueryBuilder->ColumnAliasArray);
         }
     }
 
     /**
-     * Static divblox Query method to query for an array of UserRole objects.
+     * Static divblox Query method to query for an array of Category objects.
      * Uses BuildQueryStatment to perform most of the work.
      * @param dxQueryCondition $objConditions any conditions on the query, itself
      * @param dxQueryClause[] $objOptionalClausees additional optional dxQueryClause objects for this query
      * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
-     * @return UserRole[] the queried objects as an array
+     * @return Category[] the queried objects as an array
      */
     public static function QueryArray(dxQueryCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
         // Get the Query Statement
         try {
-            $strQuery = UserRole::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+            $strQuery = Category::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();
             throw $objExc;
@@ -326,7 +336,7 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
 
         // Perform the Query and Instantiate the Array Result
         $objDbResult = $objQueryBuilder->Database->Query($strQuery);
-        return UserRole::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNode, $objQueryBuilder->ColumnAliasArray);
+        return Category::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNode, $objQueryBuilder->ColumnAliasArray);
     }
 
     /**
@@ -340,7 +350,7 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     public static function QueryCursor(dxQueryCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
         // Get the query statement
         try {
-            $strQuery = UserRole::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+            $strQuery = Category::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();
             throw $objExc;
@@ -355,7 +365,7 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Static divblox Query method to query for a count of UserRole objects.
+     * Static divblox Query method to query for a count of Category objects.
      * Uses BuildQueryStatment to perform most of the work.
      * @param dxQueryCondition $objConditions any conditions on the query, itself
      * @param dxQueryClause[] $objOptionalClausees additional optional dxQueryClause objects for this query
@@ -365,7 +375,7 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     public static function QueryCount(dxQueryCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
         // Get the Query Statement
         try {
-            $strQuery = UserRole::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, true);
+            $strQuery = Category::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, true);
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();
             throw $objExc;
@@ -406,16 +416,16 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
 
     public static function QueryArrayCached(dxQueryCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null, $blnForceUpdate = false) {
         // Get the Database Object for this Class
-        $objDatabase = UserRole::GetDatabase();
+        $objDatabase = Category::GetDatabase();
 
-        $strQuery = UserRole::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+        $strQuery = Category::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
 
-        $objCache = new dxCache('dxquery/userrole', $strQuery);
+        $objCache = new dxCache('dxquery/category', $strQuery);
         $cacheData = $objCache->GetData();
 
         if (!$cacheData || $blnForceUpdate) {
             $objDbResult = $objQueryBuilder->Database->Query($strQuery);
-            $arrResult = UserRole::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNode, $objQueryBuilder->ColumnAliasArray);
+            $arrResult = Category::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNode, $objQueryBuilder->ColumnAliasArray);
             $objCache->SaveData(serialize($arrResult));
         } else {
             $arrResult = unserialize($cacheData);
@@ -425,7 +435,7 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Updates a dxQueryBuilder with the SELECT fields for this UserRole
+     * Updates a dxQueryBuilder with the SELECT fields for this Category
      * @param dxQueryBuilder $objBuilder the Query Builder object to update
      * @param string $strPrefix optional prefix to add to the SELECT fields
      */
@@ -434,7 +444,7 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
             $strTableName = $strPrefix;
             $strAliasPrefix = $strPrefix . '__';
         } else {
-            $strTableName = 'UserRole';
+            $strTableName = 'Category';
             $strAliasPrefix = '';
         }
 
@@ -443,7 +453,8 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
             $objSelect->AddSelectItems($objBuilder, $strTableName, $strAliasPrefix);
         } else {
             $objBuilder->AddSelectItem($strTableName, 'Id', $strAliasPrefix . 'Id');
-            $objBuilder->AddSelectItem($strTableName, 'Role', $strAliasPrefix . 'Role');
+            $objBuilder->AddSelectItem($strTableName, 'CategoryName', $strAliasPrefix . 'CategoryName');
+            $objBuilder->AddSelectItem($strTableName, 'CategoryTotal', $strAliasPrefix . 'CategoryTotal');
             $objBuilder->AddSelectItem($strTableName, 'LastUpdated', $strAliasPrefix . 'LastUpdated');
             $objBuilder->AddSelectItem($strTableName, 'ObjectOwner', $strAliasPrefix . 'ObjectOwner');
         }
@@ -530,16 +541,16 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Instantiate a UserRole from a Database Row.
+     * Instantiate a Category from a Database Row.
      * Takes in an optional strAliasPrefix, used in case another Object::InstantiateDbRow
-     * is calling this UserRole::InstantiateDbRow in order to perform
+     * is calling this Category::InstantiateDbRow in order to perform
      * early binding on referenced objects.
      * @param DatabaseRowBase $objDbRow
      * @param string $strAliasPrefix
      * @param dxQueryBaseNode $objExpandAsArrayNode
      * @param dxBaseClass $arrPreviousItem
      * @param string[] $strColumnAliasArray
-     * @return mixed Either a UserRole, or false to indicate the dbrow was used in an expansion, or null to indicate that this leaf is a duplicate.
+     * @return mixed Either a Category, or false to indicate the dbrow was used in an expansion, or null to indicate that this leaf is a duplicate.
     */
     public static function InstantiateDbRow($objDbRow, $strAliasPrefix = null, $objExpandAsArrayNode = null, $objPreviousItemArray = null, $strColumnAliasArray = array()) {
         // If blank row, return null
@@ -558,21 +569,24 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
                 is_array($objPreviousItemArray) &&
                 ProjectFunctions::getDataSetSize($objPreviousItemArray)) {
 
-            if (UserRole::ExpandArray ($objDbRow, $strAliasPrefix, $objExpandAsArrayNode, $objPreviousItemArray, $strColumnAliasArray)) {
+            if (Category::ExpandArray ($objDbRow, $strAliasPrefix, $objExpandAsArrayNode, $objPreviousItemArray, $strColumnAliasArray)) {
                 return false; // db row was used but no new object was created
             }
         }
 
-        // Create a new instance of the UserRole object
-        $objToReturn = new UserRole();
+        // Create a new instance of the Category object
+        $objToReturn = new Category();
         $objToReturn->__blnRestored = true;
 
         $strAlias = $strAliasPrefix . 'Id';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intId = $objDbRow->GetColumn($strAliasName, 'Integer');
-        $strAlias = $strAliasPrefix . 'Role';
+        $strAlias = $strAliasPrefix . 'CategoryName';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->strRole = $objDbRow->GetColumn($strAliasName, 'VarChar');
+        $objToReturn->strCategoryName = $objDbRow->GetColumn($strAliasName, 'VarChar');
+        $strAlias = $strAliasPrefix . 'CategoryTotal';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->strCategoryTotal = $objDbRow->GetColumn($strAliasName, 'VarChar');
         $strAlias = $strAliasPrefix . 'LastUpdated';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->strLastUpdated = $objDbRow->GetColumn($strAliasName, 'VarChar');
@@ -607,23 +621,23 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
         }
 
         if (!$strAliasPrefix)
-            $strAliasPrefix = 'UserRole__';
+            $strAliasPrefix = 'Category__';
 
 
 
 
-        // Check for Account Virtual Binding
-        $strAlias = $strAliasPrefix . 'account__Id';
+        // Check for Expense Virtual Binding
+        $strAlias = $strAliasPrefix . 'expense__Id';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objExpansionNode = (empty($objExpansionAliasArray['account']) ? null : $objExpansionAliasArray['account']);
+        $objExpansionNode = (empty($objExpansionAliasArray['expense']) ? null : $objExpansionAliasArray['expense']);
         $blnExpanded = ($objExpansionNode && $objExpansionNode->ExpandAsArray);
-        if ($blnExpanded && null === $objToReturn->_objAccountArray)
-            $objToReturn->_objAccountArray = array();
+        if ($blnExpanded && null === $objToReturn->_objExpenseArray)
+            $objToReturn->_objExpenseArray = array();
         if (!is_null($objDbRow->GetColumn($strAliasName))) {
             if ($blnExpanded) {
-                $objToReturn->_objAccountArray[] = Account::InstantiateDbRow($objDbRow, $strAliasPrefix . 'account__', $objExpansionNode, null, $strColumnAliasArray);
-            } elseif (is_null($objToReturn->_objAccount)) {
-                $objToReturn->_objAccount = Account::InstantiateDbRow($objDbRow, $strAliasPrefix . 'account__', $objExpansionNode, null, $strColumnAliasArray);
+                $objToReturn->_objExpenseArray[] = Expense::InstantiateDbRow($objDbRow, $strAliasPrefix . 'expense__', $objExpansionNode, null, $strColumnAliasArray);
+            } elseif (is_null($objToReturn->_objExpense)) {
+                $objToReturn->_objExpense = Expense::InstantiateDbRow($objDbRow, $strAliasPrefix . 'expense__', $objExpansionNode, null, $strColumnAliasArray);
             }
         }
 
@@ -631,11 +645,11 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Instantiate an array of UserRoles from a Database Result
+     * Instantiate an array of Categories from a Database Result
      * @param DatabaseResultBase $objDbResult
      * @param dxQueryBaseNode $objExpandAsArrayNode
      * @param string[] $strColumnAliasArray
-     * @return UserRole[]
+     * @return Category[]
      */
     public static function InstantiateDbResult(dxDatabaseResultBase $objDbResult, $objExpandAsArrayNode = null, $strColumnAliasArray = null) {
         $objToReturn = array();
@@ -652,7 +666,7 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
             $objToReturn = array();
             $objPrevItemArray = array();
             while ($objDbRow = $objDbResult->GetNextRow()) {
-                $objItem = UserRole::InstantiateDbRow($objDbRow, null, $objExpandAsArrayNode, $objPrevItemArray, $strColumnAliasArray);
+                $objItem = Category::InstantiateDbRow($objDbRow, null, $objExpandAsArrayNode, $objPrevItemArray, $strColumnAliasArray);
                 if ($objItem) {
                     $objToReturn[] = $objItem;
                     $objPrevItemArray[$objItem->intId][] = $objItem;
@@ -660,7 +674,7 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
             }
         } else {
             while ($objDbRow = $objDbResult->GetNextRow())
-                $objToReturn[] = UserRole::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
+                $objToReturn[] = Category::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
         }
 
         return $objToReturn;
@@ -668,11 +682,11 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
-     * Instantiate a single UserRole object from a query cursor (e.g. a DB ResultSet).
+     * Instantiate a single Category object from a query cursor (e.g. a DB ResultSet).
      * Cursor is automatically moved to the "next row" of the result set.
      * Will return NULL if no cursor or if the cursor has no more rows in the resultset.
      * @param dxDatabaseResultBase $objDbResult cursor resource
-     * @return UserRole next row resulting from the query
+     * @return Category next row resulting from the query
      */
     public static function InstantiateCursor(dxDatabaseResultBase $objDbResult) {
         // If blank resultset, then return empty result
@@ -693,7 +707,7 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
         }
 
         // Load up the return result with a row and return it
-        return UserRole::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
+        return Category::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
     }
 
     ///////////////////////////////////////////////////
@@ -701,32 +715,16 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     ///////////////////////////////////////////////////
 
     /**
-     * Load a single UserRole object,
+     * Load a single Category object,
      * by Id Index(es)
      * @param integer $intId
      * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
-     * @return UserRole
+     * @return Category
     */
     public static function LoadById($intId, $objOptionalClauses = null) {
-        return UserRole::QuerySingle(
+        return Category::QuerySingle(
             dxQuery::AndCondition(
-                dxQuery::Equal(dxQueryN::UserRole()->Id, $intId)
-            ),
-            $objOptionalClauses
-        );
-    }
-
-    /**
-     * Load a single UserRole object,
-     * by Role Index(es)
-     * @param string $strRole
-     * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
-     * @return UserRole
-    */
-    public static function LoadByRole($strRole, $objOptionalClauses = null) {
-        return UserRole::QuerySingle(
-            dxQuery::AndCondition(
-                dxQuery::Equal(dxQueryN::UserRole()->Role, $strRole)
+                dxQuery::Equal(dxQueryN::Category()->Id, $intId)
             ),
             $objOptionalClauses
         );
@@ -741,30 +739,31 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     //////////////////////////
 
     /**
-    * Save this UserRole
+    * Save this Category
     * @param bool $blnForceInsert
     * @param bool $blnForceUpdate
     * @return int
     */
     public function Save($blnForceInsert = false, $blnForceUpdate = false) {
-        $ObjectAccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),"UserRole",$this->intId);
+        $ObjectAccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),"Category",$this->intId);
         // Get the Database Object for this Class
-        $objDatabase = UserRole::GetDatabase();
+        $objDatabase = Category::GetDatabase();
         $mixToReturn = null;
         if (!is_numeric($this->intObjectOwner)) {
             $this->intObjectOwner = ProjectFunctions::getCurrentAccountId();
         }
-        $ExistingObj = UserRole::Load($this->intId);
+        $ExistingObj = Category::Load($this->intId);
         $newAuditLogEntry = new AuditLogEntry();
         $ChangedArray = array();
         $newAuditLogEntry->EntryTimeStamp = dxDateTime::Now();
         $newAuditLogEntry->ObjectId = $this->intId;
-        $newAuditLogEntry->ObjectName = 'UserRole';
+        $newAuditLogEntry->ObjectName = 'Category';
         $newAuditLogEntry->UserEmail = ProjectFunctions::getCurrentUserEmailForAudit();
         if (!$ExistingObj) {
             $newAuditLogEntry->ModificationType = 'Create';
             $ChangedArray = array_merge($ChangedArray,array("Id" => $this->intId));
-            $ChangedArray = array_merge($ChangedArray,array("Role" => $this->strRole));
+            $ChangedArray = array_merge($ChangedArray,array("CategoryName" => $this->strCategoryName));
+            $ChangedArray = array_merge($ChangedArray,array("CategoryTotal" => $this->strCategoryTotal));
             $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
             $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
             $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
@@ -779,12 +778,20 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
                 //$ChangedArray = array_merge($ChangedArray,array("Id" => "From: ".$ExistingValueStr." to: ".$this->intId));
             }
             $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->Role)) {
-                $ExistingValueStr = $ExistingObj->Role;
+            if (!is_null($ExistingObj->CategoryName)) {
+                $ExistingValueStr = $ExistingObj->CategoryName;
             }
-            if ($ExistingObj->Role != $this->strRole) {
-                $ChangedArray = array_merge($ChangedArray,array("Role" => array("Before" => $ExistingValueStr,"After" => $this->strRole)));
-                //$ChangedArray = array_merge($ChangedArray,array("Role" => "From: ".$ExistingValueStr." to: ".$this->strRole));
+            if ($ExistingObj->CategoryName != $this->strCategoryName) {
+                $ChangedArray = array_merge($ChangedArray,array("CategoryName" => array("Before" => $ExistingValueStr,"After" => $this->strCategoryName)));
+                //$ChangedArray = array_merge($ChangedArray,array("CategoryName" => "From: ".$ExistingValueStr." to: ".$this->strCategoryName));
+            }
+            $ExistingValueStr = "NULL";
+            if (!is_null($ExistingObj->CategoryTotal)) {
+                $ExistingValueStr = $ExistingObj->CategoryTotal;
+            }
+            if ($ExistingObj->CategoryTotal != $this->strCategoryTotal) {
+                $ChangedArray = array_merge($ChangedArray,array("CategoryTotal" => array("Before" => $ExistingValueStr,"After" => $this->strCategoryTotal)));
+                //$ChangedArray = array_merge($ChangedArray,array("CategoryTotal" => "From: ".$ExistingValueStr." to: ".$this->strCategoryTotal));
             }
             $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->LastUpdated)) {
@@ -808,42 +815,45 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
             if ((!$this->__blnRestored) || ($blnForceInsert)) {
                 if (!in_array(AccessOperation::CREATE_STR,$ObjectAccessArray)) {
                     // This user is not allowed to create an object of this type
-                    throw new Exception("User is not allowed to perform operation ".AccessOperation::CREATE_STR." on entity of type 'UserRole'. Allowed access is ".json_encode($ObjectAccessArray));
+                    throw new Exception("User is not allowed to perform operation ".AccessOperation::CREATE_STR." on entity of type 'Category'. Allowed access is ".json_encode($ObjectAccessArray));
                 }
                 // Perform an INSERT query
                 $objDatabase->NonQuery('
-                INSERT INTO `UserRole` (
-							`Role`,
+                INSERT INTO `Category` (
+							`CategoryName`,
+							`CategoryTotal`,
 							`ObjectOwner`
 						) VALUES (
-							' . $objDatabase->SqlVariable($this->strRole) . ',
+							' . $objDatabase->SqlVariable($this->strCategoryName) . ',
+							' . $objDatabase->SqlVariable($this->strCategoryTotal) . ',
 							' . $objDatabase->SqlVariable($this->intObjectOwner) . '
 						)
                 ');
 					// Update Identity column and return its value
-                $mixToReturn = $this->intId = $objDatabase->InsertId('UserRole', 'Id');
+                $mixToReturn = $this->intId = $objDatabase->InsertId('Category', 'Id');
             } else {
                 // Perform an UPDATE query
                 // First checking for Optimistic Locking constraints (if applicable)
                 if (!in_array(AccessOperation::UPDATE_STR,$ObjectAccessArray)) {
                     // This user is not allowed to create an object of this type
-                    throw new Exception("User is not allowed to perform operation ".AccessOperation::UPDATE_STR." on entity of type 'UserRole'. Allowed access is ".json_encode($ObjectAccessArray));
+                    throw new Exception("User is not allowed to perform operation ".AccessOperation::UPDATE_STR." on entity of type 'Category'. Allowed access is ".json_encode($ObjectAccessArray));
                 }
                 if (!$blnForceUpdate) {
                     // Perform the Optimistic Locking check
                     $objResult = $objDatabase->Query('
-                    SELECT `LastUpdated` FROM `UserRole` WHERE
+                    SELECT `LastUpdated` FROM `Category` WHERE
 							`Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
 
                 $objRow = $objResult->FetchArray();
                 if ($objRow[0] != $this->strLastUpdated)
-                    throw new dxOptimisticLockingException('UserRole');
+                    throw new dxOptimisticLockingException('Category');
             }
 
             // Perform the UPDATE query
             $objDatabase->NonQuery('
-            UPDATE `UserRole` SET
-							`Role` = ' . $objDatabase->SqlVariable($this->strRole) . ',
+            UPDATE `Category` SET
+							`CategoryName` = ' . $objDatabase->SqlVariable($this->strCategoryName) . ',
+							`CategoryTotal` = ' . $objDatabase->SqlVariable($this->strCategoryTotal) . ',
 							`ObjectOwner` = ' . $objDatabase->SqlVariable($this->intObjectOwner) . '
             WHERE
 							`Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
@@ -857,14 +867,14 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
             $newAuditLogEntry->ObjectId = $this->intId;
             $newAuditLogEntry->Save();
         } catch(dxCallerException $e) {
-            error_log('Could not save audit log while saving UserRole. Details: '.$newAuditLogEntry->getJson().'<br>Error details: '.$e->getMessage());
+            error_log('Could not save audit log while saving Category. Details: '.$newAuditLogEntry->getJson().'<br>Error details: '.$e->getMessage());
         }
         // Update __blnRestored and any Non-Identity PK Columns (if applicable)
         $this->__blnRestored = true;
 
         // Update Local Timestamp
         $objResult = $objDatabase->Query('SELECT `LastUpdated` FROM
-                                            `UserRole` WHERE
+                                            `Category` WHERE
                 							`Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
 
         $objRow = $objResult->FetchArray();
@@ -876,43 +886,44 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
         return $mixToReturn;
     }
     /**
-     * Delete this UserRole
+     * Delete this Category
      * @return void
      */
     public function Delete() {
         if ((is_null($this->intId)))
-            throw new dxUndefinedPrimaryKeyException('Cannot delete this UserRole with an unset primary key.');
+            throw new dxUndefinedPrimaryKeyException('Cannot delete this Category with an unset primary key.');
 
-        $ObjectAccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),"UserRole",$this->intId);
+        $ObjectAccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),"Category",$this->intId);
         if (!in_array(AccessOperation::DELETE_STR,$ObjectAccessArray)) {
             // This user is not allowed to delete an object of this type
-            throw new Exception("User is not allowed to perform operation ".AccessOperation::DELETE_STR." on entity of type 'UserRole'. Allowed access is ".json_encode($ObjectAccessArray));
+            throw new Exception("User is not allowed to perform operation ".AccessOperation::DELETE_STR." on entity of type 'Category'. Allowed access is ".json_encode($ObjectAccessArray));
         }
 
         // Get the Database Object for this Class
-        $objDatabase = UserRole::GetDatabase();
+        $objDatabase = Category::GetDatabase();
         $newAuditLogEntry = new AuditLogEntry();
         $ChangedArray = array();
         $newAuditLogEntry->EntryTimeStamp = dxDateTime::Now();
         $newAuditLogEntry->ObjectId = $this->intId;
-        $newAuditLogEntry->ObjectName = 'UserRole';
+        $newAuditLogEntry->ObjectName = 'Category';
         $newAuditLogEntry->UserEmail = ProjectFunctions::getCurrentUserEmailForAudit();
         $newAuditLogEntry->ModificationType = 'Delete';
         $ChangedArray = array_merge($ChangedArray,array("Id" => $this->intId));
-        $ChangedArray = array_merge($ChangedArray,array("Role" => $this->strRole));
+        $ChangedArray = array_merge($ChangedArray,array("CategoryName" => $this->strCategoryName));
+        $ChangedArray = array_merge($ChangedArray,array("CategoryTotal" => $this->strCategoryTotal));
         $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
         $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
         $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         try {
             $newAuditLogEntry->Save();
         } catch(dxCallerException $e) {
-            error_log('Could not save audit log while deleting UserRole. Details: '.$newAuditLogEntry->getJson().'<br>Error details: '.$e->getMessage());
+            error_log('Could not save audit log while deleting Category. Details: '.$newAuditLogEntry->getJson().'<br>Error details: '.$e->getMessage());
         }
 
         // Perform the SQL Query
         $objDatabase->NonQuery('
             DELETE FROM
-                `UserRole`
+                `Category`
             WHERE
                 `Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
 
@@ -920,28 +931,28 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Delete this UserRole ONLY from the cache
+     * Delete this Category ONLY from the cache
      * @return void
      */
     public function DeleteCache() {
         if (ProjectFunctions::$objCacheProvider && ProjectFunctions::$Database[1]->Caching) {
-            $strCacheKey = ProjectFunctions::$objCacheProvider->CreateKey(ProjectFunctions::$Database[1]->Database, 'UserRole', $this->intId);
+            $strCacheKey = ProjectFunctions::$objCacheProvider->CreateKey(ProjectFunctions::$Database[1]->Database, 'Category', $this->intId);
             ProjectFunctions::$objCacheProvider->Delete($strCacheKey);
         }
     }
 
     /**
-     * Delete all UserRoles
+     * Delete all Categories
      * @return void
      */
     public static function DeleteAll() {
         // Get the Database Object for this Class
-        $objDatabase = UserRole::GetDatabase();
+        $objDatabase = Category::GetDatabase();
 
         // Perform the Query
         $objDatabase->NonQuery('
             DELETE FROM
-                `UserRole`');
+                `Category`');
 
         if (ProjectFunctions::$objCacheProvider && ProjectFunctions::$Database[1]->Caching) {
             ProjectFunctions::$objCacheProvider->DeleteAll();
@@ -949,37 +960,38 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Truncate UserRole table
+     * Truncate Category table
      * @return void
      */
     public static function Truncate() {
         // Get the Database Object for this Class
-        $objDatabase = UserRole::GetDatabase();
+        $objDatabase = Category::GetDatabase();
 
         // Perform the Query
         $objDatabase->NonQuery('
-            TRUNCATE `UserRole`');
+            TRUNCATE `Category`');
 
         if (ProjectFunctions::$objCacheProvider && ProjectFunctions::$Database[1]->Caching) {
             ProjectFunctions::$objCacheProvider->DeleteAll();
         }
     }
     /**
-     * Reload this UserRole from the database.
+     * Reload this Category from the database.
      * @return void
      */
     public function Reload() {
         // Make sure we are actually Restored from the database
         if (!$this->__blnRestored)
-            throw new dxCallerException('Cannot call Reload() on a new, unsaved UserRole object.');
+            throw new dxCallerException('Cannot call Reload() on a new, unsaved Category object.');
 
         $this->DeleteCache();
 
         // Reload the Object
-        $objReloaded = UserRole::Load($this->intId);
+        $objReloaded = Category::Load($this->intId);
 
         // Update $this's local variables to match
-        $this->strRole = $objReloaded->strRole;
+        $this->strCategoryName = $objReloaded->strCategoryName;
+        $this->strCategoryTotal = $objReloaded->strCategoryTotal;
         $this->strLastUpdated = $objReloaded->strLastUpdated;
         $this->intObjectOwner = $objReloaded->intObjectOwner;
     }
@@ -1006,12 +1018,19 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
                  */
                 return $this->intId;
 
-            case 'Role':
+            case 'CategoryName':
                 /**
-                 * Gets the value for strRole (Unique)
+                 * Gets the value for strCategoryName 
                  * @return string
                  */
-                return $this->strRole;
+                return $this->strCategoryName;
+
+            case 'CategoryTotal':
+                /**
+                 * Gets the value for strCategoryTotal 
+                 * @return string
+                 */
+                return $this->strCategoryTotal;
 
             case 'LastUpdated':
                 /**
@@ -1037,21 +1056,21 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
             // (If restored via a "Many-to" expansion)
             ////////////////////////////
 
-            case '_Account':
+            case '_Expense':
                 /**
-                 * Gets the value for the private _objAccount (Read-Only)
-                 * if set due to an expansion on the Account.UserRole reverse relationship
-                 * @return Account
+                 * Gets the value for the private _objExpense (Read-Only)
+                 * if set due to an expansion on the Expense.Category reverse relationship
+                 * @return Expense
                  */
-                return $this->_objAccount;
+                return $this->_objExpense;
 
-            case '_AccountArray':
+            case '_ExpenseArray':
                 /**
-                 * Gets the value for the private _objAccountArray (Read-Only)
-                 * if set due to an ExpandAsArray on the Account.UserRole reverse relationship
-                 * @return Account[]
+                 * Gets the value for the private _objExpenseArray (Read-Only)
+                 * if set due to an ExpandAsArray on the Expense.Category reverse relationship
+                 * @return Expense[]
                  */
-                return $this->_objAccountArray;
+                return $this->_objExpenseArray;
 
 
             case '__Restored':
@@ -1079,14 +1098,27 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
             ///////////////////
             // Member Variables
             ///////////////////
-            case 'Role':
+            case 'CategoryName':
                 /**
-                 * Sets the value for strRole (Unique)
+                 * Sets the value for strCategoryName 
                  * @param string $mixValue
                  * @return string
                  */
                 try {
-                    return ($this->strRole = dxType::Cast($mixValue, dxType::String));
+                    return ($this->strCategoryName = dxType::Cast($mixValue, dxType::String));
+                } catch (dxCallerException $objExc) {
+                    $objExc->IncrementOffset();
+                    throw $objExc;
+                }
+
+            case 'CategoryTotal':
+                /**
+                 * Sets the value for strCategoryTotal 
+                 * @param string $mixValue
+                 * @return string
+                 */
+                try {
+                    return ($this->strCategoryTotal = dxType::Cast($mixValue, dxType::String));
                 } catch (dxCallerException $objExc) {
                     $objExc->IncrementOffset();
                     throw $objExc;
@@ -1135,20 +1167,20 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
 
 
 
-    // Related Objects' Methods for Account
+    // Related Objects' Methods for Expense
     //-------------------------------------------------------------------
 
     /**
-     * Gets all associated Accounts as an array of Account objects
+     * Gets all associated Expenses as an array of Expense objects
      * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
-     * @return Account[]
+     * @return Expense[]
     */
-    public function GetAccountArray($objOptionalClauses = null) {
+    public function GetExpenseArray($objOptionalClauses = null) {
         if ((is_null($this->intId)))
             return array();
 
         try {
-            return Account::LoadArrayByUserRole($this->intId, $objOptionalClauses);
+            return Expense::LoadArrayByCategory($this->intId, $objOptionalClauses);
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();
             throw $objExc;
@@ -1156,130 +1188,130 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Counts all associated Accounts
+     * Counts all associated Expenses
      * @return int
     */
-    public function CountAccounts() {
+    public function CountExpenses() {
         if ((is_null($this->intId)))
             return 0;
 
-        return Account::CountByUserRole($this->intId);
+        return Expense::CountByCategory($this->intId);
     }
 
     /**
-     * Associates a Account
-     * @param Account $objAccount
+     * Associates a Expense
+     * @param Expense $objExpense
      * @return void
     */
-    public function AssociateAccount(Account $objAccount) {
+    public function AssociateExpense(Expense $objExpense) {
         if ((is_null($this->intId)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call AssociateAccount on this unsaved UserRole.');
-        if ((is_null($objAccount->Id)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call AssociateAccount on this UserRole with an unsaved Account.');
+            throw new dxUndefinedPrimaryKeyException('Unable to call AssociateExpense on this unsaved Category.');
+        if ((is_null($objExpense->Id)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call AssociateExpense on this Category with an unsaved Expense.');
 
         // Get the Database Object for this Class
-        $objDatabase = UserRole::GetDatabase();
+        $objDatabase = Category::GetDatabase();
 
         // Perform the SQL Query
         $objDatabase->NonQuery('
             UPDATE
-                `Account`
+                `Expense`
             SET
-                `UserRole` = ' . $objDatabase->SqlVariable($this->intId) . '
+                `Category` = ' . $objDatabase->SqlVariable($this->intId) . '
             WHERE
-                `Id` = ' . $objDatabase->SqlVariable($objAccount->Id) . '
+                `Id` = ' . $objDatabase->SqlVariable($objExpense->Id) . '
         ');
     }
 
     /**
-     * Unassociates a Account
-     * @param Account $objAccount
+     * Unassociates a Expense
+     * @param Expense $objExpense
      * @return void
     */
-    public function UnassociateAccount(Account $objAccount) {
+    public function UnassociateExpense(Expense $objExpense) {
         if ((is_null($this->intId)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateAccount on this unsaved UserRole.');
-        if ((is_null($objAccount->Id)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateAccount on this UserRole with an unsaved Account.');
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateExpense on this unsaved Category.');
+        if ((is_null($objExpense->Id)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateExpense on this Category with an unsaved Expense.');
 
         // Get the Database Object for this Class
-        $objDatabase = UserRole::GetDatabase();
+        $objDatabase = Category::GetDatabase();
 
         // Perform the SQL Query
         $objDatabase->NonQuery('
             UPDATE
-                `Account`
+                `Expense`
             SET
-                `UserRole` = null
+                `Category` = null
             WHERE
-                `Id` = ' . $objDatabase->SqlVariable($objAccount->Id) . ' AND
-                `UserRole` = ' . $objDatabase->SqlVariable($this->intId) . '
+                `Id` = ' . $objDatabase->SqlVariable($objExpense->Id) . ' AND
+                `Category` = ' . $objDatabase->SqlVariable($this->intId) . '
         ');
     }
 
     /**
-     * Unassociates all Accounts
+     * Unassociates all Expenses
      * @return void
     */
-    public function UnassociateAllAccounts() {
+    public function UnassociateAllExpenses() {
         if ((is_null($this->intId)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateAccount on this unsaved UserRole.');
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateExpense on this unsaved Category.');
 
         // Get the Database Object for this Class
-        $objDatabase = UserRole::GetDatabase();
+        $objDatabase = Category::GetDatabase();
 
         // Perform the SQL Query
         $objDatabase->NonQuery('
             UPDATE
-                `Account`
+                `Expense`
             SET
-                `UserRole` = null
+                `Category` = null
             WHERE
-                `UserRole` = ' . $objDatabase->SqlVariable($this->intId) . '
+                `Category` = ' . $objDatabase->SqlVariable($this->intId) . '
         ');
     }
 
     /**
-     * Deletes an associated Account
-     * @param Account $objAccount
+     * Deletes an associated Expense
+     * @param Expense $objExpense
      * @return void
     */
-    public function DeleteAssociatedAccount(Account $objAccount) {
+    public function DeleteAssociatedExpense(Expense $objExpense) {
         if ((is_null($this->intId)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateAccount on this unsaved UserRole.');
-        if ((is_null($objAccount->Id)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateAccount on this UserRole with an unsaved Account.');
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateExpense on this unsaved Category.');
+        if ((is_null($objExpense->Id)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateExpense on this Category with an unsaved Expense.');
 
         // Get the Database Object for this Class
-        $objDatabase = UserRole::GetDatabase();
+        $objDatabase = Category::GetDatabase();
 
         // Perform the SQL Query
         $objDatabase->NonQuery('
             DELETE FROM
-                `Account`
+                `Expense`
             WHERE
-                `Id` = ' . $objDatabase->SqlVariable($objAccount->Id) . ' AND
-                `UserRole` = ' . $objDatabase->SqlVariable($this->intId) . '
+                `Id` = ' . $objDatabase->SqlVariable($objExpense->Id) . ' AND
+                `Category` = ' . $objDatabase->SqlVariable($this->intId) . '
         ');
     }
 
     /**
-     * Deletes all associated Accounts
+     * Deletes all associated Expenses
      * @return void
     */
-    public function DeleteAllAccounts() {
+    public function DeleteAllExpenses() {
         if ((is_null($this->intId)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateAccount on this unsaved UserRole.');
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateExpense on this unsaved Category.');
 
         // Get the Database Object for this Class
-        $objDatabase = UserRole::GetDatabase();
+        $objDatabase = Category::GetDatabase();
 
         // Perform the SQL Query
         $objDatabase->NonQuery('
             DELETE FROM
-                `Account`
+                `Expense`
             WHERE
-                `UserRole` = ' . $objDatabase->SqlVariable($this->intId) . '
+                `Category` = ' . $objDatabase->SqlVariable($this->intId) . '
         ');
     }
 
@@ -1294,7 +1326,7 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
      * @return string Name of the table from which this class has been created.
      */
     public static function GetTableName() {
-        return "UserRole";
+        return "Category";
     }
 
     /**
@@ -1302,7 +1334,7 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
      * @return string Name of the table from which this class has been created.
      */
     public static function GetDatabaseName() {
-        return ProjectFunctions::$Database[UserRole::GetDatabaseIndex()]->Database;
+        return ProjectFunctions::$Database[Category::GetDatabaseIndex()]->Database;
     }
 
     /**
@@ -1321,9 +1353,10 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     ////////////////////////////////////////
 
     public static function GetSoapComplexTypeXml() {
-        $strToReturn = '<complexType name="UserRole"><sequence>';
+        $strToReturn = '<complexType name="Category"><sequence>';
         $strToReturn .= '<element name="Id" type="xsd:int"/>';
-        $strToReturn .= '<element name="Role" type="xsd:string"/>';
+        $strToReturn .= '<element name="CategoryName" type="xsd:string"/>';
+        $strToReturn .= '<element name="CategoryTotal" type="xsd:string"/>';
         $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
         $strToReturn .= '<element name="ObjectOwner" type="xsd:int"/>';
         $strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
@@ -1332,8 +1365,8 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     }
 
     public static function AlterSoapComplexTypeArray(&$strComplexTypeArray) {
-        if (!array_key_exists('UserRole', $strComplexTypeArray)) {
-            $strComplexTypeArray['UserRole'] = UserRole::GetSoapComplexTypeXml();
+        if (!array_key_exists('Category', $strComplexTypeArray)) {
+            $strComplexTypeArray['Category'] = Category::GetSoapComplexTypeXml();
         }
     }
 
@@ -1341,17 +1374,19 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
         $objArrayToReturn = array();
 
         foreach ($objSoapArray as $objSoapObject)
-            array_push($objArrayToReturn, UserRole::GetObjectFromSoapObject($objSoapObject));
+            array_push($objArrayToReturn, Category::GetObjectFromSoapObject($objSoapObject));
 
         return $objArrayToReturn;
     }
 
     public static function GetObjectFromSoapObject($objSoapObject) {
-        $objToReturn = new UserRole();
+        $objToReturn = new Category();
         if (property_exists($objSoapObject, 'Id'))
             $objToReturn->intId = $objSoapObject->Id;
-        if (property_exists($objSoapObject, 'Role'))
-            $objToReturn->strRole = $objSoapObject->Role;
+        if (property_exists($objSoapObject, 'CategoryName'))
+            $objToReturn->strCategoryName = $objSoapObject->CategoryName;
+        if (property_exists($objSoapObject, 'CategoryTotal'))
+            $objToReturn->strCategoryTotal = $objSoapObject->CategoryTotal;
         if (property_exists($objSoapObject, 'LastUpdated'))
             $objToReturn->strLastUpdated = $objSoapObject->LastUpdated;
         if (property_exists($objSoapObject, 'ObjectOwner'))
@@ -1368,7 +1403,7 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
         $objArrayToReturn = array();
 
         foreach ($objArray as $objObject)
-            array_push($objArrayToReturn, UserRole::GetSoapObjectFromObject($objObject, true));
+            array_push($objArrayToReturn, Category::GetSoapObjectFromObject($objObject, true));
 
         return unserialize(serialize($objArrayToReturn));
     }
@@ -1389,7 +1424,8 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
         // Member Variables
         ///////////////////
         $iArray['Id'] = $this->intId;
-        $iArray['Role'] = $this->strRole;
+        $iArray['CategoryName'] = $this->strCategoryName;
+        $iArray['CategoryTotal'] = $this->strCategoryTotal;
         $iArray['LastUpdated'] = $this->strLastUpdated;
         $iArray['ObjectOwner'] = $this->intObjectOwner;
         return new ArrayIterator($iArray);
@@ -1427,31 +1463,34 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
      * @uses dxQueryNode
      *
      * @property-read dxQueryNode $Id
-     * @property-read dxQueryNode $Role
+     * @property-read dxQueryNode $CategoryName
+     * @property-read dxQueryNode $CategoryTotal
      * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ObjectOwner
      *
      *
-     * @property-read dxQueryReverseReferenceNodeAccount $Account
+     * @property-read dxQueryReverseReferenceNodeExpense $Expense
 
      * @property-read dxQueryNode $_PrimaryKeyNode
      **/
-	class dxQueryNodeUserRole extends dxQueryNode {
-		protected $strTableName = 'UserRole';
+	class dxQueryNodeCategory extends dxQueryNode {
+		protected $strTableName = 'Category';
 		protected $strPrimaryKey = 'Id';
-		protected $strClassName = 'UserRole';
+		protected $strClassName = 'Category';
 		public function __get($strName) {
 			switch ($strName) {
 				case 'Id':
 					return new dxQueryNode('Id', 'Id', 'Integer', $this);
-				case 'Role':
-					return new dxQueryNode('Role', 'Role', 'VarChar', $this);
+				case 'CategoryName':
+					return new dxQueryNode('CategoryName', 'CategoryName', 'VarChar', $this);
+				case 'CategoryTotal':
+					return new dxQueryNode('CategoryTotal', 'CategoryTotal', 'VarChar', $this);
 				case 'LastUpdated':
 					return new dxQueryNode('LastUpdated', 'LastUpdated', 'VarChar', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'Integer', $this);
-				case 'Account':
-					return new dxQueryReverseReferenceNodeAccount($this, 'account', 'reverse_reference', 'UserRole', 'Account');
+				case 'Expense':
+					return new dxQueryReverseReferenceNodeExpense($this, 'expense', 'reverse_reference', 'Category', 'Expense');
 
 				case '_PrimaryKeyNode':
 					return new dxQueryNode('Id', 'Id', 'Integer', $this);
@@ -1468,31 +1507,34 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
 
     /**
      * @property-read dxQueryNode $Id
-     * @property-read dxQueryNode $Role
+     * @property-read dxQueryNode $CategoryName
+     * @property-read dxQueryNode $CategoryTotal
      * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ObjectOwner
      *
      *
-     * @property-read dxQueryReverseReferenceNodeAccount $Account
+     * @property-read dxQueryReverseReferenceNodeExpense $Expense
 
      * @property-read dxQueryNode $_PrimaryKeyNode
      **/
-	class dxQueryReverseReferenceNodeUserRole extends dxQueryReverseReferenceNode {
-		protected $strTableName = 'UserRole';
+	class dxQueryReverseReferenceNodeCategory extends dxQueryReverseReferenceNode {
+		protected $strTableName = 'Category';
 		protected $strPrimaryKey = 'Id';
-		protected $strClassName = 'UserRole';
+		protected $strClassName = 'Category';
 		public function __get($strName) {
 			switch ($strName) {
 				case 'Id':
 					return new dxQueryNode('Id', 'Id', 'integer', $this);
-				case 'Role':
-					return new dxQueryNode('Role', 'Role', 'string', $this);
+				case 'CategoryName':
+					return new dxQueryNode('CategoryName', 'CategoryName', 'string', $this);
+				case 'CategoryTotal':
+					return new dxQueryNode('CategoryTotal', 'CategoryTotal', 'string', $this);
 				case 'LastUpdated':
 					return new dxQueryNode('LastUpdated', 'LastUpdated', 'string', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'integer', $this);
-				case 'Account':
-					return new dxQueryReverseReferenceNodeAccount($this, 'account', 'reverse_reference', 'UserRole', 'Account');
+				case 'Expense':
+					return new dxQueryReverseReferenceNodeExpense($this, 'expense', 'reverse_reference', 'Category', 'Expense');
 
 				case '_PrimaryKeyNode':
 					return new dxQueryNode('Id', 'Id', 'integer', $this);

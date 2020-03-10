@@ -49,6 +49,12 @@ class dxQueryN {
         return new dxQueryNodeBackgroundProcessUpdate('BackgroundProcessUpdate', null, null);
     }
     /**
+     * @return dxQueryNodeCategory
+     */
+    static public function Category() {
+        return new dxQueryNodeCategory('Category', null, null);
+    }
+    /**
      * @return dxQueryNodeClientAuthenticationToken
      */
     static public function ClientAuthenticationToken() {
@@ -65,6 +71,12 @@ class dxQueryN {
      */
     static public function EmailMessage() {
         return new dxQueryNodeEmailMessage('EmailMessage', null, null);
+    }
+    /**
+     * @return dxQueryNodeExpense
+     */
+    static public function Expense() {
+        return new dxQueryNodeExpense('Expense', null, null);
     }
     /**
      * @return dxQueryNodeFileDocument

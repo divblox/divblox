@@ -1,36 +1,42 @@
 <?php
 /**
- * The abstract UserRoleGen class defined here is
+ * The abstract ExpenseGen class defined here is
  * code-generated and contains all the basic CRUD-type functionality as well as
  * basic methods to handle relationships and index-based loading.
  *
- * To use, you should use the UserRole subclass which
- * extends this UserRoleGen class.
+ * To use, you should use the Expense subclass which
+ * extends this ExpenseGen class.
  *
  * Because subsequent re-code generations will overwrite any changes to this
  * file, you should leave this file unaltered to prevent yourself from losing
  * any information or code changes.  All customizations should be done by
  * overriding existing or implementing new methods, properties and variables
- * in the UserRole class.
+ * in the Expense class.
  *
  * @package divblox_app
  * @subpackage GeneratedDataObjects
  * @property-read integer $Id the value for intId (Read-Only PK)
- * @property string $Role the value for strRole (Unique)
+ * @property string $ExpenseName the value for strExpenseName 
+ * @property string $ExpenseAmount the value for strExpenseAmount 
+ * @property dxDateTime $ExpenseDate the value for dttExpenseDate 
+ * @property string $ExpenseUniqueId the value for strExpenseUniqueId 
  * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
+ * @property integer $Account the value for intAccount 
+ * @property string $SearchMetaInfo the value for strSearchMetaInfo 
+ * @property integer $Category the value for intCategory 
  * @property integer $ObjectOwner the value for intObjectOwner 
- * @property-read Account $_Account the value for the private _objAccount (Read-Only) if set due to an expansion on the Account.UserRole reverse relationship
- * @property-read Account[] $_AccountArray the value for the private _objAccountArray (Read-Only) if set due to an ExpandAsArray on the Account.UserRole reverse relationship
+ * @property Account $AccountObject the value for the Account object referenced by intAccount 
+ * @property Category $CategoryObject the value for the Category object referenced by intCategory 
  * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
  */
-class UserRoleGen extends dxBaseClass implements IteratorAggregate {
+class ExpenseGen extends dxBaseClass implements IteratorAggregate {
 
     ///////////////////////////////////////////////////////////////////////
     // PROTECTED MEMBER VARIABLES and TEXT FIELD MAXLENGTHS (if applicable)
     ///////////////////////////////////////////////////////////////////////
 
     /**
-     * Protected member variable that maps to the database PK Identity column UserRole.Id
+     * Protected member variable that maps to the database PK Identity column Expense.Id
      * @var integer intId
      */
     protected $intId;
@@ -38,16 +44,41 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
-     * Protected member variable that maps to the database column UserRole.Role
-     * @var string strRole
+     * Protected member variable that maps to the database column Expense.ExpenseName
+     * @var string strExpenseName
      */
-    protected $strRole;
-    const RoleMaxLength = 50;
-    const RoleDefault = null;
+    protected $strExpenseName;
+    const ExpenseNameMaxLength = 50;
+    const ExpenseNameDefault = null;
 
 
     /**
-     * Protected member variable that maps to the database column UserRole.LastUpdated
+     * Protected member variable that maps to the database column Expense.ExpenseAmount
+     * @var string strExpenseAmount
+     */
+    protected $strExpenseAmount;
+    const ExpenseAmountDefault = null;
+
+
+    /**
+     * Protected member variable that maps to the database column Expense.ExpenseDate
+     * @var dxDateTime dttExpenseDate
+     */
+    protected $dttExpenseDate;
+    const ExpenseDateDefault = null;
+
+
+    /**
+     * Protected member variable that maps to the database column Expense.ExpenseUniqueId
+     * @var string strExpenseUniqueId
+     */
+    protected $strExpenseUniqueId;
+    const ExpenseUniqueIdMaxLength = 25;
+    const ExpenseUniqueIdDefault = null;
+
+
+    /**
+     * Protected member variable that maps to the database column Expense.LastUpdated
      * @var string strLastUpdated
      */
     protected $strLastUpdated;
@@ -55,28 +86,36 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
-     * Protected member variable that maps to the database column UserRole.ObjectOwner
+     * Protected member variable that maps to the database column Expense.Account
+     * @var integer intAccount
+     */
+    protected $intAccount;
+    const AccountDefault = null;
+
+
+    /**
+     * Protected member variable that maps to the database column Expense.SearchMetaInfo
+     * @var string strSearchMetaInfo
+     */
+    protected $strSearchMetaInfo;
+    const SearchMetaInfoDefault = null;
+
+
+    /**
+     * Protected member variable that maps to the database column Expense.Category
+     * @var integer intCategory
+     */
+    protected $intCategory;
+    const CategoryDefault = null;
+
+
+    /**
+     * Protected member variable that maps to the database column Expense.ObjectOwner
      * @var integer intObjectOwner
      */
     protected $intObjectOwner;
     const ObjectOwnerDefault = null;
 
-
-    /**
-     * Private member variable that stores a reference to a single Account object
-     * (of type Account), if this UserRole object was restored with
-     * an expansion on the Account association table.
-     * @var Account _objAccount;
-     */
-    private $_objAccount;
-
-    /**
-     * Private member variable that stores a reference to an array of Account objects
-     * (of type Account[]), if this UserRole object was restored with
-     * an ExpandAsArray on the Account association table.
-     * @var Account[] _objAccountArray;
-     */
-    private $_objAccountArray = null;
 
     /**
      * Protected array of virtual attributes for this object (e.g. extra/other calculated and/or non-object bound
@@ -97,15 +136,41 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     // PROTECTED MEMBER OBJECTS
     ///////////////////////////////
 
+    /**
+     * Protected member variable that contains the object pointed by the reference
+     * in the database column Expense.Account.
+     *
+     * NOTE: Always use the AccountObject property getter to correctly retrieve this Account object.
+     * (Because this class implements late binding, this variable reference MAY be null.)
+     * @var Account objAccountObject
+     */
+    protected $objAccountObject;
+
+    /**
+     * Protected member variable that contains the object pointed by the reference
+     * in the database column Expense.Category.
+     *
+     * NOTE: Always use the CategoryObject property getter to correctly retrieve this Category object.
+     * (Because this class implements late binding, this variable reference MAY be null.)
+     * @var Category objCategoryObject
+     */
+    protected $objCategoryObject;
+
 
     /**
      * Initialize each property with default values from database definition
      */
     public function Initialize() {
-        $this->intId = UserRole::IdDefault;
-        $this->strRole = UserRole::RoleDefault;
-        $this->strLastUpdated = UserRole::LastUpdatedDefault;
-        $this->intObjectOwner = UserRole::ObjectOwnerDefault;
+        $this->intId = Expense::IdDefault;
+        $this->strExpenseName = Expense::ExpenseNameDefault;
+        $this->strExpenseAmount = Expense::ExpenseAmountDefault;
+        $this->dttExpenseDate = (Expense::ExpenseDateDefault === null)?null:new dxDateTime(Expense::ExpenseDateDefault);
+        $this->strExpenseUniqueId = Expense::ExpenseUniqueIdDefault;
+        $this->strLastUpdated = Expense::LastUpdatedDefault;
+        $this->intAccount = Expense::AccountDefault;
+        $this->strSearchMetaInfo = Expense::SearchMetaInfoDefault;
+        $this->intCategory = Expense::CategoryDefault;
+        $this->intObjectOwner = Expense::ObjectOwnerDefault;
     }
 
     ///////////////////////////////
@@ -121,24 +186,24 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Load a UserRole from PK Info
+     * Load a Expense from PK Info
      * @param integer $intId
      * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
-     * @return UserRole
+     * @return Expense
      */
     public static function Load($intId, $objOptionalClauses = null) {
         $strCacheKey = false;
         if (ProjectFunctions::$objCacheProvider && !$objOptionalClauses && ProjectFunctions::$Database[1]->Caching) {
-            $strCacheKey = ProjectFunctions::$objCacheProvider->CreateKey(ProjectFunctions::$Database[1]->Database, 'UserRole', $intId);
+            $strCacheKey = ProjectFunctions::$objCacheProvider->CreateKey(ProjectFunctions::$Database[1]->Database, 'Expense', $intId);
             $objCachedObject = ProjectFunctions::$objCacheProvider->Get($strCacheKey);
             if ($objCachedObject !== false) {
                 return $objCachedObject;
             }
         }
         // Use QuerySingle to Perform the Query
-        $objToReturn = UserRole::QuerySingle(
+        $objToReturn = Expense::QuerySingle(
             dxQuery::AndCondition(
-                dxQuery::Equal(dxQueryN::UserRole()->Id, $intId)
+                dxQuery::Equal(dxQueryN::Expense()->Id, $intId)
             ),
             $objOptionalClauses
         );
@@ -149,17 +214,17 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Load all UserRoles
+     * Load all Expenses
      * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
-     * @return UserRole[]
+     * @return Expense[]
      */
     public static function LoadAll($objOptionalClauses = null) {
         if (func_num_args() > 1) {
             throw new dxCallerException("LoadAll must be called with an array of optional clauses as a single argument");
         }
-        // Call UserRole::QueryArray to perform the LoadAll query
+        // Call Expense::QueryArray to perform the LoadAll query
         try {
-            return UserRole::QueryArray(dxQuery::All(), $objOptionalClauses);
+            return Expense::QueryArray(dxQuery::All(), $objOptionalClauses);
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();
             throw $objExc;
@@ -167,12 +232,12 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Count all UserRoles
+     * Count all Expenses
      * @return int
      */
     public static function CountAll() {
-        // Call UserRole::QueryCount to perform the CountAll query
-        return UserRole::QueryCount(dxQuery::All());
+        // Call Expense::QueryCount to perform the CountAll query
+        return Expense::QueryCount(dxQuery::All());
     }
 
     ///////////////////////////////
@@ -191,10 +256,10 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
      */
     protected static function BuildQueryStatement(&$objQueryBuilder, dxQueryCondition $objConditions, $objOptionalClauses, $mixParameterArray, $blnCountOnly) {
         // Get the Database Object for this Class
-        $objDatabase = UserRole::GetDatabase();
+        $objDatabase = Expense::GetDatabase();
 
-        // Create/Build out the QueryBuilder object with UserRole-specific SELET and FROM fields
-        $objQueryBuilder = new dxQueryBuilder($objDatabase, 'UserRole');
+        // Create/Build out the QueryBuilder object with Expense-specific SELET and FROM fields
+        $objQueryBuilder = new dxQueryBuilder($objDatabase, 'Expense');
 
         $blnAddAllFieldsToSelect = true;
         if ($objDatabase->OnlyFullGroupBy) {
@@ -213,9 +278,9 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
             }
         }
         if ($blnAddAllFieldsToSelect) {
-            UserRole::GetSelectFields($objQueryBuilder, null, dxQuery::extractSelectClause($objOptionalClauses));
+            Expense::GetSelectFields($objQueryBuilder, null, dxQuery::extractSelectClause($objOptionalClauses));
         }
-        $objQueryBuilder->AddFromItem('UserRole');
+        $objQueryBuilder->AddFromItem('Expense');
 
         // Set "CountOnly" option (if applicable)
         if ($blnCountOnly)
@@ -262,23 +327,23 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Static divblox Query method to query for a single UserRole object.
+     * Static divblox Query method to query for a single Expense object.
      * Uses BuildQueryStatment to perform most of the work.
      * @param dxQueryCondition $objConditions any conditions on the query, itself
      * @param dxQueryClause[] $objOptionalClausees additional optional dxQueryClause objects for this query
      * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
-     * @return UserRole the queried object
+     * @return Expense the queried object
      */
     public static function QuerySingle(dxQueryCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
         // Get the Query Statement
         try {
-            $strQuery = UserRole::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+            $strQuery = Expense::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();
             throw $objExc;
         }
 
-        // Perform the Query, Get the First Row, and Instantiate a new UserRole object
+        // Perform the Query, Get the First Row, and Instantiate a new Expense object
         $objDbResult = $objQueryBuilder->Database->Query($strQuery);
 
         // Do we have to expand anything?
@@ -286,7 +351,7 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
             $objToReturn = array();
             $objPrevItemArray = array();
             while ($objDbRow = $objDbResult->GetNextRow()) {
-                $objItem = UserRole::InstantiateDbRow($objDbRow, null, $objQueryBuilder->ExpandAsArrayNode, $objPrevItemArray, $objQueryBuilder->ColumnAliasArray);
+                $objItem = Expense::InstantiateDbRow($objDbRow, null, $objQueryBuilder->ExpandAsArrayNode, $objPrevItemArray, $objQueryBuilder->ColumnAliasArray);
                 if ($objItem) {
                     $objToReturn[] = $objItem;
                     $objPrevItemArray[$objItem->intId][] = $objItem;
@@ -303,22 +368,22 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
             $objDbRow = $objDbResult->GetNextRow();
             if(null === $objDbRow)
                 return null;
-            return UserRole::InstantiateDbRow($objDbRow, null, null, null, $objQueryBuilder->ColumnAliasArray);
+            return Expense::InstantiateDbRow($objDbRow, null, null, null, $objQueryBuilder->ColumnAliasArray);
         }
     }
 
     /**
-     * Static divblox Query method to query for an array of UserRole objects.
+     * Static divblox Query method to query for an array of Expense objects.
      * Uses BuildQueryStatment to perform most of the work.
      * @param dxQueryCondition $objConditions any conditions on the query, itself
      * @param dxQueryClause[] $objOptionalClausees additional optional dxQueryClause objects for this query
      * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
-     * @return UserRole[] the queried objects as an array
+     * @return Expense[] the queried objects as an array
      */
     public static function QueryArray(dxQueryCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
         // Get the Query Statement
         try {
-            $strQuery = UserRole::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+            $strQuery = Expense::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();
             throw $objExc;
@@ -326,7 +391,7 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
 
         // Perform the Query and Instantiate the Array Result
         $objDbResult = $objQueryBuilder->Database->Query($strQuery);
-        return UserRole::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNode, $objQueryBuilder->ColumnAliasArray);
+        return Expense::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNode, $objQueryBuilder->ColumnAliasArray);
     }
 
     /**
@@ -340,7 +405,7 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     public static function QueryCursor(dxQueryCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
         // Get the query statement
         try {
-            $strQuery = UserRole::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+            $strQuery = Expense::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();
             throw $objExc;
@@ -355,7 +420,7 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Static divblox Query method to query for a count of UserRole objects.
+     * Static divblox Query method to query for a count of Expense objects.
      * Uses BuildQueryStatment to perform most of the work.
      * @param dxQueryCondition $objConditions any conditions on the query, itself
      * @param dxQueryClause[] $objOptionalClausees additional optional dxQueryClause objects for this query
@@ -365,7 +430,7 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     public static function QueryCount(dxQueryCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
         // Get the Query Statement
         try {
-            $strQuery = UserRole::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, true);
+            $strQuery = Expense::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, true);
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();
             throw $objExc;
@@ -406,16 +471,16 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
 
     public static function QueryArrayCached(dxQueryCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null, $blnForceUpdate = false) {
         // Get the Database Object for this Class
-        $objDatabase = UserRole::GetDatabase();
+        $objDatabase = Expense::GetDatabase();
 
-        $strQuery = UserRole::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+        $strQuery = Expense::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
 
-        $objCache = new dxCache('dxquery/userrole', $strQuery);
+        $objCache = new dxCache('dxquery/expense', $strQuery);
         $cacheData = $objCache->GetData();
 
         if (!$cacheData || $blnForceUpdate) {
             $objDbResult = $objQueryBuilder->Database->Query($strQuery);
-            $arrResult = UserRole::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNode, $objQueryBuilder->ColumnAliasArray);
+            $arrResult = Expense::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNode, $objQueryBuilder->ColumnAliasArray);
             $objCache->SaveData(serialize($arrResult));
         } else {
             $arrResult = unserialize($cacheData);
@@ -425,7 +490,7 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Updates a dxQueryBuilder with the SELECT fields for this UserRole
+     * Updates a dxQueryBuilder with the SELECT fields for this Expense
      * @param dxQueryBuilder $objBuilder the Query Builder object to update
      * @param string $strPrefix optional prefix to add to the SELECT fields
      */
@@ -434,7 +499,7 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
             $strTableName = $strPrefix;
             $strAliasPrefix = $strPrefix . '__';
         } else {
-            $strTableName = 'UserRole';
+            $strTableName = 'Expense';
             $strAliasPrefix = '';
         }
 
@@ -443,8 +508,14 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
             $objSelect->AddSelectItems($objBuilder, $strTableName, $strAliasPrefix);
         } else {
             $objBuilder->AddSelectItem($strTableName, 'Id', $strAliasPrefix . 'Id');
-            $objBuilder->AddSelectItem($strTableName, 'Role', $strAliasPrefix . 'Role');
+            $objBuilder->AddSelectItem($strTableName, 'ExpenseName', $strAliasPrefix . 'ExpenseName');
+            $objBuilder->AddSelectItem($strTableName, 'ExpenseAmount', $strAliasPrefix . 'ExpenseAmount');
+            $objBuilder->AddSelectItem($strTableName, 'ExpenseDate', $strAliasPrefix . 'ExpenseDate');
+            $objBuilder->AddSelectItem($strTableName, 'ExpenseUniqueId', $strAliasPrefix . 'ExpenseUniqueId');
             $objBuilder->AddSelectItem($strTableName, 'LastUpdated', $strAliasPrefix . 'LastUpdated');
+            $objBuilder->AddSelectItem($strTableName, 'Account', $strAliasPrefix . 'Account');
+            $objBuilder->AddSelectItem($strTableName, 'SearchMetaInfo', $strAliasPrefix . 'SearchMetaInfo');
+            $objBuilder->AddSelectItem($strTableName, 'Category', $strAliasPrefix . 'Category');
             $objBuilder->AddSelectItem($strTableName, 'ObjectOwner', $strAliasPrefix . 'ObjectOwner');
         }
     }
@@ -530,16 +601,16 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Instantiate a UserRole from a Database Row.
+     * Instantiate a Expense from a Database Row.
      * Takes in an optional strAliasPrefix, used in case another Object::InstantiateDbRow
-     * is calling this UserRole::InstantiateDbRow in order to perform
+     * is calling this Expense::InstantiateDbRow in order to perform
      * early binding on referenced objects.
      * @param DatabaseRowBase $objDbRow
      * @param string $strAliasPrefix
      * @param dxQueryBaseNode $objExpandAsArrayNode
      * @param dxBaseClass $arrPreviousItem
      * @param string[] $strColumnAliasArray
-     * @return mixed Either a UserRole, or false to indicate the dbrow was used in an expansion, or null to indicate that this leaf is a duplicate.
+     * @return mixed Either a Expense, or false to indicate the dbrow was used in an expansion, or null to indicate that this leaf is a duplicate.
     */
     public static function InstantiateDbRow($objDbRow, $strAliasPrefix = null, $objExpandAsArrayNode = null, $objPreviousItemArray = null, $strColumnAliasArray = array()) {
         // If blank row, return null
@@ -558,24 +629,42 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
                 is_array($objPreviousItemArray) &&
                 ProjectFunctions::getDataSetSize($objPreviousItemArray)) {
 
-            if (UserRole::ExpandArray ($objDbRow, $strAliasPrefix, $objExpandAsArrayNode, $objPreviousItemArray, $strColumnAliasArray)) {
+            if (Expense::ExpandArray ($objDbRow, $strAliasPrefix, $objExpandAsArrayNode, $objPreviousItemArray, $strColumnAliasArray)) {
                 return false; // db row was used but no new object was created
             }
         }
 
-        // Create a new instance of the UserRole object
-        $objToReturn = new UserRole();
+        // Create a new instance of the Expense object
+        $objToReturn = new Expense();
         $objToReturn->__blnRestored = true;
 
         $strAlias = $strAliasPrefix . 'Id';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intId = $objDbRow->GetColumn($strAliasName, 'Integer');
-        $strAlias = $strAliasPrefix . 'Role';
+        $strAlias = $strAliasPrefix . 'ExpenseName';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->strRole = $objDbRow->GetColumn($strAliasName, 'VarChar');
+        $objToReturn->strExpenseName = $objDbRow->GetColumn($strAliasName, 'VarChar');
+        $strAlias = $strAliasPrefix . 'ExpenseAmount';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->strExpenseAmount = $objDbRow->GetColumn($strAliasName, 'VarChar');
+        $strAlias = $strAliasPrefix . 'ExpenseDate';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->dttExpenseDate = $objDbRow->GetColumn($strAliasName, 'Date');
+        $strAlias = $strAliasPrefix . 'ExpenseUniqueId';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->strExpenseUniqueId = $objDbRow->GetColumn($strAliasName, 'VarChar');
         $strAlias = $strAliasPrefix . 'LastUpdated';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->strLastUpdated = $objDbRow->GetColumn($strAliasName, 'VarChar');
+        $strAlias = $strAliasPrefix . 'Account';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->intAccount = $objDbRow->GetColumn($strAliasName, 'Integer');
+        $strAlias = $strAliasPrefix . 'SearchMetaInfo';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->strSearchMetaInfo = $objDbRow->GetColumn($strAliasName, 'Blob');
+        $strAlias = $strAliasPrefix . 'Category';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->intCategory = $objDbRow->GetColumn($strAliasName, 'Integer');
         $strAlias = $strAliasPrefix . 'ObjectOwner';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intObjectOwner = $objDbRow->GetColumn($strAliasName, 'Integer');
@@ -607,35 +696,34 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
         }
 
         if (!$strAliasPrefix)
-            $strAliasPrefix = 'UserRole__';
+            $strAliasPrefix = 'Expense__';
 
-
-
-
-        // Check for Account Virtual Binding
-        $strAlias = $strAliasPrefix . 'account__Id';
+        // Check for AccountObject Early Binding
+        $strAlias = $strAliasPrefix . 'Account__Id';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objExpansionNode = (empty($objExpansionAliasArray['account']) ? null : $objExpansionAliasArray['account']);
-        $blnExpanded = ($objExpansionNode && $objExpansionNode->ExpandAsArray);
-        if ($blnExpanded && null === $objToReturn->_objAccountArray)
-            $objToReturn->_objAccountArray = array();
         if (!is_null($objDbRow->GetColumn($strAliasName))) {
-            if ($blnExpanded) {
-                $objToReturn->_objAccountArray[] = Account::InstantiateDbRow($objDbRow, $strAliasPrefix . 'account__', $objExpansionNode, null, $strColumnAliasArray);
-            } elseif (is_null($objToReturn->_objAccount)) {
-                $objToReturn->_objAccount = Account::InstantiateDbRow($objDbRow, $strAliasPrefix . 'account__', $objExpansionNode, null, $strColumnAliasArray);
-            }
+            $objExpansionNode = (empty($objExpansionAliasArray['Account']) ? null : $objExpansionAliasArray['Account']);
+            $objToReturn->objAccountObject = Account::InstantiateDbRow($objDbRow, $strAliasPrefix . 'Account__', $objExpansionNode, null, $strColumnAliasArray);
         }
+        // Check for CategoryObject Early Binding
+        $strAlias = $strAliasPrefix . 'Category__Id';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        if (!is_null($objDbRow->GetColumn($strAliasName))) {
+            $objExpansionNode = (empty($objExpansionAliasArray['Category']) ? null : $objExpansionAliasArray['Category']);
+            $objToReturn->objCategoryObject = Category::InstantiateDbRow($objDbRow, $strAliasPrefix . 'Category__', $objExpansionNode, null, $strColumnAliasArray);
+        }
+
+
 
         return $objToReturn;
     }
 
     /**
-     * Instantiate an array of UserRoles from a Database Result
+     * Instantiate an array of Expenses from a Database Result
      * @param DatabaseResultBase $objDbResult
      * @param dxQueryBaseNode $objExpandAsArrayNode
      * @param string[] $strColumnAliasArray
-     * @return UserRole[]
+     * @return Expense[]
      */
     public static function InstantiateDbResult(dxDatabaseResultBase $objDbResult, $objExpandAsArrayNode = null, $strColumnAliasArray = null) {
         $objToReturn = array();
@@ -652,7 +740,7 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
             $objToReturn = array();
             $objPrevItemArray = array();
             while ($objDbRow = $objDbResult->GetNextRow()) {
-                $objItem = UserRole::InstantiateDbRow($objDbRow, null, $objExpandAsArrayNode, $objPrevItemArray, $strColumnAliasArray);
+                $objItem = Expense::InstantiateDbRow($objDbRow, null, $objExpandAsArrayNode, $objPrevItemArray, $strColumnAliasArray);
                 if ($objItem) {
                     $objToReturn[] = $objItem;
                     $objPrevItemArray[$objItem->intId][] = $objItem;
@@ -660,7 +748,7 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
             }
         } else {
             while ($objDbRow = $objDbResult->GetNextRow())
-                $objToReturn[] = UserRole::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
+                $objToReturn[] = Expense::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
         }
 
         return $objToReturn;
@@ -668,11 +756,11 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
-     * Instantiate a single UserRole object from a query cursor (e.g. a DB ResultSet).
+     * Instantiate a single Expense object from a query cursor (e.g. a DB ResultSet).
      * Cursor is automatically moved to the "next row" of the result set.
      * Will return NULL if no cursor or if the cursor has no more rows in the resultset.
      * @param dxDatabaseResultBase $objDbResult cursor resource
-     * @return UserRole next row resulting from the query
+     * @return Expense next row resulting from the query
      */
     public static function InstantiateCursor(dxDatabaseResultBase $objDbResult) {
         // If blank resultset, then return empty result
@@ -693,7 +781,7 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
         }
 
         // Load up the return result with a row and return it
-        return UserRole::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
+        return Expense::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
     }
 
     ///////////////////////////////////////////////////
@@ -701,34 +789,82 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     ///////////////////////////////////////////////////
 
     /**
-     * Load a single UserRole object,
+     * Load a single Expense object,
      * by Id Index(es)
      * @param integer $intId
      * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
-     * @return UserRole
+     * @return Expense
     */
     public static function LoadById($intId, $objOptionalClauses = null) {
-        return UserRole::QuerySingle(
+        return Expense::QuerySingle(
             dxQuery::AndCondition(
-                dxQuery::Equal(dxQueryN::UserRole()->Id, $intId)
+                dxQuery::Equal(dxQueryN::Expense()->Id, $intId)
             ),
             $objOptionalClauses
         );
     }
 
     /**
-     * Load a single UserRole object,
-     * by Role Index(es)
-     * @param string $strRole
+     * Load an array of Expense objects,
+     * by Account Index(es)
+     * @param integer $intAccount
      * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
-     * @return UserRole
+     * @return Expense[]
     */
-    public static function LoadByRole($strRole, $objOptionalClauses = null) {
-        return UserRole::QuerySingle(
-            dxQuery::AndCondition(
-                dxQuery::Equal(dxQueryN::UserRole()->Role, $strRole)
-            ),
-            $objOptionalClauses
+    public static function LoadArrayByAccount($intAccount, $objOptionalClauses = null) {
+        // Call Expense::QueryArray to perform the LoadArrayByAccount query
+        try {
+            return Expense::QueryArray(
+                dxQuery::Equal(dxQueryN::Expense()->Account, $intAccount),
+                $objOptionalClauses);
+        } catch (dxCallerException $objExc) {
+            $objExc->IncrementOffset();
+            throw $objExc;
+        }
+    }
+
+    /**
+     * Count Expenses
+     * by Account Index(es)
+     * @param integer $intAccount
+     * @return int
+    */
+    public static function CountByAccount($intAccount) {
+        // Call Expense::QueryCount to perform the CountByAccount query
+        return Expense::QueryCount(
+            dxQuery::Equal(dxQueryN::Expense()->Account, $intAccount)
+        );
+    }
+
+    /**
+     * Load an array of Expense objects,
+     * by Category Index(es)
+     * @param integer $intCategory
+     * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
+     * @return Expense[]
+    */
+    public static function LoadArrayByCategory($intCategory, $objOptionalClauses = null) {
+        // Call Expense::QueryArray to perform the LoadArrayByCategory query
+        try {
+            return Expense::QueryArray(
+                dxQuery::Equal(dxQueryN::Expense()->Category, $intCategory),
+                $objOptionalClauses);
+        } catch (dxCallerException $objExc) {
+            $objExc->IncrementOffset();
+            throw $objExc;
+        }
+    }
+
+    /**
+     * Count Expenses
+     * by Category Index(es)
+     * @param integer $intCategory
+     * @return int
+    */
+    public static function CountByCategory($intCategory) {
+        // Call Expense::QueryCount to perform the CountByCategory query
+        return Expense::QueryCount(
+            dxQuery::Equal(dxQueryN::Expense()->Category, $intCategory)
         );
     }
     ////////////////////////////////////////////////////
@@ -741,31 +877,37 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     //////////////////////////
 
     /**
-    * Save this UserRole
+    * Save this Expense
     * @param bool $blnForceInsert
     * @param bool $blnForceUpdate
     * @return int
     */
     public function Save($blnForceInsert = false, $blnForceUpdate = false) {
-        $ObjectAccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),"UserRole",$this->intId);
+        $ObjectAccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),"Expense",$this->intId);
         // Get the Database Object for this Class
-        $objDatabase = UserRole::GetDatabase();
+        $objDatabase = Expense::GetDatabase();
         $mixToReturn = null;
         if (!is_numeric($this->intObjectOwner)) {
             $this->intObjectOwner = ProjectFunctions::getCurrentAccountId();
         }
-        $ExistingObj = UserRole::Load($this->intId);
+        $ExistingObj = Expense::Load($this->intId);
         $newAuditLogEntry = new AuditLogEntry();
         $ChangedArray = array();
         $newAuditLogEntry->EntryTimeStamp = dxDateTime::Now();
         $newAuditLogEntry->ObjectId = $this->intId;
-        $newAuditLogEntry->ObjectName = 'UserRole';
+        $newAuditLogEntry->ObjectName = 'Expense';
         $newAuditLogEntry->UserEmail = ProjectFunctions::getCurrentUserEmailForAudit();
         if (!$ExistingObj) {
             $newAuditLogEntry->ModificationType = 'Create';
             $ChangedArray = array_merge($ChangedArray,array("Id" => $this->intId));
-            $ChangedArray = array_merge($ChangedArray,array("Role" => $this->strRole));
+            $ChangedArray = array_merge($ChangedArray,array("ExpenseName" => $this->strExpenseName));
+            $ChangedArray = array_merge($ChangedArray,array("ExpenseAmount" => $this->strExpenseAmount));
+            $ChangedArray = array_merge($ChangedArray,array("ExpenseDate" => $this->dttExpenseDate));
+            $ChangedArray = array_merge($ChangedArray,array("ExpenseUniqueId" => $this->strExpenseUniqueId));
             $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
+            $ChangedArray = array_merge($ChangedArray,array("Account" => $this->intAccount));
+            $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
+            $ChangedArray = array_merge($ChangedArray,array("Category" => $this->intCategory));
             $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
             $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         } else {
@@ -779,12 +921,36 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
                 //$ChangedArray = array_merge($ChangedArray,array("Id" => "From: ".$ExistingValueStr." to: ".$this->intId));
             }
             $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->Role)) {
-                $ExistingValueStr = $ExistingObj->Role;
+            if (!is_null($ExistingObj->ExpenseName)) {
+                $ExistingValueStr = $ExistingObj->ExpenseName;
             }
-            if ($ExistingObj->Role != $this->strRole) {
-                $ChangedArray = array_merge($ChangedArray,array("Role" => array("Before" => $ExistingValueStr,"After" => $this->strRole)));
-                //$ChangedArray = array_merge($ChangedArray,array("Role" => "From: ".$ExistingValueStr." to: ".$this->strRole));
+            if ($ExistingObj->ExpenseName != $this->strExpenseName) {
+                $ChangedArray = array_merge($ChangedArray,array("ExpenseName" => array("Before" => $ExistingValueStr,"After" => $this->strExpenseName)));
+                //$ChangedArray = array_merge($ChangedArray,array("ExpenseName" => "From: ".$ExistingValueStr." to: ".$this->strExpenseName));
+            }
+            $ExistingValueStr = "NULL";
+            if (!is_null($ExistingObj->ExpenseAmount)) {
+                $ExistingValueStr = $ExistingObj->ExpenseAmount;
+            }
+            if ($ExistingObj->ExpenseAmount != $this->strExpenseAmount) {
+                $ChangedArray = array_merge($ChangedArray,array("ExpenseAmount" => array("Before" => $ExistingValueStr,"After" => $this->strExpenseAmount)));
+                //$ChangedArray = array_merge($ChangedArray,array("ExpenseAmount" => "From: ".$ExistingValueStr." to: ".$this->strExpenseAmount));
+            }
+            $ExistingValueStr = "NULL";
+            if (!is_null($ExistingObj->ExpenseDate)) {
+                $ExistingValueStr = $ExistingObj->ExpenseDate;
+            }
+            if ($ExistingObj->ExpenseDate != $this->dttExpenseDate) {
+                $ChangedArray = array_merge($ChangedArray,array("ExpenseDate" => array("Before" => $ExistingValueStr,"After" => $this->dttExpenseDate)));
+                //$ChangedArray = array_merge($ChangedArray,array("ExpenseDate" => "From: ".$ExistingValueStr." to: ".$this->dttExpenseDate));
+            }
+            $ExistingValueStr = "NULL";
+            if (!is_null($ExistingObj->ExpenseUniqueId)) {
+                $ExistingValueStr = $ExistingObj->ExpenseUniqueId;
+            }
+            if ($ExistingObj->ExpenseUniqueId != $this->strExpenseUniqueId) {
+                $ChangedArray = array_merge($ChangedArray,array("ExpenseUniqueId" => array("Before" => $ExistingValueStr,"After" => $this->strExpenseUniqueId)));
+                //$ChangedArray = array_merge($ChangedArray,array("ExpenseUniqueId" => "From: ".$ExistingValueStr." to: ".$this->strExpenseUniqueId));
             }
             $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->LastUpdated)) {
@@ -793,6 +959,30 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
             if ($ExistingObj->LastUpdated != $this->strLastUpdated) {
                 $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => array("Before" => $ExistingValueStr,"After" => $this->strLastUpdated)));
                 //$ChangedArray = array_merge($ChangedArray,array("LastUpdated" => "From: ".$ExistingValueStr." to: ".$this->strLastUpdated));
+            }
+            $ExistingValueStr = "NULL";
+            if (!is_null($ExistingObj->Account)) {
+                $ExistingValueStr = $ExistingObj->Account;
+            }
+            if ($ExistingObj->Account != $this->intAccount) {
+                $ChangedArray = array_merge($ChangedArray,array("Account" => array("Before" => $ExistingValueStr,"After" => $this->intAccount)));
+                //$ChangedArray = array_merge($ChangedArray,array("Account" => "From: ".$ExistingValueStr." to: ".$this->intAccount));
+            }
+            $ExistingValueStr = "NULL";
+            if (!is_null($ExistingObj->SearchMetaInfo)) {
+                $ExistingValueStr = $ExistingObj->SearchMetaInfo;
+            }
+            if ($ExistingObj->SearchMetaInfo != $this->strSearchMetaInfo) {
+                $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => array("Before" => $ExistingValueStr,"After" => $this->strSearchMetaInfo)));
+                //$ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => "From: ".$ExistingValueStr." to: ".$this->strSearchMetaInfo));
+            }
+            $ExistingValueStr = "NULL";
+            if (!is_null($ExistingObj->Category)) {
+                $ExistingValueStr = $ExistingObj->Category;
+            }
+            if ($ExistingObj->Category != $this->intCategory) {
+                $ChangedArray = array_merge($ChangedArray,array("Category" => array("Before" => $ExistingValueStr,"After" => $this->intCategory)));
+                //$ChangedArray = array_merge($ChangedArray,array("Category" => "From: ".$ExistingValueStr." to: ".$this->intCategory));
             }
             $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->ObjectOwner)) {
@@ -808,42 +998,60 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
             if ((!$this->__blnRestored) || ($blnForceInsert)) {
                 if (!in_array(AccessOperation::CREATE_STR,$ObjectAccessArray)) {
                     // This user is not allowed to create an object of this type
-                    throw new Exception("User is not allowed to perform operation ".AccessOperation::CREATE_STR." on entity of type 'UserRole'. Allowed access is ".json_encode($ObjectAccessArray));
+                    throw new Exception("User is not allowed to perform operation ".AccessOperation::CREATE_STR." on entity of type 'Expense'. Allowed access is ".json_encode($ObjectAccessArray));
                 }
                 // Perform an INSERT query
                 $objDatabase->NonQuery('
-                INSERT INTO `UserRole` (
-							`Role`,
+                INSERT INTO `Expense` (
+							`ExpenseName`,
+							`ExpenseAmount`,
+							`ExpenseDate`,
+							`ExpenseUniqueId`,
+							`Account`,
+							`SearchMetaInfo`,
+							`Category`,
 							`ObjectOwner`
 						) VALUES (
-							' . $objDatabase->SqlVariable($this->strRole) . ',
+							' . $objDatabase->SqlVariable($this->strExpenseName) . ',
+							' . $objDatabase->SqlVariable($this->strExpenseAmount) . ',
+							' . $objDatabase->SqlVariable($this->dttExpenseDate) . ',
+							' . $objDatabase->SqlVariable($this->strExpenseUniqueId) . ',
+							' . $objDatabase->SqlVariable($this->intAccount) . ',
+							' . $objDatabase->SqlVariable($this->strSearchMetaInfo) . ',
+							' . $objDatabase->SqlVariable($this->intCategory) . ',
 							' . $objDatabase->SqlVariable($this->intObjectOwner) . '
 						)
                 ');
 					// Update Identity column and return its value
-                $mixToReturn = $this->intId = $objDatabase->InsertId('UserRole', 'Id');
+                $mixToReturn = $this->intId = $objDatabase->InsertId('Expense', 'Id');
             } else {
                 // Perform an UPDATE query
                 // First checking for Optimistic Locking constraints (if applicable)
                 if (!in_array(AccessOperation::UPDATE_STR,$ObjectAccessArray)) {
                     // This user is not allowed to create an object of this type
-                    throw new Exception("User is not allowed to perform operation ".AccessOperation::UPDATE_STR." on entity of type 'UserRole'. Allowed access is ".json_encode($ObjectAccessArray));
+                    throw new Exception("User is not allowed to perform operation ".AccessOperation::UPDATE_STR." on entity of type 'Expense'. Allowed access is ".json_encode($ObjectAccessArray));
                 }
                 if (!$blnForceUpdate) {
                     // Perform the Optimistic Locking check
                     $objResult = $objDatabase->Query('
-                    SELECT `LastUpdated` FROM `UserRole` WHERE
+                    SELECT `LastUpdated` FROM `Expense` WHERE
 							`Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
 
                 $objRow = $objResult->FetchArray();
                 if ($objRow[0] != $this->strLastUpdated)
-                    throw new dxOptimisticLockingException('UserRole');
+                    throw new dxOptimisticLockingException('Expense');
             }
 
             // Perform the UPDATE query
             $objDatabase->NonQuery('
-            UPDATE `UserRole` SET
-							`Role` = ' . $objDatabase->SqlVariable($this->strRole) . ',
+            UPDATE `Expense` SET
+							`ExpenseName` = ' . $objDatabase->SqlVariable($this->strExpenseName) . ',
+							`ExpenseAmount` = ' . $objDatabase->SqlVariable($this->strExpenseAmount) . ',
+							`ExpenseDate` = ' . $objDatabase->SqlVariable($this->dttExpenseDate) . ',
+							`ExpenseUniqueId` = ' . $objDatabase->SqlVariable($this->strExpenseUniqueId) . ',
+							`Account` = ' . $objDatabase->SqlVariable($this->intAccount) . ',
+							`SearchMetaInfo` = ' . $objDatabase->SqlVariable($this->strSearchMetaInfo) . ',
+							`Category` = ' . $objDatabase->SqlVariable($this->intCategory) . ',
 							`ObjectOwner` = ' . $objDatabase->SqlVariable($this->intObjectOwner) . '
             WHERE
 							`Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
@@ -857,14 +1065,14 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
             $newAuditLogEntry->ObjectId = $this->intId;
             $newAuditLogEntry->Save();
         } catch(dxCallerException $e) {
-            error_log('Could not save audit log while saving UserRole. Details: '.$newAuditLogEntry->getJson().'<br>Error details: '.$e->getMessage());
+            error_log('Could not save audit log while saving Expense. Details: '.$newAuditLogEntry->getJson().'<br>Error details: '.$e->getMessage());
         }
         // Update __blnRestored and any Non-Identity PK Columns (if applicable)
         $this->__blnRestored = true;
 
         // Update Local Timestamp
         $objResult = $objDatabase->Query('SELECT `LastUpdated` FROM
-                                            `UserRole` WHERE
+                                            `Expense` WHERE
                 							`Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
 
         $objRow = $objResult->FetchArray();
@@ -876,43 +1084,49 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
         return $mixToReturn;
     }
     /**
-     * Delete this UserRole
+     * Delete this Expense
      * @return void
      */
     public function Delete() {
         if ((is_null($this->intId)))
-            throw new dxUndefinedPrimaryKeyException('Cannot delete this UserRole with an unset primary key.');
+            throw new dxUndefinedPrimaryKeyException('Cannot delete this Expense with an unset primary key.');
 
-        $ObjectAccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),"UserRole",$this->intId);
+        $ObjectAccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),"Expense",$this->intId);
         if (!in_array(AccessOperation::DELETE_STR,$ObjectAccessArray)) {
             // This user is not allowed to delete an object of this type
-            throw new Exception("User is not allowed to perform operation ".AccessOperation::DELETE_STR." on entity of type 'UserRole'. Allowed access is ".json_encode($ObjectAccessArray));
+            throw new Exception("User is not allowed to perform operation ".AccessOperation::DELETE_STR." on entity of type 'Expense'. Allowed access is ".json_encode($ObjectAccessArray));
         }
 
         // Get the Database Object for this Class
-        $objDatabase = UserRole::GetDatabase();
+        $objDatabase = Expense::GetDatabase();
         $newAuditLogEntry = new AuditLogEntry();
         $ChangedArray = array();
         $newAuditLogEntry->EntryTimeStamp = dxDateTime::Now();
         $newAuditLogEntry->ObjectId = $this->intId;
-        $newAuditLogEntry->ObjectName = 'UserRole';
+        $newAuditLogEntry->ObjectName = 'Expense';
         $newAuditLogEntry->UserEmail = ProjectFunctions::getCurrentUserEmailForAudit();
         $newAuditLogEntry->ModificationType = 'Delete';
         $ChangedArray = array_merge($ChangedArray,array("Id" => $this->intId));
-        $ChangedArray = array_merge($ChangedArray,array("Role" => $this->strRole));
+        $ChangedArray = array_merge($ChangedArray,array("ExpenseName" => $this->strExpenseName));
+        $ChangedArray = array_merge($ChangedArray,array("ExpenseAmount" => $this->strExpenseAmount));
+        $ChangedArray = array_merge($ChangedArray,array("ExpenseDate" => $this->dttExpenseDate));
+        $ChangedArray = array_merge($ChangedArray,array("ExpenseUniqueId" => $this->strExpenseUniqueId));
         $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
+        $ChangedArray = array_merge($ChangedArray,array("Account" => $this->intAccount));
+        $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
+        $ChangedArray = array_merge($ChangedArray,array("Category" => $this->intCategory));
         $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
         $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         try {
             $newAuditLogEntry->Save();
         } catch(dxCallerException $e) {
-            error_log('Could not save audit log while deleting UserRole. Details: '.$newAuditLogEntry->getJson().'<br>Error details: '.$e->getMessage());
+            error_log('Could not save audit log while deleting Expense. Details: '.$newAuditLogEntry->getJson().'<br>Error details: '.$e->getMessage());
         }
 
         // Perform the SQL Query
         $objDatabase->NonQuery('
             DELETE FROM
-                `UserRole`
+                `Expense`
             WHERE
                 `Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
 
@@ -920,28 +1134,28 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Delete this UserRole ONLY from the cache
+     * Delete this Expense ONLY from the cache
      * @return void
      */
     public function DeleteCache() {
         if (ProjectFunctions::$objCacheProvider && ProjectFunctions::$Database[1]->Caching) {
-            $strCacheKey = ProjectFunctions::$objCacheProvider->CreateKey(ProjectFunctions::$Database[1]->Database, 'UserRole', $this->intId);
+            $strCacheKey = ProjectFunctions::$objCacheProvider->CreateKey(ProjectFunctions::$Database[1]->Database, 'Expense', $this->intId);
             ProjectFunctions::$objCacheProvider->Delete($strCacheKey);
         }
     }
 
     /**
-     * Delete all UserRoles
+     * Delete all Expenses
      * @return void
      */
     public static function DeleteAll() {
         // Get the Database Object for this Class
-        $objDatabase = UserRole::GetDatabase();
+        $objDatabase = Expense::GetDatabase();
 
         // Perform the Query
         $objDatabase->NonQuery('
             DELETE FROM
-                `UserRole`');
+                `Expense`');
 
         if (ProjectFunctions::$objCacheProvider && ProjectFunctions::$Database[1]->Caching) {
             ProjectFunctions::$objCacheProvider->DeleteAll();
@@ -949,38 +1163,44 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Truncate UserRole table
+     * Truncate Expense table
      * @return void
      */
     public static function Truncate() {
         // Get the Database Object for this Class
-        $objDatabase = UserRole::GetDatabase();
+        $objDatabase = Expense::GetDatabase();
 
         // Perform the Query
         $objDatabase->NonQuery('
-            TRUNCATE `UserRole`');
+            TRUNCATE `Expense`');
 
         if (ProjectFunctions::$objCacheProvider && ProjectFunctions::$Database[1]->Caching) {
             ProjectFunctions::$objCacheProvider->DeleteAll();
         }
     }
     /**
-     * Reload this UserRole from the database.
+     * Reload this Expense from the database.
      * @return void
      */
     public function Reload() {
         // Make sure we are actually Restored from the database
         if (!$this->__blnRestored)
-            throw new dxCallerException('Cannot call Reload() on a new, unsaved UserRole object.');
+            throw new dxCallerException('Cannot call Reload() on a new, unsaved Expense object.');
 
         $this->DeleteCache();
 
         // Reload the Object
-        $objReloaded = UserRole::Load($this->intId);
+        $objReloaded = Expense::Load($this->intId);
 
         // Update $this's local variables to match
-        $this->strRole = $objReloaded->strRole;
+        $this->strExpenseName = $objReloaded->strExpenseName;
+        $this->strExpenseAmount = $objReloaded->strExpenseAmount;
+        $this->dttExpenseDate = $objReloaded->dttExpenseDate;
+        $this->strExpenseUniqueId = $objReloaded->strExpenseUniqueId;
         $this->strLastUpdated = $objReloaded->strLastUpdated;
+        $this->Account = $objReloaded->Account;
+        $this->strSearchMetaInfo = $objReloaded->strSearchMetaInfo;
+        $this->Category = $objReloaded->Category;
         $this->intObjectOwner = $objReloaded->intObjectOwner;
     }
     ////////////////////
@@ -1006,12 +1226,33 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
                  */
                 return $this->intId;
 
-            case 'Role':
+            case 'ExpenseName':
                 /**
-                 * Gets the value for strRole (Unique)
+                 * Gets the value for strExpenseName 
                  * @return string
                  */
-                return $this->strRole;
+                return $this->strExpenseName;
+
+            case 'ExpenseAmount':
+                /**
+                 * Gets the value for strExpenseAmount 
+                 * @return string
+                 */
+                return $this->strExpenseAmount;
+
+            case 'ExpenseDate':
+                /**
+                 * Gets the value for dttExpenseDate 
+                 * @return dxDateTime
+                 */
+                return $this->dttExpenseDate;
+
+            case 'ExpenseUniqueId':
+                /**
+                 * Gets the value for strExpenseUniqueId 
+                 * @return string
+                 */
+                return $this->strExpenseUniqueId;
 
             case 'LastUpdated':
                 /**
@@ -1019,6 +1260,27 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
                  * @return string
                  */
                 return $this->strLastUpdated;
+
+            case 'Account':
+                /**
+                 * Gets the value for intAccount 
+                 * @return integer
+                 */
+                return $this->intAccount;
+
+            case 'SearchMetaInfo':
+                /**
+                 * Gets the value for strSearchMetaInfo 
+                 * @return string
+                 */
+                return $this->strSearchMetaInfo;
+
+            case 'Category':
+                /**
+                 * Gets the value for intCategory 
+                 * @return integer
+                 */
+                return $this->intCategory;
 
             case 'ObjectOwner':
                 /**
@@ -1031,27 +1293,39 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
             ///////////////////
             // Member Objects
             ///////////////////
+            case 'AccountObject':
+                /**
+                 * Gets the value for the Account object referenced by intAccount 
+                 * @return Account
+                 */
+                try {
+                    if ((!$this->objAccountObject) && (!is_null($this->intAccount)))
+                        $this->objAccountObject = Account::Load($this->intAccount);
+                    return $this->objAccountObject;
+                } catch (dxCallerException $objExc) {
+                    $objExc->IncrementOffset();
+                    throw $objExc;
+                }
+
+            case 'CategoryObject':
+                /**
+                 * Gets the value for the Category object referenced by intCategory 
+                 * @return Category
+                 */
+                try {
+                    if ((!$this->objCategoryObject) && (!is_null($this->intCategory)))
+                        $this->objCategoryObject = Category::Load($this->intCategory);
+                    return $this->objCategoryObject;
+                } catch (dxCallerException $objExc) {
+                    $objExc->IncrementOffset();
+                    throw $objExc;
+                }
+
 
             ////////////////////////////
             // Virtual Object References (Many to Many and Reverse References)
             // (If restored via a "Many-to" expansion)
             ////////////////////////////
-
-            case '_Account':
-                /**
-                 * Gets the value for the private _objAccount (Read-Only)
-                 * if set due to an expansion on the Account.UserRole reverse relationship
-                 * @return Account
-                 */
-                return $this->_objAccount;
-
-            case '_AccountArray':
-                /**
-                 * Gets the value for the private _objAccountArray (Read-Only)
-                 * if set due to an ExpandAsArray on the Account.UserRole reverse relationship
-                 * @return Account[]
-                 */
-                return $this->_objAccountArray;
 
 
             case '__Restored':
@@ -1079,14 +1353,94 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
             ///////////////////
             // Member Variables
             ///////////////////
-            case 'Role':
+            case 'ExpenseName':
                 /**
-                 * Sets the value for strRole (Unique)
+                 * Sets the value for strExpenseName 
                  * @param string $mixValue
                  * @return string
                  */
                 try {
-                    return ($this->strRole = dxType::Cast($mixValue, dxType::String));
+                    return ($this->strExpenseName = dxType::Cast($mixValue, dxType::String));
+                } catch (dxCallerException $objExc) {
+                    $objExc->IncrementOffset();
+                    throw $objExc;
+                }
+
+            case 'ExpenseAmount':
+                /**
+                 * Sets the value for strExpenseAmount 
+                 * @param string $mixValue
+                 * @return string
+                 */
+                try {
+                    return ($this->strExpenseAmount = dxType::Cast($mixValue, dxType::String));
+                } catch (dxCallerException $objExc) {
+                    $objExc->IncrementOffset();
+                    throw $objExc;
+                }
+
+            case 'ExpenseDate':
+                /**
+                 * Sets the value for dttExpenseDate 
+                 * @param dxDateTime $mixValue
+                 * @return dxDateTime
+                 */
+                try {
+                    return ($this->dttExpenseDate = dxType::Cast($mixValue, dxType::DateTime));
+                } catch (dxCallerException $objExc) {
+                    $objExc->IncrementOffset();
+                    throw $objExc;
+                }
+
+            case 'ExpenseUniqueId':
+                /**
+                 * Sets the value for strExpenseUniqueId 
+                 * @param string $mixValue
+                 * @return string
+                 */
+                try {
+                    return ($this->strExpenseUniqueId = dxType::Cast($mixValue, dxType::String));
+                } catch (dxCallerException $objExc) {
+                    $objExc->IncrementOffset();
+                    throw $objExc;
+                }
+
+            case 'Account':
+                /**
+                 * Sets the value for intAccount 
+                 * @param integer $mixValue
+                 * @return integer
+                 */
+                try {
+                    $this->objAccountObject = null;
+                    return ($this->intAccount = dxType::Cast($mixValue, dxType::Integer));
+                } catch (dxCallerException $objExc) {
+                    $objExc->IncrementOffset();
+                    throw $objExc;
+                }
+
+            case 'SearchMetaInfo':
+                /**
+                 * Sets the value for strSearchMetaInfo 
+                 * @param string $mixValue
+                 * @return string
+                 */
+                try {
+                    return ($this->strSearchMetaInfo = dxType::Cast($mixValue, dxType::String));
+                } catch (dxCallerException $objExc) {
+                    $objExc->IncrementOffset();
+                    throw $objExc;
+                }
+
+            case 'Category':
+                /**
+                 * Sets the value for intCategory 
+                 * @param integer $mixValue
+                 * @return integer
+                 */
+                try {
+                    $this->objCategoryObject = null;
+                    return ($this->intCategory = dxType::Cast($mixValue, dxType::Integer));
                 } catch (dxCallerException $objExc) {
                     $objExc->IncrementOffset();
                     throw $objExc;
@@ -1109,6 +1463,70 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
             ///////////////////
             // Member Objects
             ///////////////////
+            case 'AccountObject':
+                /**
+                 * Sets the value for the Account object referenced by intAccount 
+                 * @param Account $mixValue
+                 * @return Account
+                 */
+                if (is_null($mixValue)) {
+                    $this->intAccount = null;
+                    $this->objAccountObject = null;
+                    return null;
+                } else {
+                    // Make sure $mixValue actually is a Account object
+                    try {
+                        $mixValue = dxType::Cast($mixValue, 'Account');
+                    } catch (dxInvalidCastException $objExc) {
+                        $objExc->IncrementOffset();
+                        throw $objExc;
+                    }
+
+                    // Make sure $mixValue is a SAVED Account object
+                    if (is_null($mixValue->Id))
+                        throw new dxCallerException('Unable to set an unsaved AccountObject for this Expense');
+
+                    // Update Local Member Variables
+                    $this->objAccountObject = $mixValue;
+                    $this->intAccount = $mixValue->Id;
+
+                    // Return $mixValue
+                    return $mixValue;
+                }
+                break;
+
+            case 'CategoryObject':
+                /**
+                 * Sets the value for the Category object referenced by intCategory 
+                 * @param Category $mixValue
+                 * @return Category
+                 */
+                if (is_null($mixValue)) {
+                    $this->intCategory = null;
+                    $this->objCategoryObject = null;
+                    return null;
+                } else {
+                    // Make sure $mixValue actually is a Category object
+                    try {
+                        $mixValue = dxType::Cast($mixValue, 'Category');
+                    } catch (dxInvalidCastException $objExc) {
+                        $objExc->IncrementOffset();
+                        throw $objExc;
+                    }
+
+                    // Make sure $mixValue is a SAVED Category object
+                    if (is_null($mixValue->Id))
+                        throw new dxCallerException('Unable to set an unsaved CategoryObject for this Expense');
+
+                    // Update Local Member Variables
+                    $this->objCategoryObject = $mixValue;
+                    $this->intCategory = $mixValue->Id;
+
+                    // Return $mixValue
+                    return $mixValue;
+                }
+                break;
+
             default:
                 try {
                     return parent::__set($strName, $mixValue);
@@ -1135,155 +1553,6 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
 
 
 
-    // Related Objects' Methods for Account
-    //-------------------------------------------------------------------
-
-    /**
-     * Gets all associated Accounts as an array of Account objects
-     * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
-     * @return Account[]
-    */
-    public function GetAccountArray($objOptionalClauses = null) {
-        if ((is_null($this->intId)))
-            return array();
-
-        try {
-            return Account::LoadArrayByUserRole($this->intId, $objOptionalClauses);
-        } catch (dxCallerException $objExc) {
-            $objExc->IncrementOffset();
-            throw $objExc;
-        }
-    }
-
-    /**
-     * Counts all associated Accounts
-     * @return int
-    */
-    public function CountAccounts() {
-        if ((is_null($this->intId)))
-            return 0;
-
-        return Account::CountByUserRole($this->intId);
-    }
-
-    /**
-     * Associates a Account
-     * @param Account $objAccount
-     * @return void
-    */
-    public function AssociateAccount(Account $objAccount) {
-        if ((is_null($this->intId)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call AssociateAccount on this unsaved UserRole.');
-        if ((is_null($objAccount->Id)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call AssociateAccount on this UserRole with an unsaved Account.');
-
-        // Get the Database Object for this Class
-        $objDatabase = UserRole::GetDatabase();
-
-        // Perform the SQL Query
-        $objDatabase->NonQuery('
-            UPDATE
-                `Account`
-            SET
-                `UserRole` = ' . $objDatabase->SqlVariable($this->intId) . '
-            WHERE
-                `Id` = ' . $objDatabase->SqlVariable($objAccount->Id) . '
-        ');
-    }
-
-    /**
-     * Unassociates a Account
-     * @param Account $objAccount
-     * @return void
-    */
-    public function UnassociateAccount(Account $objAccount) {
-        if ((is_null($this->intId)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateAccount on this unsaved UserRole.');
-        if ((is_null($objAccount->Id)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateAccount on this UserRole with an unsaved Account.');
-
-        // Get the Database Object for this Class
-        $objDatabase = UserRole::GetDatabase();
-
-        // Perform the SQL Query
-        $objDatabase->NonQuery('
-            UPDATE
-                `Account`
-            SET
-                `UserRole` = null
-            WHERE
-                `Id` = ' . $objDatabase->SqlVariable($objAccount->Id) . ' AND
-                `UserRole` = ' . $objDatabase->SqlVariable($this->intId) . '
-        ');
-    }
-
-    /**
-     * Unassociates all Accounts
-     * @return void
-    */
-    public function UnassociateAllAccounts() {
-        if ((is_null($this->intId)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateAccount on this unsaved UserRole.');
-
-        // Get the Database Object for this Class
-        $objDatabase = UserRole::GetDatabase();
-
-        // Perform the SQL Query
-        $objDatabase->NonQuery('
-            UPDATE
-                `Account`
-            SET
-                `UserRole` = null
-            WHERE
-                `UserRole` = ' . $objDatabase->SqlVariable($this->intId) . '
-        ');
-    }
-
-    /**
-     * Deletes an associated Account
-     * @param Account $objAccount
-     * @return void
-    */
-    public function DeleteAssociatedAccount(Account $objAccount) {
-        if ((is_null($this->intId)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateAccount on this unsaved UserRole.');
-        if ((is_null($objAccount->Id)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateAccount on this UserRole with an unsaved Account.');
-
-        // Get the Database Object for this Class
-        $objDatabase = UserRole::GetDatabase();
-
-        // Perform the SQL Query
-        $objDatabase->NonQuery('
-            DELETE FROM
-                `Account`
-            WHERE
-                `Id` = ' . $objDatabase->SqlVariable($objAccount->Id) . ' AND
-                `UserRole` = ' . $objDatabase->SqlVariable($this->intId) . '
-        ');
-    }
-
-    /**
-     * Deletes all associated Accounts
-     * @return void
-    */
-    public function DeleteAllAccounts() {
-        if ((is_null($this->intId)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateAccount on this unsaved UserRole.');
-
-        // Get the Database Object for this Class
-        $objDatabase = UserRole::GetDatabase();
-
-        // Perform the SQL Query
-        $objDatabase->NonQuery('
-            DELETE FROM
-                `Account`
-            WHERE
-                `UserRole` = ' . $objDatabase->SqlVariable($this->intId) . '
-        ');
-    }
-
-
     
 ///////////////////////////////
     // METHODS TO EXTRACT INFO ABOUT THE CLASS
@@ -1294,7 +1563,7 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
      * @return string Name of the table from which this class has been created.
      */
     public static function GetTableName() {
-        return "UserRole";
+        return "Expense";
     }
 
     /**
@@ -1302,7 +1571,7 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
      * @return string Name of the table from which this class has been created.
      */
     public static function GetDatabaseName() {
-        return ProjectFunctions::$Database[UserRole::GetDatabaseIndex()]->Database;
+        return ProjectFunctions::$Database[Expense::GetDatabaseIndex()]->Database;
     }
 
     /**
@@ -1321,10 +1590,16 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     ////////////////////////////////////////
 
     public static function GetSoapComplexTypeXml() {
-        $strToReturn = '<complexType name="UserRole"><sequence>';
+        $strToReturn = '<complexType name="Expense"><sequence>';
         $strToReturn .= '<element name="Id" type="xsd:int"/>';
-        $strToReturn .= '<element name="Role" type="xsd:string"/>';
+        $strToReturn .= '<element name="ExpenseName" type="xsd:string"/>';
+        $strToReturn .= '<element name="ExpenseAmount" type="xsd:string"/>';
+        $strToReturn .= '<element name="ExpenseDate" type="xsd:dateTime"/>';
+        $strToReturn .= '<element name="ExpenseUniqueId" type="xsd:string"/>';
         $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
+        $strToReturn .= '<element name="AccountObject" type="xsd1:Account"/>';
+        $strToReturn .= '<element name="SearchMetaInfo" type="xsd:string"/>';
+        $strToReturn .= '<element name="CategoryObject" type="xsd1:Category"/>';
         $strToReturn .= '<element name="ObjectOwner" type="xsd:int"/>';
         $strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
         $strToReturn .= '</sequence></complexType>';
@@ -1332,8 +1607,10 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
     }
 
     public static function AlterSoapComplexTypeArray(&$strComplexTypeArray) {
-        if (!array_key_exists('UserRole', $strComplexTypeArray)) {
-            $strComplexTypeArray['UserRole'] = UserRole::GetSoapComplexTypeXml();
+        if (!array_key_exists('Expense', $strComplexTypeArray)) {
+            $strComplexTypeArray['Expense'] = Expense::GetSoapComplexTypeXml();
+            Account::AlterSoapComplexTypeArray($strComplexTypeArray);
+            Category::AlterSoapComplexTypeArray($strComplexTypeArray);
         }
     }
 
@@ -1341,19 +1618,33 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
         $objArrayToReturn = array();
 
         foreach ($objSoapArray as $objSoapObject)
-            array_push($objArrayToReturn, UserRole::GetObjectFromSoapObject($objSoapObject));
+            array_push($objArrayToReturn, Expense::GetObjectFromSoapObject($objSoapObject));
 
         return $objArrayToReturn;
     }
 
     public static function GetObjectFromSoapObject($objSoapObject) {
-        $objToReturn = new UserRole();
+        $objToReturn = new Expense();
         if (property_exists($objSoapObject, 'Id'))
             $objToReturn->intId = $objSoapObject->Id;
-        if (property_exists($objSoapObject, 'Role'))
-            $objToReturn->strRole = $objSoapObject->Role;
+        if (property_exists($objSoapObject, 'ExpenseName'))
+            $objToReturn->strExpenseName = $objSoapObject->ExpenseName;
+        if (property_exists($objSoapObject, 'ExpenseAmount'))
+            $objToReturn->strExpenseAmount = $objSoapObject->ExpenseAmount;
+        if (property_exists($objSoapObject, 'ExpenseDate'))
+            $objToReturn->dttExpenseDate = new dxDateTime($objSoapObject->ExpenseDate);
+        if (property_exists($objSoapObject, 'ExpenseUniqueId'))
+            $objToReturn->strExpenseUniqueId = $objSoapObject->ExpenseUniqueId;
         if (property_exists($objSoapObject, 'LastUpdated'))
             $objToReturn->strLastUpdated = $objSoapObject->LastUpdated;
+        if ((property_exists($objSoapObject, 'AccountObject')) &&
+            ($objSoapObject->AccountObject))
+            $objToReturn->AccountObject = Account::GetObjectFromSoapObject($objSoapObject->AccountObject);
+        if (property_exists($objSoapObject, 'SearchMetaInfo'))
+            $objToReturn->strSearchMetaInfo = $objSoapObject->SearchMetaInfo;
+        if ((property_exists($objSoapObject, 'CategoryObject')) &&
+            ($objSoapObject->CategoryObject))
+            $objToReturn->CategoryObject = Category::GetObjectFromSoapObject($objSoapObject->CategoryObject);
         if (property_exists($objSoapObject, 'ObjectOwner'))
             $objToReturn->intObjectOwner = $objSoapObject->ObjectOwner;
         if (property_exists($objSoapObject, '__blnRestored'))
@@ -1368,12 +1659,22 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
         $objArrayToReturn = array();
 
         foreach ($objArray as $objObject)
-            array_push($objArrayToReturn, UserRole::GetSoapObjectFromObject($objObject, true));
+            array_push($objArrayToReturn, Expense::GetSoapObjectFromObject($objObject, true));
 
         return unserialize(serialize($objArrayToReturn));
     }
 
     public static function GetSoapObjectFromObject($objObject, $blnBindRelatedObjects) {
+        if ($objObject->dttExpenseDate)
+            $objObject->dttExpenseDate = $objObject->dttExpenseDate->qFormat(dxDateTime::FormatSoap);
+        if ($objObject->objAccountObject)
+            $objObject->objAccountObject = Account::GetSoapObjectFromObject($objObject->objAccountObject, false);
+        else if (!$blnBindRelatedObjects)
+            $objObject->intAccount = null;
+        if ($objObject->objCategoryObject)
+            $objObject->objCategoryObject = Category::GetSoapObjectFromObject($objObject->objCategoryObject, false);
+        else if (!$blnBindRelatedObjects)
+            $objObject->intCategory = null;
         return $objObject;
     }
 
@@ -1389,8 +1690,14 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
         // Member Variables
         ///////////////////
         $iArray['Id'] = $this->intId;
-        $iArray['Role'] = $this->strRole;
+        $iArray['ExpenseName'] = $this->strExpenseName;
+        $iArray['ExpenseAmount'] = $this->strExpenseAmount;
+        $iArray['ExpenseDate'] = $this->dttExpenseDate;
+        $iArray['ExpenseUniqueId'] = $this->strExpenseUniqueId;
         $iArray['LastUpdated'] = $this->strLastUpdated;
+        $iArray['Account'] = $this->intAccount;
+        $iArray['SearchMetaInfo'] = $this->strSearchMetaInfo;
+        $iArray['Category'] = $this->intCategory;
         $iArray['ObjectOwner'] = $this->intObjectOwner;
         return new ArrayIterator($iArray);
     }
@@ -1427,31 +1734,52 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
      * @uses dxQueryNode
      *
      * @property-read dxQueryNode $Id
-     * @property-read dxQueryNode $Role
+     * @property-read dxQueryNode $ExpenseName
+     * @property-read dxQueryNode $ExpenseAmount
+     * @property-read dxQueryNode $ExpenseDate
+     * @property-read dxQueryNode $ExpenseUniqueId
      * @property-read dxQueryNode $LastUpdated
+     * @property-read dxQueryNode $Account
+     * @property-read dxQueryNodeAccount $AccountObject
+     * @property-read dxQueryNode $SearchMetaInfo
+     * @property-read dxQueryNode $Category
+     * @property-read dxQueryNodeCategory $CategoryObject
      * @property-read dxQueryNode $ObjectOwner
      *
      *
-     * @property-read dxQueryReverseReferenceNodeAccount $Account
 
      * @property-read dxQueryNode $_PrimaryKeyNode
      **/
-	class dxQueryNodeUserRole extends dxQueryNode {
-		protected $strTableName = 'UserRole';
+	class dxQueryNodeExpense extends dxQueryNode {
+		protected $strTableName = 'Expense';
 		protected $strPrimaryKey = 'Id';
-		protected $strClassName = 'UserRole';
+		protected $strClassName = 'Expense';
 		public function __get($strName) {
 			switch ($strName) {
 				case 'Id':
 					return new dxQueryNode('Id', 'Id', 'Integer', $this);
-				case 'Role':
-					return new dxQueryNode('Role', 'Role', 'VarChar', $this);
+				case 'ExpenseName':
+					return new dxQueryNode('ExpenseName', 'ExpenseName', 'VarChar', $this);
+				case 'ExpenseAmount':
+					return new dxQueryNode('ExpenseAmount', 'ExpenseAmount', 'VarChar', $this);
+				case 'ExpenseDate':
+					return new dxQueryNode('ExpenseDate', 'ExpenseDate', 'Date', $this);
+				case 'ExpenseUniqueId':
+					return new dxQueryNode('ExpenseUniqueId', 'ExpenseUniqueId', 'VarChar', $this);
 				case 'LastUpdated':
 					return new dxQueryNode('LastUpdated', 'LastUpdated', 'VarChar', $this);
+				case 'Account':
+					return new dxQueryNode('Account', 'Account', 'Integer', $this);
+				case 'AccountObject':
+					return new dxQueryNodeAccount('Account', 'AccountObject', 'Integer', $this);
+				case 'SearchMetaInfo':
+					return new dxQueryNode('SearchMetaInfo', 'SearchMetaInfo', 'Blob', $this);
+				case 'Category':
+					return new dxQueryNode('Category', 'Category', 'Integer', $this);
+				case 'CategoryObject':
+					return new dxQueryNodeCategory('Category', 'CategoryObject', 'Integer', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'Integer', $this);
-				case 'Account':
-					return new dxQueryReverseReferenceNodeAccount($this, 'account', 'reverse_reference', 'UserRole', 'Account');
 
 				case '_PrimaryKeyNode':
 					return new dxQueryNode('Id', 'Id', 'Integer', $this);
@@ -1468,31 +1796,52 @@ class UserRoleGen extends dxBaseClass implements IteratorAggregate {
 
     /**
      * @property-read dxQueryNode $Id
-     * @property-read dxQueryNode $Role
+     * @property-read dxQueryNode $ExpenseName
+     * @property-read dxQueryNode $ExpenseAmount
+     * @property-read dxQueryNode $ExpenseDate
+     * @property-read dxQueryNode $ExpenseUniqueId
      * @property-read dxQueryNode $LastUpdated
+     * @property-read dxQueryNode $Account
+     * @property-read dxQueryNodeAccount $AccountObject
+     * @property-read dxQueryNode $SearchMetaInfo
+     * @property-read dxQueryNode $Category
+     * @property-read dxQueryNodeCategory $CategoryObject
      * @property-read dxQueryNode $ObjectOwner
      *
      *
-     * @property-read dxQueryReverseReferenceNodeAccount $Account
 
      * @property-read dxQueryNode $_PrimaryKeyNode
      **/
-	class dxQueryReverseReferenceNodeUserRole extends dxQueryReverseReferenceNode {
-		protected $strTableName = 'UserRole';
+	class dxQueryReverseReferenceNodeExpense extends dxQueryReverseReferenceNode {
+		protected $strTableName = 'Expense';
 		protected $strPrimaryKey = 'Id';
-		protected $strClassName = 'UserRole';
+		protected $strClassName = 'Expense';
 		public function __get($strName) {
 			switch ($strName) {
 				case 'Id':
 					return new dxQueryNode('Id', 'Id', 'integer', $this);
-				case 'Role':
-					return new dxQueryNode('Role', 'Role', 'string', $this);
+				case 'ExpenseName':
+					return new dxQueryNode('ExpenseName', 'ExpenseName', 'string', $this);
+				case 'ExpenseAmount':
+					return new dxQueryNode('ExpenseAmount', 'ExpenseAmount', 'string', $this);
+				case 'ExpenseDate':
+					return new dxQueryNode('ExpenseDate', 'ExpenseDate', 'dxDateTime', $this);
+				case 'ExpenseUniqueId':
+					return new dxQueryNode('ExpenseUniqueId', 'ExpenseUniqueId', 'string', $this);
 				case 'LastUpdated':
 					return new dxQueryNode('LastUpdated', 'LastUpdated', 'string', $this);
+				case 'Account':
+					return new dxQueryNode('Account', 'Account', 'integer', $this);
+				case 'AccountObject':
+					return new dxQueryNodeAccount('Account', 'AccountObject', 'integer', $this);
+				case 'SearchMetaInfo':
+					return new dxQueryNode('SearchMetaInfo', 'SearchMetaInfo', 'string', $this);
+				case 'Category':
+					return new dxQueryNode('Category', 'Category', 'integer', $this);
+				case 'CategoryObject':
+					return new dxQueryNodeCategory('Category', 'CategoryObject', 'integer', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'integer', $this);
-				case 'Account':
-					return new dxQueryReverseReferenceNodeAccount($this, 'account', 'reverse_reference', 'UserRole', 'Account');
 
 				case '_PrimaryKeyNode':
 					return new dxQueryNode('Id', 'Id', 'integer', $this);

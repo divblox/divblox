@@ -4,12 +4,22 @@
 	  Modeller is used to update the project's data model, this file will be regenerated and all local changes might be lost
 	- This file is used to provide the data model data to the DataModel class */
 abstract class DataModelData {
-	public static $ProjectEntityArray = array();
-	public static $ProjectEntityAttributeArray = array();
-	public static $ProjectEntityAttributeTypeArray = array();
-	public static $ProjectEntitySingleRelationshipArray = array();
+	public static $ProjectEntityArray = array("Expense","Category");
+	public static $ProjectEntityAttributeArray = array(
+        "Expense"
+            => array("ExpenseName","ExpenseAmount","ExpenseDate","ExpenseUniqueId"),
+        "Category"
+            => array("CategoryName","CategoryTotal"));
+	public static $ProjectEntityAttributeTypeArray = array(
+        "Expense"
+            => array("VARCHAR(50)","DOUBLE","DATE","VARCHAR(25)"),
+        "Category"
+            => array("VARCHAR(50)","DOUBLE"));
+	public static $ProjectEntitySingleRelationshipArray = array(
+        "Expense"
+            => array("Account","Category"));
 	public static $UserRoleArray = array("Administrator","User");
     public static $ModuleArray = array(
-    "Main" => array("Account","AdditionalAccountInformation","AllowedApiOperation","ApiKey","ApiOperation","AuditLogEntry","BackgroundProcess","BackgroundProcessUpdate","ClientAuthenticationToken","ClientConnection","EmailMessage","FileDocument","PageView","PasswordReset","PushRegistration","UserRole",));
+    "Main" => array("Account","AdditionalAccountInformation","AllowedApiOperation","ApiKey","ApiOperation","AuditLogEntry","BackgroundProcess","BackgroundProcessUpdate","Category","ClientAuthenticationToken","ClientConnection","EmailMessage","Expense","FileDocument","PageView","PasswordReset","PushRegistration","UserRole",));
 }
 ?>

@@ -499,6 +499,27 @@
             }
         }
     },
+    "Category": {
+        "Attributes": {
+            "CategoryName": {
+                "DisplayType": "text",
+                "InputLabel": "Category Name:",
+                "DefaultValue": "",
+                "Placeholder": "Category Name",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Category Name"
+            },
+            "CategoryTotal": {
+                "DisplayType": "number",
+                "InputLabel": "Category Total:",
+                "DefaultValue": "",
+                "Placeholder": "Category Total",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Category Total"
+            }
+        },
+        "Relationships": []
+    },
     "ClientAuthenticationToken": {
         "Attributes": {
             "Token": {
@@ -659,6 +680,60 @@
             }
         },
         "Relationships": []
+    },
+    "Expense": {
+        "Attributes": {
+            "ExpenseName": {
+                "DisplayType": "text",
+                "InputLabel": "Expense Name:",
+                "DefaultValue": "",
+                "Placeholder": "Expense Name",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Expense Name"
+            },
+            "ExpenseAmount": {
+                "DisplayType": "number",
+                "InputLabel": "Expense Amount:",
+                "DefaultValue": "",
+                "Placeholder": "Expense Amount",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Expense Amount"
+            },
+            "ExpenseDate": {
+                "DisplayType": "date",
+                "InputLabel": "Expense Date:",
+                "DefaultValue": "",
+                "Placeholder": "Expense Date",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Expense Date"
+            },
+            "ExpenseUniqueId": {
+                "DisplayType": "text",
+                "InputLabel": "Expense Unique Id:",
+                "DefaultValue": "",
+                "Placeholder": "Expense Unique Id",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Expense Unique Id"
+            }
+        },
+        "Relationships": {
+            "Account": {
+                "DisplayType": "list",
+                "InputLabel": "Account:",
+                "DefaultValue": "-Please Select-",
+                "Placeholder": "Account",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Account"
+            },
+            "Category": {
+                "DisplayType": "list",
+                "InputLabel": "Category:",
+                "DefaultValue": "-Please Select-",
+                "Placeholder": "Category",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Category"
+            }
+        }
     },
     "FileDocument": {
         "Attributes": {

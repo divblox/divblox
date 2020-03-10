@@ -42,15 +42,17 @@
  * @property string $Gender the value for strGender 
  * @property boolean $AccessBlocked the value for blnAccessBlocked 
  * @property string $BlockedReason the value for strBlockedReason 
+ * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
  * @property integer $UserRole the value for intUserRole 
  * @property string $SearchMetaInfo the value for strSearchMetaInfo 
- * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
  * @property integer $ObjectOwner the value for intObjectOwner 
  * @property UserRole $UserRoleObject the value for the UserRole object referenced by intUserRole 
  * @property-read AdditionalAccountInformation $_AdditionalAccountInformation the value for the private _objAdditionalAccountInformation (Read-Only) if set due to an expansion on the AdditionalAccountInformation.Account reverse relationship
  * @property-read AdditionalAccountInformation[] $_AdditionalAccountInformationArray the value for the private _objAdditionalAccountInformationArray (Read-Only) if set due to an ExpandAsArray on the AdditionalAccountInformation.Account reverse relationship
  * @property-read ClientConnection $_ClientConnection the value for the private _objClientConnection (Read-Only) if set due to an expansion on the ClientConnection.Account reverse relationship
  * @property-read ClientConnection[] $_ClientConnectionArray the value for the private _objClientConnectionArray (Read-Only) if set due to an ExpandAsArray on the ClientConnection.Account reverse relationship
+ * @property-read Expense $_Expense the value for the private _objExpense (Read-Only) if set due to an expansion on the Expense.Account reverse relationship
+ * @property-read Expense[] $_ExpenseArray the value for the private _objExpenseArray (Read-Only) if set due to an ExpandAsArray on the Expense.Account reverse relationship
  * @property-read PasswordReset $_PasswordReset the value for the private _objPasswordReset (Read-Only) if set due to an expansion on the PasswordReset.Account reverse relationship
  * @property-read PasswordReset[] $_PasswordResetArray the value for the private _objPasswordResetArray (Read-Only) if set due to an ExpandAsArray on the PasswordReset.Account reverse relationship
  * @property-read PushRegistration $_PushRegistration the value for the private _objPushRegistration (Read-Only) if set due to an expansion on the PushRegistration.Account reverse relationship
@@ -303,6 +305,14 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
+     * Protected member variable that maps to the database column Account.LastUpdated
+     * @var string strLastUpdated
+     */
+    protected $strLastUpdated;
+    const LastUpdatedDefault = null;
+
+
+    /**
      * Protected member variable that maps to the database column Account.UserRole
      * @var integer intUserRole
      */
@@ -316,14 +326,6 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
      */
     protected $strSearchMetaInfo;
     const SearchMetaInfoDefault = null;
-
-
-    /**
-     * Protected member variable that maps to the database column Account.LastUpdated
-     * @var string strLastUpdated
-     */
-    protected $strLastUpdated;
-    const LastUpdatedDefault = null;
 
 
     /**
@@ -365,6 +367,22 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
      * @var ClientConnection[] _objClientConnectionArray;
      */
     private $_objClientConnectionArray = null;
+
+    /**
+     * Private member variable that stores a reference to a single Expense object
+     * (of type Expense), if this Account object was restored with
+     * an expansion on the Expense association table.
+     * @var Expense _objExpense;
+     */
+    private $_objExpense;
+
+    /**
+     * Private member variable that stores a reference to an array of Expense objects
+     * (of type Expense[]), if this Account object was restored with
+     * an ExpandAsArray on the Expense association table.
+     * @var Expense[] _objExpenseArray;
+     */
+    private $_objExpenseArray = null;
 
     /**
      * Private member variable that stores a reference to a single PasswordReset object
@@ -459,9 +477,9 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
         $this->strGender = Account::GenderDefault;
         $this->blnAccessBlocked = Account::AccessBlockedDefault;
         $this->strBlockedReason = Account::BlockedReasonDefault;
+        $this->strLastUpdated = Account::LastUpdatedDefault;
         $this->intUserRole = Account::UserRoleDefault;
         $this->strSearchMetaInfo = Account::SearchMetaInfoDefault;
-        $this->strLastUpdated = Account::LastUpdatedDefault;
         $this->intObjectOwner = Account::ObjectOwnerDefault;
     }
 
@@ -826,9 +844,9 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
             $objBuilder->AddSelectItem($strTableName, 'Gender', $strAliasPrefix . 'Gender');
             $objBuilder->AddSelectItem($strTableName, 'AccessBlocked', $strAliasPrefix . 'AccessBlocked');
             $objBuilder->AddSelectItem($strTableName, 'BlockedReason', $strAliasPrefix . 'BlockedReason');
+            $objBuilder->AddSelectItem($strTableName, 'LastUpdated', $strAliasPrefix . 'LastUpdated');
             $objBuilder->AddSelectItem($strTableName, 'UserRole', $strAliasPrefix . 'UserRole');
             $objBuilder->AddSelectItem($strTableName, 'SearchMetaInfo', $strAliasPrefix . 'SearchMetaInfo');
-            $objBuilder->AddSelectItem($strTableName, 'LastUpdated', $strAliasPrefix . 'LastUpdated');
             $objBuilder->AddSelectItem($strTableName, 'ObjectOwner', $strAliasPrefix . 'ObjectOwner');
         }
     }
@@ -1032,15 +1050,15 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
         $strAlias = $strAliasPrefix . 'BlockedReason';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->strBlockedReason = $objDbRow->GetColumn($strAliasName, 'Blob');
+        $strAlias = $strAliasPrefix . 'LastUpdated';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->strLastUpdated = $objDbRow->GetColumn($strAliasName, 'VarChar');
         $strAlias = $strAliasPrefix . 'UserRole';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intUserRole = $objDbRow->GetColumn($strAliasName, 'Integer');
         $strAlias = $strAliasPrefix . 'SearchMetaInfo';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->strSearchMetaInfo = $objDbRow->GetColumn($strAliasName, 'Blob');
-        $strAlias = $strAliasPrefix . 'LastUpdated';
-        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->strLastUpdated = $objDbRow->GetColumn($strAliasName, 'VarChar');
         $strAlias = $strAliasPrefix . 'ObjectOwner';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intObjectOwner = $objDbRow->GetColumn($strAliasName, 'Integer');
@@ -1111,6 +1129,21 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
                 $objToReturn->_objClientConnectionArray[] = ClientConnection::InstantiateDbRow($objDbRow, $strAliasPrefix . 'clientconnection__', $objExpansionNode, null, $strColumnAliasArray);
             } elseif (is_null($objToReturn->_objClientConnection)) {
                 $objToReturn->_objClientConnection = ClientConnection::InstantiateDbRow($objDbRow, $strAliasPrefix . 'clientconnection__', $objExpansionNode, null, $strColumnAliasArray);
+            }
+        }
+
+        // Check for Expense Virtual Binding
+        $strAlias = $strAliasPrefix . 'expense__Id';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objExpansionNode = (empty($objExpansionAliasArray['expense']) ? null : $objExpansionAliasArray['expense']);
+        $blnExpanded = ($objExpansionNode && $objExpansionNode->ExpandAsArray);
+        if ($blnExpanded && null === $objToReturn->_objExpenseArray)
+            $objToReturn->_objExpenseArray = array();
+        if (!is_null($objDbRow->GetColumn($strAliasName))) {
+            if ($blnExpanded) {
+                $objToReturn->_objExpenseArray[] = Expense::InstantiateDbRow($objDbRow, $strAliasPrefix . 'expense__', $objExpansionNode, null, $strColumnAliasArray);
+            } elseif (is_null($objToReturn->_objExpense)) {
+                $objToReturn->_objExpense = Expense::InstantiateDbRow($objDbRow, $strAliasPrefix . 'expense__', $objExpansionNode, null, $strColumnAliasArray);
             }
         }
 
@@ -1339,9 +1372,9 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
             $ChangedArray = array_merge($ChangedArray,array("Gender" => $this->strGender));
             $ChangedArray = array_merge($ChangedArray,array("AccessBlocked" => $this->blnAccessBlocked));
             $ChangedArray = array_merge($ChangedArray,array("BlockedReason" => $this->strBlockedReason));
+            $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
             $ChangedArray = array_merge($ChangedArray,array("UserRole" => $this->intUserRole));
             $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
-            $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
             $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
             $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         } else {
@@ -1563,6 +1596,14 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
                 //$ChangedArray = array_merge($ChangedArray,array("BlockedReason" => "From: ".$ExistingValueStr." to: ".$this->strBlockedReason));
             }
             $ExistingValueStr = "NULL";
+            if (!is_null($ExistingObj->LastUpdated)) {
+                $ExistingValueStr = $ExistingObj->LastUpdated;
+            }
+            if ($ExistingObj->LastUpdated != $this->strLastUpdated) {
+                $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => array("Before" => $ExistingValueStr,"After" => $this->strLastUpdated)));
+                //$ChangedArray = array_merge($ChangedArray,array("LastUpdated" => "From: ".$ExistingValueStr." to: ".$this->strLastUpdated));
+            }
+            $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->UserRole)) {
                 $ExistingValueStr = $ExistingObj->UserRole;
             }
@@ -1577,14 +1618,6 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
             if ($ExistingObj->SearchMetaInfo != $this->strSearchMetaInfo) {
                 $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => array("Before" => $ExistingValueStr,"After" => $this->strSearchMetaInfo)));
                 //$ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => "From: ".$ExistingValueStr." to: ".$this->strSearchMetaInfo));
-            }
-            $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->LastUpdated)) {
-                $ExistingValueStr = $ExistingObj->LastUpdated;
-            }
-            if ($ExistingObj->LastUpdated != $this->strLastUpdated) {
-                $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => array("Before" => $ExistingValueStr,"After" => $this->strLastUpdated)));
-                //$ChangedArray = array_merge($ChangedArray,array("LastUpdated" => "From: ".$ExistingValueStr." to: ".$this->strLastUpdated));
             }
             $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->ObjectOwner)) {
@@ -1798,9 +1831,9 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
         $ChangedArray = array_merge($ChangedArray,array("Gender" => $this->strGender));
         $ChangedArray = array_merge($ChangedArray,array("AccessBlocked" => $this->blnAccessBlocked));
         $ChangedArray = array_merge($ChangedArray,array("BlockedReason" => $this->strBlockedReason));
+        $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
         $ChangedArray = array_merge($ChangedArray,array("UserRole" => $this->intUserRole));
         $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
-        $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
         $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
         $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         try {
@@ -1905,9 +1938,9 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
         $this->strGender = $objReloaded->strGender;
         $this->blnAccessBlocked = $objReloaded->blnAccessBlocked;
         $this->strBlockedReason = $objReloaded->strBlockedReason;
+        $this->strLastUpdated = $objReloaded->strLastUpdated;
         $this->UserRole = $objReloaded->UserRole;
         $this->strSearchMetaInfo = $objReloaded->strSearchMetaInfo;
-        $this->strLastUpdated = $objReloaded->strLastUpdated;
         $this->intObjectOwner = $objReloaded->intObjectOwner;
     }
     ////////////////////
@@ -2115,6 +2148,13 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
                  */
                 return $this->strBlockedReason;
 
+            case 'LastUpdated':
+                /**
+                 * Gets the value for strLastUpdated (Read-Only Timestamp)
+                 * @return string
+                 */
+                return $this->strLastUpdated;
+
             case 'UserRole':
                 /**
                  * Gets the value for intUserRole 
@@ -2128,13 +2168,6 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
                  * @return string
                  */
                 return $this->strSearchMetaInfo;
-
-            case 'LastUpdated':
-                /**
-                 * Gets the value for strLastUpdated (Read-Only Timestamp)
-                 * @return string
-                 */
-                return $this->strLastUpdated;
 
             case 'ObjectOwner':
                 /**
@@ -2198,6 +2231,22 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
                  * @return ClientConnection[]
                  */
                 return $this->_objClientConnectionArray;
+
+            case '_Expense':
+                /**
+                 * Gets the value for the private _objExpense (Read-Only)
+                 * if set due to an expansion on the Expense.Account reverse relationship
+                 * @return Expense
+                 */
+                return $this->_objExpense;
+
+            case '_ExpenseArray':
+                /**
+                 * Gets the value for the private _objExpenseArray (Read-Only)
+                 * if set due to an ExpandAsArray on the Expense.Account reverse relationship
+                 * @return Expense[]
+                 */
+                return $this->_objExpenseArray;
 
             case '_PasswordReset':
                 /**
@@ -2995,6 +3044,155 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
     }
 
 
+    // Related Objects' Methods for Expense
+    //-------------------------------------------------------------------
+
+    /**
+     * Gets all associated Expenses as an array of Expense objects
+     * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
+     * @return Expense[]
+    */
+    public function GetExpenseArray($objOptionalClauses = null) {
+        if ((is_null($this->intId)))
+            return array();
+
+        try {
+            return Expense::LoadArrayByAccount($this->intId, $objOptionalClauses);
+        } catch (dxCallerException $objExc) {
+            $objExc->IncrementOffset();
+            throw $objExc;
+        }
+    }
+
+    /**
+     * Counts all associated Expenses
+     * @return int
+    */
+    public function CountExpenses() {
+        if ((is_null($this->intId)))
+            return 0;
+
+        return Expense::CountByAccount($this->intId);
+    }
+
+    /**
+     * Associates a Expense
+     * @param Expense $objExpense
+     * @return void
+    */
+    public function AssociateExpense(Expense $objExpense) {
+        if ((is_null($this->intId)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call AssociateExpense on this unsaved Account.');
+        if ((is_null($objExpense->Id)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call AssociateExpense on this Account with an unsaved Expense.');
+
+        // Get the Database Object for this Class
+        $objDatabase = Account::GetDatabase();
+
+        // Perform the SQL Query
+        $objDatabase->NonQuery('
+            UPDATE
+                `Expense`
+            SET
+                `Account` = ' . $objDatabase->SqlVariable($this->intId) . '
+            WHERE
+                `Id` = ' . $objDatabase->SqlVariable($objExpense->Id) . '
+        ');
+    }
+
+    /**
+     * Unassociates a Expense
+     * @param Expense $objExpense
+     * @return void
+    */
+    public function UnassociateExpense(Expense $objExpense) {
+        if ((is_null($this->intId)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateExpense on this unsaved Account.');
+        if ((is_null($objExpense->Id)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateExpense on this Account with an unsaved Expense.');
+
+        // Get the Database Object for this Class
+        $objDatabase = Account::GetDatabase();
+
+        // Perform the SQL Query
+        $objDatabase->NonQuery('
+            UPDATE
+                `Expense`
+            SET
+                `Account` = null
+            WHERE
+                `Id` = ' . $objDatabase->SqlVariable($objExpense->Id) . ' AND
+                `Account` = ' . $objDatabase->SqlVariable($this->intId) . '
+        ');
+    }
+
+    /**
+     * Unassociates all Expenses
+     * @return void
+    */
+    public function UnassociateAllExpenses() {
+        if ((is_null($this->intId)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateExpense on this unsaved Account.');
+
+        // Get the Database Object for this Class
+        $objDatabase = Account::GetDatabase();
+
+        // Perform the SQL Query
+        $objDatabase->NonQuery('
+            UPDATE
+                `Expense`
+            SET
+                `Account` = null
+            WHERE
+                `Account` = ' . $objDatabase->SqlVariable($this->intId) . '
+        ');
+    }
+
+    /**
+     * Deletes an associated Expense
+     * @param Expense $objExpense
+     * @return void
+    */
+    public function DeleteAssociatedExpense(Expense $objExpense) {
+        if ((is_null($this->intId)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateExpense on this unsaved Account.');
+        if ((is_null($objExpense->Id)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateExpense on this Account with an unsaved Expense.');
+
+        // Get the Database Object for this Class
+        $objDatabase = Account::GetDatabase();
+
+        // Perform the SQL Query
+        $objDatabase->NonQuery('
+            DELETE FROM
+                `Expense`
+            WHERE
+                `Id` = ' . $objDatabase->SqlVariable($objExpense->Id) . ' AND
+                `Account` = ' . $objDatabase->SqlVariable($this->intId) . '
+        ');
+    }
+
+    /**
+     * Deletes all associated Expenses
+     * @return void
+    */
+    public function DeleteAllExpenses() {
+        if ((is_null($this->intId)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateExpense on this unsaved Account.');
+
+        // Get the Database Object for this Class
+        $objDatabase = Account::GetDatabase();
+
+        // Perform the SQL Query
+        $objDatabase->NonQuery('
+            DELETE FROM
+                `Expense`
+            WHERE
+                `Account` = ' . $objDatabase->SqlVariable($this->intId) . '
+        ');
+    }
+
+
     // Related Objects' Methods for PasswordReset
     //-------------------------------------------------------------------
 
@@ -3358,9 +3556,9 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
         $strToReturn .= '<element name="Gender" type="xsd:string"/>';
         $strToReturn .= '<element name="AccessBlocked" type="xsd:boolean"/>';
         $strToReturn .= '<element name="BlockedReason" type="xsd:string"/>';
+        $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
         $strToReturn .= '<element name="UserRoleObject" type="xsd1:UserRole"/>';
         $strToReturn .= '<element name="SearchMetaInfo" type="xsd:string"/>';
-        $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
         $strToReturn .= '<element name="ObjectOwner" type="xsd:int"/>';
         $strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
         $strToReturn .= '</sequence></complexType>';
@@ -3439,13 +3637,13 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
             $objToReturn->blnAccessBlocked = $objSoapObject->AccessBlocked;
         if (property_exists($objSoapObject, 'BlockedReason'))
             $objToReturn->strBlockedReason = $objSoapObject->BlockedReason;
+        if (property_exists($objSoapObject, 'LastUpdated'))
+            $objToReturn->strLastUpdated = $objSoapObject->LastUpdated;
         if ((property_exists($objSoapObject, 'UserRoleObject')) &&
             ($objSoapObject->UserRoleObject))
             $objToReturn->UserRoleObject = UserRole::GetObjectFromSoapObject($objSoapObject->UserRoleObject);
         if (property_exists($objSoapObject, 'SearchMetaInfo'))
             $objToReturn->strSearchMetaInfo = $objSoapObject->SearchMetaInfo;
-        if (property_exists($objSoapObject, 'LastUpdated'))
-            $objToReturn->strLastUpdated = $objSoapObject->LastUpdated;
         if (property_exists($objSoapObject, 'ObjectOwner'))
             $objToReturn->intObjectOwner = $objSoapObject->ObjectOwner;
         if (property_exists($objSoapObject, '__blnRestored'))
@@ -3513,9 +3711,9 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
         $iArray['Gender'] = $this->strGender;
         $iArray['AccessBlocked'] = $this->blnAccessBlocked;
         $iArray['BlockedReason'] = $this->strBlockedReason;
+        $iArray['LastUpdated'] = $this->strLastUpdated;
         $iArray['UserRole'] = $this->intUserRole;
         $iArray['SearchMetaInfo'] = $this->strSearchMetaInfo;
-        $iArray['LastUpdated'] = $this->strLastUpdated;
         $iArray['ObjectOwner'] = $this->intObjectOwner;
         return new ArrayIterator($iArray);
     }
@@ -3578,15 +3776,16 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
      * @property-read dxQueryNode $Gender
      * @property-read dxQueryNode $AccessBlocked
      * @property-read dxQueryNode $BlockedReason
+     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $UserRole
      * @property-read dxQueryNodeUserRole $UserRoleObject
      * @property-read dxQueryNode $SearchMetaInfo
-     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ObjectOwner
      *
      *
      * @property-read dxQueryReverseReferenceNodeAdditionalAccountInformation $AdditionalAccountInformation
      * @property-read dxQueryReverseReferenceNodeClientConnection $ClientConnection
+     * @property-read dxQueryReverseReferenceNodeExpense $Expense
      * @property-read dxQueryReverseReferenceNodePasswordReset $PasswordReset
      * @property-read dxQueryReverseReferenceNodePushRegistration $PushRegistration
 
@@ -3652,20 +3851,22 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNode('AccessBlocked', 'AccessBlocked', 'Bit', $this);
 				case 'BlockedReason':
 					return new dxQueryNode('BlockedReason', 'BlockedReason', 'Blob', $this);
+				case 'LastUpdated':
+					return new dxQueryNode('LastUpdated', 'LastUpdated', 'VarChar', $this);
 				case 'UserRole':
 					return new dxQueryNode('UserRole', 'UserRole', 'Integer', $this);
 				case 'UserRoleObject':
 					return new dxQueryNodeUserRole('UserRole', 'UserRoleObject', 'Integer', $this);
 				case 'SearchMetaInfo':
 					return new dxQueryNode('SearchMetaInfo', 'SearchMetaInfo', 'Blob', $this);
-				case 'LastUpdated':
-					return new dxQueryNode('LastUpdated', 'LastUpdated', 'VarChar', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'Integer', $this);
 				case 'AdditionalAccountInformation':
 					return new dxQueryReverseReferenceNodeAdditionalAccountInformation($this, 'additionalaccountinformation', 'reverse_reference', 'Account', 'AdditionalAccountInformation');
 				case 'ClientConnection':
 					return new dxQueryReverseReferenceNodeClientConnection($this, 'clientconnection', 'reverse_reference', 'Account', 'ClientConnection');
+				case 'Expense':
+					return new dxQueryReverseReferenceNodeExpense($this, 'expense', 'reverse_reference', 'Account', 'Expense');
 				case 'PasswordReset':
 					return new dxQueryReverseReferenceNodePasswordReset($this, 'passwordreset', 'reverse_reference', 'Account', 'PasswordReset');
 				case 'PushRegistration':
@@ -3712,15 +3913,16 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
      * @property-read dxQueryNode $Gender
      * @property-read dxQueryNode $AccessBlocked
      * @property-read dxQueryNode $BlockedReason
+     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $UserRole
      * @property-read dxQueryNodeUserRole $UserRoleObject
      * @property-read dxQueryNode $SearchMetaInfo
-     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ObjectOwner
      *
      *
      * @property-read dxQueryReverseReferenceNodeAdditionalAccountInformation $AdditionalAccountInformation
      * @property-read dxQueryReverseReferenceNodeClientConnection $ClientConnection
+     * @property-read dxQueryReverseReferenceNodeExpense $Expense
      * @property-read dxQueryReverseReferenceNodePasswordReset $PasswordReset
      * @property-read dxQueryReverseReferenceNodePushRegistration $PushRegistration
 
@@ -3786,20 +3988,22 @@ class AccountGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNode('AccessBlocked', 'AccessBlocked', 'boolean', $this);
 				case 'BlockedReason':
 					return new dxQueryNode('BlockedReason', 'BlockedReason', 'string', $this);
+				case 'LastUpdated':
+					return new dxQueryNode('LastUpdated', 'LastUpdated', 'string', $this);
 				case 'UserRole':
 					return new dxQueryNode('UserRole', 'UserRole', 'integer', $this);
 				case 'UserRoleObject':
 					return new dxQueryNodeUserRole('UserRole', 'UserRoleObject', 'integer', $this);
 				case 'SearchMetaInfo':
 					return new dxQueryNode('SearchMetaInfo', 'SearchMetaInfo', 'string', $this);
-				case 'LastUpdated':
-					return new dxQueryNode('LastUpdated', 'LastUpdated', 'string', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'integer', $this);
 				case 'AdditionalAccountInformation':
 					return new dxQueryReverseReferenceNodeAdditionalAccountInformation($this, 'additionalaccountinformation', 'reverse_reference', 'Account', 'AdditionalAccountInformation');
 				case 'ClientConnection':
 					return new dxQueryReverseReferenceNodeClientConnection($this, 'clientconnection', 'reverse_reference', 'Account', 'ClientConnection');
+				case 'Expense':
+					return new dxQueryReverseReferenceNodeExpense($this, 'expense', 'reverse_reference', 'Account', 'Expense');
 				case 'PasswordReset':
 					return new dxQueryReverseReferenceNodePasswordReset($this, 'passwordreset', 'reverse_reference', 'Account', 'PasswordReset');
 				case 'PushRegistration':

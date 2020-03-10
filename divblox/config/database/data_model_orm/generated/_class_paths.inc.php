@@ -39,6 +39,11 @@
     ProjectFunctions::$ClassFile['dxquerynodebackgroundprocessupdate'] = DATA_MODEL_ORM_PATH_STR.'/BackgroundProcessUpdate.class.php';
     ProjectFunctions::$ClassFile['dxreversereferencenodebackgroundprocessupdate'] = DATA_MODEL_ORM_PATH_STR.'/BackgroundProcessUpdate.class.php';
 
+	// ClassPaths for the Category class
+    ProjectFunctions::$ClassFile['category'] = DATA_MODEL_ORM_PATH_STR.'/Category.class.php';
+    ProjectFunctions::$ClassFile['dxquerynodecategory'] = DATA_MODEL_ORM_PATH_STR.'/Category.class.php';
+    ProjectFunctions::$ClassFile['dxreversereferencenodecategory'] = DATA_MODEL_ORM_PATH_STR.'/Category.class.php';
+
 	// ClassPaths for the ClientAuthenticationToken class
     ProjectFunctions::$ClassFile['clientauthenticationtoken'] = DATA_MODEL_ORM_PATH_STR.'/ClientAuthenticationToken.class.php';
     ProjectFunctions::$ClassFile['dxquerynodeclientauthenticationtoken'] = DATA_MODEL_ORM_PATH_STR.'/ClientAuthenticationToken.class.php';
@@ -53,6 +58,11 @@
     ProjectFunctions::$ClassFile['emailmessage'] = DATA_MODEL_ORM_PATH_STR.'/EmailMessage.class.php';
     ProjectFunctions::$ClassFile['dxquerynodeemailmessage'] = DATA_MODEL_ORM_PATH_STR.'/EmailMessage.class.php';
     ProjectFunctions::$ClassFile['dxreversereferencenodeemailmessage'] = DATA_MODEL_ORM_PATH_STR.'/EmailMessage.class.php';
+
+	// ClassPaths for the Expense class
+    ProjectFunctions::$ClassFile['expense'] = DATA_MODEL_ORM_PATH_STR.'/Expense.class.php';
+    ProjectFunctions::$ClassFile['dxquerynodeexpense'] = DATA_MODEL_ORM_PATH_STR.'/Expense.class.php';
+    ProjectFunctions::$ClassFile['dxreversereferencenodeexpense'] = DATA_MODEL_ORM_PATH_STR.'/Expense.class.php';
 
 	// ClassPaths for the FileDocument class
     ProjectFunctions::$ClassFile['filedocument'] = DATA_MODEL_ORM_PATH_STR.'/FileDocument.class.php';
