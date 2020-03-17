@@ -19,6 +19,11 @@ if (typeof component_classes['data_model_category_crud_update'] === "undefined")
 			}
 			super.reset(inputs,propagate);
 		}
+
+		getEntityId() {
+			// return this.getLoadArgument("entity_id");
+			return getGlobalConstrainById("Category");
+		}
 	}
 	component_classes['data_model_category_crud_update'] = data_model_category_crud_update;
 }

@@ -103,6 +103,12 @@ class dxQueryN {
         return new dxQueryNodePushRegistration('PushRegistration', null, null);
     }
     /**
+     * @return dxQueryNodeSubTask
+     */
+    static public function SubTask() {
+        return new dxQueryNodeSubTask('SubTask', null, null);
+    }
+    /**
      * @return dxQueryNodeTicket
      */
     static public function Ticket() {

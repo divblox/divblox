@@ -516,6 +516,14 @@
                 "Placeholder": "Ticket Count",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Ticket Count"
+            },
+            "CategoryParentId": {
+                "DisplayType": "number",
+                "InputLabel": "Category Parent Id:",
+                "DefaultValue": "",
+                "Placeholder": "Category Parent Id",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Category Parent Id"
             }
         },
         "Relationships": []
@@ -744,13 +752,13 @@
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Note Description"
             },
-            "NoteCreationDate": {
+            "NoteCreatedDate": {
                 "DisplayType": "date",
-                "InputLabel": "Note Creation Date:",
+                "InputLabel": "Note Created Date:",
                 "DefaultValue": "",
-                "Placeholder": "Note Creation Date",
+                "Placeholder": "Note Created Date",
                 "Data": null,
-                "ValidationMessage": "Please provide a valid Note Creation Date"
+                "ValidationMessage": "Please provide a valid Note Created Date"
             }
         },
         "Relationships": {
@@ -761,6 +769,14 @@
                 "Placeholder": "Ticket",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Ticket"
+            },
+            "FileDocument": {
+                "DisplayType": "list",
+                "InputLabel": "File Document:",
+                "DefaultValue": "-Please Select-",
+                "Placeholder": "FileDocument",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid File Document"
             }
         }
     },
@@ -933,6 +949,44 @@
             }
         }
     },
+    "SubTask": {
+        "Attributes": {
+            "Description": {
+                "DisplayType": "textarea",
+                "InputLabel": "Description:",
+                "DefaultValue": "",
+                "Placeholder": "Description",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Description"
+            },
+            "SubTaskStatus": {
+                "DisplayType": "text",
+                "InputLabel": "Sub Task Status:",
+                "DefaultValue": "",
+                "Placeholder": "Sub Task Status",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Sub Task Status"
+            },
+            "SubTaskDueDate": {
+                "DisplayType": "text",
+                "InputLabel": "Sub Task Due Date:",
+                "DefaultValue": "",
+                "Placeholder": "Sub Task Due Date",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Sub Task Due Date"
+            }
+        },
+        "Relationships": {
+            "Ticket": {
+                "DisplayType": "list",
+                "InputLabel": "Ticket:",
+                "DefaultValue": "-Please Select-",
+                "Placeholder": "Ticket",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Ticket"
+            }
+        }
+    },
     "Ticket": {
         "Attributes": {
             "TicketName": {
@@ -982,14 +1036,6 @@
                 "Placeholder": "Ticket Progress",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Ticket Progress"
-            },
-            "TicketParentId": {
-                "DisplayType": "number",
-                "InputLabel": "Ticket Parent Id:",
-                "DefaultValue": "",
-                "Placeholder": "Ticket Parent Id",
-                "Data": null,
-                "ValidationMessage": "Please provide a valid Ticket Parent Id"
             }
         },
         "Relationships": {

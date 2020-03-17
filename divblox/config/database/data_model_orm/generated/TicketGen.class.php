@@ -27,11 +27,12 @@
  * @property string $SearchMetaInfo the value for strSearchMetaInfo 
  * @property integer $Category the value for intCategory 
  * @property integer $ObjectOwner the value for intObjectOwner 
- * @property integer $TicketParentId the value for intTicketParentId 
  * @property Account $AccountObject the value for the Account object referenced by intAccount 
  * @property Category $CategoryObject the value for the Category object referenced by intCategory 
  * @property-read Note $_Note the value for the private _objNote (Read-Only) if set due to an expansion on the Note.Ticket reverse relationship
  * @property-read Note[] $_NoteArray the value for the private _objNoteArray (Read-Only) if set due to an ExpandAsArray on the Note.Ticket reverse relationship
+ * @property-read SubTask $_SubTask the value for the private _objSubTask (Read-Only) if set due to an expansion on the SubTask.Ticket reverse relationship
+ * @property-read SubTask[] $_SubTaskArray the value for the private _objSubTaskArray (Read-Only) if set due to an ExpandAsArray on the SubTask.Ticket reverse relationship
  * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
  */
 class TicketGen extends dxBaseClass implements IteratorAggregate {
@@ -140,14 +141,6 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
-     * Protected member variable that maps to the database column Ticket.TicketParentId
-     * @var integer intTicketParentId
-     */
-    protected $intTicketParentId;
-    const TicketParentIdDefault = null;
-
-
-    /**
      * Private member variable that stores a reference to a single Note object
      * (of type Note), if this Ticket object was restored with
      * an expansion on the Note association table.
@@ -162,6 +155,22 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
      * @var Note[] _objNoteArray;
      */
     private $_objNoteArray = null;
+
+    /**
+     * Private member variable that stores a reference to a single SubTask object
+     * (of type SubTask), if this Ticket object was restored with
+     * an expansion on the SubTask association table.
+     * @var SubTask _objSubTask;
+     */
+    private $_objSubTask;
+
+    /**
+     * Private member variable that stores a reference to an array of SubTask objects
+     * (of type SubTask[]), if this Ticket object was restored with
+     * an ExpandAsArray on the SubTask association table.
+     * @var SubTask[] _objSubTaskArray;
+     */
+    private $_objSubTaskArray = null;
 
     /**
      * Protected array of virtual attributes for this object (e.g. extra/other calculated and/or non-object bound
@@ -219,7 +228,6 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
         $this->strSearchMetaInfo = Ticket::SearchMetaInfoDefault;
         $this->intCategory = Ticket::CategoryDefault;
         $this->intObjectOwner = Ticket::ObjectOwnerDefault;
-        $this->intTicketParentId = Ticket::TicketParentIdDefault;
     }
 
     ///////////////////////////////
@@ -568,7 +576,6 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
             $objBuilder->AddSelectItem($strTableName, 'SearchMetaInfo', $strAliasPrefix . 'SearchMetaInfo');
             $objBuilder->AddSelectItem($strTableName, 'Category', $strAliasPrefix . 'Category');
             $objBuilder->AddSelectItem($strTableName, 'ObjectOwner', $strAliasPrefix . 'ObjectOwner');
-            $objBuilder->AddSelectItem($strTableName, 'TicketParentId', $strAliasPrefix . 'TicketParentId');
         }
     }
     ///////////////////////////////
@@ -726,9 +733,6 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
         $strAlias = $strAliasPrefix . 'ObjectOwner';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intObjectOwner = $objDbRow->GetColumn($strAliasName, 'Integer');
-        $strAlias = $strAliasPrefix . 'TicketParentId';
-        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->intTicketParentId = $objDbRow->GetColumn($strAliasName, 'Integer');
 
         if (isset($objPreviousItemArray) && is_array($objPreviousItemArray)) {
             foreach ($objPreviousItemArray as $objPreviousItem) {
@@ -788,6 +792,21 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
                 $objToReturn->_objNoteArray[] = Note::InstantiateDbRow($objDbRow, $strAliasPrefix . 'note__', $objExpansionNode, null, $strColumnAliasArray);
             } elseif (is_null($objToReturn->_objNote)) {
                 $objToReturn->_objNote = Note::InstantiateDbRow($objDbRow, $strAliasPrefix . 'note__', $objExpansionNode, null, $strColumnAliasArray);
+            }
+        }
+
+        // Check for SubTask Virtual Binding
+        $strAlias = $strAliasPrefix . 'subtask__Id';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objExpansionNode = (empty($objExpansionAliasArray['subtask']) ? null : $objExpansionAliasArray['subtask']);
+        $blnExpanded = ($objExpansionNode && $objExpansionNode->ExpandAsArray);
+        if ($blnExpanded && null === $objToReturn->_objSubTaskArray)
+            $objToReturn->_objSubTaskArray = array();
+        if (!is_null($objDbRow->GetColumn($strAliasName))) {
+            if ($blnExpanded) {
+                $objToReturn->_objSubTaskArray[] = SubTask::InstantiateDbRow($objDbRow, $strAliasPrefix . 'subtask__', $objExpansionNode, null, $strColumnAliasArray);
+            } elseif (is_null($objToReturn->_objSubTask)) {
+                $objToReturn->_objSubTask = SubTask::InstantiateDbRow($objDbRow, $strAliasPrefix . 'subtask__', $objExpansionNode, null, $strColumnAliasArray);
             }
         }
 
@@ -1003,7 +1022,6 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
             $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
             $ChangedArray = array_merge($ChangedArray,array("Category" => $this->intCategory));
             $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
-            $ChangedArray = array_merge($ChangedArray,array("TicketParentId" => $this->intTicketParentId));
             $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         } else {
             $newAuditLogEntry->ModificationType = 'Update';
@@ -1103,14 +1121,6 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
                 $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => array("Before" => $ExistingValueStr,"After" => $this->intObjectOwner)));
                 //$ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => "From: ".$ExistingValueStr." to: ".$this->intObjectOwner));
             }
-            $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->TicketParentId)) {
-                $ExistingValueStr = $ExistingObj->TicketParentId;
-            }
-            if ($ExistingObj->TicketParentId != $this->intTicketParentId) {
-                $ChangedArray = array_merge($ChangedArray,array("TicketParentId" => array("Before" => $ExistingValueStr,"After" => $this->intTicketParentId)));
-                //$ChangedArray = array_merge($ChangedArray,array("TicketParentId" => "From: ".$ExistingValueStr." to: ".$this->intTicketParentId));
-            }
             $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         }
         try {
@@ -1131,8 +1141,7 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
 							`Account`,
 							`SearchMetaInfo`,
 							`Category`,
-							`ObjectOwner`,
-							`TicketParentId`
+							`ObjectOwner`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->strTicketName) . ',
 							' . $objDatabase->SqlVariable($this->strTicketDescription) . ',
@@ -1143,8 +1152,7 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
 							' . $objDatabase->SqlVariable($this->intAccount) . ',
 							' . $objDatabase->SqlVariable($this->strSearchMetaInfo) . ',
 							' . $objDatabase->SqlVariable($this->intCategory) . ',
-							' . $objDatabase->SqlVariable($this->intObjectOwner) . ',
-							' . $objDatabase->SqlVariable($this->intTicketParentId) . '
+							' . $objDatabase->SqlVariable($this->intObjectOwner) . '
 						)
                 ');
 					// Update Identity column and return its value
@@ -1179,8 +1187,7 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
 							`Account` = ' . $objDatabase->SqlVariable($this->intAccount) . ',
 							`SearchMetaInfo` = ' . $objDatabase->SqlVariable($this->strSearchMetaInfo) . ',
 							`Category` = ' . $objDatabase->SqlVariable($this->intCategory) . ',
-							`ObjectOwner` = ' . $objDatabase->SqlVariable($this->intObjectOwner) . ',
-							`TicketParentId` = ' . $objDatabase->SqlVariable($this->intTicketParentId) . '
+							`ObjectOwner` = ' . $objDatabase->SqlVariable($this->intObjectOwner) . '
             WHERE
 							`Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
             }
@@ -1246,7 +1253,6 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
         $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
         $ChangedArray = array_merge($ChangedArray,array("Category" => $this->intCategory));
         $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
-        $ChangedArray = array_merge($ChangedArray,array("TicketParentId" => $this->intTicketParentId));
         $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         try {
             $newAuditLogEntry->Save();
@@ -1335,7 +1341,6 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
         $this->strSearchMetaInfo = $objReloaded->strSearchMetaInfo;
         $this->Category = $objReloaded->Category;
         $this->intObjectOwner = $objReloaded->intObjectOwner;
-        $this->intTicketParentId = $objReloaded->intTicketParentId;
     }
     ////////////////////
     // PUBLIC OVERRIDERS
@@ -1437,13 +1442,6 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
                  */
                 return $this->intObjectOwner;
 
-            case 'TicketParentId':
-                /**
-                 * Gets the value for intTicketParentId 
-                 * @return integer
-                 */
-                return $this->intTicketParentId;
-
 
             ///////////////////
             // Member Objects
@@ -1497,6 +1495,22 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
                  * @return Note[]
                  */
                 return $this->_objNoteArray;
+
+            case '_SubTask':
+                /**
+                 * Gets the value for the private _objSubTask (Read-Only)
+                 * if set due to an expansion on the SubTask.Ticket reverse relationship
+                 * @return SubTask
+                 */
+                return $this->_objSubTask;
+
+            case '_SubTaskArray':
+                /**
+                 * Gets the value for the private _objSubTaskArray (Read-Only)
+                 * if set due to an ExpandAsArray on the SubTask.Ticket reverse relationship
+                 * @return SubTask[]
+                 */
+                return $this->_objSubTaskArray;
 
 
             case '__Restored':
@@ -1651,19 +1665,6 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
                  */
                 try {
                     return ($this->intObjectOwner = dxType::Cast($mixValue, dxType::Integer));
-                } catch (dxCallerException $objExc) {
-                    $objExc->IncrementOffset();
-                    throw $objExc;
-                }
-
-            case 'TicketParentId':
-                /**
-                 * Sets the value for intTicketParentId 
-                 * @param integer $mixValue
-                 * @return integer
-                 */
-                try {
-                    return ($this->intTicketParentId = dxType::Cast($mixValue, dxType::Integer));
                 } catch (dxCallerException $objExc) {
                     $objExc->IncrementOffset();
                     throw $objExc;
@@ -1912,6 +1913,155 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
     }
 
 
+    // Related Objects' Methods for SubTask
+    //-------------------------------------------------------------------
+
+    /**
+     * Gets all associated SubTasks as an array of SubTask objects
+     * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
+     * @return SubTask[]
+    */
+    public function GetSubTaskArray($objOptionalClauses = null) {
+        if ((is_null($this->intId)))
+            return array();
+
+        try {
+            return SubTask::LoadArrayByTicket($this->intId, $objOptionalClauses);
+        } catch (dxCallerException $objExc) {
+            $objExc->IncrementOffset();
+            throw $objExc;
+        }
+    }
+
+    /**
+     * Counts all associated SubTasks
+     * @return int
+    */
+    public function CountSubTasks() {
+        if ((is_null($this->intId)))
+            return 0;
+
+        return SubTask::CountByTicket($this->intId);
+    }
+
+    /**
+     * Associates a SubTask
+     * @param SubTask $objSubTask
+     * @return void
+    */
+    public function AssociateSubTask(SubTask $objSubTask) {
+        if ((is_null($this->intId)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call AssociateSubTask on this unsaved Ticket.');
+        if ((is_null($objSubTask->Id)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call AssociateSubTask on this Ticket with an unsaved SubTask.');
+
+        // Get the Database Object for this Class
+        $objDatabase = Ticket::GetDatabase();
+
+        // Perform the SQL Query
+        $objDatabase->NonQuery('
+            UPDATE
+                `SubTask`
+            SET
+                `Ticket` = ' . $objDatabase->SqlVariable($this->intId) . '
+            WHERE
+                `Id` = ' . $objDatabase->SqlVariable($objSubTask->Id) . '
+        ');
+    }
+
+    /**
+     * Unassociates a SubTask
+     * @param SubTask $objSubTask
+     * @return void
+    */
+    public function UnassociateSubTask(SubTask $objSubTask) {
+        if ((is_null($this->intId)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateSubTask on this unsaved Ticket.');
+        if ((is_null($objSubTask->Id)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateSubTask on this Ticket with an unsaved SubTask.');
+
+        // Get the Database Object for this Class
+        $objDatabase = Ticket::GetDatabase();
+
+        // Perform the SQL Query
+        $objDatabase->NonQuery('
+            UPDATE
+                `SubTask`
+            SET
+                `Ticket` = null
+            WHERE
+                `Id` = ' . $objDatabase->SqlVariable($objSubTask->Id) . ' AND
+                `Ticket` = ' . $objDatabase->SqlVariable($this->intId) . '
+        ');
+    }
+
+    /**
+     * Unassociates all SubTasks
+     * @return void
+    */
+    public function UnassociateAllSubTasks() {
+        if ((is_null($this->intId)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateSubTask on this unsaved Ticket.');
+
+        // Get the Database Object for this Class
+        $objDatabase = Ticket::GetDatabase();
+
+        // Perform the SQL Query
+        $objDatabase->NonQuery('
+            UPDATE
+                `SubTask`
+            SET
+                `Ticket` = null
+            WHERE
+                `Ticket` = ' . $objDatabase->SqlVariable($this->intId) . '
+        ');
+    }
+
+    /**
+     * Deletes an associated SubTask
+     * @param SubTask $objSubTask
+     * @return void
+    */
+    public function DeleteAssociatedSubTask(SubTask $objSubTask) {
+        if ((is_null($this->intId)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateSubTask on this unsaved Ticket.');
+        if ((is_null($objSubTask->Id)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateSubTask on this Ticket with an unsaved SubTask.');
+
+        // Get the Database Object for this Class
+        $objDatabase = Ticket::GetDatabase();
+
+        // Perform the SQL Query
+        $objDatabase->NonQuery('
+            DELETE FROM
+                `SubTask`
+            WHERE
+                `Id` = ' . $objDatabase->SqlVariable($objSubTask->Id) . ' AND
+                `Ticket` = ' . $objDatabase->SqlVariable($this->intId) . '
+        ');
+    }
+
+    /**
+     * Deletes all associated SubTasks
+     * @return void
+    */
+    public function DeleteAllSubTasks() {
+        if ((is_null($this->intId)))
+            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateSubTask on this unsaved Ticket.');
+
+        // Get the Database Object for this Class
+        $objDatabase = Ticket::GetDatabase();
+
+        // Perform the SQL Query
+        $objDatabase->NonQuery('
+            DELETE FROM
+                `SubTask`
+            WHERE
+                `Ticket` = ' . $objDatabase->SqlVariable($this->intId) . '
+        ');
+    }
+
+
     
 ///////////////////////////////
     // METHODS TO EXTRACT INFO ABOUT THE CLASS
@@ -1962,7 +2112,6 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
         $strToReturn .= '<element name="SearchMetaInfo" type="xsd:string"/>';
         $strToReturn .= '<element name="CategoryObject" type="xsd1:Category"/>';
         $strToReturn .= '<element name="ObjectOwner" type="xsd:int"/>';
-        $strToReturn .= '<element name="TicketParentId" type="xsd:int"/>';
         $strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
         $strToReturn .= '</sequence></complexType>';
         return $strToReturn;
@@ -2013,8 +2162,6 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
             $objToReturn->CategoryObject = Category::GetObjectFromSoapObject($objSoapObject->CategoryObject);
         if (property_exists($objSoapObject, 'ObjectOwner'))
             $objToReturn->intObjectOwner = $objSoapObject->ObjectOwner;
-        if (property_exists($objSoapObject, 'TicketParentId'))
-            $objToReturn->intTicketParentId = $objSoapObject->TicketParentId;
         if (property_exists($objSoapObject, '__blnRestored'))
             $objToReturn->__blnRestored = $objSoapObject->__blnRestored;
         return $objToReturn;
@@ -2069,7 +2216,6 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
         $iArray['SearchMetaInfo'] = $this->strSearchMetaInfo;
         $iArray['Category'] = $this->intCategory;
         $iArray['ObjectOwner'] = $this->intObjectOwner;
-        $iArray['TicketParentId'] = $this->intTicketParentId;
         return new ArrayIterator($iArray);
     }
 
@@ -2118,10 +2264,10 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
      * @property-read dxQueryNode $Category
      * @property-read dxQueryNodeCategory $CategoryObject
      * @property-read dxQueryNode $ObjectOwner
-     * @property-read dxQueryNode $TicketParentId
      *
      *
      * @property-read dxQueryReverseReferenceNodeNote $Note
+     * @property-read dxQueryReverseReferenceNodeSubTask $SubTask
 
      * @property-read dxQueryNode $_PrimaryKeyNode
      **/
@@ -2159,10 +2305,10 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNodeCategory('Category', 'CategoryObject', 'Integer', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'Integer', $this);
-				case 'TicketParentId':
-					return new dxQueryNode('TicketParentId', 'TicketParentId', 'Integer', $this);
 				case 'Note':
 					return new dxQueryReverseReferenceNodeNote($this, 'note', 'reverse_reference', 'Ticket', 'Note');
+				case 'SubTask':
+					return new dxQueryReverseReferenceNodeSubTask($this, 'subtask', 'reverse_reference', 'Ticket', 'SubTask');
 
 				case '_PrimaryKeyNode':
 					return new dxQueryNode('Id', 'Id', 'Integer', $this);
@@ -2192,10 +2338,10 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
      * @property-read dxQueryNode $Category
      * @property-read dxQueryNodeCategory $CategoryObject
      * @property-read dxQueryNode $ObjectOwner
-     * @property-read dxQueryNode $TicketParentId
      *
      *
      * @property-read dxQueryReverseReferenceNodeNote $Note
+     * @property-read dxQueryReverseReferenceNodeSubTask $SubTask
 
      * @property-read dxQueryNode $_PrimaryKeyNode
      **/
@@ -2233,10 +2379,10 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNodeCategory('Category', 'CategoryObject', 'integer', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'integer', $this);
-				case 'TicketParentId':
-					return new dxQueryNode('TicketParentId', 'TicketParentId', 'integer', $this);
 				case 'Note':
 					return new dxQueryReverseReferenceNodeNote($this, 'note', 'reverse_reference', 'Ticket', 'Note');
+				case 'SubTask':
+					return new dxQueryReverseReferenceNodeSubTask($this, 'subtask', 'reverse_reference', 'Ticket', 'SubTask');
 
 				case '_PrimaryKeyNode':
 					return new dxQueryNode('Id', 'Id', 'integer', $this);

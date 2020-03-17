@@ -84,6 +84,11 @@
     ProjectFunctions::$ClassFile['dxquerynodepushregistration'] = DATA_MODEL_ORM_PATH_STR.'/PushRegistration.class.php';
     ProjectFunctions::$ClassFile['dxreversereferencenodepushregistration'] = DATA_MODEL_ORM_PATH_STR.'/PushRegistration.class.php';
 
+	// ClassPaths for the SubTask class
+    ProjectFunctions::$ClassFile['subtask'] = DATA_MODEL_ORM_PATH_STR.'/SubTask.class.php';
+    ProjectFunctions::$ClassFile['dxquerynodesubtask'] = DATA_MODEL_ORM_PATH_STR.'/SubTask.class.php';
+    ProjectFunctions::$ClassFile['dxreversereferencenodesubtask'] = DATA_MODEL_ORM_PATH_STR.'/SubTask.class.php';
+
 	// ClassPaths for the Ticket class
     ProjectFunctions::$ClassFile['ticket'] = DATA_MODEL_ORM_PATH_STR.'/Ticket.class.php';
     ProjectFunctions::$ClassFile['dxquerynodeticket'] = DATA_MODEL_ORM_PATH_STR.'/Ticket.class.php';

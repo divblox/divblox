@@ -20,6 +20,7 @@
  * @property integer $TicketCount the value for intTicketCount 
  * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
  * @property integer $ObjectOwner the value for intObjectOwner 
+ * @property integer $CategoryParentId the value for intCategoryParentId 
  * @property-read Ticket $_Ticket the value for the private _objTicket (Read-Only) if set due to an expansion on the Ticket.Category reverse relationship
  * @property-read Ticket[] $_TicketArray the value for the private _objTicketArray (Read-Only) if set due to an ExpandAsArray on the Ticket.Category reverse relationship
  * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
@@ -72,6 +73,14 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
+     * Protected member variable that maps to the database column Category.CategoryParentId
+     * @var integer intCategoryParentId
+     */
+    protected $intCategoryParentId;
+    const CategoryParentIdDefault = null;
+
+
+    /**
      * Private member variable that stores a reference to a single Ticket object
      * (of type Ticket), if this Category object was restored with
      * an expansion on the Ticket association table.
@@ -116,6 +125,7 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
         $this->intTicketCount = Category::TicketCountDefault;
         $this->strLastUpdated = Category::LastUpdatedDefault;
         $this->intObjectOwner = Category::ObjectOwnerDefault;
+        $this->intCategoryParentId = Category::CategoryParentIdDefault;
     }
 
     ///////////////////////////////
@@ -457,6 +467,7 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
             $objBuilder->AddSelectItem($strTableName, 'TicketCount', $strAliasPrefix . 'TicketCount');
             $objBuilder->AddSelectItem($strTableName, 'LastUpdated', $strAliasPrefix . 'LastUpdated');
             $objBuilder->AddSelectItem($strTableName, 'ObjectOwner', $strAliasPrefix . 'ObjectOwner');
+            $objBuilder->AddSelectItem($strTableName, 'CategoryParentId', $strAliasPrefix . 'CategoryParentId');
         }
     }
     ///////////////////////////////
@@ -593,6 +604,9 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
         $strAlias = $strAliasPrefix . 'ObjectOwner';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intObjectOwner = $objDbRow->GetColumn($strAliasName, 'Integer');
+        $strAlias = $strAliasPrefix . 'CategoryParentId';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->intCategoryParentId = $objDbRow->GetColumn($strAliasName, 'Integer');
 
         if (isset($objPreviousItemArray) && is_array($objPreviousItemArray)) {
             foreach ($objPreviousItemArray as $objPreviousItem) {
@@ -766,6 +780,7 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
             $ChangedArray = array_merge($ChangedArray,array("TicketCount" => $this->intTicketCount));
             $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
             $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
+            $ChangedArray = array_merge($ChangedArray,array("CategoryParentId" => $this->intCategoryParentId));
             $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         } else {
             $newAuditLogEntry->ModificationType = 'Update';
@@ -809,6 +824,14 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
                 $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => array("Before" => $ExistingValueStr,"After" => $this->intObjectOwner)));
                 //$ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => "From: ".$ExistingValueStr." to: ".$this->intObjectOwner));
             }
+            $ExistingValueStr = "NULL";
+            if (!is_null($ExistingObj->CategoryParentId)) {
+                $ExistingValueStr = $ExistingObj->CategoryParentId;
+            }
+            if ($ExistingObj->CategoryParentId != $this->intCategoryParentId) {
+                $ChangedArray = array_merge($ChangedArray,array("CategoryParentId" => array("Before" => $ExistingValueStr,"After" => $this->intCategoryParentId)));
+                //$ChangedArray = array_merge($ChangedArray,array("CategoryParentId" => "From: ".$ExistingValueStr." to: ".$this->intCategoryParentId));
+            }
             $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         }
         try {
@@ -822,11 +845,13 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
                 INSERT INTO `Category` (
 							`CategoryLabel`,
 							`TicketCount`,
-							`ObjectOwner`
+							`ObjectOwner`,
+							`CategoryParentId`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->strCategoryLabel) . ',
 							' . $objDatabase->SqlVariable($this->intTicketCount) . ',
-							' . $objDatabase->SqlVariable($this->intObjectOwner) . '
+							' . $objDatabase->SqlVariable($this->intObjectOwner) . ',
+							' . $objDatabase->SqlVariable($this->intCategoryParentId) . '
 						)
                 ');
 					// Update Identity column and return its value
@@ -854,7 +879,8 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
             UPDATE `Category` SET
 							`CategoryLabel` = ' . $objDatabase->SqlVariable($this->strCategoryLabel) . ',
 							`TicketCount` = ' . $objDatabase->SqlVariable($this->intTicketCount) . ',
-							`ObjectOwner` = ' . $objDatabase->SqlVariable($this->intObjectOwner) . '
+							`ObjectOwner` = ' . $objDatabase->SqlVariable($this->intObjectOwner) . ',
+							`CategoryParentId` = ' . $objDatabase->SqlVariable($this->intCategoryParentId) . '
             WHERE
 							`Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
             }
@@ -913,6 +939,7 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
         $ChangedArray = array_merge($ChangedArray,array("TicketCount" => $this->intTicketCount));
         $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
         $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
+        $ChangedArray = array_merge($ChangedArray,array("CategoryParentId" => $this->intCategoryParentId));
         $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         try {
             $newAuditLogEntry->Save();
@@ -994,6 +1021,7 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
         $this->intTicketCount = $objReloaded->intTicketCount;
         $this->strLastUpdated = $objReloaded->strLastUpdated;
         $this->intObjectOwner = $objReloaded->intObjectOwner;
+        $this->intCategoryParentId = $objReloaded->intCategoryParentId;
     }
     ////////////////////
     // PUBLIC OVERRIDERS
@@ -1045,6 +1073,13 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
                  * @return integer
                  */
                 return $this->intObjectOwner;
+
+            case 'CategoryParentId':
+                /**
+                 * Gets the value for intCategoryParentId 
+                 * @return integer
+                 */
+                return $this->intCategoryParentId;
 
 
             ///////////////////
@@ -1132,6 +1167,19 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
                  */
                 try {
                     return ($this->intObjectOwner = dxType::Cast($mixValue, dxType::Integer));
+                } catch (dxCallerException $objExc) {
+                    $objExc->IncrementOffset();
+                    throw $objExc;
+                }
+
+            case 'CategoryParentId':
+                /**
+                 * Sets the value for intCategoryParentId 
+                 * @param integer $mixValue
+                 * @return integer
+                 */
+                try {
+                    return ($this->intCategoryParentId = dxType::Cast($mixValue, dxType::Integer));
                 } catch (dxCallerException $objExc) {
                     $objExc->IncrementOffset();
                     throw $objExc;
@@ -1359,6 +1407,7 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
         $strToReturn .= '<element name="TicketCount" type="xsd:int"/>';
         $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
         $strToReturn .= '<element name="ObjectOwner" type="xsd:int"/>';
+        $strToReturn .= '<element name="CategoryParentId" type="xsd:int"/>';
         $strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
         $strToReturn .= '</sequence></complexType>';
         return $strToReturn;
@@ -1391,6 +1440,8 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
             $objToReturn->strLastUpdated = $objSoapObject->LastUpdated;
         if (property_exists($objSoapObject, 'ObjectOwner'))
             $objToReturn->intObjectOwner = $objSoapObject->ObjectOwner;
+        if (property_exists($objSoapObject, 'CategoryParentId'))
+            $objToReturn->intCategoryParentId = $objSoapObject->CategoryParentId;
         if (property_exists($objSoapObject, '__blnRestored'))
             $objToReturn->__blnRestored = $objSoapObject->__blnRestored;
         return $objToReturn;
@@ -1428,6 +1479,7 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
         $iArray['TicketCount'] = $this->intTicketCount;
         $iArray['LastUpdated'] = $this->strLastUpdated;
         $iArray['ObjectOwner'] = $this->intObjectOwner;
+        $iArray['CategoryParentId'] = $this->intCategoryParentId;
         return new ArrayIterator($iArray);
     }
 
@@ -1467,6 +1519,7 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
      * @property-read dxQueryNode $TicketCount
      * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ObjectOwner
+     * @property-read dxQueryNode $CategoryParentId
      *
      *
      * @property-read dxQueryReverseReferenceNodeTicket $Ticket
@@ -1489,6 +1542,8 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNode('LastUpdated', 'LastUpdated', 'VarChar', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'Integer', $this);
+				case 'CategoryParentId':
+					return new dxQueryNode('CategoryParentId', 'CategoryParentId', 'Integer', $this);
 				case 'Ticket':
 					return new dxQueryReverseReferenceNodeTicket($this, 'ticket', 'reverse_reference', 'Category', 'Ticket');
 
@@ -1511,6 +1566,7 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
      * @property-read dxQueryNode $TicketCount
      * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ObjectOwner
+     * @property-read dxQueryNode $CategoryParentId
      *
      *
      * @property-read dxQueryReverseReferenceNodeTicket $Ticket
@@ -1533,6 +1589,8 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNode('LastUpdated', 'LastUpdated', 'string', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'integer', $this);
+				case 'CategoryParentId':
+					return new dxQueryNode('CategoryParentId', 'CategoryParentId', 'integer', $this);
 				case 'Ticket':
 					return new dxQueryReverseReferenceNodeTicket($this, 'ticket', 'reverse_reference', 'Category', 'Ticket');
 

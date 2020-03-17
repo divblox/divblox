@@ -20,8 +20,7 @@ if (typeof component_classes['data_model_category_crud'] === "undefined") {
 				case 'category_crud_create_clicked':this.toggleSubView("data_create_wrapper");
 					getRegisteredComponent(this.getUid()+"_category_crud_create_component").reset();
 					break;
-				case 'category_clicked':this.toggleSubView("data_update_wrapper");
-					getRegisteredComponent(this.getUid()+"_category_crud_update_component").reset(parameters_obj.id,true);
+				case 'category_clicked':loadPageComponent("category_update");
 					break;
 				case 'category_created':
 				case 'category_deleted':

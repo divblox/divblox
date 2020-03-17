@@ -1,41 +1,39 @@
 <?php
 /**
- * The abstract FileDocumentGen class defined here is
+ * The abstract SubTaskGen class defined here is
  * code-generated and contains all the basic CRUD-type functionality as well as
  * basic methods to handle relationships and index-based loading.
  *
- * To use, you should use the FileDocument subclass which
- * extends this FileDocumentGen class.
+ * To use, you should use the SubTask subclass which
+ * extends this SubTaskGen class.
  *
  * Because subsequent re-code generations will overwrite any changes to this
  * file, you should leave this file unaltered to prevent yourself from losing
  * any information or code changes.  All customizations should be done by
  * overriding existing or implementing new methods, properties and variables
- * in the FileDocument class.
+ * in the SubTask class.
  *
  * @package divblox_app
  * @subpackage GeneratedDataObjects
  * @property-read integer $Id the value for intId (Read-Only PK)
- * @property string $FileName the value for strFileName 
- * @property string $Path the value for strPath 
- * @property string $UploadedFileName the value for strUploadedFileName 
- * @property string $FileType the value for strFileType 
- * @property string $SizeInKilobytes the value for strSizeInKilobytes 
- * @property dxDateTime $CreatedDate the value for dttCreatedDate 
+ * @property string $Description the value for strDescription 
+ * @property string $SubTaskStatus the value for strSubTaskStatus 
+ * @property string $SubTaskDueDate the value for strSubTaskDueDate 
  * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
+ * @property integer $Ticket the value for intTicket 
+ * @property string $SearchMetaInfo the value for strSearchMetaInfo 
  * @property integer $ObjectOwner the value for intObjectOwner 
- * @property-read Note $_Note the value for the private _objNote (Read-Only) if set due to an expansion on the Note.FileDocument reverse relationship
- * @property-read Note[] $_NoteArray the value for the private _objNoteArray (Read-Only) if set due to an ExpandAsArray on the Note.FileDocument reverse relationship
+ * @property Ticket $TicketObject the value for the Ticket object referenced by intTicket 
  * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
  */
-class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
+class SubTaskGen extends dxBaseClass implements IteratorAggregate {
 
     ///////////////////////////////////////////////////////////////////////
     // PROTECTED MEMBER VARIABLES and TEXT FIELD MAXLENGTHS (if applicable)
     ///////////////////////////////////////////////////////////////////////
 
     /**
-     * Protected member variable that maps to the database PK Identity column FileDocument.Id
+     * Protected member variable that maps to the database PK Identity column SubTask.Id
      * @var integer intId
      */
     protected $intId;
@@ -43,59 +41,33 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
-     * Protected member variable that maps to the database column FileDocument.FileName
-     * @var string strFileName
+     * Protected member variable that maps to the database column SubTask.Description
+     * @var string strDescription
      */
-    protected $strFileName;
-    const FileNameMaxLength = 200;
-    const FileNameDefault = null;
+    protected $strDescription;
+    const DescriptionDefault = null;
 
 
     /**
-     * Protected member variable that maps to the database column FileDocument.Path
-     * @var string strPath
+     * Protected member variable that maps to the database column SubTask.SubTaskStatus
+     * @var string strSubTaskStatus
      */
-    protected $strPath;
-    const PathMaxLength = 300;
-    const PathDefault = null;
+    protected $strSubTaskStatus;
+    const SubTaskStatusMaxLength = 25;
+    const SubTaskStatusDefault = null;
 
 
     /**
-     * Protected member variable that maps to the database column FileDocument.UploadedFileName
-     * @var string strUploadedFileName
+     * Protected member variable that maps to the database column SubTask.SubTaskDueDate
+     * @var string strSubTaskDueDate
      */
-    protected $strUploadedFileName;
-    const UploadedFileNameMaxLength = 300;
-    const UploadedFileNameDefault = null;
+    protected $strSubTaskDueDate;
+    const SubTaskDueDateMaxLength = 10;
+    const SubTaskDueDateDefault = null;
 
 
     /**
-     * Protected member variable that maps to the database column FileDocument.FileType
-     * @var string strFileType
-     */
-    protected $strFileType;
-    const FileTypeMaxLength = 150;
-    const FileTypeDefault = null;
-
-
-    /**
-     * Protected member variable that maps to the database column FileDocument.SizeInKilobytes
-     * @var string strSizeInKilobytes
-     */
-    protected $strSizeInKilobytes;
-    const SizeInKilobytesDefault = null;
-
-
-    /**
-     * Protected member variable that maps to the database column FileDocument.CreatedDate
-     * @var dxDateTime dttCreatedDate
-     */
-    protected $dttCreatedDate;
-    const CreatedDateDefault = null;
-
-
-    /**
-     * Protected member variable that maps to the database column FileDocument.LastUpdated
+     * Protected member variable that maps to the database column SubTask.LastUpdated
      * @var string strLastUpdated
      */
     protected $strLastUpdated;
@@ -103,28 +75,28 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
-     * Protected member variable that maps to the database column FileDocument.ObjectOwner
+     * Protected member variable that maps to the database column SubTask.Ticket
+     * @var integer intTicket
+     */
+    protected $intTicket;
+    const TicketDefault = null;
+
+
+    /**
+     * Protected member variable that maps to the database column SubTask.SearchMetaInfo
+     * @var string strSearchMetaInfo
+     */
+    protected $strSearchMetaInfo;
+    const SearchMetaInfoDefault = null;
+
+
+    /**
+     * Protected member variable that maps to the database column SubTask.ObjectOwner
      * @var integer intObjectOwner
      */
     protected $intObjectOwner;
     const ObjectOwnerDefault = null;
 
-
-    /**
-     * Private member variable that stores a reference to a single Note object
-     * (of type Note), if this FileDocument object was restored with
-     * an expansion on the Note association table.
-     * @var Note _objNote;
-     */
-    private $_objNote;
-
-    /**
-     * Private member variable that stores a reference to an array of Note objects
-     * (of type Note[]), if this FileDocument object was restored with
-     * an ExpandAsArray on the Note association table.
-     * @var Note[] _objNoteArray;
-     */
-    private $_objNoteArray = null;
 
     /**
      * Protected array of virtual attributes for this object (e.g. extra/other calculated and/or non-object bound
@@ -145,20 +117,29 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
     // PROTECTED MEMBER OBJECTS
     ///////////////////////////////
 
+    /**
+     * Protected member variable that contains the object pointed by the reference
+     * in the database column SubTask.Ticket.
+     *
+     * NOTE: Always use the TicketObject property getter to correctly retrieve this Ticket object.
+     * (Because this class implements late binding, this variable reference MAY be null.)
+     * @var Ticket objTicketObject
+     */
+    protected $objTicketObject;
+
 
     /**
      * Initialize each property with default values from database definition
      */
     public function Initialize() {
-        $this->intId = FileDocument::IdDefault;
-        $this->strFileName = FileDocument::FileNameDefault;
-        $this->strPath = FileDocument::PathDefault;
-        $this->strUploadedFileName = FileDocument::UploadedFileNameDefault;
-        $this->strFileType = FileDocument::FileTypeDefault;
-        $this->strSizeInKilobytes = FileDocument::SizeInKilobytesDefault;
-        $this->dttCreatedDate = (FileDocument::CreatedDateDefault === null)?null:new dxDateTime(FileDocument::CreatedDateDefault);
-        $this->strLastUpdated = FileDocument::LastUpdatedDefault;
-        $this->intObjectOwner = FileDocument::ObjectOwnerDefault;
+        $this->intId = SubTask::IdDefault;
+        $this->strDescription = SubTask::DescriptionDefault;
+        $this->strSubTaskStatus = SubTask::SubTaskStatusDefault;
+        $this->strSubTaskDueDate = SubTask::SubTaskDueDateDefault;
+        $this->strLastUpdated = SubTask::LastUpdatedDefault;
+        $this->intTicket = SubTask::TicketDefault;
+        $this->strSearchMetaInfo = SubTask::SearchMetaInfoDefault;
+        $this->intObjectOwner = SubTask::ObjectOwnerDefault;
     }
 
     ///////////////////////////////
@@ -174,24 +155,24 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Load a FileDocument from PK Info
+     * Load a SubTask from PK Info
      * @param integer $intId
      * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
-     * @return FileDocument
+     * @return SubTask
      */
     public static function Load($intId, $objOptionalClauses = null) {
         $strCacheKey = false;
         if (ProjectFunctions::$objCacheProvider && !$objOptionalClauses && ProjectFunctions::$Database[1]->Caching) {
-            $strCacheKey = ProjectFunctions::$objCacheProvider->CreateKey(ProjectFunctions::$Database[1]->Database, 'FileDocument', $intId);
+            $strCacheKey = ProjectFunctions::$objCacheProvider->CreateKey(ProjectFunctions::$Database[1]->Database, 'SubTask', $intId);
             $objCachedObject = ProjectFunctions::$objCacheProvider->Get($strCacheKey);
             if ($objCachedObject !== false) {
                 return $objCachedObject;
             }
         }
         // Use QuerySingle to Perform the Query
-        $objToReturn = FileDocument::QuerySingle(
+        $objToReturn = SubTask::QuerySingle(
             dxQuery::AndCondition(
-                dxQuery::Equal(dxQueryN::FileDocument()->Id, $intId)
+                dxQuery::Equal(dxQueryN::SubTask()->Id, $intId)
             ),
             $objOptionalClauses
         );
@@ -202,17 +183,17 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Load all FileDocuments
+     * Load all SubTasks
      * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
-     * @return FileDocument[]
+     * @return SubTask[]
      */
     public static function LoadAll($objOptionalClauses = null) {
         if (func_num_args() > 1) {
             throw new dxCallerException("LoadAll must be called with an array of optional clauses as a single argument");
         }
-        // Call FileDocument::QueryArray to perform the LoadAll query
+        // Call SubTask::QueryArray to perform the LoadAll query
         try {
-            return FileDocument::QueryArray(dxQuery::All(), $objOptionalClauses);
+            return SubTask::QueryArray(dxQuery::All(), $objOptionalClauses);
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();
             throw $objExc;
@@ -220,12 +201,12 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Count all FileDocuments
+     * Count all SubTasks
      * @return int
      */
     public static function CountAll() {
-        // Call FileDocument::QueryCount to perform the CountAll query
-        return FileDocument::QueryCount(dxQuery::All());
+        // Call SubTask::QueryCount to perform the CountAll query
+        return SubTask::QueryCount(dxQuery::All());
     }
 
     ///////////////////////////////
@@ -244,10 +225,10 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
      */
     protected static function BuildQueryStatement(&$objQueryBuilder, dxQueryCondition $objConditions, $objOptionalClauses, $mixParameterArray, $blnCountOnly) {
         // Get the Database Object for this Class
-        $objDatabase = FileDocument::GetDatabase();
+        $objDatabase = SubTask::GetDatabase();
 
-        // Create/Build out the QueryBuilder object with FileDocument-specific SELET and FROM fields
-        $objQueryBuilder = new dxQueryBuilder($objDatabase, 'FileDocument');
+        // Create/Build out the QueryBuilder object with SubTask-specific SELET and FROM fields
+        $objQueryBuilder = new dxQueryBuilder($objDatabase, 'SubTask');
 
         $blnAddAllFieldsToSelect = true;
         if ($objDatabase->OnlyFullGroupBy) {
@@ -266,9 +247,9 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
             }
         }
         if ($blnAddAllFieldsToSelect) {
-            FileDocument::GetSelectFields($objQueryBuilder, null, dxQuery::extractSelectClause($objOptionalClauses));
+            SubTask::GetSelectFields($objQueryBuilder, null, dxQuery::extractSelectClause($objOptionalClauses));
         }
-        $objQueryBuilder->AddFromItem('FileDocument');
+        $objQueryBuilder->AddFromItem('SubTask');
 
         // Set "CountOnly" option (if applicable)
         if ($blnCountOnly)
@@ -315,23 +296,23 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Static divblox Query method to query for a single FileDocument object.
+     * Static divblox Query method to query for a single SubTask object.
      * Uses BuildQueryStatment to perform most of the work.
      * @param dxQueryCondition $objConditions any conditions on the query, itself
      * @param dxQueryClause[] $objOptionalClausees additional optional dxQueryClause objects for this query
      * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
-     * @return FileDocument the queried object
+     * @return SubTask the queried object
      */
     public static function QuerySingle(dxQueryCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
         // Get the Query Statement
         try {
-            $strQuery = FileDocument::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+            $strQuery = SubTask::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();
             throw $objExc;
         }
 
-        // Perform the Query, Get the First Row, and Instantiate a new FileDocument object
+        // Perform the Query, Get the First Row, and Instantiate a new SubTask object
         $objDbResult = $objQueryBuilder->Database->Query($strQuery);
 
         // Do we have to expand anything?
@@ -339,7 +320,7 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
             $objToReturn = array();
             $objPrevItemArray = array();
             while ($objDbRow = $objDbResult->GetNextRow()) {
-                $objItem = FileDocument::InstantiateDbRow($objDbRow, null, $objQueryBuilder->ExpandAsArrayNode, $objPrevItemArray, $objQueryBuilder->ColumnAliasArray);
+                $objItem = SubTask::InstantiateDbRow($objDbRow, null, $objQueryBuilder->ExpandAsArrayNode, $objPrevItemArray, $objQueryBuilder->ColumnAliasArray);
                 if ($objItem) {
                     $objToReturn[] = $objItem;
                     $objPrevItemArray[$objItem->intId][] = $objItem;
@@ -356,22 +337,22 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
             $objDbRow = $objDbResult->GetNextRow();
             if(null === $objDbRow)
                 return null;
-            return FileDocument::InstantiateDbRow($objDbRow, null, null, null, $objQueryBuilder->ColumnAliasArray);
+            return SubTask::InstantiateDbRow($objDbRow, null, null, null, $objQueryBuilder->ColumnAliasArray);
         }
     }
 
     /**
-     * Static divblox Query method to query for an array of FileDocument objects.
+     * Static divblox Query method to query for an array of SubTask objects.
      * Uses BuildQueryStatment to perform most of the work.
      * @param dxQueryCondition $objConditions any conditions on the query, itself
      * @param dxQueryClause[] $objOptionalClausees additional optional dxQueryClause objects for this query
      * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
-     * @return FileDocument[] the queried objects as an array
+     * @return SubTask[] the queried objects as an array
      */
     public static function QueryArray(dxQueryCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
         // Get the Query Statement
         try {
-            $strQuery = FileDocument::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+            $strQuery = SubTask::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();
             throw $objExc;
@@ -379,7 +360,7 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
 
         // Perform the Query and Instantiate the Array Result
         $objDbResult = $objQueryBuilder->Database->Query($strQuery);
-        return FileDocument::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNode, $objQueryBuilder->ColumnAliasArray);
+        return SubTask::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNode, $objQueryBuilder->ColumnAliasArray);
     }
 
     /**
@@ -393,7 +374,7 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
     public static function QueryCursor(dxQueryCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
         // Get the query statement
         try {
-            $strQuery = FileDocument::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+            $strQuery = SubTask::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();
             throw $objExc;
@@ -408,7 +389,7 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Static divblox Query method to query for a count of FileDocument objects.
+     * Static divblox Query method to query for a count of SubTask objects.
      * Uses BuildQueryStatment to perform most of the work.
      * @param dxQueryCondition $objConditions any conditions on the query, itself
      * @param dxQueryClause[] $objOptionalClausees additional optional dxQueryClause objects for this query
@@ -418,7 +399,7 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
     public static function QueryCount(dxQueryCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
         // Get the Query Statement
         try {
-            $strQuery = FileDocument::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, true);
+            $strQuery = SubTask::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, true);
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();
             throw $objExc;
@@ -459,16 +440,16 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
 
     public static function QueryArrayCached(dxQueryCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null, $blnForceUpdate = false) {
         // Get the Database Object for this Class
-        $objDatabase = FileDocument::GetDatabase();
+        $objDatabase = SubTask::GetDatabase();
 
-        $strQuery = FileDocument::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+        $strQuery = SubTask::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
 
-        $objCache = new dxCache('dxquery/filedocument', $strQuery);
+        $objCache = new dxCache('dxquery/subtask', $strQuery);
         $cacheData = $objCache->GetData();
 
         if (!$cacheData || $blnForceUpdate) {
             $objDbResult = $objQueryBuilder->Database->Query($strQuery);
-            $arrResult = FileDocument::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNode, $objQueryBuilder->ColumnAliasArray);
+            $arrResult = SubTask::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNode, $objQueryBuilder->ColumnAliasArray);
             $objCache->SaveData(serialize($arrResult));
         } else {
             $arrResult = unserialize($cacheData);
@@ -478,7 +459,7 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Updates a dxQueryBuilder with the SELECT fields for this FileDocument
+     * Updates a dxQueryBuilder with the SELECT fields for this SubTask
      * @param dxQueryBuilder $objBuilder the Query Builder object to update
      * @param string $strPrefix optional prefix to add to the SELECT fields
      */
@@ -487,7 +468,7 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
             $strTableName = $strPrefix;
             $strAliasPrefix = $strPrefix . '__';
         } else {
-            $strTableName = 'FileDocument';
+            $strTableName = 'SubTask';
             $strAliasPrefix = '';
         }
 
@@ -496,13 +477,12 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
             $objSelect->AddSelectItems($objBuilder, $strTableName, $strAliasPrefix);
         } else {
             $objBuilder->AddSelectItem($strTableName, 'Id', $strAliasPrefix . 'Id');
-            $objBuilder->AddSelectItem($strTableName, 'FileName', $strAliasPrefix . 'FileName');
-            $objBuilder->AddSelectItem($strTableName, 'Path', $strAliasPrefix . 'Path');
-            $objBuilder->AddSelectItem($strTableName, 'UploadedFileName', $strAliasPrefix . 'UploadedFileName');
-            $objBuilder->AddSelectItem($strTableName, 'FileType', $strAliasPrefix . 'FileType');
-            $objBuilder->AddSelectItem($strTableName, 'SizeInKilobytes', $strAliasPrefix . 'SizeInKilobytes');
-            $objBuilder->AddSelectItem($strTableName, 'CreatedDate', $strAliasPrefix . 'CreatedDate');
+            $objBuilder->AddSelectItem($strTableName, 'Description', $strAliasPrefix . 'Description');
+            $objBuilder->AddSelectItem($strTableName, 'SubTaskStatus', $strAliasPrefix . 'SubTaskStatus');
+            $objBuilder->AddSelectItem($strTableName, 'SubTaskDueDate', $strAliasPrefix . 'SubTaskDueDate');
             $objBuilder->AddSelectItem($strTableName, 'LastUpdated', $strAliasPrefix . 'LastUpdated');
+            $objBuilder->AddSelectItem($strTableName, 'Ticket', $strAliasPrefix . 'Ticket');
+            $objBuilder->AddSelectItem($strTableName, 'SearchMetaInfo', $strAliasPrefix . 'SearchMetaInfo');
             $objBuilder->AddSelectItem($strTableName, 'ObjectOwner', $strAliasPrefix . 'ObjectOwner');
         }
     }
@@ -588,16 +568,16 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Instantiate a FileDocument from a Database Row.
+     * Instantiate a SubTask from a Database Row.
      * Takes in an optional strAliasPrefix, used in case another Object::InstantiateDbRow
-     * is calling this FileDocument::InstantiateDbRow in order to perform
+     * is calling this SubTask::InstantiateDbRow in order to perform
      * early binding on referenced objects.
      * @param DatabaseRowBase $objDbRow
      * @param string $strAliasPrefix
      * @param dxQueryBaseNode $objExpandAsArrayNode
      * @param dxBaseClass $arrPreviousItem
      * @param string[] $strColumnAliasArray
-     * @return mixed Either a FileDocument, or false to indicate the dbrow was used in an expansion, or null to indicate that this leaf is a duplicate.
+     * @return mixed Either a SubTask, or false to indicate the dbrow was used in an expansion, or null to indicate that this leaf is a duplicate.
     */
     public static function InstantiateDbRow($objDbRow, $strAliasPrefix = null, $objExpandAsArrayNode = null, $objPreviousItemArray = null, $strColumnAliasArray = array()) {
         // If blank row, return null
@@ -616,39 +596,36 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
                 is_array($objPreviousItemArray) &&
                 ProjectFunctions::getDataSetSize($objPreviousItemArray)) {
 
-            if (FileDocument::ExpandArray ($objDbRow, $strAliasPrefix, $objExpandAsArrayNode, $objPreviousItemArray, $strColumnAliasArray)) {
+            if (SubTask::ExpandArray ($objDbRow, $strAliasPrefix, $objExpandAsArrayNode, $objPreviousItemArray, $strColumnAliasArray)) {
                 return false; // db row was used but no new object was created
             }
         }
 
-        // Create a new instance of the FileDocument object
-        $objToReturn = new FileDocument();
+        // Create a new instance of the SubTask object
+        $objToReturn = new SubTask();
         $objToReturn->__blnRestored = true;
 
         $strAlias = $strAliasPrefix . 'Id';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intId = $objDbRow->GetColumn($strAliasName, 'Integer');
-        $strAlias = $strAliasPrefix . 'FileName';
+        $strAlias = $strAliasPrefix . 'Description';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->strFileName = $objDbRow->GetColumn($strAliasName, 'VarChar');
-        $strAlias = $strAliasPrefix . 'Path';
+        $objToReturn->strDescription = $objDbRow->GetColumn($strAliasName, 'Blob');
+        $strAlias = $strAliasPrefix . 'SubTaskStatus';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->strPath = $objDbRow->GetColumn($strAliasName, 'VarChar');
-        $strAlias = $strAliasPrefix . 'UploadedFileName';
+        $objToReturn->strSubTaskStatus = $objDbRow->GetColumn($strAliasName, 'VarChar');
+        $strAlias = $strAliasPrefix . 'SubTaskDueDate';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->strUploadedFileName = $objDbRow->GetColumn($strAliasName, 'VarChar');
-        $strAlias = $strAliasPrefix . 'FileType';
-        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->strFileType = $objDbRow->GetColumn($strAliasName, 'VarChar');
-        $strAlias = $strAliasPrefix . 'SizeInKilobytes';
-        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->strSizeInKilobytes = $objDbRow->GetColumn($strAliasName, 'VarChar');
-        $strAlias = $strAliasPrefix . 'CreatedDate';
-        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->dttCreatedDate = $objDbRow->GetColumn($strAliasName, 'DateTime');
+        $objToReturn->strSubTaskDueDate = $objDbRow->GetColumn($strAliasName, 'VarChar');
         $strAlias = $strAliasPrefix . 'LastUpdated';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->strLastUpdated = $objDbRow->GetColumn($strAliasName, 'VarChar');
+        $strAlias = $strAliasPrefix . 'Ticket';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->intTicket = $objDbRow->GetColumn($strAliasName, 'Integer');
+        $strAlias = $strAliasPrefix . 'SearchMetaInfo';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->strSearchMetaInfo = $objDbRow->GetColumn($strAliasName, 'Blob');
         $strAlias = $strAliasPrefix . 'ObjectOwner';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intObjectOwner = $objDbRow->GetColumn($strAliasName, 'Integer');
@@ -680,35 +657,27 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
         }
 
         if (!$strAliasPrefix)
-            $strAliasPrefix = 'FileDocument__';
+            $strAliasPrefix = 'SubTask__';
 
-
-
-
-        // Check for Note Virtual Binding
-        $strAlias = $strAliasPrefix . 'note__Id';
+        // Check for TicketObject Early Binding
+        $strAlias = $strAliasPrefix . 'Ticket__Id';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objExpansionNode = (empty($objExpansionAliasArray['note']) ? null : $objExpansionAliasArray['note']);
-        $blnExpanded = ($objExpansionNode && $objExpansionNode->ExpandAsArray);
-        if ($blnExpanded && null === $objToReturn->_objNoteArray)
-            $objToReturn->_objNoteArray = array();
         if (!is_null($objDbRow->GetColumn($strAliasName))) {
-            if ($blnExpanded) {
-                $objToReturn->_objNoteArray[] = Note::InstantiateDbRow($objDbRow, $strAliasPrefix . 'note__', $objExpansionNode, null, $strColumnAliasArray);
-            } elseif (is_null($objToReturn->_objNote)) {
-                $objToReturn->_objNote = Note::InstantiateDbRow($objDbRow, $strAliasPrefix . 'note__', $objExpansionNode, null, $strColumnAliasArray);
-            }
+            $objExpansionNode = (empty($objExpansionAliasArray['Ticket']) ? null : $objExpansionAliasArray['Ticket']);
+            $objToReturn->objTicketObject = Ticket::InstantiateDbRow($objDbRow, $strAliasPrefix . 'Ticket__', $objExpansionNode, null, $strColumnAliasArray);
         }
+
+
 
         return $objToReturn;
     }
 
     /**
-     * Instantiate an array of FileDocuments from a Database Result
+     * Instantiate an array of SubTasks from a Database Result
      * @param DatabaseResultBase $objDbResult
      * @param dxQueryBaseNode $objExpandAsArrayNode
      * @param string[] $strColumnAliasArray
-     * @return FileDocument[]
+     * @return SubTask[]
      */
     public static function InstantiateDbResult(dxDatabaseResultBase $objDbResult, $objExpandAsArrayNode = null, $strColumnAliasArray = null) {
         $objToReturn = array();
@@ -725,7 +694,7 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
             $objToReturn = array();
             $objPrevItemArray = array();
             while ($objDbRow = $objDbResult->GetNextRow()) {
-                $objItem = FileDocument::InstantiateDbRow($objDbRow, null, $objExpandAsArrayNode, $objPrevItemArray, $strColumnAliasArray);
+                $objItem = SubTask::InstantiateDbRow($objDbRow, null, $objExpandAsArrayNode, $objPrevItemArray, $strColumnAliasArray);
                 if ($objItem) {
                     $objToReturn[] = $objItem;
                     $objPrevItemArray[$objItem->intId][] = $objItem;
@@ -733,7 +702,7 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
             }
         } else {
             while ($objDbRow = $objDbResult->GetNextRow())
-                $objToReturn[] = FileDocument::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
+                $objToReturn[] = SubTask::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
         }
 
         return $objToReturn;
@@ -741,11 +710,11 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
-     * Instantiate a single FileDocument object from a query cursor (e.g. a DB ResultSet).
+     * Instantiate a single SubTask object from a query cursor (e.g. a DB ResultSet).
      * Cursor is automatically moved to the "next row" of the result set.
      * Will return NULL if no cursor or if the cursor has no more rows in the resultset.
      * @param dxDatabaseResultBase $objDbResult cursor resource
-     * @return FileDocument next row resulting from the query
+     * @return SubTask next row resulting from the query
      */
     public static function InstantiateCursor(dxDatabaseResultBase $objDbResult) {
         // If blank resultset, then return empty result
@@ -766,7 +735,7 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
         }
 
         // Load up the return result with a row and return it
-        return FileDocument::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
+        return SubTask::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
     }
 
     ///////////////////////////////////////////////////
@@ -774,18 +743,50 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
     ///////////////////////////////////////////////////
 
     /**
-     * Load a single FileDocument object,
+     * Load a single SubTask object,
      * by Id Index(es)
      * @param integer $intId
      * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
-     * @return FileDocument
+     * @return SubTask
     */
     public static function LoadById($intId, $objOptionalClauses = null) {
-        return FileDocument::QuerySingle(
+        return SubTask::QuerySingle(
             dxQuery::AndCondition(
-                dxQuery::Equal(dxQueryN::FileDocument()->Id, $intId)
+                dxQuery::Equal(dxQueryN::SubTask()->Id, $intId)
             ),
             $objOptionalClauses
+        );
+    }
+
+    /**
+     * Load an array of SubTask objects,
+     * by Ticket Index(es)
+     * @param integer $intTicket
+     * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
+     * @return SubTask[]
+    */
+    public static function LoadArrayByTicket($intTicket, $objOptionalClauses = null) {
+        // Call SubTask::QueryArray to perform the LoadArrayByTicket query
+        try {
+            return SubTask::QueryArray(
+                dxQuery::Equal(dxQueryN::SubTask()->Ticket, $intTicket),
+                $objOptionalClauses);
+        } catch (dxCallerException $objExc) {
+            $objExc->IncrementOffset();
+            throw $objExc;
+        }
+    }
+
+    /**
+     * Count SubTasks
+     * by Ticket Index(es)
+     * @param integer $intTicket
+     * @return int
+    */
+    public static function CountByTicket($intTicket) {
+        // Call SubTask::QueryCount to perform the CountByTicket query
+        return SubTask::QueryCount(
+            dxQuery::Equal(dxQueryN::SubTask()->Ticket, $intTicket)
         );
     }
     ////////////////////////////////////////////////////
@@ -798,36 +799,35 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
     //////////////////////////
 
     /**
-    * Save this FileDocument
+    * Save this SubTask
     * @param bool $blnForceInsert
     * @param bool $blnForceUpdate
     * @return int
     */
     public function Save($blnForceInsert = false, $blnForceUpdate = false) {
-        $ObjectAccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),"FileDocument",$this->intId);
+        $ObjectAccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),"SubTask",$this->intId);
         // Get the Database Object for this Class
-        $objDatabase = FileDocument::GetDatabase();
+        $objDatabase = SubTask::GetDatabase();
         $mixToReturn = null;
         if (!is_numeric($this->intObjectOwner)) {
             $this->intObjectOwner = ProjectFunctions::getCurrentAccountId();
         }
-        $ExistingObj = FileDocument::Load($this->intId);
+        $ExistingObj = SubTask::Load($this->intId);
         $newAuditLogEntry = new AuditLogEntry();
         $ChangedArray = array();
         $newAuditLogEntry->EntryTimeStamp = dxDateTime::Now();
         $newAuditLogEntry->ObjectId = $this->intId;
-        $newAuditLogEntry->ObjectName = 'FileDocument';
+        $newAuditLogEntry->ObjectName = 'SubTask';
         $newAuditLogEntry->UserEmail = ProjectFunctions::getCurrentUserEmailForAudit();
         if (!$ExistingObj) {
             $newAuditLogEntry->ModificationType = 'Create';
             $ChangedArray = array_merge($ChangedArray,array("Id" => $this->intId));
-            $ChangedArray = array_merge($ChangedArray,array("FileName" => $this->strFileName));
-            $ChangedArray = array_merge($ChangedArray,array("Path" => $this->strPath));
-            $ChangedArray = array_merge($ChangedArray,array("UploadedFileName" => $this->strUploadedFileName));
-            $ChangedArray = array_merge($ChangedArray,array("FileType" => $this->strFileType));
-            $ChangedArray = array_merge($ChangedArray,array("SizeInKilobytes" => $this->strSizeInKilobytes));
-            $ChangedArray = array_merge($ChangedArray,array("CreatedDate" => $this->dttCreatedDate));
+            $ChangedArray = array_merge($ChangedArray,array("Description" => $this->strDescription));
+            $ChangedArray = array_merge($ChangedArray,array("SubTaskStatus" => $this->strSubTaskStatus));
+            $ChangedArray = array_merge($ChangedArray,array("SubTaskDueDate" => $this->strSubTaskDueDate));
             $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
+            $ChangedArray = array_merge($ChangedArray,array("Ticket" => $this->intTicket));
+            $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
             $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
             $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         } else {
@@ -841,52 +841,28 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
                 //$ChangedArray = array_merge($ChangedArray,array("Id" => "From: ".$ExistingValueStr." to: ".$this->intId));
             }
             $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->FileName)) {
-                $ExistingValueStr = $ExistingObj->FileName;
+            if (!is_null($ExistingObj->Description)) {
+                $ExistingValueStr = $ExistingObj->Description;
             }
-            if ($ExistingObj->FileName != $this->strFileName) {
-                $ChangedArray = array_merge($ChangedArray,array("FileName" => array("Before" => $ExistingValueStr,"After" => $this->strFileName)));
-                //$ChangedArray = array_merge($ChangedArray,array("FileName" => "From: ".$ExistingValueStr." to: ".$this->strFileName));
-            }
-            $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->Path)) {
-                $ExistingValueStr = $ExistingObj->Path;
-            }
-            if ($ExistingObj->Path != $this->strPath) {
-                $ChangedArray = array_merge($ChangedArray,array("Path" => array("Before" => $ExistingValueStr,"After" => $this->strPath)));
-                //$ChangedArray = array_merge($ChangedArray,array("Path" => "From: ".$ExistingValueStr." to: ".$this->strPath));
+            if ($ExistingObj->Description != $this->strDescription) {
+                $ChangedArray = array_merge($ChangedArray,array("Description" => array("Before" => $ExistingValueStr,"After" => $this->strDescription)));
+                //$ChangedArray = array_merge($ChangedArray,array("Description" => "From: ".$ExistingValueStr." to: ".$this->strDescription));
             }
             $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->UploadedFileName)) {
-                $ExistingValueStr = $ExistingObj->UploadedFileName;
+            if (!is_null($ExistingObj->SubTaskStatus)) {
+                $ExistingValueStr = $ExistingObj->SubTaskStatus;
             }
-            if ($ExistingObj->UploadedFileName != $this->strUploadedFileName) {
-                $ChangedArray = array_merge($ChangedArray,array("UploadedFileName" => array("Before" => $ExistingValueStr,"After" => $this->strUploadedFileName)));
-                //$ChangedArray = array_merge($ChangedArray,array("UploadedFileName" => "From: ".$ExistingValueStr." to: ".$this->strUploadedFileName));
-            }
-            $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->FileType)) {
-                $ExistingValueStr = $ExistingObj->FileType;
-            }
-            if ($ExistingObj->FileType != $this->strFileType) {
-                $ChangedArray = array_merge($ChangedArray,array("FileType" => array("Before" => $ExistingValueStr,"After" => $this->strFileType)));
-                //$ChangedArray = array_merge($ChangedArray,array("FileType" => "From: ".$ExistingValueStr." to: ".$this->strFileType));
+            if ($ExistingObj->SubTaskStatus != $this->strSubTaskStatus) {
+                $ChangedArray = array_merge($ChangedArray,array("SubTaskStatus" => array("Before" => $ExistingValueStr,"After" => $this->strSubTaskStatus)));
+                //$ChangedArray = array_merge($ChangedArray,array("SubTaskStatus" => "From: ".$ExistingValueStr." to: ".$this->strSubTaskStatus));
             }
             $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->SizeInKilobytes)) {
-                $ExistingValueStr = $ExistingObj->SizeInKilobytes;
+            if (!is_null($ExistingObj->SubTaskDueDate)) {
+                $ExistingValueStr = $ExistingObj->SubTaskDueDate;
             }
-            if ($ExistingObj->SizeInKilobytes != $this->strSizeInKilobytes) {
-                $ChangedArray = array_merge($ChangedArray,array("SizeInKilobytes" => array("Before" => $ExistingValueStr,"After" => $this->strSizeInKilobytes)));
-                //$ChangedArray = array_merge($ChangedArray,array("SizeInKilobytes" => "From: ".$ExistingValueStr." to: ".$this->strSizeInKilobytes));
-            }
-            $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->CreatedDate)) {
-                $ExistingValueStr = $ExistingObj->CreatedDate;
-            }
-            if ($ExistingObj->CreatedDate != $this->dttCreatedDate) {
-                $ChangedArray = array_merge($ChangedArray,array("CreatedDate" => array("Before" => $ExistingValueStr,"After" => $this->dttCreatedDate)));
-                //$ChangedArray = array_merge($ChangedArray,array("CreatedDate" => "From: ".$ExistingValueStr." to: ".$this->dttCreatedDate));
+            if ($ExistingObj->SubTaskDueDate != $this->strSubTaskDueDate) {
+                $ChangedArray = array_merge($ChangedArray,array("SubTaskDueDate" => array("Before" => $ExistingValueStr,"After" => $this->strSubTaskDueDate)));
+                //$ChangedArray = array_merge($ChangedArray,array("SubTaskDueDate" => "From: ".$ExistingValueStr." to: ".$this->strSubTaskDueDate));
             }
             $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->LastUpdated)) {
@@ -895,6 +871,22 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
             if ($ExistingObj->LastUpdated != $this->strLastUpdated) {
                 $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => array("Before" => $ExistingValueStr,"After" => $this->strLastUpdated)));
                 //$ChangedArray = array_merge($ChangedArray,array("LastUpdated" => "From: ".$ExistingValueStr." to: ".$this->strLastUpdated));
+            }
+            $ExistingValueStr = "NULL";
+            if (!is_null($ExistingObj->Ticket)) {
+                $ExistingValueStr = $ExistingObj->Ticket;
+            }
+            if ($ExistingObj->Ticket != $this->intTicket) {
+                $ChangedArray = array_merge($ChangedArray,array("Ticket" => array("Before" => $ExistingValueStr,"After" => $this->intTicket)));
+                //$ChangedArray = array_merge($ChangedArray,array("Ticket" => "From: ".$ExistingValueStr." to: ".$this->intTicket));
+            }
+            $ExistingValueStr = "NULL";
+            if (!is_null($ExistingObj->SearchMetaInfo)) {
+                $ExistingValueStr = $ExistingObj->SearchMetaInfo;
+            }
+            if ($ExistingObj->SearchMetaInfo != $this->strSearchMetaInfo) {
+                $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => array("Before" => $ExistingValueStr,"After" => $this->strSearchMetaInfo)));
+                //$ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => "From: ".$ExistingValueStr." to: ".$this->strSearchMetaInfo));
             }
             $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->ObjectOwner)) {
@@ -910,57 +902,54 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
             if ((!$this->__blnRestored) || ($blnForceInsert)) {
                 if (!in_array(AccessOperation::CREATE_STR,$ObjectAccessArray)) {
                     // This user is not allowed to create an object of this type
-                    throw new Exception("User is not allowed to perform operation ".AccessOperation::CREATE_STR." on entity of type 'FileDocument'. Allowed access is ".json_encode($ObjectAccessArray));
+                    throw new Exception("User is not allowed to perform operation ".AccessOperation::CREATE_STR." on entity of type 'SubTask'. Allowed access is ".json_encode($ObjectAccessArray));
                 }
                 // Perform an INSERT query
                 $objDatabase->NonQuery('
-                INSERT INTO `FileDocument` (
-							`FileName`,
-							`Path`,
-							`UploadedFileName`,
-							`FileType`,
-							`SizeInKilobytes`,
-							`CreatedDate`,
+                INSERT INTO `SubTask` (
+							`Description`,
+							`SubTaskStatus`,
+							`SubTaskDueDate`,
+							`Ticket`,
+							`SearchMetaInfo`,
 							`ObjectOwner`
 						) VALUES (
-							' . $objDatabase->SqlVariable($this->strFileName) . ',
-							' . $objDatabase->SqlVariable($this->strPath) . ',
-							' . $objDatabase->SqlVariable($this->strUploadedFileName) . ',
-							' . $objDatabase->SqlVariable($this->strFileType) . ',
-							' . $objDatabase->SqlVariable($this->strSizeInKilobytes) . ',
-							' . $objDatabase->SqlVariable($this->dttCreatedDate) . ',
+							' . $objDatabase->SqlVariable($this->strDescription) . ',
+							' . $objDatabase->SqlVariable($this->strSubTaskStatus) . ',
+							' . $objDatabase->SqlVariable($this->strSubTaskDueDate) . ',
+							' . $objDatabase->SqlVariable($this->intTicket) . ',
+							' . $objDatabase->SqlVariable($this->strSearchMetaInfo) . ',
 							' . $objDatabase->SqlVariable($this->intObjectOwner) . '
 						)
                 ');
 					// Update Identity column and return its value
-                $mixToReturn = $this->intId = $objDatabase->InsertId('FileDocument', 'Id');
+                $mixToReturn = $this->intId = $objDatabase->InsertId('SubTask', 'Id');
             } else {
                 // Perform an UPDATE query
                 // First checking for Optimistic Locking constraints (if applicable)
                 if (!in_array(AccessOperation::UPDATE_STR,$ObjectAccessArray)) {
                     // This user is not allowed to create an object of this type
-                    throw new Exception("User is not allowed to perform operation ".AccessOperation::UPDATE_STR." on entity of type 'FileDocument'. Allowed access is ".json_encode($ObjectAccessArray));
+                    throw new Exception("User is not allowed to perform operation ".AccessOperation::UPDATE_STR." on entity of type 'SubTask'. Allowed access is ".json_encode($ObjectAccessArray));
                 }
                 if (!$blnForceUpdate) {
                     // Perform the Optimistic Locking check
                     $objResult = $objDatabase->Query('
-                    SELECT `LastUpdated` FROM `FileDocument` WHERE
+                    SELECT `LastUpdated` FROM `SubTask` WHERE
 							`Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
 
                 $objRow = $objResult->FetchArray();
                 if ($objRow[0] != $this->strLastUpdated)
-                    throw new dxOptimisticLockingException('FileDocument');
+                    throw new dxOptimisticLockingException('SubTask');
             }
 
             // Perform the UPDATE query
             $objDatabase->NonQuery('
-            UPDATE `FileDocument` SET
-							`FileName` = ' . $objDatabase->SqlVariable($this->strFileName) . ',
-							`Path` = ' . $objDatabase->SqlVariable($this->strPath) . ',
-							`UploadedFileName` = ' . $objDatabase->SqlVariable($this->strUploadedFileName) . ',
-							`FileType` = ' . $objDatabase->SqlVariable($this->strFileType) . ',
-							`SizeInKilobytes` = ' . $objDatabase->SqlVariable($this->strSizeInKilobytes) . ',
-							`CreatedDate` = ' . $objDatabase->SqlVariable($this->dttCreatedDate) . ',
+            UPDATE `SubTask` SET
+							`Description` = ' . $objDatabase->SqlVariable($this->strDescription) . ',
+							`SubTaskStatus` = ' . $objDatabase->SqlVariable($this->strSubTaskStatus) . ',
+							`SubTaskDueDate` = ' . $objDatabase->SqlVariable($this->strSubTaskDueDate) . ',
+							`Ticket` = ' . $objDatabase->SqlVariable($this->intTicket) . ',
+							`SearchMetaInfo` = ' . $objDatabase->SqlVariable($this->strSearchMetaInfo) . ',
 							`ObjectOwner` = ' . $objDatabase->SqlVariable($this->intObjectOwner) . '
             WHERE
 							`Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
@@ -974,14 +963,14 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
             $newAuditLogEntry->ObjectId = $this->intId;
             $newAuditLogEntry->Save();
         } catch(dxCallerException $e) {
-            error_log('Could not save audit log while saving FileDocument. Details: '.$newAuditLogEntry->getJson().'<br>Error details: '.$e->getMessage());
+            error_log('Could not save audit log while saving SubTask. Details: '.$newAuditLogEntry->getJson().'<br>Error details: '.$e->getMessage());
         }
         // Update __blnRestored and any Non-Identity PK Columns (if applicable)
         $this->__blnRestored = true;
 
         // Update Local Timestamp
         $objResult = $objDatabase->Query('SELECT `LastUpdated` FROM
-                                            `FileDocument` WHERE
+                                            `SubTask` WHERE
                 							`Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
 
         $objRow = $objResult->FetchArray();
@@ -993,48 +982,47 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
         return $mixToReturn;
     }
     /**
-     * Delete this FileDocument
+     * Delete this SubTask
      * @return void
      */
     public function Delete() {
         if ((is_null($this->intId)))
-            throw new dxUndefinedPrimaryKeyException('Cannot delete this FileDocument with an unset primary key.');
+            throw new dxUndefinedPrimaryKeyException('Cannot delete this SubTask with an unset primary key.');
 
-        $ObjectAccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),"FileDocument",$this->intId);
+        $ObjectAccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),"SubTask",$this->intId);
         if (!in_array(AccessOperation::DELETE_STR,$ObjectAccessArray)) {
             // This user is not allowed to delete an object of this type
-            throw new Exception("User is not allowed to perform operation ".AccessOperation::DELETE_STR." on entity of type 'FileDocument'. Allowed access is ".json_encode($ObjectAccessArray));
+            throw new Exception("User is not allowed to perform operation ".AccessOperation::DELETE_STR." on entity of type 'SubTask'. Allowed access is ".json_encode($ObjectAccessArray));
         }
 
         // Get the Database Object for this Class
-        $objDatabase = FileDocument::GetDatabase();
+        $objDatabase = SubTask::GetDatabase();
         $newAuditLogEntry = new AuditLogEntry();
         $ChangedArray = array();
         $newAuditLogEntry->EntryTimeStamp = dxDateTime::Now();
         $newAuditLogEntry->ObjectId = $this->intId;
-        $newAuditLogEntry->ObjectName = 'FileDocument';
+        $newAuditLogEntry->ObjectName = 'SubTask';
         $newAuditLogEntry->UserEmail = ProjectFunctions::getCurrentUserEmailForAudit();
         $newAuditLogEntry->ModificationType = 'Delete';
         $ChangedArray = array_merge($ChangedArray,array("Id" => $this->intId));
-        $ChangedArray = array_merge($ChangedArray,array("FileName" => $this->strFileName));
-        $ChangedArray = array_merge($ChangedArray,array("Path" => $this->strPath));
-        $ChangedArray = array_merge($ChangedArray,array("UploadedFileName" => $this->strUploadedFileName));
-        $ChangedArray = array_merge($ChangedArray,array("FileType" => $this->strFileType));
-        $ChangedArray = array_merge($ChangedArray,array("SizeInKilobytes" => $this->strSizeInKilobytes));
-        $ChangedArray = array_merge($ChangedArray,array("CreatedDate" => $this->dttCreatedDate));
+        $ChangedArray = array_merge($ChangedArray,array("Description" => $this->strDescription));
+        $ChangedArray = array_merge($ChangedArray,array("SubTaskStatus" => $this->strSubTaskStatus));
+        $ChangedArray = array_merge($ChangedArray,array("SubTaskDueDate" => $this->strSubTaskDueDate));
         $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
+        $ChangedArray = array_merge($ChangedArray,array("Ticket" => $this->intTicket));
+        $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
         $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
         $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         try {
             $newAuditLogEntry->Save();
         } catch(dxCallerException $e) {
-            error_log('Could not save audit log while deleting FileDocument. Details: '.$newAuditLogEntry->getJson().'<br>Error details: '.$e->getMessage());
+            error_log('Could not save audit log while deleting SubTask. Details: '.$newAuditLogEntry->getJson().'<br>Error details: '.$e->getMessage());
         }
 
         // Perform the SQL Query
         $objDatabase->NonQuery('
             DELETE FROM
-                `FileDocument`
+                `SubTask`
             WHERE
                 `Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
 
@@ -1042,28 +1030,28 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Delete this FileDocument ONLY from the cache
+     * Delete this SubTask ONLY from the cache
      * @return void
      */
     public function DeleteCache() {
         if (ProjectFunctions::$objCacheProvider && ProjectFunctions::$Database[1]->Caching) {
-            $strCacheKey = ProjectFunctions::$objCacheProvider->CreateKey(ProjectFunctions::$Database[1]->Database, 'FileDocument', $this->intId);
+            $strCacheKey = ProjectFunctions::$objCacheProvider->CreateKey(ProjectFunctions::$Database[1]->Database, 'SubTask', $this->intId);
             ProjectFunctions::$objCacheProvider->Delete($strCacheKey);
         }
     }
 
     /**
-     * Delete all FileDocuments
+     * Delete all SubTasks
      * @return void
      */
     public static function DeleteAll() {
         // Get the Database Object for this Class
-        $objDatabase = FileDocument::GetDatabase();
+        $objDatabase = SubTask::GetDatabase();
 
         // Perform the Query
         $objDatabase->NonQuery('
             DELETE FROM
-                `FileDocument`');
+                `SubTask`');
 
         if (ProjectFunctions::$objCacheProvider && ProjectFunctions::$Database[1]->Caching) {
             ProjectFunctions::$objCacheProvider->DeleteAll();
@@ -1071,43 +1059,42 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Truncate FileDocument table
+     * Truncate SubTask table
      * @return void
      */
     public static function Truncate() {
         // Get the Database Object for this Class
-        $objDatabase = FileDocument::GetDatabase();
+        $objDatabase = SubTask::GetDatabase();
 
         // Perform the Query
         $objDatabase->NonQuery('
-            TRUNCATE `FileDocument`');
+            TRUNCATE `SubTask`');
 
         if (ProjectFunctions::$objCacheProvider && ProjectFunctions::$Database[1]->Caching) {
             ProjectFunctions::$objCacheProvider->DeleteAll();
         }
     }
     /**
-     * Reload this FileDocument from the database.
+     * Reload this SubTask from the database.
      * @return void
      */
     public function Reload() {
         // Make sure we are actually Restored from the database
         if (!$this->__blnRestored)
-            throw new dxCallerException('Cannot call Reload() on a new, unsaved FileDocument object.');
+            throw new dxCallerException('Cannot call Reload() on a new, unsaved SubTask object.');
 
         $this->DeleteCache();
 
         // Reload the Object
-        $objReloaded = FileDocument::Load($this->intId);
+        $objReloaded = SubTask::Load($this->intId);
 
         // Update $this's local variables to match
-        $this->strFileName = $objReloaded->strFileName;
-        $this->strPath = $objReloaded->strPath;
-        $this->strUploadedFileName = $objReloaded->strUploadedFileName;
-        $this->strFileType = $objReloaded->strFileType;
-        $this->strSizeInKilobytes = $objReloaded->strSizeInKilobytes;
-        $this->dttCreatedDate = $objReloaded->dttCreatedDate;
+        $this->strDescription = $objReloaded->strDescription;
+        $this->strSubTaskStatus = $objReloaded->strSubTaskStatus;
+        $this->strSubTaskDueDate = $objReloaded->strSubTaskDueDate;
         $this->strLastUpdated = $objReloaded->strLastUpdated;
+        $this->Ticket = $objReloaded->Ticket;
+        $this->strSearchMetaInfo = $objReloaded->strSearchMetaInfo;
         $this->intObjectOwner = $objReloaded->intObjectOwner;
     }
     ////////////////////
@@ -1133,47 +1120,26 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
                  */
                 return $this->intId;
 
-            case 'FileName':
+            case 'Description':
                 /**
-                 * Gets the value for strFileName 
+                 * Gets the value for strDescription 
                  * @return string
                  */
-                return $this->strFileName;
+                return $this->strDescription;
 
-            case 'Path':
+            case 'SubTaskStatus':
                 /**
-                 * Gets the value for strPath 
+                 * Gets the value for strSubTaskStatus 
                  * @return string
                  */
-                return $this->strPath;
+                return $this->strSubTaskStatus;
 
-            case 'UploadedFileName':
+            case 'SubTaskDueDate':
                 /**
-                 * Gets the value for strUploadedFileName 
+                 * Gets the value for strSubTaskDueDate 
                  * @return string
                  */
-                return $this->strUploadedFileName;
-
-            case 'FileType':
-                /**
-                 * Gets the value for strFileType 
-                 * @return string
-                 */
-                return $this->strFileType;
-
-            case 'SizeInKilobytes':
-                /**
-                 * Gets the value for strSizeInKilobytes 
-                 * @return string
-                 */
-                return $this->strSizeInKilobytes;
-
-            case 'CreatedDate':
-                /**
-                 * Gets the value for dttCreatedDate 
-                 * @return dxDateTime
-                 */
-                return $this->dttCreatedDate;
+                return $this->strSubTaskDueDate;
 
             case 'LastUpdated':
                 /**
@@ -1181,6 +1147,20 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
                  * @return string
                  */
                 return $this->strLastUpdated;
+
+            case 'Ticket':
+                /**
+                 * Gets the value for intTicket 
+                 * @return integer
+                 */
+                return $this->intTicket;
+
+            case 'SearchMetaInfo':
+                /**
+                 * Gets the value for strSearchMetaInfo 
+                 * @return string
+                 */
+                return $this->strSearchMetaInfo;
 
             case 'ObjectOwner':
                 /**
@@ -1193,27 +1173,25 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
             ///////////////////
             // Member Objects
             ///////////////////
+            case 'TicketObject':
+                /**
+                 * Gets the value for the Ticket object referenced by intTicket 
+                 * @return Ticket
+                 */
+                try {
+                    if ((!$this->objTicketObject) && (!is_null($this->intTicket)))
+                        $this->objTicketObject = Ticket::Load($this->intTicket);
+                    return $this->objTicketObject;
+                } catch (dxCallerException $objExc) {
+                    $objExc->IncrementOffset();
+                    throw $objExc;
+                }
+
 
             ////////////////////////////
             // Virtual Object References (Many to Many and Reverse References)
             // (If restored via a "Many-to" expansion)
             ////////////////////////////
-
-            case '_Note':
-                /**
-                 * Gets the value for the private _objNote (Read-Only)
-                 * if set due to an expansion on the Note.FileDocument reverse relationship
-                 * @return Note
-                 */
-                return $this->_objNote;
-
-            case '_NoteArray':
-                /**
-                 * Gets the value for the private _objNoteArray (Read-Only)
-                 * if set due to an ExpandAsArray on the Note.FileDocument reverse relationship
-                 * @return Note[]
-                 */
-                return $this->_objNoteArray;
 
 
             case '__Restored':
@@ -1241,79 +1219,67 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
             ///////////////////
             // Member Variables
             ///////////////////
-            case 'FileName':
+            case 'Description':
                 /**
-                 * Sets the value for strFileName 
+                 * Sets the value for strDescription 
                  * @param string $mixValue
                  * @return string
                  */
                 try {
-                    return ($this->strFileName = dxType::Cast($mixValue, dxType::String));
+                    return ($this->strDescription = dxType::Cast($mixValue, dxType::String));
                 } catch (dxCallerException $objExc) {
                     $objExc->IncrementOffset();
                     throw $objExc;
                 }
 
-            case 'Path':
+            case 'SubTaskStatus':
                 /**
-                 * Sets the value for strPath 
+                 * Sets the value for strSubTaskStatus 
                  * @param string $mixValue
                  * @return string
                  */
                 try {
-                    return ($this->strPath = dxType::Cast($mixValue, dxType::String));
+                    return ($this->strSubTaskStatus = dxType::Cast($mixValue, dxType::String));
                 } catch (dxCallerException $objExc) {
                     $objExc->IncrementOffset();
                     throw $objExc;
                 }
 
-            case 'UploadedFileName':
+            case 'SubTaskDueDate':
                 /**
-                 * Sets the value for strUploadedFileName 
+                 * Sets the value for strSubTaskDueDate 
                  * @param string $mixValue
                  * @return string
                  */
                 try {
-                    return ($this->strUploadedFileName = dxType::Cast($mixValue, dxType::String));
+                    return ($this->strSubTaskDueDate = dxType::Cast($mixValue, dxType::String));
                 } catch (dxCallerException $objExc) {
                     $objExc->IncrementOffset();
                     throw $objExc;
                 }
 
-            case 'FileType':
+            case 'Ticket':
                 /**
-                 * Sets the value for strFileType 
-                 * @param string $mixValue
-                 * @return string
+                 * Sets the value for intTicket 
+                 * @param integer $mixValue
+                 * @return integer
                  */
                 try {
-                    return ($this->strFileType = dxType::Cast($mixValue, dxType::String));
+                    $this->objTicketObject = null;
+                    return ($this->intTicket = dxType::Cast($mixValue, dxType::Integer));
                 } catch (dxCallerException $objExc) {
                     $objExc->IncrementOffset();
                     throw $objExc;
                 }
 
-            case 'SizeInKilobytes':
+            case 'SearchMetaInfo':
                 /**
-                 * Sets the value for strSizeInKilobytes 
+                 * Sets the value for strSearchMetaInfo 
                  * @param string $mixValue
                  * @return string
                  */
                 try {
-                    return ($this->strSizeInKilobytes = dxType::Cast($mixValue, dxType::String));
-                } catch (dxCallerException $objExc) {
-                    $objExc->IncrementOffset();
-                    throw $objExc;
-                }
-
-            case 'CreatedDate':
-                /**
-                 * Sets the value for dttCreatedDate 
-                 * @param dxDateTime $mixValue
-                 * @return dxDateTime
-                 */
-                try {
-                    return ($this->dttCreatedDate = dxType::Cast($mixValue, dxType::DateTime));
+                    return ($this->strSearchMetaInfo = dxType::Cast($mixValue, dxType::String));
                 } catch (dxCallerException $objExc) {
                     $objExc->IncrementOffset();
                     throw $objExc;
@@ -1336,6 +1302,38 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
             ///////////////////
             // Member Objects
             ///////////////////
+            case 'TicketObject':
+                /**
+                 * Sets the value for the Ticket object referenced by intTicket 
+                 * @param Ticket $mixValue
+                 * @return Ticket
+                 */
+                if (is_null($mixValue)) {
+                    $this->intTicket = null;
+                    $this->objTicketObject = null;
+                    return null;
+                } else {
+                    // Make sure $mixValue actually is a Ticket object
+                    try {
+                        $mixValue = dxType::Cast($mixValue, 'Ticket');
+                    } catch (dxInvalidCastException $objExc) {
+                        $objExc->IncrementOffset();
+                        throw $objExc;
+                    }
+
+                    // Make sure $mixValue is a SAVED Ticket object
+                    if (is_null($mixValue->Id))
+                        throw new dxCallerException('Unable to set an unsaved TicketObject for this SubTask');
+
+                    // Update Local Member Variables
+                    $this->objTicketObject = $mixValue;
+                    $this->intTicket = $mixValue->Id;
+
+                    // Return $mixValue
+                    return $mixValue;
+                }
+                break;
+
             default:
                 try {
                     return parent::__set($strName, $mixValue);
@@ -1362,155 +1360,6 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
 
 
 
-    // Related Objects' Methods for Note
-    //-------------------------------------------------------------------
-
-    /**
-     * Gets all associated Notes as an array of Note objects
-     * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
-     * @return Note[]
-    */
-    public function GetNoteArray($objOptionalClauses = null) {
-        if ((is_null($this->intId)))
-            return array();
-
-        try {
-            return Note::LoadArrayByFileDocument($this->intId, $objOptionalClauses);
-        } catch (dxCallerException $objExc) {
-            $objExc->IncrementOffset();
-            throw $objExc;
-        }
-    }
-
-    /**
-     * Counts all associated Notes
-     * @return int
-    */
-    public function CountNotes() {
-        if ((is_null($this->intId)))
-            return 0;
-
-        return Note::CountByFileDocument($this->intId);
-    }
-
-    /**
-     * Associates a Note
-     * @param Note $objNote
-     * @return void
-    */
-    public function AssociateNote(Note $objNote) {
-        if ((is_null($this->intId)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call AssociateNote on this unsaved FileDocument.');
-        if ((is_null($objNote->Id)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call AssociateNote on this FileDocument with an unsaved Note.');
-
-        // Get the Database Object for this Class
-        $objDatabase = FileDocument::GetDatabase();
-
-        // Perform the SQL Query
-        $objDatabase->NonQuery('
-            UPDATE
-                `Note`
-            SET
-                `FileDocument` = ' . $objDatabase->SqlVariable($this->intId) . '
-            WHERE
-                `Id` = ' . $objDatabase->SqlVariable($objNote->Id) . '
-        ');
-    }
-
-    /**
-     * Unassociates a Note
-     * @param Note $objNote
-     * @return void
-    */
-    public function UnassociateNote(Note $objNote) {
-        if ((is_null($this->intId)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateNote on this unsaved FileDocument.');
-        if ((is_null($objNote->Id)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateNote on this FileDocument with an unsaved Note.');
-
-        // Get the Database Object for this Class
-        $objDatabase = FileDocument::GetDatabase();
-
-        // Perform the SQL Query
-        $objDatabase->NonQuery('
-            UPDATE
-                `Note`
-            SET
-                `FileDocument` = null
-            WHERE
-                `Id` = ' . $objDatabase->SqlVariable($objNote->Id) . ' AND
-                `FileDocument` = ' . $objDatabase->SqlVariable($this->intId) . '
-        ');
-    }
-
-    /**
-     * Unassociates all Notes
-     * @return void
-    */
-    public function UnassociateAllNotes() {
-        if ((is_null($this->intId)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateNote on this unsaved FileDocument.');
-
-        // Get the Database Object for this Class
-        $objDatabase = FileDocument::GetDatabase();
-
-        // Perform the SQL Query
-        $objDatabase->NonQuery('
-            UPDATE
-                `Note`
-            SET
-                `FileDocument` = null
-            WHERE
-                `FileDocument` = ' . $objDatabase->SqlVariable($this->intId) . '
-        ');
-    }
-
-    /**
-     * Deletes an associated Note
-     * @param Note $objNote
-     * @return void
-    */
-    public function DeleteAssociatedNote(Note $objNote) {
-        if ((is_null($this->intId)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateNote on this unsaved FileDocument.');
-        if ((is_null($objNote->Id)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateNote on this FileDocument with an unsaved Note.');
-
-        // Get the Database Object for this Class
-        $objDatabase = FileDocument::GetDatabase();
-
-        // Perform the SQL Query
-        $objDatabase->NonQuery('
-            DELETE FROM
-                `Note`
-            WHERE
-                `Id` = ' . $objDatabase->SqlVariable($objNote->Id) . ' AND
-                `FileDocument` = ' . $objDatabase->SqlVariable($this->intId) . '
-        ');
-    }
-
-    /**
-     * Deletes all associated Notes
-     * @return void
-    */
-    public function DeleteAllNotes() {
-        if ((is_null($this->intId)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateNote on this unsaved FileDocument.');
-
-        // Get the Database Object for this Class
-        $objDatabase = FileDocument::GetDatabase();
-
-        // Perform the SQL Query
-        $objDatabase->NonQuery('
-            DELETE FROM
-                `Note`
-            WHERE
-                `FileDocument` = ' . $objDatabase->SqlVariable($this->intId) . '
-        ');
-    }
-
-
     
 ///////////////////////////////
     // METHODS TO EXTRACT INFO ABOUT THE CLASS
@@ -1521,7 +1370,7 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
      * @return string Name of the table from which this class has been created.
      */
     public static function GetTableName() {
-        return "FileDocument";
+        return "SubTask";
     }
 
     /**
@@ -1529,7 +1378,7 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
      * @return string Name of the table from which this class has been created.
      */
     public static function GetDatabaseName() {
-        return ProjectFunctions::$Database[FileDocument::GetDatabaseIndex()]->Database;
+        return ProjectFunctions::$Database[SubTask::GetDatabaseIndex()]->Database;
     }
 
     /**
@@ -1548,15 +1397,14 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
     ////////////////////////////////////////
 
     public static function GetSoapComplexTypeXml() {
-        $strToReturn = '<complexType name="FileDocument"><sequence>';
+        $strToReturn = '<complexType name="SubTask"><sequence>';
         $strToReturn .= '<element name="Id" type="xsd:int"/>';
-        $strToReturn .= '<element name="FileName" type="xsd:string"/>';
-        $strToReturn .= '<element name="Path" type="xsd:string"/>';
-        $strToReturn .= '<element name="UploadedFileName" type="xsd:string"/>';
-        $strToReturn .= '<element name="FileType" type="xsd:string"/>';
-        $strToReturn .= '<element name="SizeInKilobytes" type="xsd:string"/>';
-        $strToReturn .= '<element name="CreatedDate" type="xsd:dateTime"/>';
+        $strToReturn .= '<element name="Description" type="xsd:string"/>';
+        $strToReturn .= '<element name="SubTaskStatus" type="xsd:string"/>';
+        $strToReturn .= '<element name="SubTaskDueDate" type="xsd:string"/>';
         $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
+        $strToReturn .= '<element name="TicketObject" type="xsd1:Ticket"/>';
+        $strToReturn .= '<element name="SearchMetaInfo" type="xsd:string"/>';
         $strToReturn .= '<element name="ObjectOwner" type="xsd:int"/>';
         $strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
         $strToReturn .= '</sequence></complexType>';
@@ -1564,8 +1412,9 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
     }
 
     public static function AlterSoapComplexTypeArray(&$strComplexTypeArray) {
-        if (!array_key_exists('FileDocument', $strComplexTypeArray)) {
-            $strComplexTypeArray['FileDocument'] = FileDocument::GetSoapComplexTypeXml();
+        if (!array_key_exists('SubTask', $strComplexTypeArray)) {
+            $strComplexTypeArray['SubTask'] = SubTask::GetSoapComplexTypeXml();
+            Ticket::AlterSoapComplexTypeArray($strComplexTypeArray);
         }
     }
 
@@ -1573,29 +1422,28 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
         $objArrayToReturn = array();
 
         foreach ($objSoapArray as $objSoapObject)
-            array_push($objArrayToReturn, FileDocument::GetObjectFromSoapObject($objSoapObject));
+            array_push($objArrayToReturn, SubTask::GetObjectFromSoapObject($objSoapObject));
 
         return $objArrayToReturn;
     }
 
     public static function GetObjectFromSoapObject($objSoapObject) {
-        $objToReturn = new FileDocument();
+        $objToReturn = new SubTask();
         if (property_exists($objSoapObject, 'Id'))
             $objToReturn->intId = $objSoapObject->Id;
-        if (property_exists($objSoapObject, 'FileName'))
-            $objToReturn->strFileName = $objSoapObject->FileName;
-        if (property_exists($objSoapObject, 'Path'))
-            $objToReturn->strPath = $objSoapObject->Path;
-        if (property_exists($objSoapObject, 'UploadedFileName'))
-            $objToReturn->strUploadedFileName = $objSoapObject->UploadedFileName;
-        if (property_exists($objSoapObject, 'FileType'))
-            $objToReturn->strFileType = $objSoapObject->FileType;
-        if (property_exists($objSoapObject, 'SizeInKilobytes'))
-            $objToReturn->strSizeInKilobytes = $objSoapObject->SizeInKilobytes;
-        if (property_exists($objSoapObject, 'CreatedDate'))
-            $objToReturn->dttCreatedDate = new dxDateTime($objSoapObject->CreatedDate);
+        if (property_exists($objSoapObject, 'Description'))
+            $objToReturn->strDescription = $objSoapObject->Description;
+        if (property_exists($objSoapObject, 'SubTaskStatus'))
+            $objToReturn->strSubTaskStatus = $objSoapObject->SubTaskStatus;
+        if (property_exists($objSoapObject, 'SubTaskDueDate'))
+            $objToReturn->strSubTaskDueDate = $objSoapObject->SubTaskDueDate;
         if (property_exists($objSoapObject, 'LastUpdated'))
             $objToReturn->strLastUpdated = $objSoapObject->LastUpdated;
+        if ((property_exists($objSoapObject, 'TicketObject')) &&
+            ($objSoapObject->TicketObject))
+            $objToReturn->TicketObject = Ticket::GetObjectFromSoapObject($objSoapObject->TicketObject);
+        if (property_exists($objSoapObject, 'SearchMetaInfo'))
+            $objToReturn->strSearchMetaInfo = $objSoapObject->SearchMetaInfo;
         if (property_exists($objSoapObject, 'ObjectOwner'))
             $objToReturn->intObjectOwner = $objSoapObject->ObjectOwner;
         if (property_exists($objSoapObject, '__blnRestored'))
@@ -1610,14 +1458,16 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
         $objArrayToReturn = array();
 
         foreach ($objArray as $objObject)
-            array_push($objArrayToReturn, FileDocument::GetSoapObjectFromObject($objObject, true));
+            array_push($objArrayToReturn, SubTask::GetSoapObjectFromObject($objObject, true));
 
         return unserialize(serialize($objArrayToReturn));
     }
 
     public static function GetSoapObjectFromObject($objObject, $blnBindRelatedObjects) {
-        if ($objObject->dttCreatedDate)
-            $objObject->dttCreatedDate = $objObject->dttCreatedDate->qFormat(dxDateTime::FormatSoap);
+        if ($objObject->objTicketObject)
+            $objObject->objTicketObject = Ticket::GetSoapObjectFromObject($objObject->objTicketObject, false);
+        else if (!$blnBindRelatedObjects)
+            $objObject->intTicket = null;
         return $objObject;
     }
 
@@ -1633,13 +1483,12 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
         // Member Variables
         ///////////////////
         $iArray['Id'] = $this->intId;
-        $iArray['FileName'] = $this->strFileName;
-        $iArray['Path'] = $this->strPath;
-        $iArray['UploadedFileName'] = $this->strUploadedFileName;
-        $iArray['FileType'] = $this->strFileType;
-        $iArray['SizeInKilobytes'] = $this->strSizeInKilobytes;
-        $iArray['CreatedDate'] = $this->dttCreatedDate;
+        $iArray['Description'] = $this->strDescription;
+        $iArray['SubTaskStatus'] = $this->strSubTaskStatus;
+        $iArray['SubTaskDueDate'] = $this->strSubTaskDueDate;
         $iArray['LastUpdated'] = $this->strLastUpdated;
+        $iArray['Ticket'] = $this->intTicket;
+        $iArray['SearchMetaInfo'] = $this->strSearchMetaInfo;
         $iArray['ObjectOwner'] = $this->intObjectOwner;
         return new ArrayIterator($iArray);
     }
@@ -1676,46 +1525,43 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
      * @uses dxQueryNode
      *
      * @property-read dxQueryNode $Id
-     * @property-read dxQueryNode $FileName
-     * @property-read dxQueryNode $Path
-     * @property-read dxQueryNode $UploadedFileName
-     * @property-read dxQueryNode $FileType
-     * @property-read dxQueryNode $SizeInKilobytes
-     * @property-read dxQueryNode $CreatedDate
+     * @property-read dxQueryNode $Description
+     * @property-read dxQueryNode $SubTaskStatus
+     * @property-read dxQueryNode $SubTaskDueDate
      * @property-read dxQueryNode $LastUpdated
+     * @property-read dxQueryNode $Ticket
+     * @property-read dxQueryNodeTicket $TicketObject
+     * @property-read dxQueryNode $SearchMetaInfo
      * @property-read dxQueryNode $ObjectOwner
      *
      *
-     * @property-read dxQueryReverseReferenceNodeNote $Note
 
      * @property-read dxQueryNode $_PrimaryKeyNode
      **/
-	class dxQueryNodeFileDocument extends dxQueryNode {
-		protected $strTableName = 'FileDocument';
+	class dxQueryNodeSubTask extends dxQueryNode {
+		protected $strTableName = 'SubTask';
 		protected $strPrimaryKey = 'Id';
-		protected $strClassName = 'FileDocument';
+		protected $strClassName = 'SubTask';
 		public function __get($strName) {
 			switch ($strName) {
 				case 'Id':
 					return new dxQueryNode('Id', 'Id', 'Integer', $this);
-				case 'FileName':
-					return new dxQueryNode('FileName', 'FileName', 'VarChar', $this);
-				case 'Path':
-					return new dxQueryNode('Path', 'Path', 'VarChar', $this);
-				case 'UploadedFileName':
-					return new dxQueryNode('UploadedFileName', 'UploadedFileName', 'VarChar', $this);
-				case 'FileType':
-					return new dxQueryNode('FileType', 'FileType', 'VarChar', $this);
-				case 'SizeInKilobytes':
-					return new dxQueryNode('SizeInKilobytes', 'SizeInKilobytes', 'VarChar', $this);
-				case 'CreatedDate':
-					return new dxQueryNode('CreatedDate', 'CreatedDate', 'DateTime', $this);
+				case 'Description':
+					return new dxQueryNode('Description', 'Description', 'Blob', $this);
+				case 'SubTaskStatus':
+					return new dxQueryNode('SubTaskStatus', 'SubTaskStatus', 'VarChar', $this);
+				case 'SubTaskDueDate':
+					return new dxQueryNode('SubTaskDueDate', 'SubTaskDueDate', 'VarChar', $this);
 				case 'LastUpdated':
 					return new dxQueryNode('LastUpdated', 'LastUpdated', 'VarChar', $this);
+				case 'Ticket':
+					return new dxQueryNode('Ticket', 'Ticket', 'Integer', $this);
+				case 'TicketObject':
+					return new dxQueryNodeTicket('Ticket', 'TicketObject', 'Integer', $this);
+				case 'SearchMetaInfo':
+					return new dxQueryNode('SearchMetaInfo', 'SearchMetaInfo', 'Blob', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'Integer', $this);
-				case 'Note':
-					return new dxQueryReverseReferenceNodeNote($this, 'note', 'reverse_reference', 'FileDocument', 'Note');
 
 				case '_PrimaryKeyNode':
 					return new dxQueryNode('Id', 'Id', 'Integer', $this);
@@ -1732,46 +1578,43 @@ class FileDocumentGen extends dxBaseClass implements IteratorAggregate {
 
     /**
      * @property-read dxQueryNode $Id
-     * @property-read dxQueryNode $FileName
-     * @property-read dxQueryNode $Path
-     * @property-read dxQueryNode $UploadedFileName
-     * @property-read dxQueryNode $FileType
-     * @property-read dxQueryNode $SizeInKilobytes
-     * @property-read dxQueryNode $CreatedDate
+     * @property-read dxQueryNode $Description
+     * @property-read dxQueryNode $SubTaskStatus
+     * @property-read dxQueryNode $SubTaskDueDate
      * @property-read dxQueryNode $LastUpdated
+     * @property-read dxQueryNode $Ticket
+     * @property-read dxQueryNodeTicket $TicketObject
+     * @property-read dxQueryNode $SearchMetaInfo
      * @property-read dxQueryNode $ObjectOwner
      *
      *
-     * @property-read dxQueryReverseReferenceNodeNote $Note
 
      * @property-read dxQueryNode $_PrimaryKeyNode
      **/
-	class dxQueryReverseReferenceNodeFileDocument extends dxQueryReverseReferenceNode {
-		protected $strTableName = 'FileDocument';
+	class dxQueryReverseReferenceNodeSubTask extends dxQueryReverseReferenceNode {
+		protected $strTableName = 'SubTask';
 		protected $strPrimaryKey = 'Id';
-		protected $strClassName = 'FileDocument';
+		protected $strClassName = 'SubTask';
 		public function __get($strName) {
 			switch ($strName) {
 				case 'Id':
 					return new dxQueryNode('Id', 'Id', 'integer', $this);
-				case 'FileName':
-					return new dxQueryNode('FileName', 'FileName', 'string', $this);
-				case 'Path':
-					return new dxQueryNode('Path', 'Path', 'string', $this);
-				case 'UploadedFileName':
-					return new dxQueryNode('UploadedFileName', 'UploadedFileName', 'string', $this);
-				case 'FileType':
-					return new dxQueryNode('FileType', 'FileType', 'string', $this);
-				case 'SizeInKilobytes':
-					return new dxQueryNode('SizeInKilobytes', 'SizeInKilobytes', 'string', $this);
-				case 'CreatedDate':
-					return new dxQueryNode('CreatedDate', 'CreatedDate', 'dxDateTime', $this);
+				case 'Description':
+					return new dxQueryNode('Description', 'Description', 'string', $this);
+				case 'SubTaskStatus':
+					return new dxQueryNode('SubTaskStatus', 'SubTaskStatus', 'string', $this);
+				case 'SubTaskDueDate':
+					return new dxQueryNode('SubTaskDueDate', 'SubTaskDueDate', 'string', $this);
 				case 'LastUpdated':
 					return new dxQueryNode('LastUpdated', 'LastUpdated', 'string', $this);
+				case 'Ticket':
+					return new dxQueryNode('Ticket', 'Ticket', 'integer', $this);
+				case 'TicketObject':
+					return new dxQueryNodeTicket('Ticket', 'TicketObject', 'integer', $this);
+				case 'SearchMetaInfo':
+					return new dxQueryNode('SearchMetaInfo', 'SearchMetaInfo', 'string', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'integer', $this);
-				case 'Note':
-					return new dxQueryReverseReferenceNodeNote($this, 'note', 'reverse_reference', 'FileDocument', 'Note');
 
 				case '_PrimaryKeyNode':
 					return new dxQueryNode('Id', 'Id', 'integer', $this);
