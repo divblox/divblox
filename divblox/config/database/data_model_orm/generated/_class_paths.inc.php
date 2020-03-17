@@ -64,6 +64,11 @@
     ProjectFunctions::$ClassFile['dxquerynodefiledocument'] = DATA_MODEL_ORM_PATH_STR.'/FileDocument.class.php';
     ProjectFunctions::$ClassFile['dxreversereferencenodefiledocument'] = DATA_MODEL_ORM_PATH_STR.'/FileDocument.class.php';
 
+	// ClassPaths for the Note class
+    ProjectFunctions::$ClassFile['note'] = DATA_MODEL_ORM_PATH_STR.'/Note.class.php';
+    ProjectFunctions::$ClassFile['dxquerynodenote'] = DATA_MODEL_ORM_PATH_STR.'/Note.class.php';
+    ProjectFunctions::$ClassFile['dxreversereferencenodenote'] = DATA_MODEL_ORM_PATH_STR.'/Note.class.php';
+
 	// ClassPaths for the PageView class
     ProjectFunctions::$ClassFile['pageview'] = DATA_MODEL_ORM_PATH_STR.'/PageView.class.php';
     ProjectFunctions::$ClassFile['dxquerynodepageview'] = DATA_MODEL_ORM_PATH_STR.'/PageView.class.php';

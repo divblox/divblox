@@ -1,37 +1,38 @@
 <?php
 /**
- * The abstract CategoryGen class defined here is
+ * The abstract NoteGen class defined here is
  * code-generated and contains all the basic CRUD-type functionality as well as
  * basic methods to handle relationships and index-based loading.
  *
- * To use, you should use the Category subclass which
- * extends this CategoryGen class.
+ * To use, you should use the Note subclass which
+ * extends this NoteGen class.
  *
  * Because subsequent re-code generations will overwrite any changes to this
  * file, you should leave this file unaltered to prevent yourself from losing
  * any information or code changes.  All customizations should be done by
  * overriding existing or implementing new methods, properties and variables
- * in the Category class.
+ * in the Note class.
  *
  * @package divblox_app
  * @subpackage GeneratedDataObjects
  * @property-read integer $Id the value for intId (Read-Only PK)
- * @property string $CategoryLabel the value for strCategoryLabel 
- * @property integer $TicketCount the value for intTicketCount 
+ * @property string $NoteDescription the value for strNoteDescription 
+ * @property dxDateTime $NoteCreationDate the value for dttNoteCreationDate 
  * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
+ * @property integer $Ticket the value for intTicket 
+ * @property string $SearchMetaInfo the value for strSearchMetaInfo 
  * @property integer $ObjectOwner the value for intObjectOwner 
- * @property-read Ticket $_Ticket the value for the private _objTicket (Read-Only) if set due to an expansion on the Ticket.Category reverse relationship
- * @property-read Ticket[] $_TicketArray the value for the private _objTicketArray (Read-Only) if set due to an ExpandAsArray on the Ticket.Category reverse relationship
+ * @property Ticket $TicketObject the value for the Ticket object referenced by intTicket 
  * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
  */
-class CategoryGen extends dxBaseClass implements IteratorAggregate {
+class NoteGen extends dxBaseClass implements IteratorAggregate {
 
     ///////////////////////////////////////////////////////////////////////
     // PROTECTED MEMBER VARIABLES and TEXT FIELD MAXLENGTHS (if applicable)
     ///////////////////////////////////////////////////////////////////////
 
     /**
-     * Protected member variable that maps to the database PK Identity column Category.Id
+     * Protected member variable that maps to the database PK Identity column Note.Id
      * @var integer intId
      */
     protected $intId;
@@ -39,24 +40,23 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
-     * Protected member variable that maps to the database column Category.CategoryLabel
-     * @var string strCategoryLabel
+     * Protected member variable that maps to the database column Note.NoteDescription
+     * @var string strNoteDescription
      */
-    protected $strCategoryLabel;
-    const CategoryLabelMaxLength = 50;
-    const CategoryLabelDefault = null;
+    protected $strNoteDescription;
+    const NoteDescriptionDefault = null;
 
 
     /**
-     * Protected member variable that maps to the database column Category.TicketCount
-     * @var integer intTicketCount
+     * Protected member variable that maps to the database column Note.NoteCreationDate
+     * @var dxDateTime dttNoteCreationDate
      */
-    protected $intTicketCount;
-    const TicketCountDefault = null;
+    protected $dttNoteCreationDate;
+    const NoteCreationDateDefault = null;
 
 
     /**
-     * Protected member variable that maps to the database column Category.LastUpdated
+     * Protected member variable that maps to the database column Note.LastUpdated
      * @var string strLastUpdated
      */
     protected $strLastUpdated;
@@ -64,28 +64,28 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
-     * Protected member variable that maps to the database column Category.ObjectOwner
+     * Protected member variable that maps to the database column Note.Ticket
+     * @var integer intTicket
+     */
+    protected $intTicket;
+    const TicketDefault = null;
+
+
+    /**
+     * Protected member variable that maps to the database column Note.SearchMetaInfo
+     * @var string strSearchMetaInfo
+     */
+    protected $strSearchMetaInfo;
+    const SearchMetaInfoDefault = null;
+
+
+    /**
+     * Protected member variable that maps to the database column Note.ObjectOwner
      * @var integer intObjectOwner
      */
     protected $intObjectOwner;
     const ObjectOwnerDefault = null;
 
-
-    /**
-     * Private member variable that stores a reference to a single Ticket object
-     * (of type Ticket), if this Category object was restored with
-     * an expansion on the Ticket association table.
-     * @var Ticket _objTicket;
-     */
-    private $_objTicket;
-
-    /**
-     * Private member variable that stores a reference to an array of Ticket objects
-     * (of type Ticket[]), if this Category object was restored with
-     * an ExpandAsArray on the Ticket association table.
-     * @var Ticket[] _objTicketArray;
-     */
-    private $_objTicketArray = null;
 
     /**
      * Protected array of virtual attributes for this object (e.g. extra/other calculated and/or non-object bound
@@ -106,16 +106,28 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
     // PROTECTED MEMBER OBJECTS
     ///////////////////////////////
 
+    /**
+     * Protected member variable that contains the object pointed by the reference
+     * in the database column Note.Ticket.
+     *
+     * NOTE: Always use the TicketObject property getter to correctly retrieve this Ticket object.
+     * (Because this class implements late binding, this variable reference MAY be null.)
+     * @var Ticket objTicketObject
+     */
+    protected $objTicketObject;
+
 
     /**
      * Initialize each property with default values from database definition
      */
     public function Initialize() {
-        $this->intId = Category::IdDefault;
-        $this->strCategoryLabel = Category::CategoryLabelDefault;
-        $this->intTicketCount = Category::TicketCountDefault;
-        $this->strLastUpdated = Category::LastUpdatedDefault;
-        $this->intObjectOwner = Category::ObjectOwnerDefault;
+        $this->intId = Note::IdDefault;
+        $this->strNoteDescription = Note::NoteDescriptionDefault;
+        $this->dttNoteCreationDate = (Note::NoteCreationDateDefault === null)?null:new dxDateTime(Note::NoteCreationDateDefault);
+        $this->strLastUpdated = Note::LastUpdatedDefault;
+        $this->intTicket = Note::TicketDefault;
+        $this->strSearchMetaInfo = Note::SearchMetaInfoDefault;
+        $this->intObjectOwner = Note::ObjectOwnerDefault;
     }
 
     ///////////////////////////////
@@ -131,24 +143,24 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Load a Category from PK Info
+     * Load a Note from PK Info
      * @param integer $intId
      * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
-     * @return Category
+     * @return Note
      */
     public static function Load($intId, $objOptionalClauses = null) {
         $strCacheKey = false;
         if (ProjectFunctions::$objCacheProvider && !$objOptionalClauses && ProjectFunctions::$Database[1]->Caching) {
-            $strCacheKey = ProjectFunctions::$objCacheProvider->CreateKey(ProjectFunctions::$Database[1]->Database, 'Category', $intId);
+            $strCacheKey = ProjectFunctions::$objCacheProvider->CreateKey(ProjectFunctions::$Database[1]->Database, 'Note', $intId);
             $objCachedObject = ProjectFunctions::$objCacheProvider->Get($strCacheKey);
             if ($objCachedObject !== false) {
                 return $objCachedObject;
             }
         }
         // Use QuerySingle to Perform the Query
-        $objToReturn = Category::QuerySingle(
+        $objToReturn = Note::QuerySingle(
             dxQuery::AndCondition(
-                dxQuery::Equal(dxQueryN::Category()->Id, $intId)
+                dxQuery::Equal(dxQueryN::Note()->Id, $intId)
             ),
             $objOptionalClauses
         );
@@ -159,17 +171,17 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Load all Categories
+     * Load all Notes
      * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
-     * @return Category[]
+     * @return Note[]
      */
     public static function LoadAll($objOptionalClauses = null) {
         if (func_num_args() > 1) {
             throw new dxCallerException("LoadAll must be called with an array of optional clauses as a single argument");
         }
-        // Call Category::QueryArray to perform the LoadAll query
+        // Call Note::QueryArray to perform the LoadAll query
         try {
-            return Category::QueryArray(dxQuery::All(), $objOptionalClauses);
+            return Note::QueryArray(dxQuery::All(), $objOptionalClauses);
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();
             throw $objExc;
@@ -177,12 +189,12 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Count all Categories
+     * Count all Notes
      * @return int
      */
     public static function CountAll() {
-        // Call Category::QueryCount to perform the CountAll query
-        return Category::QueryCount(dxQuery::All());
+        // Call Note::QueryCount to perform the CountAll query
+        return Note::QueryCount(dxQuery::All());
     }
 
     ///////////////////////////////
@@ -201,10 +213,10 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
      */
     protected static function BuildQueryStatement(&$objQueryBuilder, dxQueryCondition $objConditions, $objOptionalClauses, $mixParameterArray, $blnCountOnly) {
         // Get the Database Object for this Class
-        $objDatabase = Category::GetDatabase();
+        $objDatabase = Note::GetDatabase();
 
-        // Create/Build out the QueryBuilder object with Category-specific SELET and FROM fields
-        $objQueryBuilder = new dxQueryBuilder($objDatabase, 'Category');
+        // Create/Build out the QueryBuilder object with Note-specific SELET and FROM fields
+        $objQueryBuilder = new dxQueryBuilder($objDatabase, 'Note');
 
         $blnAddAllFieldsToSelect = true;
         if ($objDatabase->OnlyFullGroupBy) {
@@ -223,9 +235,9 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
             }
         }
         if ($blnAddAllFieldsToSelect) {
-            Category::GetSelectFields($objQueryBuilder, null, dxQuery::extractSelectClause($objOptionalClauses));
+            Note::GetSelectFields($objQueryBuilder, null, dxQuery::extractSelectClause($objOptionalClauses));
         }
-        $objQueryBuilder->AddFromItem('Category');
+        $objQueryBuilder->AddFromItem('Note');
 
         // Set "CountOnly" option (if applicable)
         if ($blnCountOnly)
@@ -272,23 +284,23 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Static divblox Query method to query for a single Category object.
+     * Static divblox Query method to query for a single Note object.
      * Uses BuildQueryStatment to perform most of the work.
      * @param dxQueryCondition $objConditions any conditions on the query, itself
      * @param dxQueryClause[] $objOptionalClausees additional optional dxQueryClause objects for this query
      * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
-     * @return Category the queried object
+     * @return Note the queried object
      */
     public static function QuerySingle(dxQueryCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
         // Get the Query Statement
         try {
-            $strQuery = Category::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+            $strQuery = Note::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();
             throw $objExc;
         }
 
-        // Perform the Query, Get the First Row, and Instantiate a new Category object
+        // Perform the Query, Get the First Row, and Instantiate a new Note object
         $objDbResult = $objQueryBuilder->Database->Query($strQuery);
 
         // Do we have to expand anything?
@@ -296,7 +308,7 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
             $objToReturn = array();
             $objPrevItemArray = array();
             while ($objDbRow = $objDbResult->GetNextRow()) {
-                $objItem = Category::InstantiateDbRow($objDbRow, null, $objQueryBuilder->ExpandAsArrayNode, $objPrevItemArray, $objQueryBuilder->ColumnAliasArray);
+                $objItem = Note::InstantiateDbRow($objDbRow, null, $objQueryBuilder->ExpandAsArrayNode, $objPrevItemArray, $objQueryBuilder->ColumnAliasArray);
                 if ($objItem) {
                     $objToReturn[] = $objItem;
                     $objPrevItemArray[$objItem->intId][] = $objItem;
@@ -313,22 +325,22 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
             $objDbRow = $objDbResult->GetNextRow();
             if(null === $objDbRow)
                 return null;
-            return Category::InstantiateDbRow($objDbRow, null, null, null, $objQueryBuilder->ColumnAliasArray);
+            return Note::InstantiateDbRow($objDbRow, null, null, null, $objQueryBuilder->ColumnAliasArray);
         }
     }
 
     /**
-     * Static divblox Query method to query for an array of Category objects.
+     * Static divblox Query method to query for an array of Note objects.
      * Uses BuildQueryStatment to perform most of the work.
      * @param dxQueryCondition $objConditions any conditions on the query, itself
      * @param dxQueryClause[] $objOptionalClausees additional optional dxQueryClause objects for this query
      * @param mixed[] $mixParameterArray a array of name-value pairs to perform PrepareStatement with
-     * @return Category[] the queried objects as an array
+     * @return Note[] the queried objects as an array
      */
     public static function QueryArray(dxQueryCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
         // Get the Query Statement
         try {
-            $strQuery = Category::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+            $strQuery = Note::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();
             throw $objExc;
@@ -336,7 +348,7 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
 
         // Perform the Query and Instantiate the Array Result
         $objDbResult = $objQueryBuilder->Database->Query($strQuery);
-        return Category::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNode, $objQueryBuilder->ColumnAliasArray);
+        return Note::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNode, $objQueryBuilder->ColumnAliasArray);
     }
 
     /**
@@ -350,7 +362,7 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
     public static function QueryCursor(dxQueryCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
         // Get the query statement
         try {
-            $strQuery = Category::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+            $strQuery = Note::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();
             throw $objExc;
@@ -365,7 +377,7 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Static divblox Query method to query for a count of Category objects.
+     * Static divblox Query method to query for a count of Note objects.
      * Uses BuildQueryStatment to perform most of the work.
      * @param dxQueryCondition $objConditions any conditions on the query, itself
      * @param dxQueryClause[] $objOptionalClausees additional optional dxQueryClause objects for this query
@@ -375,7 +387,7 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
     public static function QueryCount(dxQueryCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null) {
         // Get the Query Statement
         try {
-            $strQuery = Category::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, true);
+            $strQuery = Note::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, true);
         } catch (dxCallerException $objExc) {
             $objExc->IncrementOffset();
             throw $objExc;
@@ -416,16 +428,16 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
 
     public static function QueryArrayCached(dxQueryCondition $objConditions, $objOptionalClauses = null, $mixParameterArray = null, $blnForceUpdate = false) {
         // Get the Database Object for this Class
-        $objDatabase = Category::GetDatabase();
+        $objDatabase = Note::GetDatabase();
 
-        $strQuery = Category::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
+        $strQuery = Note::BuildQueryStatement($objQueryBuilder, $objConditions, $objOptionalClauses, $mixParameterArray, false);
 
-        $objCache = new dxCache('dxquery/category', $strQuery);
+        $objCache = new dxCache('dxquery/note', $strQuery);
         $cacheData = $objCache->GetData();
 
         if (!$cacheData || $blnForceUpdate) {
             $objDbResult = $objQueryBuilder->Database->Query($strQuery);
-            $arrResult = Category::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNode, $objQueryBuilder->ColumnAliasArray);
+            $arrResult = Note::InstantiateDbResult($objDbResult, $objQueryBuilder->ExpandAsArrayNode, $objQueryBuilder->ColumnAliasArray);
             $objCache->SaveData(serialize($arrResult));
         } else {
             $arrResult = unserialize($cacheData);
@@ -435,7 +447,7 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Updates a dxQueryBuilder with the SELECT fields for this Category
+     * Updates a dxQueryBuilder with the SELECT fields for this Note
      * @param dxQueryBuilder $objBuilder the Query Builder object to update
      * @param string $strPrefix optional prefix to add to the SELECT fields
      */
@@ -444,7 +456,7 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
             $strTableName = $strPrefix;
             $strAliasPrefix = $strPrefix . '__';
         } else {
-            $strTableName = 'Category';
+            $strTableName = 'Note';
             $strAliasPrefix = '';
         }
 
@@ -453,9 +465,11 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
             $objSelect->AddSelectItems($objBuilder, $strTableName, $strAliasPrefix);
         } else {
             $objBuilder->AddSelectItem($strTableName, 'Id', $strAliasPrefix . 'Id');
-            $objBuilder->AddSelectItem($strTableName, 'CategoryLabel', $strAliasPrefix . 'CategoryLabel');
-            $objBuilder->AddSelectItem($strTableName, 'TicketCount', $strAliasPrefix . 'TicketCount');
+            $objBuilder->AddSelectItem($strTableName, 'NoteDescription', $strAliasPrefix . 'NoteDescription');
+            $objBuilder->AddSelectItem($strTableName, 'NoteCreationDate', $strAliasPrefix . 'NoteCreationDate');
             $objBuilder->AddSelectItem($strTableName, 'LastUpdated', $strAliasPrefix . 'LastUpdated');
+            $objBuilder->AddSelectItem($strTableName, 'Ticket', $strAliasPrefix . 'Ticket');
+            $objBuilder->AddSelectItem($strTableName, 'SearchMetaInfo', $strAliasPrefix . 'SearchMetaInfo');
             $objBuilder->AddSelectItem($strTableName, 'ObjectOwner', $strAliasPrefix . 'ObjectOwner');
         }
     }
@@ -541,16 +555,16 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Instantiate a Category from a Database Row.
+     * Instantiate a Note from a Database Row.
      * Takes in an optional strAliasPrefix, used in case another Object::InstantiateDbRow
-     * is calling this Category::InstantiateDbRow in order to perform
+     * is calling this Note::InstantiateDbRow in order to perform
      * early binding on referenced objects.
      * @param DatabaseRowBase $objDbRow
      * @param string $strAliasPrefix
      * @param dxQueryBaseNode $objExpandAsArrayNode
      * @param dxBaseClass $arrPreviousItem
      * @param string[] $strColumnAliasArray
-     * @return mixed Either a Category, or false to indicate the dbrow was used in an expansion, or null to indicate that this leaf is a duplicate.
+     * @return mixed Either a Note, or false to indicate the dbrow was used in an expansion, or null to indicate that this leaf is a duplicate.
     */
     public static function InstantiateDbRow($objDbRow, $strAliasPrefix = null, $objExpandAsArrayNode = null, $objPreviousItemArray = null, $strColumnAliasArray = array()) {
         // If blank row, return null
@@ -569,27 +583,33 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
                 is_array($objPreviousItemArray) &&
                 ProjectFunctions::getDataSetSize($objPreviousItemArray)) {
 
-            if (Category::ExpandArray ($objDbRow, $strAliasPrefix, $objExpandAsArrayNode, $objPreviousItemArray, $strColumnAliasArray)) {
+            if (Note::ExpandArray ($objDbRow, $strAliasPrefix, $objExpandAsArrayNode, $objPreviousItemArray, $strColumnAliasArray)) {
                 return false; // db row was used but no new object was created
             }
         }
 
-        // Create a new instance of the Category object
-        $objToReturn = new Category();
+        // Create a new instance of the Note object
+        $objToReturn = new Note();
         $objToReturn->__blnRestored = true;
 
         $strAlias = $strAliasPrefix . 'Id';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intId = $objDbRow->GetColumn($strAliasName, 'Integer');
-        $strAlias = $strAliasPrefix . 'CategoryLabel';
+        $strAlias = $strAliasPrefix . 'NoteDescription';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->strCategoryLabel = $objDbRow->GetColumn($strAliasName, 'VarChar');
-        $strAlias = $strAliasPrefix . 'TicketCount';
+        $objToReturn->strNoteDescription = $objDbRow->GetColumn($strAliasName, 'Blob');
+        $strAlias = $strAliasPrefix . 'NoteCreationDate';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->intTicketCount = $objDbRow->GetColumn($strAliasName, 'Integer');
+        $objToReturn->dttNoteCreationDate = $objDbRow->GetColumn($strAliasName, 'Date');
         $strAlias = $strAliasPrefix . 'LastUpdated';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->strLastUpdated = $objDbRow->GetColumn($strAliasName, 'VarChar');
+        $strAlias = $strAliasPrefix . 'Ticket';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->intTicket = $objDbRow->GetColumn($strAliasName, 'Integer');
+        $strAlias = $strAliasPrefix . 'SearchMetaInfo';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->strSearchMetaInfo = $objDbRow->GetColumn($strAliasName, 'Blob');
         $strAlias = $strAliasPrefix . 'ObjectOwner';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intObjectOwner = $objDbRow->GetColumn($strAliasName, 'Integer');
@@ -621,35 +641,27 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
         }
 
         if (!$strAliasPrefix)
-            $strAliasPrefix = 'Category__';
+            $strAliasPrefix = 'Note__';
 
-
-
-
-        // Check for Ticket Virtual Binding
-        $strAlias = $strAliasPrefix . 'ticket__Id';
+        // Check for TicketObject Early Binding
+        $strAlias = $strAliasPrefix . 'Ticket__Id';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objExpansionNode = (empty($objExpansionAliasArray['ticket']) ? null : $objExpansionAliasArray['ticket']);
-        $blnExpanded = ($objExpansionNode && $objExpansionNode->ExpandAsArray);
-        if ($blnExpanded && null === $objToReturn->_objTicketArray)
-            $objToReturn->_objTicketArray = array();
         if (!is_null($objDbRow->GetColumn($strAliasName))) {
-            if ($blnExpanded) {
-                $objToReturn->_objTicketArray[] = Ticket::InstantiateDbRow($objDbRow, $strAliasPrefix . 'ticket__', $objExpansionNode, null, $strColumnAliasArray);
-            } elseif (is_null($objToReturn->_objTicket)) {
-                $objToReturn->_objTicket = Ticket::InstantiateDbRow($objDbRow, $strAliasPrefix . 'ticket__', $objExpansionNode, null, $strColumnAliasArray);
-            }
+            $objExpansionNode = (empty($objExpansionAliasArray['Ticket']) ? null : $objExpansionAliasArray['Ticket']);
+            $objToReturn->objTicketObject = Ticket::InstantiateDbRow($objDbRow, $strAliasPrefix . 'Ticket__', $objExpansionNode, null, $strColumnAliasArray);
         }
+
+
 
         return $objToReturn;
     }
 
     /**
-     * Instantiate an array of Categories from a Database Result
+     * Instantiate an array of Notes from a Database Result
      * @param DatabaseResultBase $objDbResult
      * @param dxQueryBaseNode $objExpandAsArrayNode
      * @param string[] $strColumnAliasArray
-     * @return Category[]
+     * @return Note[]
      */
     public static function InstantiateDbResult(dxDatabaseResultBase $objDbResult, $objExpandAsArrayNode = null, $strColumnAliasArray = null) {
         $objToReturn = array();
@@ -666,7 +678,7 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
             $objToReturn = array();
             $objPrevItemArray = array();
             while ($objDbRow = $objDbResult->GetNextRow()) {
-                $objItem = Category::InstantiateDbRow($objDbRow, null, $objExpandAsArrayNode, $objPrevItemArray, $strColumnAliasArray);
+                $objItem = Note::InstantiateDbRow($objDbRow, null, $objExpandAsArrayNode, $objPrevItemArray, $strColumnAliasArray);
                 if ($objItem) {
                     $objToReturn[] = $objItem;
                     $objPrevItemArray[$objItem->intId][] = $objItem;
@@ -674,7 +686,7 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
             }
         } else {
             while ($objDbRow = $objDbResult->GetNextRow())
-                $objToReturn[] = Category::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
+                $objToReturn[] = Note::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
         }
 
         return $objToReturn;
@@ -682,11 +694,11 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
-     * Instantiate a single Category object from a query cursor (e.g. a DB ResultSet).
+     * Instantiate a single Note object from a query cursor (e.g. a DB ResultSet).
      * Cursor is automatically moved to the "next row" of the result set.
      * Will return NULL if no cursor or if the cursor has no more rows in the resultset.
      * @param dxDatabaseResultBase $objDbResult cursor resource
-     * @return Category next row resulting from the query
+     * @return Note next row resulting from the query
      */
     public static function InstantiateCursor(dxDatabaseResultBase $objDbResult) {
         // If blank resultset, then return empty result
@@ -707,7 +719,7 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
         }
 
         // Load up the return result with a row and return it
-        return Category::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
+        return Note::InstantiateDbRow($objDbRow, null, null, null, $strColumnAliasArray);
     }
 
     ///////////////////////////////////////////////////
@@ -715,18 +727,50 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
     ///////////////////////////////////////////////////
 
     /**
-     * Load a single Category object,
+     * Load a single Note object,
      * by Id Index(es)
      * @param integer $intId
      * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
-     * @return Category
+     * @return Note
     */
     public static function LoadById($intId, $objOptionalClauses = null) {
-        return Category::QuerySingle(
+        return Note::QuerySingle(
             dxQuery::AndCondition(
-                dxQuery::Equal(dxQueryN::Category()->Id, $intId)
+                dxQuery::Equal(dxQueryN::Note()->Id, $intId)
             ),
             $objOptionalClauses
+        );
+    }
+
+    /**
+     * Load an array of Note objects,
+     * by Ticket Index(es)
+     * @param integer $intTicket
+     * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
+     * @return Note[]
+    */
+    public static function LoadArrayByTicket($intTicket, $objOptionalClauses = null) {
+        // Call Note::QueryArray to perform the LoadArrayByTicket query
+        try {
+            return Note::QueryArray(
+                dxQuery::Equal(dxQueryN::Note()->Ticket, $intTicket),
+                $objOptionalClauses);
+        } catch (dxCallerException $objExc) {
+            $objExc->IncrementOffset();
+            throw $objExc;
+        }
+    }
+
+    /**
+     * Count Notes
+     * by Ticket Index(es)
+     * @param integer $intTicket
+     * @return int
+    */
+    public static function CountByTicket($intTicket) {
+        // Call Note::QueryCount to perform the CountByTicket query
+        return Note::QueryCount(
+            dxQuery::Equal(dxQueryN::Note()->Ticket, $intTicket)
         );
     }
     ////////////////////////////////////////////////////
@@ -739,32 +783,34 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
     //////////////////////////
 
     /**
-    * Save this Category
+    * Save this Note
     * @param bool $blnForceInsert
     * @param bool $blnForceUpdate
     * @return int
     */
     public function Save($blnForceInsert = false, $blnForceUpdate = false) {
-        $ObjectAccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),"Category",$this->intId);
+        $ObjectAccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),"Note",$this->intId);
         // Get the Database Object for this Class
-        $objDatabase = Category::GetDatabase();
+        $objDatabase = Note::GetDatabase();
         $mixToReturn = null;
         if (!is_numeric($this->intObjectOwner)) {
             $this->intObjectOwner = ProjectFunctions::getCurrentAccountId();
         }
-        $ExistingObj = Category::Load($this->intId);
+        $ExistingObj = Note::Load($this->intId);
         $newAuditLogEntry = new AuditLogEntry();
         $ChangedArray = array();
         $newAuditLogEntry->EntryTimeStamp = dxDateTime::Now();
         $newAuditLogEntry->ObjectId = $this->intId;
-        $newAuditLogEntry->ObjectName = 'Category';
+        $newAuditLogEntry->ObjectName = 'Note';
         $newAuditLogEntry->UserEmail = ProjectFunctions::getCurrentUserEmailForAudit();
         if (!$ExistingObj) {
             $newAuditLogEntry->ModificationType = 'Create';
             $ChangedArray = array_merge($ChangedArray,array("Id" => $this->intId));
-            $ChangedArray = array_merge($ChangedArray,array("CategoryLabel" => $this->strCategoryLabel));
-            $ChangedArray = array_merge($ChangedArray,array("TicketCount" => $this->intTicketCount));
+            $ChangedArray = array_merge($ChangedArray,array("NoteDescription" => $this->strNoteDescription));
+            $ChangedArray = array_merge($ChangedArray,array("NoteCreationDate" => $this->dttNoteCreationDate));
             $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
+            $ChangedArray = array_merge($ChangedArray,array("Ticket" => $this->intTicket));
+            $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
             $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
             $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         } else {
@@ -778,20 +824,20 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
                 //$ChangedArray = array_merge($ChangedArray,array("Id" => "From: ".$ExistingValueStr." to: ".$this->intId));
             }
             $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->CategoryLabel)) {
-                $ExistingValueStr = $ExistingObj->CategoryLabel;
+            if (!is_null($ExistingObj->NoteDescription)) {
+                $ExistingValueStr = $ExistingObj->NoteDescription;
             }
-            if ($ExistingObj->CategoryLabel != $this->strCategoryLabel) {
-                $ChangedArray = array_merge($ChangedArray,array("CategoryLabel" => array("Before" => $ExistingValueStr,"After" => $this->strCategoryLabel)));
-                //$ChangedArray = array_merge($ChangedArray,array("CategoryLabel" => "From: ".$ExistingValueStr." to: ".$this->strCategoryLabel));
+            if ($ExistingObj->NoteDescription != $this->strNoteDescription) {
+                $ChangedArray = array_merge($ChangedArray,array("NoteDescription" => array("Before" => $ExistingValueStr,"After" => $this->strNoteDescription)));
+                //$ChangedArray = array_merge($ChangedArray,array("NoteDescription" => "From: ".$ExistingValueStr." to: ".$this->strNoteDescription));
             }
             $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->TicketCount)) {
-                $ExistingValueStr = $ExistingObj->TicketCount;
+            if (!is_null($ExistingObj->NoteCreationDate)) {
+                $ExistingValueStr = $ExistingObj->NoteCreationDate;
             }
-            if ($ExistingObj->TicketCount != $this->intTicketCount) {
-                $ChangedArray = array_merge($ChangedArray,array("TicketCount" => array("Before" => $ExistingValueStr,"After" => $this->intTicketCount)));
-                //$ChangedArray = array_merge($ChangedArray,array("TicketCount" => "From: ".$ExistingValueStr." to: ".$this->intTicketCount));
+            if ($ExistingObj->NoteCreationDate != $this->dttNoteCreationDate) {
+                $ChangedArray = array_merge($ChangedArray,array("NoteCreationDate" => array("Before" => $ExistingValueStr,"After" => $this->dttNoteCreationDate)));
+                //$ChangedArray = array_merge($ChangedArray,array("NoteCreationDate" => "From: ".$ExistingValueStr." to: ".$this->dttNoteCreationDate));
             }
             $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->LastUpdated)) {
@@ -800,6 +846,22 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
             if ($ExistingObj->LastUpdated != $this->strLastUpdated) {
                 $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => array("Before" => $ExistingValueStr,"After" => $this->strLastUpdated)));
                 //$ChangedArray = array_merge($ChangedArray,array("LastUpdated" => "From: ".$ExistingValueStr." to: ".$this->strLastUpdated));
+            }
+            $ExistingValueStr = "NULL";
+            if (!is_null($ExistingObj->Ticket)) {
+                $ExistingValueStr = $ExistingObj->Ticket;
+            }
+            if ($ExistingObj->Ticket != $this->intTicket) {
+                $ChangedArray = array_merge($ChangedArray,array("Ticket" => array("Before" => $ExistingValueStr,"After" => $this->intTicket)));
+                //$ChangedArray = array_merge($ChangedArray,array("Ticket" => "From: ".$ExistingValueStr." to: ".$this->intTicket));
+            }
+            $ExistingValueStr = "NULL";
+            if (!is_null($ExistingObj->SearchMetaInfo)) {
+                $ExistingValueStr = $ExistingObj->SearchMetaInfo;
+            }
+            if ($ExistingObj->SearchMetaInfo != $this->strSearchMetaInfo) {
+                $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => array("Before" => $ExistingValueStr,"After" => $this->strSearchMetaInfo)));
+                //$ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => "From: ".$ExistingValueStr." to: ".$this->strSearchMetaInfo));
             }
             $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->ObjectOwner)) {
@@ -815,45 +877,51 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
             if ((!$this->__blnRestored) || ($blnForceInsert)) {
                 if (!in_array(AccessOperation::CREATE_STR,$ObjectAccessArray)) {
                     // This user is not allowed to create an object of this type
-                    throw new Exception("User is not allowed to perform operation ".AccessOperation::CREATE_STR." on entity of type 'Category'. Allowed access is ".json_encode($ObjectAccessArray));
+                    throw new Exception("User is not allowed to perform operation ".AccessOperation::CREATE_STR." on entity of type 'Note'. Allowed access is ".json_encode($ObjectAccessArray));
                 }
                 // Perform an INSERT query
                 $objDatabase->NonQuery('
-                INSERT INTO `Category` (
-							`CategoryLabel`,
-							`TicketCount`,
+                INSERT INTO `Note` (
+							`NoteDescription`,
+							`NoteCreationDate`,
+							`Ticket`,
+							`SearchMetaInfo`,
 							`ObjectOwner`
 						) VALUES (
-							' . $objDatabase->SqlVariable($this->strCategoryLabel) . ',
-							' . $objDatabase->SqlVariable($this->intTicketCount) . ',
+							' . $objDatabase->SqlVariable($this->strNoteDescription) . ',
+							' . $objDatabase->SqlVariable($this->dttNoteCreationDate) . ',
+							' . $objDatabase->SqlVariable($this->intTicket) . ',
+							' . $objDatabase->SqlVariable($this->strSearchMetaInfo) . ',
 							' . $objDatabase->SqlVariable($this->intObjectOwner) . '
 						)
                 ');
 					// Update Identity column and return its value
-                $mixToReturn = $this->intId = $objDatabase->InsertId('Category', 'Id');
+                $mixToReturn = $this->intId = $objDatabase->InsertId('Note', 'Id');
             } else {
                 // Perform an UPDATE query
                 // First checking for Optimistic Locking constraints (if applicable)
                 if (!in_array(AccessOperation::UPDATE_STR,$ObjectAccessArray)) {
                     // This user is not allowed to create an object of this type
-                    throw new Exception("User is not allowed to perform operation ".AccessOperation::UPDATE_STR." on entity of type 'Category'. Allowed access is ".json_encode($ObjectAccessArray));
+                    throw new Exception("User is not allowed to perform operation ".AccessOperation::UPDATE_STR." on entity of type 'Note'. Allowed access is ".json_encode($ObjectAccessArray));
                 }
                 if (!$blnForceUpdate) {
                     // Perform the Optimistic Locking check
                     $objResult = $objDatabase->Query('
-                    SELECT `LastUpdated` FROM `Category` WHERE
+                    SELECT `LastUpdated` FROM `Note` WHERE
 							`Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
 
                 $objRow = $objResult->FetchArray();
                 if ($objRow[0] != $this->strLastUpdated)
-                    throw new dxOptimisticLockingException('Category');
+                    throw new dxOptimisticLockingException('Note');
             }
 
             // Perform the UPDATE query
             $objDatabase->NonQuery('
-            UPDATE `Category` SET
-							`CategoryLabel` = ' . $objDatabase->SqlVariable($this->strCategoryLabel) . ',
-							`TicketCount` = ' . $objDatabase->SqlVariable($this->intTicketCount) . ',
+            UPDATE `Note` SET
+							`NoteDescription` = ' . $objDatabase->SqlVariable($this->strNoteDescription) . ',
+							`NoteCreationDate` = ' . $objDatabase->SqlVariable($this->dttNoteCreationDate) . ',
+							`Ticket` = ' . $objDatabase->SqlVariable($this->intTicket) . ',
+							`SearchMetaInfo` = ' . $objDatabase->SqlVariable($this->strSearchMetaInfo) . ',
 							`ObjectOwner` = ' . $objDatabase->SqlVariable($this->intObjectOwner) . '
             WHERE
 							`Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
@@ -867,14 +935,14 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
             $newAuditLogEntry->ObjectId = $this->intId;
             $newAuditLogEntry->Save();
         } catch(dxCallerException $e) {
-            error_log('Could not save audit log while saving Category. Details: '.$newAuditLogEntry->getJson().'<br>Error details: '.$e->getMessage());
+            error_log('Could not save audit log while saving Note. Details: '.$newAuditLogEntry->getJson().'<br>Error details: '.$e->getMessage());
         }
         // Update __blnRestored and any Non-Identity PK Columns (if applicable)
         $this->__blnRestored = true;
 
         // Update Local Timestamp
         $objResult = $objDatabase->Query('SELECT `LastUpdated` FROM
-                                            `Category` WHERE
+                                            `Note` WHERE
                 							`Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
 
         $objRow = $objResult->FetchArray();
@@ -886,44 +954,46 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
         return $mixToReturn;
     }
     /**
-     * Delete this Category
+     * Delete this Note
      * @return void
      */
     public function Delete() {
         if ((is_null($this->intId)))
-            throw new dxUndefinedPrimaryKeyException('Cannot delete this Category with an unset primary key.');
+            throw new dxUndefinedPrimaryKeyException('Cannot delete this Note with an unset primary key.');
 
-        $ObjectAccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),"Category",$this->intId);
+        $ObjectAccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),"Note",$this->intId);
         if (!in_array(AccessOperation::DELETE_STR,$ObjectAccessArray)) {
             // This user is not allowed to delete an object of this type
-            throw new Exception("User is not allowed to perform operation ".AccessOperation::DELETE_STR." on entity of type 'Category'. Allowed access is ".json_encode($ObjectAccessArray));
+            throw new Exception("User is not allowed to perform operation ".AccessOperation::DELETE_STR." on entity of type 'Note'. Allowed access is ".json_encode($ObjectAccessArray));
         }
 
         // Get the Database Object for this Class
-        $objDatabase = Category::GetDatabase();
+        $objDatabase = Note::GetDatabase();
         $newAuditLogEntry = new AuditLogEntry();
         $ChangedArray = array();
         $newAuditLogEntry->EntryTimeStamp = dxDateTime::Now();
         $newAuditLogEntry->ObjectId = $this->intId;
-        $newAuditLogEntry->ObjectName = 'Category';
+        $newAuditLogEntry->ObjectName = 'Note';
         $newAuditLogEntry->UserEmail = ProjectFunctions::getCurrentUserEmailForAudit();
         $newAuditLogEntry->ModificationType = 'Delete';
         $ChangedArray = array_merge($ChangedArray,array("Id" => $this->intId));
-        $ChangedArray = array_merge($ChangedArray,array("CategoryLabel" => $this->strCategoryLabel));
-        $ChangedArray = array_merge($ChangedArray,array("TicketCount" => $this->intTicketCount));
+        $ChangedArray = array_merge($ChangedArray,array("NoteDescription" => $this->strNoteDescription));
+        $ChangedArray = array_merge($ChangedArray,array("NoteCreationDate" => $this->dttNoteCreationDate));
         $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
+        $ChangedArray = array_merge($ChangedArray,array("Ticket" => $this->intTicket));
+        $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
         $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
         $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         try {
             $newAuditLogEntry->Save();
         } catch(dxCallerException $e) {
-            error_log('Could not save audit log while deleting Category. Details: '.$newAuditLogEntry->getJson().'<br>Error details: '.$e->getMessage());
+            error_log('Could not save audit log while deleting Note. Details: '.$newAuditLogEntry->getJson().'<br>Error details: '.$e->getMessage());
         }
 
         // Perform the SQL Query
         $objDatabase->NonQuery('
             DELETE FROM
-                `Category`
+                `Note`
             WHERE
                 `Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
 
@@ -931,28 +1001,28 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Delete this Category ONLY from the cache
+     * Delete this Note ONLY from the cache
      * @return void
      */
     public function DeleteCache() {
         if (ProjectFunctions::$objCacheProvider && ProjectFunctions::$Database[1]->Caching) {
-            $strCacheKey = ProjectFunctions::$objCacheProvider->CreateKey(ProjectFunctions::$Database[1]->Database, 'Category', $this->intId);
+            $strCacheKey = ProjectFunctions::$objCacheProvider->CreateKey(ProjectFunctions::$Database[1]->Database, 'Note', $this->intId);
             ProjectFunctions::$objCacheProvider->Delete($strCacheKey);
         }
     }
 
     /**
-     * Delete all Categories
+     * Delete all Notes
      * @return void
      */
     public static function DeleteAll() {
         // Get the Database Object for this Class
-        $objDatabase = Category::GetDatabase();
+        $objDatabase = Note::GetDatabase();
 
         // Perform the Query
         $objDatabase->NonQuery('
             DELETE FROM
-                `Category`');
+                `Note`');
 
         if (ProjectFunctions::$objCacheProvider && ProjectFunctions::$Database[1]->Caching) {
             ProjectFunctions::$objCacheProvider->DeleteAll();
@@ -960,39 +1030,41 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
     }
 
     /**
-     * Truncate Category table
+     * Truncate Note table
      * @return void
      */
     public static function Truncate() {
         // Get the Database Object for this Class
-        $objDatabase = Category::GetDatabase();
+        $objDatabase = Note::GetDatabase();
 
         // Perform the Query
         $objDatabase->NonQuery('
-            TRUNCATE `Category`');
+            TRUNCATE `Note`');
 
         if (ProjectFunctions::$objCacheProvider && ProjectFunctions::$Database[1]->Caching) {
             ProjectFunctions::$objCacheProvider->DeleteAll();
         }
     }
     /**
-     * Reload this Category from the database.
+     * Reload this Note from the database.
      * @return void
      */
     public function Reload() {
         // Make sure we are actually Restored from the database
         if (!$this->__blnRestored)
-            throw new dxCallerException('Cannot call Reload() on a new, unsaved Category object.');
+            throw new dxCallerException('Cannot call Reload() on a new, unsaved Note object.');
 
         $this->DeleteCache();
 
         // Reload the Object
-        $objReloaded = Category::Load($this->intId);
+        $objReloaded = Note::Load($this->intId);
 
         // Update $this's local variables to match
-        $this->strCategoryLabel = $objReloaded->strCategoryLabel;
-        $this->intTicketCount = $objReloaded->intTicketCount;
+        $this->strNoteDescription = $objReloaded->strNoteDescription;
+        $this->dttNoteCreationDate = $objReloaded->dttNoteCreationDate;
         $this->strLastUpdated = $objReloaded->strLastUpdated;
+        $this->Ticket = $objReloaded->Ticket;
+        $this->strSearchMetaInfo = $objReloaded->strSearchMetaInfo;
         $this->intObjectOwner = $objReloaded->intObjectOwner;
     }
     ////////////////////
@@ -1018,19 +1090,19 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
                  */
                 return $this->intId;
 
-            case 'CategoryLabel':
+            case 'NoteDescription':
                 /**
-                 * Gets the value for strCategoryLabel 
+                 * Gets the value for strNoteDescription 
                  * @return string
                  */
-                return $this->strCategoryLabel;
+                return $this->strNoteDescription;
 
-            case 'TicketCount':
+            case 'NoteCreationDate':
                 /**
-                 * Gets the value for intTicketCount 
-                 * @return integer
+                 * Gets the value for dttNoteCreationDate 
+                 * @return dxDateTime
                  */
-                return $this->intTicketCount;
+                return $this->dttNoteCreationDate;
 
             case 'LastUpdated':
                 /**
@@ -1038,6 +1110,20 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
                  * @return string
                  */
                 return $this->strLastUpdated;
+
+            case 'Ticket':
+                /**
+                 * Gets the value for intTicket 
+                 * @return integer
+                 */
+                return $this->intTicket;
+
+            case 'SearchMetaInfo':
+                /**
+                 * Gets the value for strSearchMetaInfo 
+                 * @return string
+                 */
+                return $this->strSearchMetaInfo;
 
             case 'ObjectOwner':
                 /**
@@ -1050,27 +1136,25 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
             ///////////////////
             // Member Objects
             ///////////////////
+            case 'TicketObject':
+                /**
+                 * Gets the value for the Ticket object referenced by intTicket 
+                 * @return Ticket
+                 */
+                try {
+                    if ((!$this->objTicketObject) && (!is_null($this->intTicket)))
+                        $this->objTicketObject = Ticket::Load($this->intTicket);
+                    return $this->objTicketObject;
+                } catch (dxCallerException $objExc) {
+                    $objExc->IncrementOffset();
+                    throw $objExc;
+                }
+
 
             ////////////////////////////
             // Virtual Object References (Many to Many and Reverse References)
             // (If restored via a "Many-to" expansion)
             ////////////////////////////
-
-            case '_Ticket':
-                /**
-                 * Gets the value for the private _objTicket (Read-Only)
-                 * if set due to an expansion on the Ticket.Category reverse relationship
-                 * @return Ticket
-                 */
-                return $this->_objTicket;
-
-            case '_TicketArray':
-                /**
-                 * Gets the value for the private _objTicketArray (Read-Only)
-                 * if set due to an ExpandAsArray on the Ticket.Category reverse relationship
-                 * @return Ticket[]
-                 */
-                return $this->_objTicketArray;
 
 
             case '__Restored':
@@ -1098,27 +1182,54 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
             ///////////////////
             // Member Variables
             ///////////////////
-            case 'CategoryLabel':
+            case 'NoteDescription':
                 /**
-                 * Sets the value for strCategoryLabel 
+                 * Sets the value for strNoteDescription 
                  * @param string $mixValue
                  * @return string
                  */
                 try {
-                    return ($this->strCategoryLabel = dxType::Cast($mixValue, dxType::String));
+                    return ($this->strNoteDescription = dxType::Cast($mixValue, dxType::String));
                 } catch (dxCallerException $objExc) {
                     $objExc->IncrementOffset();
                     throw $objExc;
                 }
 
-            case 'TicketCount':
+            case 'NoteCreationDate':
                 /**
-                 * Sets the value for intTicketCount 
+                 * Sets the value for dttNoteCreationDate 
+                 * @param dxDateTime $mixValue
+                 * @return dxDateTime
+                 */
+                try {
+                    return ($this->dttNoteCreationDate = dxType::Cast($mixValue, dxType::DateTime));
+                } catch (dxCallerException $objExc) {
+                    $objExc->IncrementOffset();
+                    throw $objExc;
+                }
+
+            case 'Ticket':
+                /**
+                 * Sets the value for intTicket 
                  * @param integer $mixValue
                  * @return integer
                  */
                 try {
-                    return ($this->intTicketCount = dxType::Cast($mixValue, dxType::Integer));
+                    $this->objTicketObject = null;
+                    return ($this->intTicket = dxType::Cast($mixValue, dxType::Integer));
+                } catch (dxCallerException $objExc) {
+                    $objExc->IncrementOffset();
+                    throw $objExc;
+                }
+
+            case 'SearchMetaInfo':
+                /**
+                 * Sets the value for strSearchMetaInfo 
+                 * @param string $mixValue
+                 * @return string
+                 */
+                try {
+                    return ($this->strSearchMetaInfo = dxType::Cast($mixValue, dxType::String));
                 } catch (dxCallerException $objExc) {
                     $objExc->IncrementOffset();
                     throw $objExc;
@@ -1141,6 +1252,38 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
             ///////////////////
             // Member Objects
             ///////////////////
+            case 'TicketObject':
+                /**
+                 * Sets the value for the Ticket object referenced by intTicket 
+                 * @param Ticket $mixValue
+                 * @return Ticket
+                 */
+                if (is_null($mixValue)) {
+                    $this->intTicket = null;
+                    $this->objTicketObject = null;
+                    return null;
+                } else {
+                    // Make sure $mixValue actually is a Ticket object
+                    try {
+                        $mixValue = dxType::Cast($mixValue, 'Ticket');
+                    } catch (dxInvalidCastException $objExc) {
+                        $objExc->IncrementOffset();
+                        throw $objExc;
+                    }
+
+                    // Make sure $mixValue is a SAVED Ticket object
+                    if (is_null($mixValue->Id))
+                        throw new dxCallerException('Unable to set an unsaved TicketObject for this Note');
+
+                    // Update Local Member Variables
+                    $this->objTicketObject = $mixValue;
+                    $this->intTicket = $mixValue->Id;
+
+                    // Return $mixValue
+                    return $mixValue;
+                }
+                break;
+
             default:
                 try {
                     return parent::__set($strName, $mixValue);
@@ -1167,155 +1310,6 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
 
 
 
-    // Related Objects' Methods for Ticket
-    //-------------------------------------------------------------------
-
-    /**
-     * Gets all associated Tickets as an array of Ticket objects
-     * @param dxQueryClause[] $objOptionalClauses additional optional dxQueryClause objects for this query
-     * @return Ticket[]
-    */
-    public function GetTicketArray($objOptionalClauses = null) {
-        if ((is_null($this->intId)))
-            return array();
-
-        try {
-            return Ticket::LoadArrayByCategory($this->intId, $objOptionalClauses);
-        } catch (dxCallerException $objExc) {
-            $objExc->IncrementOffset();
-            throw $objExc;
-        }
-    }
-
-    /**
-     * Counts all associated Tickets
-     * @return int
-    */
-    public function CountTickets() {
-        if ((is_null($this->intId)))
-            return 0;
-
-        return Ticket::CountByCategory($this->intId);
-    }
-
-    /**
-     * Associates a Ticket
-     * @param Ticket $objTicket
-     * @return void
-    */
-    public function AssociateTicket(Ticket $objTicket) {
-        if ((is_null($this->intId)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call AssociateTicket on this unsaved Category.');
-        if ((is_null($objTicket->Id)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call AssociateTicket on this Category with an unsaved Ticket.');
-
-        // Get the Database Object for this Class
-        $objDatabase = Category::GetDatabase();
-
-        // Perform the SQL Query
-        $objDatabase->NonQuery('
-            UPDATE
-                `Ticket`
-            SET
-                `Category` = ' . $objDatabase->SqlVariable($this->intId) . '
-            WHERE
-                `Id` = ' . $objDatabase->SqlVariable($objTicket->Id) . '
-        ');
-    }
-
-    /**
-     * Unassociates a Ticket
-     * @param Ticket $objTicket
-     * @return void
-    */
-    public function UnassociateTicket(Ticket $objTicket) {
-        if ((is_null($this->intId)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateTicket on this unsaved Category.');
-        if ((is_null($objTicket->Id)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateTicket on this Category with an unsaved Ticket.');
-
-        // Get the Database Object for this Class
-        $objDatabase = Category::GetDatabase();
-
-        // Perform the SQL Query
-        $objDatabase->NonQuery('
-            UPDATE
-                `Ticket`
-            SET
-                `Category` = null
-            WHERE
-                `Id` = ' . $objDatabase->SqlVariable($objTicket->Id) . ' AND
-                `Category` = ' . $objDatabase->SqlVariable($this->intId) . '
-        ');
-    }
-
-    /**
-     * Unassociates all Tickets
-     * @return void
-    */
-    public function UnassociateAllTickets() {
-        if ((is_null($this->intId)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateTicket on this unsaved Category.');
-
-        // Get the Database Object for this Class
-        $objDatabase = Category::GetDatabase();
-
-        // Perform the SQL Query
-        $objDatabase->NonQuery('
-            UPDATE
-                `Ticket`
-            SET
-                `Category` = null
-            WHERE
-                `Category` = ' . $objDatabase->SqlVariable($this->intId) . '
-        ');
-    }
-
-    /**
-     * Deletes an associated Ticket
-     * @param Ticket $objTicket
-     * @return void
-    */
-    public function DeleteAssociatedTicket(Ticket $objTicket) {
-        if ((is_null($this->intId)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateTicket on this unsaved Category.');
-        if ((is_null($objTicket->Id)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateTicket on this Category with an unsaved Ticket.');
-
-        // Get the Database Object for this Class
-        $objDatabase = Category::GetDatabase();
-
-        // Perform the SQL Query
-        $objDatabase->NonQuery('
-            DELETE FROM
-                `Ticket`
-            WHERE
-                `Id` = ' . $objDatabase->SqlVariable($objTicket->Id) . ' AND
-                `Category` = ' . $objDatabase->SqlVariable($this->intId) . '
-        ');
-    }
-
-    /**
-     * Deletes all associated Tickets
-     * @return void
-    */
-    public function DeleteAllTickets() {
-        if ((is_null($this->intId)))
-            throw new dxUndefinedPrimaryKeyException('Unable to call UnassociateTicket on this unsaved Category.');
-
-        // Get the Database Object for this Class
-        $objDatabase = Category::GetDatabase();
-
-        // Perform the SQL Query
-        $objDatabase->NonQuery('
-            DELETE FROM
-                `Ticket`
-            WHERE
-                `Category` = ' . $objDatabase->SqlVariable($this->intId) . '
-        ');
-    }
-
-
     
 ///////////////////////////////
     // METHODS TO EXTRACT INFO ABOUT THE CLASS
@@ -1326,7 +1320,7 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
      * @return string Name of the table from which this class has been created.
      */
     public static function GetTableName() {
-        return "Category";
+        return "Note";
     }
 
     /**
@@ -1334,7 +1328,7 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
      * @return string Name of the table from which this class has been created.
      */
     public static function GetDatabaseName() {
-        return ProjectFunctions::$Database[Category::GetDatabaseIndex()]->Database;
+        return ProjectFunctions::$Database[Note::GetDatabaseIndex()]->Database;
     }
 
     /**
@@ -1353,11 +1347,13 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
     ////////////////////////////////////////
 
     public static function GetSoapComplexTypeXml() {
-        $strToReturn = '<complexType name="Category"><sequence>';
+        $strToReturn = '<complexType name="Note"><sequence>';
         $strToReturn .= '<element name="Id" type="xsd:int"/>';
-        $strToReturn .= '<element name="CategoryLabel" type="xsd:string"/>';
-        $strToReturn .= '<element name="TicketCount" type="xsd:int"/>';
+        $strToReturn .= '<element name="NoteDescription" type="xsd:string"/>';
+        $strToReturn .= '<element name="NoteCreationDate" type="xsd:dateTime"/>';
         $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
+        $strToReturn .= '<element name="TicketObject" type="xsd1:Ticket"/>';
+        $strToReturn .= '<element name="SearchMetaInfo" type="xsd:string"/>';
         $strToReturn .= '<element name="ObjectOwner" type="xsd:int"/>';
         $strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
         $strToReturn .= '</sequence></complexType>';
@@ -1365,8 +1361,9 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
     }
 
     public static function AlterSoapComplexTypeArray(&$strComplexTypeArray) {
-        if (!array_key_exists('Category', $strComplexTypeArray)) {
-            $strComplexTypeArray['Category'] = Category::GetSoapComplexTypeXml();
+        if (!array_key_exists('Note', $strComplexTypeArray)) {
+            $strComplexTypeArray['Note'] = Note::GetSoapComplexTypeXml();
+            Ticket::AlterSoapComplexTypeArray($strComplexTypeArray);
         }
     }
 
@@ -1374,21 +1371,26 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
         $objArrayToReturn = array();
 
         foreach ($objSoapArray as $objSoapObject)
-            array_push($objArrayToReturn, Category::GetObjectFromSoapObject($objSoapObject));
+            array_push($objArrayToReturn, Note::GetObjectFromSoapObject($objSoapObject));
 
         return $objArrayToReturn;
     }
 
     public static function GetObjectFromSoapObject($objSoapObject) {
-        $objToReturn = new Category();
+        $objToReturn = new Note();
         if (property_exists($objSoapObject, 'Id'))
             $objToReturn->intId = $objSoapObject->Id;
-        if (property_exists($objSoapObject, 'CategoryLabel'))
-            $objToReturn->strCategoryLabel = $objSoapObject->CategoryLabel;
-        if (property_exists($objSoapObject, 'TicketCount'))
-            $objToReturn->intTicketCount = $objSoapObject->TicketCount;
+        if (property_exists($objSoapObject, 'NoteDescription'))
+            $objToReturn->strNoteDescription = $objSoapObject->NoteDescription;
+        if (property_exists($objSoapObject, 'NoteCreationDate'))
+            $objToReturn->dttNoteCreationDate = new dxDateTime($objSoapObject->NoteCreationDate);
         if (property_exists($objSoapObject, 'LastUpdated'))
             $objToReturn->strLastUpdated = $objSoapObject->LastUpdated;
+        if ((property_exists($objSoapObject, 'TicketObject')) &&
+            ($objSoapObject->TicketObject))
+            $objToReturn->TicketObject = Ticket::GetObjectFromSoapObject($objSoapObject->TicketObject);
+        if (property_exists($objSoapObject, 'SearchMetaInfo'))
+            $objToReturn->strSearchMetaInfo = $objSoapObject->SearchMetaInfo;
         if (property_exists($objSoapObject, 'ObjectOwner'))
             $objToReturn->intObjectOwner = $objSoapObject->ObjectOwner;
         if (property_exists($objSoapObject, '__blnRestored'))
@@ -1403,12 +1405,18 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
         $objArrayToReturn = array();
 
         foreach ($objArray as $objObject)
-            array_push($objArrayToReturn, Category::GetSoapObjectFromObject($objObject, true));
+            array_push($objArrayToReturn, Note::GetSoapObjectFromObject($objObject, true));
 
         return unserialize(serialize($objArrayToReturn));
     }
 
     public static function GetSoapObjectFromObject($objObject, $blnBindRelatedObjects) {
+        if ($objObject->dttNoteCreationDate)
+            $objObject->dttNoteCreationDate = $objObject->dttNoteCreationDate->qFormat(dxDateTime::FormatSoap);
+        if ($objObject->objTicketObject)
+            $objObject->objTicketObject = Ticket::GetSoapObjectFromObject($objObject->objTicketObject, false);
+        else if (!$blnBindRelatedObjects)
+            $objObject->intTicket = null;
         return $objObject;
     }
 
@@ -1424,9 +1432,11 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
         // Member Variables
         ///////////////////
         $iArray['Id'] = $this->intId;
-        $iArray['CategoryLabel'] = $this->strCategoryLabel;
-        $iArray['TicketCount'] = $this->intTicketCount;
+        $iArray['NoteDescription'] = $this->strNoteDescription;
+        $iArray['NoteCreationDate'] = $this->dttNoteCreationDate;
         $iArray['LastUpdated'] = $this->strLastUpdated;
+        $iArray['Ticket'] = $this->intTicket;
+        $iArray['SearchMetaInfo'] = $this->strSearchMetaInfo;
         $iArray['ObjectOwner'] = $this->intObjectOwner;
         return new ArrayIterator($iArray);
     }
@@ -1463,34 +1473,40 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
      * @uses dxQueryNode
      *
      * @property-read dxQueryNode $Id
-     * @property-read dxQueryNode $CategoryLabel
-     * @property-read dxQueryNode $TicketCount
+     * @property-read dxQueryNode $NoteDescription
+     * @property-read dxQueryNode $NoteCreationDate
      * @property-read dxQueryNode $LastUpdated
+     * @property-read dxQueryNode $Ticket
+     * @property-read dxQueryNodeTicket $TicketObject
+     * @property-read dxQueryNode $SearchMetaInfo
      * @property-read dxQueryNode $ObjectOwner
      *
      *
-     * @property-read dxQueryReverseReferenceNodeTicket $Ticket
 
      * @property-read dxQueryNode $_PrimaryKeyNode
      **/
-	class dxQueryNodeCategory extends dxQueryNode {
-		protected $strTableName = 'Category';
+	class dxQueryNodeNote extends dxQueryNode {
+		protected $strTableName = 'Note';
 		protected $strPrimaryKey = 'Id';
-		protected $strClassName = 'Category';
+		protected $strClassName = 'Note';
 		public function __get($strName) {
 			switch ($strName) {
 				case 'Id':
 					return new dxQueryNode('Id', 'Id', 'Integer', $this);
-				case 'CategoryLabel':
-					return new dxQueryNode('CategoryLabel', 'CategoryLabel', 'VarChar', $this);
-				case 'TicketCount':
-					return new dxQueryNode('TicketCount', 'TicketCount', 'Integer', $this);
+				case 'NoteDescription':
+					return new dxQueryNode('NoteDescription', 'NoteDescription', 'Blob', $this);
+				case 'NoteCreationDate':
+					return new dxQueryNode('NoteCreationDate', 'NoteCreationDate', 'Date', $this);
 				case 'LastUpdated':
 					return new dxQueryNode('LastUpdated', 'LastUpdated', 'VarChar', $this);
+				case 'Ticket':
+					return new dxQueryNode('Ticket', 'Ticket', 'Integer', $this);
+				case 'TicketObject':
+					return new dxQueryNodeTicket('Ticket', 'TicketObject', 'Integer', $this);
+				case 'SearchMetaInfo':
+					return new dxQueryNode('SearchMetaInfo', 'SearchMetaInfo', 'Blob', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'Integer', $this);
-				case 'Ticket':
-					return new dxQueryReverseReferenceNodeTicket($this, 'ticket', 'reverse_reference', 'Category', 'Ticket');
 
 				case '_PrimaryKeyNode':
 					return new dxQueryNode('Id', 'Id', 'Integer', $this);
@@ -1507,34 +1523,40 @@ class CategoryGen extends dxBaseClass implements IteratorAggregate {
 
     /**
      * @property-read dxQueryNode $Id
-     * @property-read dxQueryNode $CategoryLabel
-     * @property-read dxQueryNode $TicketCount
+     * @property-read dxQueryNode $NoteDescription
+     * @property-read dxQueryNode $NoteCreationDate
      * @property-read dxQueryNode $LastUpdated
+     * @property-read dxQueryNode $Ticket
+     * @property-read dxQueryNodeTicket $TicketObject
+     * @property-read dxQueryNode $SearchMetaInfo
      * @property-read dxQueryNode $ObjectOwner
      *
      *
-     * @property-read dxQueryReverseReferenceNodeTicket $Ticket
 
      * @property-read dxQueryNode $_PrimaryKeyNode
      **/
-	class dxQueryReverseReferenceNodeCategory extends dxQueryReverseReferenceNode {
-		protected $strTableName = 'Category';
+	class dxQueryReverseReferenceNodeNote extends dxQueryReverseReferenceNode {
+		protected $strTableName = 'Note';
 		protected $strPrimaryKey = 'Id';
-		protected $strClassName = 'Category';
+		protected $strClassName = 'Note';
 		public function __get($strName) {
 			switch ($strName) {
 				case 'Id':
 					return new dxQueryNode('Id', 'Id', 'integer', $this);
-				case 'CategoryLabel':
-					return new dxQueryNode('CategoryLabel', 'CategoryLabel', 'string', $this);
-				case 'TicketCount':
-					return new dxQueryNode('TicketCount', 'TicketCount', 'integer', $this);
+				case 'NoteDescription':
+					return new dxQueryNode('NoteDescription', 'NoteDescription', 'string', $this);
+				case 'NoteCreationDate':
+					return new dxQueryNode('NoteCreationDate', 'NoteCreationDate', 'dxDateTime', $this);
 				case 'LastUpdated':
 					return new dxQueryNode('LastUpdated', 'LastUpdated', 'string', $this);
+				case 'Ticket':
+					return new dxQueryNode('Ticket', 'Ticket', 'integer', $this);
+				case 'TicketObject':
+					return new dxQueryNodeTicket('Ticket', 'TicketObject', 'integer', $this);
+				case 'SearchMetaInfo':
+					return new dxQueryNode('SearchMetaInfo', 'SearchMetaInfo', 'string', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'integer', $this);
-				case 'Ticket':
-					return new dxQueryReverseReferenceNodeTicket($this, 'ticket', 'reverse_reference', 'Category', 'Ticket');
 
 				case '_PrimaryKeyNode':
 					return new dxQueryNode('Id', 'Id', 'integer', $this);

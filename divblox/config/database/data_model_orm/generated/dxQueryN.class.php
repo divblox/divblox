@@ -79,6 +79,12 @@ class dxQueryN {
         return new dxQueryNodeFileDocument('FileDocument', null, null);
     }
     /**
+     * @return dxQueryNodeNote
+     */
+    static public function Note() {
+        return new dxQueryNodeNote('Note', null, null);
+    }
+    /**
      * @return dxQueryNodePageView
      */
     static public function PageView() {

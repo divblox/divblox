@@ -734,6 +734,36 @@
         },
         "Relationships": []
     },
+    "Note": {
+        "Attributes": {
+            "NoteDescription": {
+                "DisplayType": "textarea",
+                "InputLabel": "Note Description:",
+                "DefaultValue": "",
+                "Placeholder": "Note Description",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Note Description"
+            },
+            "NoteCreationDate": {
+                "DisplayType": "date",
+                "InputLabel": "Note Creation Date:",
+                "DefaultValue": "",
+                "Placeholder": "Note Creation Date",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Note Creation Date"
+            }
+        },
+        "Relationships": {
+            "Ticket": {
+                "DisplayType": "list",
+                "InputLabel": "Ticket:",
+                "DefaultValue": "-Please Select-",
+                "Placeholder": "Ticket",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Ticket"
+            }
+        }
+    },
     "PageView": {
         "Attributes": {
             "TimeStamped": {
@@ -944,6 +974,14 @@
                 "Placeholder": "Ticket Unique Id",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Ticket Unique Id"
+            },
+            "TicketProgress": {
+                "DisplayType": "number",
+                "InputLabel": "Ticket Progress:",
+                "DefaultValue": "",
+                "Placeholder": "Ticket Progress",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Ticket Progress"
             }
         },
         "Relationships": {
