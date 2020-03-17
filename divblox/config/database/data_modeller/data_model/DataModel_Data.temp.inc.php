@@ -7,14 +7,14 @@ abstract class DataModelData {
 	public static $ProjectEntityArray = array("Ticket","Category","Note");
 	public static $ProjectEntityAttributeArray = array(
         "Ticket"
-            => array("TicketName","TicketDescription","TicketDueDate","TicketStatus","TicketUniqueId","TicketProgress"),
+            => array("TicketName","TicketDescription","TicketDueDate","TicketStatus","TicketUniqueId","TicketProgress","TicketParentId"),
         "Category"
             => array("CategoryLabel","TicketCount"),
         "Note"
             => array("NoteDescription","NoteCreationDate"));
 	public static $ProjectEntityAttributeTypeArray = array(
         "Ticket"
-            => array("VARCHAR(25)","TEXT","DATE","VARCHAR(25)","VARCHAR(25) UNIQUE","INT"),
+            => array("VARCHAR(25)","TEXT","DATE","VARCHAR(25)","VARCHAR(25) UNIQUE","INT","BIGINT"),
         "Category"
             => array("VARCHAR(50)","INT"),
         "Note"

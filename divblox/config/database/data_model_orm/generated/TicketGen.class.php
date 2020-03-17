@@ -27,6 +27,7 @@
  * @property string $SearchMetaInfo the value for strSearchMetaInfo 
  * @property integer $Category the value for intCategory 
  * @property integer $ObjectOwner the value for intObjectOwner 
+ * @property integer $TicketParentId the value for intTicketParentId 
  * @property Account $AccountObject the value for the Account object referenced by intAccount 
  * @property Category $CategoryObject the value for the Category object referenced by intCategory 
  * @property-read Note $_Note the value for the private _objNote (Read-Only) if set due to an expansion on the Note.Ticket reverse relationship
@@ -139,6 +140,14 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
+     * Protected member variable that maps to the database column Ticket.TicketParentId
+     * @var integer intTicketParentId
+     */
+    protected $intTicketParentId;
+    const TicketParentIdDefault = null;
+
+
+    /**
      * Private member variable that stores a reference to a single Note object
      * (of type Note), if this Ticket object was restored with
      * an expansion on the Note association table.
@@ -210,6 +219,7 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
         $this->strSearchMetaInfo = Ticket::SearchMetaInfoDefault;
         $this->intCategory = Ticket::CategoryDefault;
         $this->intObjectOwner = Ticket::ObjectOwnerDefault;
+        $this->intTicketParentId = Ticket::TicketParentIdDefault;
     }
 
     ///////////////////////////////
@@ -558,6 +568,7 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
             $objBuilder->AddSelectItem($strTableName, 'SearchMetaInfo', $strAliasPrefix . 'SearchMetaInfo');
             $objBuilder->AddSelectItem($strTableName, 'Category', $strAliasPrefix . 'Category');
             $objBuilder->AddSelectItem($strTableName, 'ObjectOwner', $strAliasPrefix . 'ObjectOwner');
+            $objBuilder->AddSelectItem($strTableName, 'TicketParentId', $strAliasPrefix . 'TicketParentId');
         }
     }
     ///////////////////////////////
@@ -715,6 +726,9 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
         $strAlias = $strAliasPrefix . 'ObjectOwner';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intObjectOwner = $objDbRow->GetColumn($strAliasName, 'Integer');
+        $strAlias = $strAliasPrefix . 'TicketParentId';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->intTicketParentId = $objDbRow->GetColumn($strAliasName, 'Integer');
 
         if (isset($objPreviousItemArray) && is_array($objPreviousItemArray)) {
             foreach ($objPreviousItemArray as $objPreviousItem) {
@@ -989,6 +1003,7 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
             $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
             $ChangedArray = array_merge($ChangedArray,array("Category" => $this->intCategory));
             $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
+            $ChangedArray = array_merge($ChangedArray,array("TicketParentId" => $this->intTicketParentId));
             $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         } else {
             $newAuditLogEntry->ModificationType = 'Update';
@@ -1088,6 +1103,14 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
                 $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => array("Before" => $ExistingValueStr,"After" => $this->intObjectOwner)));
                 //$ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => "From: ".$ExistingValueStr." to: ".$this->intObjectOwner));
             }
+            $ExistingValueStr = "NULL";
+            if (!is_null($ExistingObj->TicketParentId)) {
+                $ExistingValueStr = $ExistingObj->TicketParentId;
+            }
+            if ($ExistingObj->TicketParentId != $this->intTicketParentId) {
+                $ChangedArray = array_merge($ChangedArray,array("TicketParentId" => array("Before" => $ExistingValueStr,"After" => $this->intTicketParentId)));
+                //$ChangedArray = array_merge($ChangedArray,array("TicketParentId" => "From: ".$ExistingValueStr." to: ".$this->intTicketParentId));
+            }
             $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         }
         try {
@@ -1108,7 +1131,8 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
 							`Account`,
 							`SearchMetaInfo`,
 							`Category`,
-							`ObjectOwner`
+							`ObjectOwner`,
+							`TicketParentId`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->strTicketName) . ',
 							' . $objDatabase->SqlVariable($this->strTicketDescription) . ',
@@ -1119,7 +1143,8 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
 							' . $objDatabase->SqlVariable($this->intAccount) . ',
 							' . $objDatabase->SqlVariable($this->strSearchMetaInfo) . ',
 							' . $objDatabase->SqlVariable($this->intCategory) . ',
-							' . $objDatabase->SqlVariable($this->intObjectOwner) . '
+							' . $objDatabase->SqlVariable($this->intObjectOwner) . ',
+							' . $objDatabase->SqlVariable($this->intTicketParentId) . '
 						)
                 ');
 					// Update Identity column and return its value
@@ -1154,7 +1179,8 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
 							`Account` = ' . $objDatabase->SqlVariable($this->intAccount) . ',
 							`SearchMetaInfo` = ' . $objDatabase->SqlVariable($this->strSearchMetaInfo) . ',
 							`Category` = ' . $objDatabase->SqlVariable($this->intCategory) . ',
-							`ObjectOwner` = ' . $objDatabase->SqlVariable($this->intObjectOwner) . '
+							`ObjectOwner` = ' . $objDatabase->SqlVariable($this->intObjectOwner) . ',
+							`TicketParentId` = ' . $objDatabase->SqlVariable($this->intTicketParentId) . '
             WHERE
 							`Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
             }
@@ -1220,6 +1246,7 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
         $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
         $ChangedArray = array_merge($ChangedArray,array("Category" => $this->intCategory));
         $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
+        $ChangedArray = array_merge($ChangedArray,array("TicketParentId" => $this->intTicketParentId));
         $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         try {
             $newAuditLogEntry->Save();
@@ -1308,6 +1335,7 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
         $this->strSearchMetaInfo = $objReloaded->strSearchMetaInfo;
         $this->Category = $objReloaded->Category;
         $this->intObjectOwner = $objReloaded->intObjectOwner;
+        $this->intTicketParentId = $objReloaded->intTicketParentId;
     }
     ////////////////////
     // PUBLIC OVERRIDERS
@@ -1408,6 +1436,13 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
                  * @return integer
                  */
                 return $this->intObjectOwner;
+
+            case 'TicketParentId':
+                /**
+                 * Gets the value for intTicketParentId 
+                 * @return integer
+                 */
+                return $this->intTicketParentId;
 
 
             ///////////////////
@@ -1616,6 +1651,19 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
                  */
                 try {
                     return ($this->intObjectOwner = dxType::Cast($mixValue, dxType::Integer));
+                } catch (dxCallerException $objExc) {
+                    $objExc->IncrementOffset();
+                    throw $objExc;
+                }
+
+            case 'TicketParentId':
+                /**
+                 * Sets the value for intTicketParentId 
+                 * @param integer $mixValue
+                 * @return integer
+                 */
+                try {
+                    return ($this->intTicketParentId = dxType::Cast($mixValue, dxType::Integer));
                 } catch (dxCallerException $objExc) {
                     $objExc->IncrementOffset();
                     throw $objExc;
@@ -1914,6 +1962,7 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
         $strToReturn .= '<element name="SearchMetaInfo" type="xsd:string"/>';
         $strToReturn .= '<element name="CategoryObject" type="xsd1:Category"/>';
         $strToReturn .= '<element name="ObjectOwner" type="xsd:int"/>';
+        $strToReturn .= '<element name="TicketParentId" type="xsd:int"/>';
         $strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
         $strToReturn .= '</sequence></complexType>';
         return $strToReturn;
@@ -1964,6 +2013,8 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
             $objToReturn->CategoryObject = Category::GetObjectFromSoapObject($objSoapObject->CategoryObject);
         if (property_exists($objSoapObject, 'ObjectOwner'))
             $objToReturn->intObjectOwner = $objSoapObject->ObjectOwner;
+        if (property_exists($objSoapObject, 'TicketParentId'))
+            $objToReturn->intTicketParentId = $objSoapObject->TicketParentId;
         if (property_exists($objSoapObject, '__blnRestored'))
             $objToReturn->__blnRestored = $objSoapObject->__blnRestored;
         return $objToReturn;
@@ -2018,6 +2069,7 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
         $iArray['SearchMetaInfo'] = $this->strSearchMetaInfo;
         $iArray['Category'] = $this->intCategory;
         $iArray['ObjectOwner'] = $this->intObjectOwner;
+        $iArray['TicketParentId'] = $this->intTicketParentId;
         return new ArrayIterator($iArray);
     }
 
@@ -2066,6 +2118,7 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
      * @property-read dxQueryNode $Category
      * @property-read dxQueryNodeCategory $CategoryObject
      * @property-read dxQueryNode $ObjectOwner
+     * @property-read dxQueryNode $TicketParentId
      *
      *
      * @property-read dxQueryReverseReferenceNodeNote $Note
@@ -2106,6 +2159,8 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNodeCategory('Category', 'CategoryObject', 'Integer', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'Integer', $this);
+				case 'TicketParentId':
+					return new dxQueryNode('TicketParentId', 'TicketParentId', 'Integer', $this);
 				case 'Note':
 					return new dxQueryReverseReferenceNodeNote($this, 'note', 'reverse_reference', 'Ticket', 'Note');
 
@@ -2137,6 +2192,7 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
      * @property-read dxQueryNode $Category
      * @property-read dxQueryNodeCategory $CategoryObject
      * @property-read dxQueryNode $ObjectOwner
+     * @property-read dxQueryNode $TicketParentId
      *
      *
      * @property-read dxQueryReverseReferenceNodeNote $Note
@@ -2177,6 +2233,8 @@ class TicketGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNodeCategory('Category', 'CategoryObject', 'integer', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'integer', $this);
+				case 'TicketParentId':
+					return new dxQueryNode('TicketParentId', 'TicketParentId', 'integer', $this);
 				case 'Note':
 					return new dxQueryReverseReferenceNodeNote($this, 'note', 'reverse_reference', 'Ticket', 'Note');
 

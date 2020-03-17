@@ -982,6 +982,14 @@
                 "Placeholder": "Ticket Progress",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Ticket Progress"
+            },
+            "TicketParentId": {
+                "DisplayType": "number",
+                "InputLabel": "Ticket Parent Id:",
+                "DefaultValue": "",
+                "Placeholder": "Ticket Parent Id",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Ticket Parent Id"
             }
         },
         "Relationships": {
