@@ -508,6 +508,14 @@
                 "Placeholder": "Category Label",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Category Label"
+            },
+            "TicketCount": {
+                "DisplayType": "number",
+                "InputLabel": "Ticket Count:",
+                "DefaultValue": "",
+                "Placeholder": "Ticket Count",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Ticket Count"
             }
         },
         "Relationships": []

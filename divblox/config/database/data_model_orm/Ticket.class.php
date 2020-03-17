@@ -26,5 +26,53 @@ class Ticket extends TicketGen {
     public function __toString() {
         return sprintf('Ticket Object %s',  $this->intId);
     }
+
+    /**
+     * Save this Ticket
+     * @param bool $blnForceInsert
+     * @param bool $blnForceUpdate
+     * @return int
+     */
+    public function Save($blnForceInsert = false, $blnForceUpdate = false) {
+        $mixToReturn = parent::Save($blnForceInsert,$blnForceUpdate);
+
+        $CategoryObj = Category::Load($this->intCategory);
+
+        if (!is_null($CategoryObj)) {
+            $TicketCount = Ticket::QueryCount(
+                dxQ::Equal(
+                    dxQN::Ticket()->CategoryObject->Id,
+                    $CategoryObj->Id
+                )
+            );
+
+            $CategoryObj->TicketCount = $TicketCount;
+            $CategoryObj->Save();
+        }
+
+        // Return
+        return $mixToReturn;
+    }
+    /**
+     * Delete this Ticket
+     * @return void
+     */
+    public function Delete() {
+
+        $CategoryObj = Category::Load($this->intCategory);
+        parent::Delete();
+
+        if (!is_null($CategoryObj)) {
+            $TicketCount = Ticket::QueryCount(
+                dxQ::Equal(
+                    dxQN::Ticket()->CategoryObject->Id,
+                    $CategoryObj->Id
+                )
+            );
+
+            $CategoryObj->TicketCount = $TicketCount;
+            $CategoryObj->Save();
+        }
+    }
 }
 ?>
