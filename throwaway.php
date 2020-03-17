@@ -1,8 +1,5 @@
 <?php
-
 require("divblox/divblox.php");
-
-
 $CategoryArray = Category::QueryArray(
     dxQ::All()
 );

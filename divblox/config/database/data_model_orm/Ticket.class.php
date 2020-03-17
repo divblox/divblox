@@ -58,7 +58,6 @@ class Ticket extends TicketGen {
      * @return void
      */
     public function Delete() {
-
         $CategoryObj = Category::Load($this->intCategory);
         parent::Delete();
 
