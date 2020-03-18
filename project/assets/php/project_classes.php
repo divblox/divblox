@@ -123,7 +123,9 @@ class EntityInstanceComponentController extends ProjectComponentController {
         parent::__construct($ComponentNameStr);
     }
     public function getObjectData() {
-        $EntityObj = $this->EntityNameStr::Load($this->getInputValue("Id",true));
+        $EntityObj = $this->EntityNameStr::Load(
+            $this->getInputValue("Id",true)
+        );
         $EntityJsonDecoded = array();
         if (!is_null($EntityObj)) {
             $EntityJsonDecoded = json_decode($EntityObj->getJson());

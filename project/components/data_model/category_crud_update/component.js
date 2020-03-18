@@ -14,15 +14,39 @@ if (typeof component_classes['data_model_category_crud_update'] === "undefined")
 			this.initCrudVariables("Category");
 		}
 		reset(inputs,propagate) {
-			if (typeof inputs !== "undefined") {
-				this.setEntityId(inputs);
-			}
+			this.setEntityId(this.getEntityId());
 			super.reset(inputs,propagate);
 		}
 
 		getEntityId() {
 			// return this.getLoadArgument("entity_id");
 			return getGlobalConstrainById("Category");
+		}
+
+		initCustomFunctions() {
+			super.initCustomFunctions();
+			getComponentElementById(this, "btnDelete").on("click", function () {
+				showAlert("Are you sure? Deleting this category will delete all of it's subcategories.",
+					"warning",
+					["Cancel", "Delete"],
+					false,
+					0,
+					this.deleteCategoryAndSubCategories.bind(this),
+					this.doNothing);
+			}.bind(this));
+		}
+
+		deleteCategoryAndSubCategories() {
+			dxRequestInternal(
+				getComponentControllerPath(this),
+				{f: "deleteCategoryAndSubCategories"},
+				function() {
+					loadPageComponent("admin");
+				}, function() {
+					// Failure function
+				},
+				false
+			)
 		}
 	}
 	component_classes['data_model_category_crud_update'] = data_model_category_crud_update;

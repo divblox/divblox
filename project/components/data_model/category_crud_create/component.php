@@ -13,7 +13,6 @@ class CategoryController extends EntityInstanceComponentController {
     }
 
     public function doAfterSaveActions($EntityToUpdateObj = null) {
-        // JGL: This function is intended to be overridden in the child class for additional functionality
         if (is_null($EntityToUpdateObj)) {
             return;
         }
@@ -36,7 +35,7 @@ class CategoryController extends EntityInstanceComponentController {
             }
             $EntityToUpdateObj->HierarchyPath = $HierarchyPathStr;
         } else {
-            $EntityToUpdateObj->HierachryPath = $EntityToUpdateObj->CategoryLabel;
+            $EntityToUpdateObj->HierarchyPath = $EntityToUpdateObj->CategoryLabel;
         }
         $EntityToUpdateObj->Save();
     }

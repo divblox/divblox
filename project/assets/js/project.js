@@ -320,3 +320,4 @@ function getApplicationIconBadgeNumber(callback) {
  */
 function doAfterAuthenticationActions() {
 }
+
