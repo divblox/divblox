@@ -21,4 +21,22 @@ abstract class ProjectFunctions extends FrameworkFunctions {
         }
         return $CandidateStr;
     }
+
+    // Strict typing
+    public static function getBreadCrumbsRecursive(Category $CategoryObj = null, $BreadCrumbsArray = []) {
+        if (is_null($CategoryObj)) {
+            return $BreadCrumbsArray;
+        }
+
+        $BreadCrumbsArray[$CategoryObj->CategoryLabel] = $CategoryObj->Id;
+
+        if (is_null($CategoryObj->CategoryParentId) || ($CategoryObj->CategoryParentId < 1)) {
+            return $BreadCrumbsArray;
+        }
+
+        $ParentCategoryObj = Category::Load($CategoryObj->CategoryParentId);
+
+        return self::getBreadCrumbsRecursive($ParentCategoryObj, $BreadCrumbsArray);
+
+    }
 }

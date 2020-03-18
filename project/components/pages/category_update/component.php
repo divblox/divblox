@@ -26,7 +26,7 @@ class CategoryUpdateController extends ProjectComponentController
 
         $CategoryObj = Category::Load($InputCategoryInt);
 
-        $ReturnArr = $this->getBreadCrumbsRecursive($CategoryObj);
+        $ReturnArr = ProjectFunctions::getBreadCrumbsRecursive($CategoryObj);
 
         $ReturnArr = array_reverse($ReturnArr);
 
@@ -55,23 +55,6 @@ class CategoryUpdateController extends ProjectComponentController
         $this->presentOutput();
     }
 
-    // Strict typing
-    protected function getBreadCrumbsRecursive(Category $CategoryObj = null, $BreadCrumbsArray = []) {
-        if (is_null($CategoryObj)) {
-            return $BreadCrumbsArray;
-        }
-
-        $BreadCrumbsArray[$CategoryObj->CategoryLabel] = $CategoryObj->Id;
-
-        if (is_null($CategoryObj->CategoryParentId) || ($CategoryObj->CategoryParentId < 1)) {
-            return $BreadCrumbsArray;
-        }
-
-        $ParentCategoryObj = Category::Load($CategoryObj->CategoryParentId);
-
-        return $this->getBreadCrumbsRecursive($ParentCategoryObj, $BreadCrumbsArray);
-
-    }
 }
 
 $ComponentObj = new CategoryUpdateController("category_update");

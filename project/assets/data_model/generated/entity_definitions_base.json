@@ -524,6 +524,14 @@
                 "Placeholder": "Category Parent Id",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Category Parent Id"
+            },
+            "HierarchyPath": {
+                "DisplayType": "textarea",
+                "InputLabel": "Hierarchy Path:",
+                "DefaultValue": "",
+                "Placeholder": "Hierarchy Path",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Hierarchy Path"
             }
         },
         "Relationships": []

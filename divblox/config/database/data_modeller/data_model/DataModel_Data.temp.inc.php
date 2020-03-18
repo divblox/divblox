@@ -9,7 +9,7 @@ abstract class DataModelData {
         "Ticket"
             => array("TicketName","TicketDescription","TicketDueDate","TicketStatus","TicketUniqueId","TicketProgress"),
         "Category"
-            => array("CategoryLabel","TicketCount","CategoryParentId"),
+            => array("CategoryLabel","TicketCount","CategoryParentId","HierarchyPath"),
         "Note"
             => array("NoteDescription","NoteCreatedDate"),
         "SubTask"
@@ -18,7 +18,7 @@ abstract class DataModelData {
         "Ticket"
             => array("VARCHAR(25)","TEXT","DATE","VARCHAR(25)","VARCHAR(25) UNIQUE","INT"),
         "Category"
-            => array("VARCHAR(50)","INT","BIGINT"),
+            => array("VARCHAR(50)","INT","BIGINT","TEXT"),
         "Note"
             => array("TEXT","DATE"),
         "SubTask"

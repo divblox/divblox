@@ -19,7 +19,7 @@ if (typeof component_classes['pages_category_update'] === "undefined") {
         initCustomFunctions() {        //Custom javascript here
             super.initCustomFunctions();
             getComponentElementById(this, "AllCategories").on("click", function () {
-                loadPageComponent("category_management");
+                loadPageComponent("admin");
             });
             $(document).on("click", ".category-breadcrumb", function () {
             	let category_id = $(this).attr("id").replace("CategoryId_","");

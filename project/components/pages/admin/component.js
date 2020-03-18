@@ -12,6 +12,7 @@ if (typeof component_classes['pages_admin'] === "undefined") {
 		reset(inputs) {
 			setActivePage("admin","Admin");
 			super.reset(inputs);
+			setGlobalConstrainById("Category", -1);
 		}
 	}
 	component_classes['pages_admin'] = pages_admin;
