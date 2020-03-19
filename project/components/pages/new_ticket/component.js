@@ -12,6 +12,18 @@ if (typeof component_classes['pages_new_ticket'] === "undefined") {
 			setActivePage("new_ticket","New Ticket");
 			super.reset(inputs);
 		}
+
+		eventTriggered(event_name, parameters_obj) {
+			switch (event_name) {
+				case 'ticket_created':
+					loadPageComponent("ticket_update");
+					break;
+				default:
+					dxLog("Event triggered: " + event_name + ": " + JSON.stringify(parameters_obj));
+			}
+			// Let's pass the event to all sub components
+			this.propagateEventTriggered(event_name, parameters_obj);
+		}
 	}
 	component_classes['pages_new_ticket'] = pages_new_ticket;
 }

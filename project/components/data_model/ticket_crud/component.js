@@ -20,10 +20,10 @@ if (typeof component_classes['data_model_ticket_crud'] === "undefined") {
 				case 'ticket_crud_create_clicked':this.toggleSubView("data_create_wrapper");
 					getRegisteredComponent(this.getUid()+"_ticket_crud_create_component").reset();
 					break;
+				case 'ticket_created':
 				case 'ticket_clicked':this.toggleSubView("data_update_wrapper");
 					getRegisteredComponent(this.getUid()+"_ticket_crud_update_component").reset(parameters_obj.id,true);
 					break;
-				case 'ticket_created':
 				case 'ticket_deleted':
 				case 'ticket_updated':
 				case 'ticket_crud_back_clicked':this.toggleSubView("data_series_wrapper");

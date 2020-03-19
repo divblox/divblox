@@ -3,7 +3,7 @@ require("../../../../divblox/divblox.php");
 class TicketController extends EntityDataSeriesComponentController {
     protected $EntityNameStr = "Ticket";
     protected $IncludedAttributeArray = ["TicketName","TicketDescription","TicketDueDate","TicketStatus",];
-    protected $IncludedRelationshipArray = ["Category" => "CategoryLabel",];
+    protected $IncludedRelationshipArray = ["Category" => "HierarchyPath",];
     protected $ConstrainByArray = [];
     protected $RequiredAttributeArray = [];
     protected $NumberValidationAttributeArray = [];

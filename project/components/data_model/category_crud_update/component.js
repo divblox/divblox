@@ -31,22 +31,46 @@ if (typeof component_classes['data_model_category_crud_update'] === "undefined")
 					["Cancel", "Delete"],
 					false,
 					0,
-					this.deleteCategoryAndSubCategories.bind(this),
+					this.deleteEntity.bind(this),
 					this.doNothing);
 			}.bind(this));
+		}
+
+		reParentSubCategories() {
+
 		}
 
 		deleteCategoryAndSubCategories() {
 			dxRequestInternal(
 				getComponentControllerPath(this),
-				{f: "deleteCategoryAndSubCategories"},
-				function() {
-					loadPageComponent("admin");
-				}, function() {
-					// Failure function
+				{f: "deleteCategoryAndSubCategories",
+					Id: this.getLoadArgument("entity_id")
 				},
+				function() {
+					// loadPageComponent("admin");
+					this.loadEntity();
+					pageEventTriggered(this.lowercase_entity_name + "_deleted");
+				}.bind(this), function() {
+					// Failure function
+					showAlert("Error deleting " + this.lowercase_entity_name + ": " + data_obj.Message, "error", "OK", false);
+				}.bind(this),
 				false
-			)
+			);
+		}
+		deleteEntity() {
+			dxRequestInternal(
+				getComponentControllerPath(this),
+				{
+					f: "deleteObjectData",
+					Id: this.getLoadArgument("entity_id")
+				},
+				function (data_obj) {
+					this.loadEntity();
+					pageEventTriggered(this.lowercase_entity_name + "_deleted");
+				}.bind(this),
+				function (data_obj) {
+					showAlert("Error deleting " + this.lowercase_entity_name + ": " + data_obj.Message, "error", "OK", false);
+				}.bind(this));
 		}
 	}
 	component_classes['data_model_category_crud_update'] = data_model_category_crud_update;
