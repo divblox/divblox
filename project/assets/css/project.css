@@ -660,3 +660,22 @@ label {
     height:64px;
 }
 /* -------------------------------------------------------------------------------------------------------------------*/
+/* -----------------------------Styles for loading overlays-----------------------------------------------------------*/
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    right: 0;
+    bottom: 0;
+    background-color: rgb(255, 255, 255); /* Black background with opacity */
+}
+.loading-overlay-animation {
+    position: fixed;
+    top: 50%;
+    height: 50px;
+    width: 100%;
+    text-align: center;
+}
+/* -------------------------------------------------------------------------------------------------------------------*/

@@ -312,7 +312,7 @@ class dxRemoteAdminDeniedException extends dxCallerException {
      * dxRemoteAdminDeniedException constructor.
      */
     public function __construct() {
-        parent::__construct('Remote access to "' . ProjectFunctions::$RequestUri . '" has been disabled.' .
+        parent::__construct('Remote access to "' . FrameworkFunctions::$RequestUri . '" has been disabled.' .
             "\r\nTo allow remote access to this script, set the ALLOW_REMOTE_ADMIN constant to TRUE\r\nor to \"" . $_SERVER['REMOTE_ADDR'] . '" in "configuration.inc.php".', 2);
     }
 }
@@ -979,7 +979,7 @@ abstract class dxString {
             }
         }
         //return the first match
-        if(ProjectFunctions::getDataSetSize($ret) > 0)
+        if(FrameworkFunctions::getDataSetSize($ret) > 0)
             return $ret[0];
         else
             return ''; //no matches
@@ -1431,7 +1431,7 @@ abstract class dxDatabaseBase extends dxBaseClass {
 
             // get rid of unnecessary backtrace info in case of:
             // query
-            if ((ProjectFunctions::getDataSetSize($objDebugBacktrace) > 3) &&
+            if ((FrameworkFunctions::getDataSetSize($objDebugBacktrace) > 3) &&
                 (array_key_exists('function', $objDebugBacktrace[2])) &&
                 (($objDebugBacktrace[2]['function'] == 'QueryArray') ||
                     ($objDebugBacktrace[2]['function'] == 'QuerySingle') ||
@@ -1449,7 +1449,7 @@ abstract class dxDatabaseBase extends dxBaseClass {
             if( isset($objBacktrace['object']))
                 $objBacktrace['object'] = null;
 
-            for ($intIndex = 0, $intMax = ProjectFunctions::getDataSetSize($objBacktrace['args']); $intIndex < $intMax; $intIndex++) {
+            for ($intIndex = 0, $intMax = FrameworkFunctions::getDataSetSize($objBacktrace['args']); $intIndex < $intMax; $intIndex++) {
                 $obj = $objBacktrace['args'][$intIndex];
                 if (($obj instanceof dxQueryClause) || ($obj instanceof dxQueryCondition))
                     $obj = sprintf("[%s]", $obj->__toString());
@@ -1594,9 +1594,9 @@ abstract class dxDatabaseBase extends dxBaseClass {
             printf('<input type="hidden" name="strProfileData" value="%s" />',
                 base64_encode(serialize($this->strProfileArray)));
             printf('<input type="hidden" name="intDatabaseIndex" value="%s" />', $this->intDatabaseIndex);
-            printf('<input type="hidden" name="strReferrer" value="%s" /></div></form>', ProjectFunctions::HtmlEntities(ProjectFunctions::$RequestUri));
+            printf('<input type="hidden" name="strReferrer" value="%s" /></div></form>', FrameworkFunctions::HtmlEntities(FrameworkFunctions::$RequestUri));
 
-            $intCount = round(ProjectFunctions::getDataSetSize($this->strProfileArray));
+            $intCount = round(FrameworkFunctions::getDataSetSize($this->strProfileArray));
             if ($intCount == 0)
                 printf('<b>PROFILING INFORMATION FOR DATABASE CONNECTION #%s</b>: No queries performed.  Please <a href="#" onclick="var frmDbProfile = document.getElementById(\'frmDbProfile%s\'); frmDbProfile.target = \'_blank\'; frmDbProfile.submit(); return false;">click here to view profiling detail</a><br />',
                     $this->intDatabaseIndex, $this->intDatabaseIndex);
@@ -2432,7 +2432,7 @@ class dxMySqliDatabase extends dxDatabaseBase {
         $strToReturn = explode(',', $strKeyDefinition);
 
         // Take out trailing and leading "`" character in each name (if applicable)
-        for ($intIndex = 0; $intIndex < ProjectFunctions::getDataSetSize($strToReturn); $intIndex++) {
+        for ($intIndex = 0; $intIndex < FrameworkFunctions::getDataSetSize($strToReturn); $intIndex++) {
             $strColumn = $strToReturn[$intIndex];
 
             if (substr($strColumn, 0, 1) == '`')
@@ -2458,7 +2458,7 @@ class dxMySqliDatabase extends dxDatabaseBase {
         $objIndexArray = array();
 
         // We don't care about the first line or the last line
-        for ($intIndex = 1; $intIndex < (ProjectFunctions::getDataSetSize($strLineArray) - 1); $intIndex++) {
+        for ($intIndex = 1; $intIndex < (FrameworkFunctions::getDataSetSize($strLineArray) - 1); $intIndex++) {
             $strLine = $strLineArray[$intIndex];
 
             // Each object has a two-space indent
@@ -2513,7 +2513,7 @@ class dxMySqliDatabase extends dxDatabaseBase {
         $objForeignKeyArray = array();
 
         // We don't care about the first line or the last line
-        for ($intIndex = 1; $intIndex < (ProjectFunctions::getDataSetSize($strLineArray) - 1); $intIndex++) {
+        for ($intIndex = 1; $intIndex < (FrameworkFunctions::getDataSetSize($strLineArray) - 1); $intIndex++) {
             $strLine = $strLineArray[$intIndex];
 
             // Check to see if the line:
@@ -2550,8 +2550,8 @@ class dxMySqliDatabase extends dxDatabaseBase {
                 array_push($objForeignKeyArray, $objForeignKey);
 
                 // Ensure the FK object has matching column numbers (or else, throw)
-                if ((ProjectFunctions::getDataSetSize($objForeignKey->ColumnNameArray) == 0) ||
-                    (ProjectFunctions::getDataSetSize($objForeignKey->ColumnNameArray) != ProjectFunctions::getDataSetSize($objForeignKey->ReferenceColumnNameArray)))
+                if ((FrameworkFunctions::getDataSetSize($objForeignKey->ColumnNameArray) == 0) ||
+                    (FrameworkFunctions::getDataSetSize($objForeignKey->ColumnNameArray) != FrameworkFunctions::getDataSetSize($objForeignKey->ReferenceColumnNameArray)))
                     throw new Exception("Invalid Foreign Key definition: $strLine");
             }
         }
@@ -2579,7 +2579,7 @@ class dxMySqliDatabase extends dxDatabaseBase {
     private function GetTableTypeForCreateStatement($strCreateStatement) {
         // Table Type is in the last line of the Create Statement, "TYPE=DbTableType"
         $strLineArray = explode("\n", $strCreateStatement);
-        $strFinalLine = strtoupper($strLineArray[ProjectFunctions::getDataSetSize($strLineArray) - 1]);
+        $strFinalLine = strtoupper($strLineArray[FrameworkFunctions::getDataSetSize($strLineArray) - 1]);
 
         if (substr($strFinalLine, 0, 7) == ') TYPE=') {
             return trim(substr($strFinalLine, 7));
@@ -2604,7 +2604,7 @@ class dxMySqliDatabase extends dxDatabaseBase {
         $strVersion = dxType::Cast($strDbRow[0], dxType::String);
         $strVersionArray = explode('.', $strVersion);
         $strMajorVersion = null;
-        if (ProjectFunctions::getDataSetSize($strVersionArray) > 0) {
+        if (FrameworkFunctions::getDataSetSize($strVersionArray) > 0) {
             $strMajorVersion = $strVersionArray[0];
         }
         if (null === $strMajorVersion) {
@@ -2614,7 +2614,7 @@ class dxMySqliDatabase extends dxDatabaseBase {
             return $this->Query("EXPLAIN " . $sql);
         } else if (5 == intval($strMajorVersion)) {
             $strMinorVersion = null;
-            if (ProjectFunctions::getDataSetSize($strVersionArray) > 1) {
+            if (FrameworkFunctions::getDataSetSize($strVersionArray) > 1) {
                 $strMinorVersion = $strVersionArray[1];
             }
             if (null === $strMinorVersion) {
@@ -2624,7 +2624,7 @@ class dxMySqliDatabase extends dxDatabaseBase {
                 return $this->Query("EXPLAIN " . $sql);
             } else if (6 == intval($strMinorVersion)) {
                 $strSubMinorVersion = null;
-                if (ProjectFunctions::getDataSetSize($strVersionArray) > 2) {
+                if (FrameworkFunctions::getDataSetSize($strVersionArray) > 2) {
                     $strSubMinorVersion = $strVersionArray[2];
                 }
                 if (null === $strSubMinorVersion) {
@@ -2632,7 +2632,7 @@ class dxMySqliDatabase extends dxDatabaseBase {
                 }
                 if (!is_integer($strSubMinorVersion)) {
                     $strSubMinorVersionArray = explode("-", $strSubMinorVersion);
-                    if (ProjectFunctions::getDataSetSize($strSubMinorVersionArray) > 1) {
+                    if (FrameworkFunctions::getDataSetSize($strSubMinorVersionArray) > 1) {
                         $strSubMinorVersion = $strSubMinorVersionArray[0];
                         if (!is_integer($strSubMinorVersion)) {
                             // Failed to determine the sub-minor version.
@@ -2905,7 +2905,7 @@ class dxMySqliDatabaseField extends dxDatabaseFieldBase {
                     // Calculate MaxLength of this column (e.g. if it's a varchar, calculate length of varchar
                     // NOTE: $mixFieldData->max_length in the MySQL spec is **DIFFERENT**
                     $strLengthArray = explode("(", $objRow["Type"]);
-                    if ((ProjectFunctions::getDataSetSize($strLengthArray) > 1) &&
+                    if ((FrameworkFunctions::getDataSetSize($strLengthArray) > 1) &&
                         (strtolower($strLengthArray[0]) != 'enum') &&
                         (strtolower($strLengthArray[0]) != 'set')) {
                         $strLengthArray = explode(")", $strLengthArray[1]);
@@ -3877,7 +3877,7 @@ class dxQueryNode extends dxQueryBaseNode {
      * @return string
      */
     protected function GetDataGridHtmlHelper($strNodeLabelArray, $intIndex) {
-        if (($intIndex + 1) == ProjectFunctions::getDataSetSize($strNodeLabelArray))
+        if (($intIndex + 1) == FrameworkFunctions::getDataSetSize($strNodeLabelArray))
             return $strNodeLabelArray[$intIndex];
         else
             return sprintf('(%s ? %s : null)', $strNodeLabelArray[$intIndex], $this->GetDataGridHtmlHelper($strNodeLabelArray, $intIndex + 1));
@@ -3892,25 +3892,25 @@ class dxQueryNode extends dxQueryBaseNode {
         $objNodeArray = array();
 
         $objNodeArray[] = $this;
-        while ($objNodeArray[ProjectFunctions::getDataSetSize($objNodeArray) - 1]->objParentNode)
-            $objNodeArray[] = $objNodeArray[ProjectFunctions::getDataSetSize($objNodeArray) - 1]->objParentNode;
+        while ($objNodeArray[FrameworkFunctions::getDataSetSize($objNodeArray) - 1]->objParentNode)
+            $objNodeArray[] = $objNodeArray[FrameworkFunctions::getDataSetSize($objNodeArray) - 1]->objParentNode;
 
         $objNodeArray = array_reverse($objNodeArray, false);
 
         // Go through the objNodeArray to build out the DataGridHtml
 
         // Error Behavior
-        if (ProjectFunctions::getDataSetSize($objNodeArray) < 2)
+        if (FrameworkFunctions::getDataSetSize($objNodeArray) < 2)
             throw new Exception('Invalid dxQueryNode to GetDataGridHtml on');
 
         // Simple Two-Step Node
-        else if (ProjectFunctions::getDataSetSize($objNodeArray) == 2)
+        else if (FrameworkFunctions::getDataSetSize($objNodeArray) == 2)
             $strToReturn = '$_ITEM->' . $objNodeArray[1]->strPropertyName;
 
         // Complex N-Step Node
         else {
             $strNodeLabelArray[0] = '$_ITEM->' . $objNodeArray[1]->strPropertyName;
-            for ($intIndex = 2; $intIndex < ProjectFunctions::getDataSetSize($objNodeArray); $intIndex++) {
+            for ($intIndex = 2; $intIndex < FrameworkFunctions::getDataSetSize($objNodeArray); $intIndex++) {
                 $strNodeLabelArray[$intIndex - 1] = $strNodeLabelArray[$intIndex - 2] . '->' . $objNodeArray[$intIndex]->strPropertyName;
             }
 
@@ -3921,7 +3921,7 @@ class dxQueryNode extends dxQueryBaseNode {
             return sprintf('(%s) ? %s->qFormat(dxDateTime::$DefaultTimeFormat) : null', $strToReturn, $strToReturn);
 
         if ($this->strType == dxDatabaseFieldType::Bit)
-            return sprintf('(null === %s)? "" : ((%s)? "%s" : "%s")', $strToReturn, $strToReturn, ProjectFunctions::Translate('True'), ProjectFunctions::Translate('False'));
+            return sprintf('(null === %s)? "" : ((%s)? "%s" : "%s")', $strToReturn, $strToReturn, FrameworkFunctions::Translate('True'), FrameworkFunctions::Translate('False'));
 
         if (class_exists($this->strClassName))
             return sprintf('(%s) ? %s->__toString() : null;', $strToReturn, $strToReturn);
@@ -4250,7 +4250,7 @@ class dxQueryConditionAll extends dxQueryCondition {
      * @throws dxCallerException
      */
     public function __construct($mixParameterArray) {
-        if (ProjectFunctions::getDataSetSize($mixParameterArray))
+        if (FrameworkFunctions::getDataSetSize($mixParameterArray))
             throw new dxCallerException('All clause takes in no parameters', 3);
     }
 
@@ -4270,7 +4270,7 @@ class dxQueryConditionNone extends dxQueryCondition {
      * @throws dxCallerException
      */
     public function __construct($mixParameterArray) {
-        if (ProjectFunctions::getDataSetSize($mixParameterArray))
+        if (FrameworkFunctions::getDataSetSize($mixParameterArray))
             throw new dxCallerException('None clause takes in no parameters', 3);
     }
 
@@ -4305,7 +4305,7 @@ abstract class dxQueryConditionLogical extends dxQueryCondition {
             if (!($objCondition instanceof dxQueryCondition))
                 throw new dxCallerException('Logical Or/And clause parameters must all be dxQueryCondition objects', 3);
 
-        if (ProjectFunctions::getDataSetSize($objConditionArray))
+        if (FrameworkFunctions::getDataSetSize($objConditionArray))
             return $objConditionArray;
         else
             throw new dxCallerException('No parameters passed in to logical Or/And clause', 3);
@@ -4332,7 +4332,7 @@ abstract class dxQueryConditionLogical extends dxQueryCondition {
      * @throws dxCallerException
      */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
-        $intLength = ProjectFunctions::getDataSetSize($this->objConditionArray);
+        $intLength = FrameworkFunctions::getDataSetSize($this->objConditionArray);
         if ($intLength) {
             $objBuilder->AddWhereItem('(');
             for ($intIndex = 0; $intIndex < $intLength; $intIndex++) {
@@ -4542,7 +4542,7 @@ class dxQueryConditionIn extends dxQueryConditionComparison {
             foreach ($mixOperand as $mixParameter) {
                 array_push($strParameters, $objBuilder->Database->SqlVariable($mixParameter));
             }
-            if (ProjectFunctions::getDataSetSize($strParameters))
+            if (FrameworkFunctions::getDataSetSize($strParameters))
                 $objBuilder->AddWhereItem($this->objQueryNode->GetColumnAlias($objBuilder) . ' IN (' . implode(',', $strParameters) . ')');
             else
                 $objBuilder->AddWhereItem('1=0');
@@ -4596,7 +4596,7 @@ class dxQueryConditionNotIn extends dxQueryConditionComparison {
             foreach ($mixOperand as $mixParameter) {
                 array_push($strParameters, $objBuilder->Database->SqlVariable($mixParameter));
             }
-            if (ProjectFunctions::getDataSetSize($strParameters))
+            if (FrameworkFunctions::getDataSetSize($strParameters))
                 $objBuilder->AddWhereItem($this->objQueryNode->GetColumnAlias($objBuilder) . ' NOT IN (' . implode(',', $strParameters) . ')');
             else
                 $objBuilder->AddWhereItem('1=1');
@@ -5385,7 +5385,7 @@ class dxQuerySubQuerySqlNode extends dxQuerySubQueryNode {
      */
     public function GetColumnAlias(dxQueryBuilder $objBuilder, $blnExpandSelection = false, dxQueryCondition $objJoinCondition = null, dxQuerySelect $objSelect = null) {
         $strSql = $this->strSql;
-        for ($intIndex = 1; $intIndex < ProjectFunctions::getDataSetSize($this->objParentQueryNodes); $intIndex++) {
+        for ($intIndex = 1; $intIndex < FrameworkFunctions::getDataSetSize($this->objParentQueryNodes); $intIndex++) {
             if (!is_null($this->objParentQueryNodes[$intIndex]))
                 $strSql = str_replace('{' . $intIndex . '}', $this->objParentQueryNodes[$intIndex]->GetColumnAlias($objBuilder), $strSql);
         }
@@ -5488,7 +5488,7 @@ class dxQueryOrderBy extends dxQueryClause {
                 $blnPreviousIsNode = true;
             }
 
-        if (ProjectFunctions::getDataSetSize($objNodeArray))
+        if (FrameworkFunctions::getDataSetSize($objNodeArray))
             return $objNodeArray;
         else
             throw new dxCallerException('No parameters passed in to OrderBy clause', 3);
@@ -5510,7 +5510,7 @@ class dxQueryOrderBy extends dxQueryClause {
      * @throws dxCallerException
      */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
-        $intLength = ProjectFunctions::getDataSetSize($this->objNodeArray);
+        $intLength = FrameworkFunctions::getDataSetSize($this->objNodeArray);
         for ($intIndex = 0; $intIndex < $intLength; $intIndex++) {
             $objNode = $this->objNodeArray[$intIndex];
             if ($objNode instanceof dxQueryNode) {
@@ -5547,7 +5547,7 @@ class dxQueryOrderBy extends dxQueryClause {
      */
     public function GetAsManualSql() {
         $strOrderByArray = array();
-        $intLength = ProjectFunctions::getDataSetSize($this->objNodeArray);
+        $intLength = FrameworkFunctions::getDataSetSize($this->objNodeArray);
         for ($intIndex = 0; $intIndex < $intLength; $intIndex++) {
             $strOrderByCommand = $this->objNodeArray[$intIndex]->GetAsManualSqlColumn();
 
@@ -5981,7 +5981,7 @@ class dxQueryGroupBy extends dxQueryClause {
                 array_push($objFinalNodeArray, $objNode);
         }
 
-        if (ProjectFunctions::getDataSetSize($objFinalNodeArray))
+        if (FrameworkFunctions::getDataSetSize($objFinalNodeArray))
             return $objFinalNodeArray;
         else
             throw new dxCallerException('No parameters passed in to Expand clause', 3);
@@ -6002,7 +6002,7 @@ class dxQueryGroupBy extends dxQueryClause {
      * @return mixed|void
      */
     public function UpdateQueryBuilder(dxQueryBuilder $objBuilder) {
-        $intLength = ProjectFunctions::getDataSetSize($this->objNodeArray);
+        $intLength = FrameworkFunctions::getDataSetSize($this->objNodeArray);
         for ($intIndex = 0; $intIndex < $intLength; $intIndex++)
             $objBuilder->AddGroupByItem($this->objNodeArray[$intIndex]->GetColumnAlias($objBuilder));
     }
@@ -6466,20 +6466,20 @@ class dxQueryBuilder extends dxBaseClass {
             implode("\r\n    ", $this->strJoinArray));
 
         // WHERE Clause
-        if (ProjectFunctions::getDataSetSize($this->strWhereArray)) {
+        if (FrameworkFunctions::getDataSetSize($this->strWhereArray)) {
             $strWhere = implode("\r\n    ", $this->strWhereArray);
             if (trim($strWhere) != '1=1')
                 $strSql .= "\r\nWHERE\r\n    " . $strWhere;
         }
 
         // Additional Ordering/Grouping/Having clauses
-        if (ProjectFunctions::getDataSetSize($this->strGroupByArray))
+        if (FrameworkFunctions::getDataSetSize($this->strGroupByArray))
             $strSql .= "\r\nGROUP BY\r\n    " . implode(",\r\n    ", $this->strGroupByArray);
-        if (ProjectFunctions::getDataSetSize($this->strHavingArray)) {
+        if (FrameworkFunctions::getDataSetSize($this->strHavingArray)) {
             $strHaving = implode("\r\n    ", $this->strHavingArray);
             $strSql .= "\r\nHaving\r\n    " . $strHaving;
         }
-        if (ProjectFunctions::getDataSetSize($this->strOrderByArray))
+        if (FrameworkFunctions::getDataSetSize($this->strOrderByArray))
             $strSql .= "\r\nORDER BY\r\n    " . implode(",\r\n    ", $this->strOrderByArray);
 
         // Limit Suffix (if applicable)
@@ -6823,7 +6823,7 @@ class dxDateTime extends DateTime {
         } else {
             $strTimeISO8601 = null;
             $blnValid = false;
-            //ProjectFunctions::SetErrorHandler('dxDateTimeErrorHandler');
+            //FrameworkFunctions::SetErrorHandler('dxDateTimeErrorHandler');
             try {
                 if ($objTimeZone)
                     $blnValid = parent::__construct($mixValue, $objTimeZone);
@@ -6832,7 +6832,7 @@ class dxDateTime extends DateTime {
             } catch (Exception $objExc) {}
             if ($blnValid !== false)
                 $strTimeISO8601 = parent::format(DateTime::ISO8601);
-            //ProjectFunctions::RestoreErrorHandler();
+            //FrameworkFunctions::RestoreErrorHandler();
 
             // Valid Value String
             if ($strTimeISO8601) {
@@ -6927,7 +6927,7 @@ class dxDateTime extends DateTime {
     public function __toString() {
         $strArgumentArray = func_get_args();
 
-        if (ProjectFunctions::getDataSetSize($strArgumentArray) >= 1) {
+        if (FrameworkFunctions::getDataSetSize($strArgumentArray) >= 1) {
             $strFormat = $strArgumentArray[0];
         } else {
             $strFormat = null;
@@ -6997,7 +6997,7 @@ class dxDateTime extends DateTime {
         $strToReturn = '';
 
         $intStartPosition = 0;
-        for ($intIndex = 0; $intIndex < ProjectFunctions::getDataSetSize($strArray); $intIndex++) {
+        for ($intIndex = 0; $intIndex < FrameworkFunctions::getDataSetSize($strArray); $intIndex++) {
             $strToken = trim($strArray[$intIndex]);
             if ($strToken) {
                 $intEndPosition = strpos($strFormat, $strArray[$intIndex], $intStartPosition);
@@ -7649,7 +7649,7 @@ class ComponentController_base {
             $this->initializeNewAuthenticationToken();
             return;
         }
-        $ClientAuthenticationTokenObj = ProjectFunctions::getCurrentAuthTokenObject($this->CurrentClientAuthenticationToken);
+        $ClientAuthenticationTokenObj = FrameworkFunctions::getCurrentAuthTokenObject($this->CurrentClientAuthenticationToken);
         if (is_null($ClientAuthenticationTokenObj)) {
             $this->initializeNewAuthenticationToken();
         } else {
@@ -7757,7 +7757,7 @@ class ComponentController_base {
             return;
         }
         $ClientAuthenticationTokenObj->ExpiredToken = $ClientAuthenticationTokenObj->Token;
-        $ClientAuthenticationTokenObj->Token = ProjectFunctions::generateUniqueClientAuthenticationToken();
+        $ClientAuthenticationTokenObj->Token = FrameworkFunctions::generateUniqueClientAuthenticationToken();
         $ClientAuthenticationTokenObj->UpdateDateTime = dxDateTime::Now();
         $ClientConnectionObj = $ClientAuthenticationTokenObj->ClientConnectionObject;
         $ClientConnectionObj->UpdateDateTime = dxDateTime::Now();
@@ -7776,7 +7776,7 @@ class ComponentController_base {
     protected function initializeNewAuthenticationToken() {
         // JGL: We need to create a new auth token that will initially not be linked to an account
         $ClientAuthenticationTokenObj = new ClientAuthenticationToken();
-        $ClientAuthenticationTokenObj->Token = ProjectFunctions::generateUniqueClientAuthenticationToken();
+        $ClientAuthenticationTokenObj->Token = FrameworkFunctions::generateUniqueClientAuthenticationToken();
         $ClientAuthenticationTokenObj->UpdateDateTime = dxDateTime::Now();
         $ClientConnectionObj = new ClientConnection();
         $RemoteAddress = 'Unknown';
@@ -7811,7 +7811,7 @@ class ComponentController_base {
     public function checkComponentAccess() {
         $this->setReturnValue("Result","Success");
         $this->setReturnValue("Message","Component ready");
-        if (!ProjectAccessManager::getComponentAccess(ProjectFunctions::getCurrentAccountId(),$this->ComponentNameStr)) {
+        if (!ProjectAccessManager::getComponentAccess(FrameworkFunctions::getCurrentAccountId(),$this->ComponentNameStr)) {
             $this->setReturnValue("Result","Failed");
             $this->setReturnValue("ForceLogout",true);
             $this->setReturnValue("Message","Access is denied for component '".$this->ComponentNameStr."'");
@@ -7913,6 +7913,11 @@ abstract class AccessManager_Base {
         if (in_array($ObjectType, $AllAccessObjectArray)) {
             return [AccessOperation::CREATE_STR,AccessOperation::READ_STR,AccessOperation::UPDATE_STR,AccessOperation::DELETE_STR];
         }
+        
+        if (FrameworkFunctions::getCurrentUserRole() == "Administrator") {
+            return [AccessOperation::CREATE_STR,AccessOperation::READ_STR,AccessOperation::UPDATE_STR,AccessOperation::DELETE_STR];
+        }
+        
         $CurrentObject = $ObjectType::Load($ObjectId);
         if (is_null($CurrentObject)) {
             return [AccessOperation::CREATE_STR,AccessOperation::READ_STR];

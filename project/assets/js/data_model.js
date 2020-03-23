@@ -5,13 +5,17 @@
 let data_lists = {};
 let entity_definitions_base = {};
 let entity_definitions = {};
+let no_cache_force_str = '';
+if (debug_mode) {
+    no_cache_force_str = getRandomFilePostFix();
+}
 let data_model = {
     loadEntityDefinitions(success_callback,failed_callback) {
-        loadJsonFromFile(getRootPath()+'project/assets/data_model/generated/data_lists.json',function(json) {
+        loadJsonFromFile(getRootPath()+'project/assets/data_model/generated/data_lists.json'+no_cache_force_str,function(json) {
             data_lists = json;
-            loadJsonFromFile(getRootPath()+'project/assets/data_model/generated/entity_definitions_base.json',function(json) {
+            loadJsonFromFile(getRootPath()+'project/assets/data_model/generated/entity_definitions_base.json'+no_cache_force_str,function(json) {
                 entity_definitions_base = json;
-                loadJsonFromFile(getRootPath()+'project/assets/data_model/entity_definitions.json',function(json) {
+                loadJsonFromFile(getRootPath()+'project/assets/data_model/entity_definitions.json'+no_cache_force_str,function(json) {
                     entity_definitions = json;
                     if ((entity_definitions === {}) || (entity_definitions_base === {})) {
                         failed_callback();

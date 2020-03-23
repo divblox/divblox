@@ -234,8 +234,9 @@ class EntityInstanceComponentController extends ProjectComponentController {
                 $EntityToUpdateObj->$ConstrainByObjStr = $item::Load($this->getInputValue('Constraining'.$item.'Id',true));
             }
         }
+        $this->doBeforeSaveActions($EntityToUpdateObj);
         $EntityToUpdateObj->Save();
-        $this->assignAdditionalValuesAfterSave($EntityToUpdateObj);
+        $this->doAfterSaveActions($EntityToUpdateObj);
         $this->setReturnValue("Result","Success");
         $this->setReturnValue("Message","Object updated");
         $this->setReturnValue("Id",$EntityToUpdateObj->Id);
@@ -254,17 +255,34 @@ class EntityInstanceComponentController extends ProjectComponentController {
             $this->setReturnValue("Message",$this->EntityNameStr." not found");
             $this->presentOutput();
         } else {
+            $this->doBeforeDeleteActions($EntityObj);
             $EntityObj->Delete();
+            $this->doAfterDeleteActions();
             $this->setReturnValue("Result","Success");
             $this->setReturnValue("Message",$this->EntityNameStr." deleted");
             $this->presentOutput();
         }
     }
-    public function assignAdditionalValuesAfterSave($EntityToUpdateObj = null) {
+    public function doBeforeSaveActions($EntityToUpdateObj = null) {
         // JGL: This function is intended to be overridden in the child class for additional functionality
         if (is_null($EntityToUpdateObj)) {
             return;
         }
+    }
+    public function doAfterSaveActions($EntityToUpdateObj = null) {
+        // JGL: This function is intended to be overridden in the child class for additional functionality
+        if (is_null($EntityToUpdateObj)) {
+            return;
+        }
+    }
+    public function doBeforeDeleteActions($EntityToUpdateObj = null) {
+        // JGL: This function is intended to be overridden in the child class for additional functionality
+        if (is_null($EntityToUpdateObj)) {
+            return;
+        }
+    }
+    public function doAfterDeleteActions() {
+        // JGL: This function is intended to be overridden in the child class for additional functionality
     }
 }
 /**

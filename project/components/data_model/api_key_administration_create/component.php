@@ -11,8 +11,8 @@ class ApiKeyController extends EntityInstanceComponentController {
     public function __construct($ComponentNameStr = 'Component') {
         parent::__construct($ComponentNameStr);
     }
-    public function assignAdditionalValuesAfterSave($EntityToUpdateObj = null) {
-        parent::assignAdditionalValuesAfterSave($EntityToUpdateObj);
+    public function doAfterSaveActions($EntityToUpdateObj = null) {
+        parent::doAfterSaveActions($EntityToUpdateObj);
         $Done = false;
         while (!$Done) {
             $ApiKeyCandidate = ProjectFunctions::generateRandomString(48);

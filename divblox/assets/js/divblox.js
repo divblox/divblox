@@ -12,7 +12,7 @@
  * divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "2.4.0";
+let dx_version = "2.5.0";
 let bootstrap_version = "4.4.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.3.8";
@@ -584,9 +584,74 @@ class DivbloxDomBaseComponent {
 		this.component_success = false;
 		this.sub_component_definitions = {};
 		this.sub_component_objects = [];
+		this.sub_component_ready = {};
 		this.sub_component_loaded_count = 0;
 		this.allowed_access_array = [];
+		this.uses_loading_state = false;
 		this.is_loading = false;
+		this.show_loading_overlay = false;
+		this.is_showing_loading_overlay = false;
+	}
+	/**
+	 * Gets the current component's parent component obj
+	 * @return {null} | The parent component
+	 */
+	getParentComponent() {
+		let parent_component_uid = this.getLoadArgument('parent_uid');
+		if ((parent_component_uid == null) || (parent_component_uid === '')) {
+			return null;
+		}
+		return getRegisteredComponent(parent_component_uid);
+	}
+	showLoadingOverlay() {
+		if (this.getParentComponent() != null) {return;/*We cannot show a loading overlay for a sub component*/}
+		this.is_showing_loading_overlay = true;
+		let overlay_html = '<div id="'+this.getUid()+'_LoadingOverlay" class="loading-overlay"><div' +
+			' class="loading-overlay-animation"><div class="spinner-border text-dark" role="status">' +
+			'<span class="sr-only">Loading...</span></div></div></div>';
+		getComponentElementById(this,'ComponentWrapper').append(overlay_html);
+		getComponentElementById(this,'LoadingOverlay').css('z-index',getHighestZIndex()+100);
+	}
+	removeLoadingOverlay() {
+		if (this.is_showing_loading_overlay) {
+			getComponentElementById(this,'LoadingOverlay').fadeOut();
+			this.is_showing_loading_overlay = false;
+		}
+	}
+	/**
+	 * Reports the current component's ready state to the parent once all sub components are ready
+	 */
+	reportComponentReadiness() {
+		if (this.is_loading) {return;}
+		let parent_component_obj = this.getParentComponent();
+		if (this.sub_component_definitions.length === 0) {
+			if (parent_component_obj != null) {
+				parent_component_obj.reportSubComponentReady(this.getUid());
+			} else {
+				this.removeLoadingOverlay();
+			}
+		} else {
+			let sub_component_ready_uids = Object.keys(this.sub_component_ready);
+			let all_ready = true;
+			sub_component_ready_uids.forEach(function(uid) {
+				all_ready &= this.sub_component_ready[uid];
+			}.bind(this));
+			if (all_ready) {
+				if (parent_component_obj != null) {
+					parent_component_obj.reportSubComponentReady(this.getUid());
+				} else {
+					this.removeLoadingOverlay();
+				}
+			}
+		}
+	}
+	/**
+	 * Allows a sub component to inform this component that it is ready
+	 * @param sub_component_uid: The uid of the calling sub component
+	 */
+	reportSubComponentReady(sub_component_uid) {
+		this.sub_component_ready[sub_component_uid] = true;
+		this.reportComponentReadiness();
 	}
 	/**
 	 * Used to load any prerequisites that a component may require before continuing to load the component
@@ -626,6 +691,9 @@ class DivbloxDomBaseComponent {
 		if (typeof callback !== "function") {
 			callback = function(){};
 		}
+		if (this.show_loading_overlay) {
+			this.showLoadingOverlay();
+		}
 		this.loadPrerequisites(function() {
 			callback();
 			dxCheckCurrentUserRole(this.allowed_access_array,function() {
@@ -659,6 +727,10 @@ class DivbloxDomBaseComponent {
 	 * @param {boolean} propagate If true, will also reset all sub components
 	 */
 	reset(inputs,propagate) {
+		if (!this.uses_loading_state) {
+			this.is_loading = false;
+			this.reportComponentReadiness();
+		}
 		propagate = propagate || false;
 		if (propagate) {
 			this.resetSubComponents(inputs,true);
@@ -668,6 +740,7 @@ class DivbloxDomBaseComponent {
 	 * Toggles the variable is_loading to true and displays the component loading state
 	 */
 	setLoadingState() {
+		this.uses_loading_state = true;
 		this.is_loading = true;
 		$("#"+this.uid+"_ComponentContent").hide();
 		$("#"+this.uid+"_ComponentPlaceholder").show();
@@ -677,7 +750,10 @@ class DivbloxDomBaseComponent {
 	 * Toggles the variable is_loading to false and removes the component loading state
 	 */
 	removeLoadingState() {
-		this.is_loading = false;
+		if (this.is_loading) {
+			this.is_loading = false;
+			this.reportComponentReadiness();
+		}
 		$("#"+this.uid+"_ComponentContent").show();
 		$("#"+this.uid+"_ComponentPlaceholder").hide();
 	}
@@ -696,7 +772,7 @@ class DivbloxDomBaseComponent {
 	 * @return {boolean} true if ready, false if not
 	 */
 	getReadyState() {
-		return this.component_success;
+		return this.component_success && !this.is_loading;
 	}
 	/**
 	 * Used to remove the loading or error state when a component loads successfully
@@ -721,6 +797,7 @@ class DivbloxDomBaseComponent {
 	 */
 	handleComponentError(ErrorMessage) {
 		this.component_success = false;
+		this.removeLoadingOverlay();
 		$("#"+this.uid+"_ComponentContent").hide();
 		$("#"+this.uid+"_ComponentPlaceholder").show();
 		$("#"+this.uid+"_ComponentFeedback").html('<div class="alert alert-danger alert-danger-component"><strong><i' +
@@ -755,6 +832,7 @@ class DivbloxDomBaseComponent {
 	subComponentLoadedCallBack(component) {
 		this.sub_component_objects.push(component);
 		this.sub_component_loaded_count++;
+		this.sub_component_ready[component.getUid()] = false;
 		this.loadSubComponent();
 		// JGL: Override as needed
 	}
@@ -999,9 +1077,13 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
 				this.relationship_list_array[relationship] = data_obj[relationship+"List"];
 			}.bind(this));
 			this.setValues();
+			this.onAfterLoadEntity(data_obj);
 		}.bind(this), function(data_obj) {
 			this.handleComponentError(data_obj.Message);
 		}.bind(this));
+	}
+	onAfterLoadEntity(data_obj) {
+		//TODO: Override this as needed;
 	}
 	setValues() {
 		this.included_attribute_array.forEach(function(attribute) {
@@ -2981,7 +3063,7 @@ function getDataModelAttributeValue(attribute) {
 			if (js_time != "00:00") {
 				return js_date+"T"+js_time;
 			}
-			return js_date;
+			return js_date+"T00:00";
 		}
 	}
 	return attribute;

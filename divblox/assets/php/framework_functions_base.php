@@ -104,7 +104,7 @@ abstract class FrameworkFunctions_base {
     }
     /**
      * @param null $DataSet: This should be an array
-     * @return int: Will return 0 if not a valid data set and 1 if data set is scalar. Otherwise it will return ProjectFunctions::getDataSetSize(DataSet);
+     * @return int: Will return 0 if not a valid data set and 1 if data set is scalar. Otherwise it will return FrameworkFunctions::getDataSetSize(DataSet);
      */
     public static function getDataSetSize($DataSet = null) {
         if (is_null($DataSet)) {
@@ -139,9 +139,9 @@ abstract class FrameworkFunctions_base {
      */
     public static function getBaseUrl() {
         $protocol = 'http://';
-        if (ProjectFunctions::isSecure())
+        if (FrameworkFunctions::isSecure())
             $protocol = 'https://';
-        $www = ProjectFunctions::HostHasWWW()?'www.':'';
+        $www = FrameworkFunctions::HostHasWWW()?'www.':'';
         $server = $_SERVER['SERVER_NAME'];
         $port = '';
         if (($_SERVER["SERVER_PORT"] != "80") && ($_SERVER["SERVER_PORT"] != "443")) {
@@ -173,7 +173,7 @@ abstract class FrameworkFunctions_base {
      * @return mixed
      */
     public static function PostToUrl($url,$fields_string = '',$client = APP_NAME_STR,$DefaultTimeout = 120) {
-        if (!ProjectFunctions::isValidUrl($url)) {
+        if (!FrameworkFunctions::isValidUrl($url)) {
             error_log("Tried calling 'PostToUrl' with invalid url");
             return '';
         }
@@ -257,7 +257,7 @@ abstract class FrameworkFunctions_base {
         }
 
         // Check to make sure the parent(s) exist, or create if not
-        if (!ProjectFunctions::MakeDirectory(dirname($strPath), $intMode)) {
+        if (!FrameworkFunctions::MakeDirectory(dirname($strPath), $intMode)) {
             return false;
         }
 
@@ -285,7 +285,7 @@ abstract class FrameworkFunctions_base {
      * @return string
      */
     public static function getAppSize() {
-        return ProjectFunctions::getSizeSymbolByQuantity(ProjectFunctions::getFolderSize(DOCUMENT_ROOT_STR.SUBDIRECTORY_STR)+ProjectFunctions::getCompleteDatabaseSizeInBytes());
+        return FrameworkFunctions::getSizeSymbolByQuantity(FrameworkFunctions::getFolderSize(DOCUMENT_ROOT_STR.SUBDIRECTORY_STR)+FrameworkFunctions::getCompleteDatabaseSizeInBytes());
     }
 
     /**
@@ -293,7 +293,7 @@ abstract class FrameworkFunctions_base {
      * @return int
      */
     public static function getAppSizeInBytes() {
-        return ProjectFunctions::getFolderSize(DOCUMENT_ROOT_STR.SUBDIRECTORY_STR)+ProjectFunctions::getCompleteDatabaseSizeInBytes();
+        return FrameworkFunctions::getFolderSize(DOCUMENT_ROOT_STR.SUBDIRECTORY_STR)+FrameworkFunctions::getCompleteDatabaseSizeInBytes();
     }
 
     /**
@@ -301,7 +301,7 @@ abstract class FrameworkFunctions_base {
      * @return string
      */
     public static function getAppStorageUsage() {
-        return ProjectFunctions::getSizeSymbolByQuantity(ProjectFunctions::getFolderSize(DOCUMENT_ROOT_STR.SUBDIRECTORY_STR));
+        return FrameworkFunctions::getSizeSymbolByQuantity(FrameworkFunctions::getFolderSize(DOCUMENT_ROOT_STR.SUBDIRECTORY_STR));
     }
 
     /**
@@ -309,7 +309,7 @@ abstract class FrameworkFunctions_base {
      * @return int
      */
     public static function getAppStorageUsageInBytes() {
-        return ProjectFunctions::getFolderSize(DOCUMENT_ROOT_STR.SUBDIRECTORY_STR);
+        return FrameworkFunctions::getFolderSize(DOCUMENT_ROOT_STR.SUBDIRECTORY_STR);
     }
 
     /**
@@ -338,7 +338,7 @@ abstract class FrameworkFunctions_base {
             if ($t<>"." && $t<>"..") {
                 $currentFile = $cleanPath . $t;
                 if (is_dir($currentFile)) {
-                    $size = ProjectFunctions::getFolderSize($currentFile);
+                    $size = FrameworkFunctions::getFolderSize($currentFile);
                     $total_size += $size;
                 }
                 else {
@@ -362,7 +362,7 @@ abstract class FrameworkFunctions_base {
      */
     public static function InitializeDatabaseConnections() {
         $ModuleArray = json_decode(APP_MODULES_STR);
-        $intMaxIndex = ProjectFunctions::getDataSetSize($ModuleArray);
+        $intMaxIndex = FrameworkFunctions::getDataSetSize($ModuleArray);
         for ($intIndex = 1; $intIndex <= $intMaxIndex; $intIndex++) {
             $strConstantPrefix = strtoupper($ModuleArray[$intIndex-1]);
             $strConstantName = $strConstantPrefix."_DATABASE_SERVER_STR";
@@ -380,7 +380,7 @@ abstract class FrameworkFunctions_base {
                 $objConfigArray['caching'] = false;
 
                 $strDatabaseType = 'dx' . $objConfigArray['adapter'] . 'Database';
-                ProjectFunctions::$Database[$intIndex] = new $strDatabaseType($intIndex, $objConfigArray);
+                FrameworkFunctions::$Database[$intIndex] = new $strDatabaseType($intIndex, $objConfigArray);
             }
         }
     }
@@ -390,7 +390,7 @@ abstract class FrameworkFunctions_base {
      * @return string
      */
     public static function getDatabaseSize($DatabaseIndex = 0) {
-        return ProjectFunctions::getSizeSymbolByQuantity(ProjectFunctions::getDatabaseSizeInBytes($DatabaseIndex));
+        return FrameworkFunctions::getSizeSymbolByQuantity(FrameworkFunctions::getDatabaseSizeInBytes($DatabaseIndex));
     }
 
     /**
@@ -399,8 +399,8 @@ abstract class FrameworkFunctions_base {
      */
     public static function getCompleteDatabaseSizeInBytes() {
         $TotalSizeInt = 0;
-        for($i = 0;$i < FrameworkFunctions::getDataSetSize(ProjectFunctions::$Database);$i++) {
-            $TotalSizeInt += ProjectFunctions::getDatabaseSizeInBytes($i);
+        for($i = 0;$i < FrameworkFunctions::getDataSetSize(FrameworkFunctions::$Database);$i++) {
+            $TotalSizeInt += FrameworkFunctions::getDatabaseSizeInBytes($i);
         }
         return $TotalSizeInt;
     }
@@ -410,10 +410,10 @@ abstract class FrameworkFunctions_base {
      * @return int
      */
     public static function getDatabaseSizeInBytes($DatabaseIndex = 0) {
-        if (!isset(ProjectFunctions::$Database[$DatabaseIndex])) {
+        if (!isset(FrameworkFunctions::$Database[$DatabaseIndex])) {
             throw new Exception("Database at index $DatabaseIndex does not exists!");
         }
-        $dbArray = ProjectFunctions::$Database[$DatabaseIndex];
+        $dbArray = FrameworkFunctions::$Database[$DatabaseIndex];
         $host = $dbArray['server'];
         $username = $dbArray['username'];
         $password = $dbArray['password'];
@@ -451,8 +451,8 @@ abstract class FrameworkFunctions_base {
      * @return boolean whether or not a class was found / included
      */
     public static function Autoload($strClassName) {
-        if (isset(ProjectFunctions::$ClassFile[strtolower($strClassName)])) {
-            include_once(ProjectFunctions::$ClassFile[strtolower($strClassName)]);
+        if (isset(FrameworkFunctions::$ClassFile[strtolower($strClassName)])) {
+            include_once(FrameworkFunctions::$ClassFile[strtolower($strClassName)]);
             return true;
         }
 
@@ -609,7 +609,7 @@ abstract class FrameworkFunctions_base {
      * Wrapper function for getCurrentAccountAttribute
      */
     public static function getCurrentAccountId() {
-        $CurrentAccountId = ProjectFunctions::getCurrentAccountAttribute();
+        $CurrentAccountId = FrameworkFunctions::getCurrentAccountAttribute();
         if (!is_numeric($CurrentAccountId)) {
             return -1;
         }
@@ -620,7 +620,7 @@ abstract class FrameworkFunctions_base {
      * @return string
      */
     public static function getCurrentUserEmailForAudit() {
-        return ProjectFunctions::getCurrentAccountAttribute('EmailAddress');
+        return FrameworkFunctions::getCurrentAccountAttribute('EmailAddress');
     }
 
     /**
@@ -630,7 +630,7 @@ abstract class FrameworkFunctions_base {
         if (isset($_SESSION["divblox_admin_access"])) {
             return 'dxAdmin';
         }
-        $CurrentAccount = Account::Load(ProjectFunctions::getCurrentAccountAttribute("ID"));
+        $CurrentAccount = Account::Load(FrameworkFunctions::getCurrentAccountAttribute("ID"));
         if (is_null($CurrentAccount))
             return 'Anonymous';
         if (!is_null($CurrentAccount->UserRoleObject)) {
@@ -662,7 +662,7 @@ abstract class FrameworkFunctions_base {
         $TokenCandidate = '';
         $Done = false;
         while (!$Done) {
-            $TokenCandidate = md5(dxDateTime::Now()->getTimestamp().ProjectFunctions::generateRandomString(20));
+            $TokenCandidate = md5(dxDateTime::Now()->getTimestamp().FrameworkFunctions::generateRandomString(20));
             $ExistingTokenObj = self::getCurrentAuthTokenObject($TokenCandidate);
             if (is_null($ExistingTokenObj)) {
                 $Done = true;
@@ -764,7 +764,7 @@ abstract class FrameworkFunctions_base {
         $TokenCandidate = '';
         $Done = false;
         while (!$Done) {
-            $TokenCandidate = md5(dxDateTime::Now()->getTimestamp().ProjectFunctions::generateRandomString(20));
+            $TokenCandidate = md5(dxDateTime::Now()->getTimestamp().FrameworkFunctions::generateRandomString(20));
             $ExistingTokenObj = PushRegistration::LoadByInternalUniqueId($TokenCandidate);
             if (is_null($ExistingTokenObj)) {
                 $Done = true;
