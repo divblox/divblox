@@ -761,7 +761,7 @@
                 "ValidationMessage": "Please provide a valid Note Description"
             },
             "NoteCreatedDate": {
-                "DisplayType": "date",
+                "DisplayType": "datetime-local",
                 "InputLabel": "Note Created Date:",
                 "DefaultValue": "",
                 "Placeholder": "Note Created Date",
@@ -976,7 +976,7 @@
                 "ValidationMessage": "Please provide a valid Sub Task Status"
             },
             "SubTaskDueDate": {
-                "DisplayType": "text",
+                "DisplayType": "date",
                 "InputLabel": "Sub Task Due Date:",
                 "DefaultValue": "",
                 "Placeholder": "Sub Task Due Date",
