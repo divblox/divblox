@@ -634,7 +634,7 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
         $objToReturn->intObjectOwner = $objDbRow->GetColumn($strAliasName, 'Integer');
         $strAlias = $strAliasPrefix . 'NoteCreatedDate';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->dttNoteCreatedDate = $objDbRow->GetColumn($strAliasName, 'Date');
+        $objToReturn->dttNoteCreatedDate = $objDbRow->GetColumn($strAliasName, 'DateTime');
         $strAlias = $strAliasPrefix . 'FileDocument';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intFileDocument = $objDbRow->GetColumn($strAliasName, 'Integer');
@@ -1663,7 +1663,7 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'Integer', $this);
 				case 'NoteCreatedDate':
-					return new dxQueryNode('NoteCreatedDate', 'NoteCreatedDate', 'Date', $this);
+					return new dxQueryNode('NoteCreatedDate', 'NoteCreatedDate', 'DateTime', $this);
 				case 'FileDocument':
 					return new dxQueryNode('FileDocument', 'FileDocument', 'Integer', $this);
 				case 'FileDocumentObject':

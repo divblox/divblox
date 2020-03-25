@@ -20,7 +20,7 @@ class CategoryController extends EntityInstanceComponentController {
 
         $SubCategoryArr = Category::QueryArray(
             dxQ::Equal(
-                dxQN::Category()->CategoryParentIdId,
+                dxQN::Category()->CategoryParentId,
                 $EntityToUpdateObj->Id
             )
         );
@@ -44,7 +44,7 @@ class CategoryController extends EntityInstanceComponentController {
                     $CategoryObj->Id
                 ),
                 dxQ::Equal(
-                    dxQN::Category()->CategoryParentIdId.
+                    dxQN::Category()->CategoryParentId.
                     $CategoryObj->CategoryParentId
                 )
             )

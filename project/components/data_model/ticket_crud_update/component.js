@@ -3,8 +3,10 @@ if (typeof component_classes['data_model_ticket_crud_update'] === "undefined") {
 		constructor(inputs,supports_native,requires_native) {
 			super(inputs,supports_native,requires_native);
 			// Sub component config start
-			this.sub_component_definitions = [];
-			// Sub component config end
+            this.sub_component_definitions = 
+                [{"component_load_path":"data_model/subtask_crud","parent_element":"zsg8N","arguments":{"uid":"data_model_subtask_crud_1"}},
+            {"component_load_path":"data_model/note_crud","parent_element":"YcX5f","arguments":{}}];
+            // Sub component config end
 			this.included_attribute_array = ['TicketName','TicketDescription','TicketDueDate','TicketStatus','TicketUniqueId',];
 			this.included_relationship_array = ['Category',];
 			this.constrain_by_array = [];
@@ -19,6 +21,9 @@ if (typeof component_classes['data_model_ticket_crud_update'] === "undefined") {
 			}
 			super.reset(inputs,propagate);
 		}
-	}
+	    initCustomFunctions() {
+            //Custom javascript here
+        }
+   	}
 	component_classes['data_model_ticket_crud_update'] = data_model_ticket_crud_update;
 }

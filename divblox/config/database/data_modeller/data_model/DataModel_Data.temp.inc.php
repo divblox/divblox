@@ -20,9 +20,9 @@ abstract class DataModelData {
         "Category"
             => array("VARCHAR(50)","INT","BIGINT","TEXT"),
         "Note"
-            => array("TEXT","DATE"),
+            => array("TEXT","DATETIME"),
         "SubTask"
-            => array("TEXT","VARCHAR(25)","VARCHAR(10)"));
+            => array("TEXT","VARCHAR(25)","DATE"));
 	public static $ProjectEntitySingleRelationshipArray = array(
         "Ticket"
             => array("Account","Category"),

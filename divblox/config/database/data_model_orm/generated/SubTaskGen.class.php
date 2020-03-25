@@ -18,7 +18,7 @@
  * @property-read integer $Id the value for intId (Read-Only PK)
  * @property string $Description the value for strDescription 
  * @property string $SubTaskStatus the value for strSubTaskStatus 
- * @property string $SubTaskDueDate the value for strSubTaskDueDate 
+ * @property dxDateTime $SubTaskDueDate the value for dttSubTaskDueDate 
  * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
  * @property integer $Ticket the value for intTicket 
  * @property string $SearchMetaInfo the value for strSearchMetaInfo 
@@ -59,10 +59,9 @@ class SubTaskGen extends dxBaseClass implements IteratorAggregate {
 
     /**
      * Protected member variable that maps to the database column SubTask.SubTaskDueDate
-     * @var string strSubTaskDueDate
+     * @var dxDateTime dttSubTaskDueDate
      */
-    protected $strSubTaskDueDate;
-    const SubTaskDueDateMaxLength = 10;
+    protected $dttSubTaskDueDate;
     const SubTaskDueDateDefault = null;
 
 
@@ -135,7 +134,7 @@ class SubTaskGen extends dxBaseClass implements IteratorAggregate {
         $this->intId = SubTask::IdDefault;
         $this->strDescription = SubTask::DescriptionDefault;
         $this->strSubTaskStatus = SubTask::SubTaskStatusDefault;
-        $this->strSubTaskDueDate = SubTask::SubTaskDueDateDefault;
+        $this->dttSubTaskDueDate = (SubTask::SubTaskDueDateDefault === null)?null:new dxDateTime(SubTask::SubTaskDueDateDefault);
         $this->strLastUpdated = SubTask::LastUpdatedDefault;
         $this->intTicket = SubTask::TicketDefault;
         $this->strSearchMetaInfo = SubTask::SearchMetaInfoDefault;
@@ -616,7 +615,7 @@ class SubTaskGen extends dxBaseClass implements IteratorAggregate {
         $objToReturn->strSubTaskStatus = $objDbRow->GetColumn($strAliasName, 'VarChar');
         $strAlias = $strAliasPrefix . 'SubTaskDueDate';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->strSubTaskDueDate = $objDbRow->GetColumn($strAliasName, 'VarChar');
+        $objToReturn->dttSubTaskDueDate = $objDbRow->GetColumn($strAliasName, 'Date');
         $strAlias = $strAliasPrefix . 'LastUpdated';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->strLastUpdated = $objDbRow->GetColumn($strAliasName, 'VarChar');
@@ -824,7 +823,7 @@ class SubTaskGen extends dxBaseClass implements IteratorAggregate {
             $ChangedArray = array_merge($ChangedArray,array("Id" => $this->intId));
             $ChangedArray = array_merge($ChangedArray,array("Description" => $this->strDescription));
             $ChangedArray = array_merge($ChangedArray,array("SubTaskStatus" => $this->strSubTaskStatus));
-            $ChangedArray = array_merge($ChangedArray,array("SubTaskDueDate" => $this->strSubTaskDueDate));
+            $ChangedArray = array_merge($ChangedArray,array("SubTaskDueDate" => $this->dttSubTaskDueDate));
             $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
             $ChangedArray = array_merge($ChangedArray,array("Ticket" => $this->intTicket));
             $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
@@ -860,9 +859,9 @@ class SubTaskGen extends dxBaseClass implements IteratorAggregate {
             if (!is_null($ExistingObj->SubTaskDueDate)) {
                 $ExistingValueStr = $ExistingObj->SubTaskDueDate;
             }
-            if ($ExistingObj->SubTaskDueDate != $this->strSubTaskDueDate) {
-                $ChangedArray = array_merge($ChangedArray,array("SubTaskDueDate" => array("Before" => $ExistingValueStr,"After" => $this->strSubTaskDueDate)));
-                //$ChangedArray = array_merge($ChangedArray,array("SubTaskDueDate" => "From: ".$ExistingValueStr." to: ".$this->strSubTaskDueDate));
+            if ($ExistingObj->SubTaskDueDate != $this->dttSubTaskDueDate) {
+                $ChangedArray = array_merge($ChangedArray,array("SubTaskDueDate" => array("Before" => $ExistingValueStr,"After" => $this->dttSubTaskDueDate)));
+                //$ChangedArray = array_merge($ChangedArray,array("SubTaskDueDate" => "From: ".$ExistingValueStr." to: ".$this->dttSubTaskDueDate));
             }
             $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->LastUpdated)) {
@@ -916,7 +915,7 @@ class SubTaskGen extends dxBaseClass implements IteratorAggregate {
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->strDescription) . ',
 							' . $objDatabase->SqlVariable($this->strSubTaskStatus) . ',
-							' . $objDatabase->SqlVariable($this->strSubTaskDueDate) . ',
+							' . $objDatabase->SqlVariable($this->dttSubTaskDueDate) . ',
 							' . $objDatabase->SqlVariable($this->intTicket) . ',
 							' . $objDatabase->SqlVariable($this->strSearchMetaInfo) . ',
 							' . $objDatabase->SqlVariable($this->intObjectOwner) . '
@@ -947,7 +946,7 @@ class SubTaskGen extends dxBaseClass implements IteratorAggregate {
             UPDATE `SubTask` SET
 							`Description` = ' . $objDatabase->SqlVariable($this->strDescription) . ',
 							`SubTaskStatus` = ' . $objDatabase->SqlVariable($this->strSubTaskStatus) . ',
-							`SubTaskDueDate` = ' . $objDatabase->SqlVariable($this->strSubTaskDueDate) . ',
+							`SubTaskDueDate` = ' . $objDatabase->SqlVariable($this->dttSubTaskDueDate) . ',
 							`Ticket` = ' . $objDatabase->SqlVariable($this->intTicket) . ',
 							`SearchMetaInfo` = ' . $objDatabase->SqlVariable($this->strSearchMetaInfo) . ',
 							`ObjectOwner` = ' . $objDatabase->SqlVariable($this->intObjectOwner) . '
@@ -1007,7 +1006,7 @@ class SubTaskGen extends dxBaseClass implements IteratorAggregate {
         $ChangedArray = array_merge($ChangedArray,array("Id" => $this->intId));
         $ChangedArray = array_merge($ChangedArray,array("Description" => $this->strDescription));
         $ChangedArray = array_merge($ChangedArray,array("SubTaskStatus" => $this->strSubTaskStatus));
-        $ChangedArray = array_merge($ChangedArray,array("SubTaskDueDate" => $this->strSubTaskDueDate));
+        $ChangedArray = array_merge($ChangedArray,array("SubTaskDueDate" => $this->dttSubTaskDueDate));
         $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
         $ChangedArray = array_merge($ChangedArray,array("Ticket" => $this->intTicket));
         $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
@@ -1091,7 +1090,7 @@ class SubTaskGen extends dxBaseClass implements IteratorAggregate {
         // Update $this's local variables to match
         $this->strDescription = $objReloaded->strDescription;
         $this->strSubTaskStatus = $objReloaded->strSubTaskStatus;
-        $this->strSubTaskDueDate = $objReloaded->strSubTaskDueDate;
+        $this->dttSubTaskDueDate = $objReloaded->dttSubTaskDueDate;
         $this->strLastUpdated = $objReloaded->strLastUpdated;
         $this->Ticket = $objReloaded->Ticket;
         $this->strSearchMetaInfo = $objReloaded->strSearchMetaInfo;
@@ -1136,10 +1135,10 @@ class SubTaskGen extends dxBaseClass implements IteratorAggregate {
 
             case 'SubTaskDueDate':
                 /**
-                 * Gets the value for strSubTaskDueDate 
-                 * @return string
+                 * Gets the value for dttSubTaskDueDate 
+                 * @return dxDateTime
                  */
-                return $this->strSubTaskDueDate;
+                return $this->dttSubTaskDueDate;
 
             case 'LastUpdated':
                 /**
@@ -1247,12 +1246,12 @@ class SubTaskGen extends dxBaseClass implements IteratorAggregate {
 
             case 'SubTaskDueDate':
                 /**
-                 * Sets the value for strSubTaskDueDate 
-                 * @param string $mixValue
-                 * @return string
+                 * Sets the value for dttSubTaskDueDate 
+                 * @param dxDateTime $mixValue
+                 * @return dxDateTime
                  */
                 try {
-                    return ($this->strSubTaskDueDate = dxType::Cast($mixValue, dxType::String));
+                    return ($this->dttSubTaskDueDate = dxType::Cast($mixValue, dxType::DateTime));
                 } catch (dxCallerException $objExc) {
                     $objExc->IncrementOffset();
                     throw $objExc;
@@ -1401,7 +1400,7 @@ class SubTaskGen extends dxBaseClass implements IteratorAggregate {
         $strToReturn .= '<element name="Id" type="xsd:int"/>';
         $strToReturn .= '<element name="Description" type="xsd:string"/>';
         $strToReturn .= '<element name="SubTaskStatus" type="xsd:string"/>';
-        $strToReturn .= '<element name="SubTaskDueDate" type="xsd:string"/>';
+        $strToReturn .= '<element name="SubTaskDueDate" type="xsd:dateTime"/>';
         $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
         $strToReturn .= '<element name="TicketObject" type="xsd1:Ticket"/>';
         $strToReturn .= '<element name="SearchMetaInfo" type="xsd:string"/>';
@@ -1436,7 +1435,7 @@ class SubTaskGen extends dxBaseClass implements IteratorAggregate {
         if (property_exists($objSoapObject, 'SubTaskStatus'))
             $objToReturn->strSubTaskStatus = $objSoapObject->SubTaskStatus;
         if (property_exists($objSoapObject, 'SubTaskDueDate'))
-            $objToReturn->strSubTaskDueDate = $objSoapObject->SubTaskDueDate;
+            $objToReturn->dttSubTaskDueDate = new dxDateTime($objSoapObject->SubTaskDueDate);
         if (property_exists($objSoapObject, 'LastUpdated'))
             $objToReturn->strLastUpdated = $objSoapObject->LastUpdated;
         if ((property_exists($objSoapObject, 'TicketObject')) &&
@@ -1464,6 +1463,8 @@ class SubTaskGen extends dxBaseClass implements IteratorAggregate {
     }
 
     public static function GetSoapObjectFromObject($objObject, $blnBindRelatedObjects) {
+        if ($objObject->dttSubTaskDueDate)
+            $objObject->dttSubTaskDueDate = $objObject->dttSubTaskDueDate->qFormat(dxDateTime::FormatSoap);
         if ($objObject->objTicketObject)
             $objObject->objTicketObject = Ticket::GetSoapObjectFromObject($objObject->objTicketObject, false);
         else if (!$blnBindRelatedObjects)
@@ -1485,7 +1486,7 @@ class SubTaskGen extends dxBaseClass implements IteratorAggregate {
         $iArray['Id'] = $this->intId;
         $iArray['Description'] = $this->strDescription;
         $iArray['SubTaskStatus'] = $this->strSubTaskStatus;
-        $iArray['SubTaskDueDate'] = $this->strSubTaskDueDate;
+        $iArray['SubTaskDueDate'] = $this->dttSubTaskDueDate;
         $iArray['LastUpdated'] = $this->strLastUpdated;
         $iArray['Ticket'] = $this->intTicket;
         $iArray['SearchMetaInfo'] = $this->strSearchMetaInfo;
@@ -1551,7 +1552,7 @@ class SubTaskGen extends dxBaseClass implements IteratorAggregate {
 				case 'SubTaskStatus':
 					return new dxQueryNode('SubTaskStatus', 'SubTaskStatus', 'VarChar', $this);
 				case 'SubTaskDueDate':
-					return new dxQueryNode('SubTaskDueDate', 'SubTaskDueDate', 'VarChar', $this);
+					return new dxQueryNode('SubTaskDueDate', 'SubTaskDueDate', 'Date', $this);
 				case 'LastUpdated':
 					return new dxQueryNode('LastUpdated', 'LastUpdated', 'VarChar', $this);
 				case 'Ticket':
@@ -1604,7 +1605,7 @@ class SubTaskGen extends dxBaseClass implements IteratorAggregate {
 				case 'SubTaskStatus':
 					return new dxQueryNode('SubTaskStatus', 'SubTaskStatus', 'string', $this);
 				case 'SubTaskDueDate':
-					return new dxQueryNode('SubTaskDueDate', 'SubTaskDueDate', 'string', $this);
+					return new dxQueryNode('SubTaskDueDate', 'SubTaskDueDate', 'dxDateTime', $this);
 				case 'LastUpdated':
 					return new dxQueryNode('LastUpdated', 'LastUpdated', 'string', $this);
 				case 'Ticket':
