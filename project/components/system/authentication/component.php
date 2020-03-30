@@ -17,6 +17,11 @@ class AuthenticationController extends ProjectComponentController {
             $this->setReturnValue("Message","Invalid input provided");
             $this->presentOutput();
         }
+        if ($AccountObj->AccessBlocked == 1) {
+            $this->setReturnValue("Result","Failed");
+            $this->setReturnValue("Message","Account access blocked");
+            $this->presentOutput();
+        }
         if (!password_verify($this->getInputValue("Password"), $AccountObj->Password)) {
             $this->setReturnValue("Result","Failed");
             $this->setReturnValue("Message","Invalid input provided");

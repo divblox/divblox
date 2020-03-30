@@ -12,7 +12,7 @@
  * divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "2.5.0";
+let dx_version = "2.5.1";
 let bootstrap_version = "4.4.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.3.8";
@@ -1094,9 +1094,9 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
 					getComponentElementById(this,attribute).prop("checked",this.component_obj[attribute]);
 				}
 			} else {
-				getComponentElementById(this,attribute).val(getDataModelAttributeValue(entity_attribute_properties.DefaultValue));
+				getComponentElementById(this,attribute).val(getDataModelAttributeValue(entity_attribute_properties.DefaultValue,entity_attribute_properties.DisplayType));
 				if (typeof this.component_obj[attribute] !== "undefined") {
-					getComponentElementById(this,attribute).val(getDataModelAttributeValue(this.component_obj[attribute]));
+					getComponentElementById(this,attribute).val(getDataModelAttributeValue(this.component_obj[attribute],entity_attribute_properties.DisplayType));
 				}
 			}
 		}.bind(this));
@@ -1564,10 +1564,14 @@ class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
 				getComponentElementById(this,"PaginationCurrentItem").html('<span class="page-link">'+this.current_page+'</span>');
 				getComponentElementById(this,"PaginationNextItem").html('<span class="page-link">'+next_page+'</span>');
 				getComponentElementById(this,"PaginationNextNextItem").html('<span class="page-link">'+next_next_page+'</span>');
+				this.onAfterLoadPage(data_obj);
 			}.bind(this),
 			function(data_obj) {
 				this.handleComponentError('Could not retrieve data: '+data_obj.Message);
 			}.bind(this),false,false);
+	}
+	onAfterLoadPage(data_obj) {
+		//TODO: Override this as needed;
 	}
 	addRow(row_data_obj) {
 		this.current_page_array.push(row_data_obj);
@@ -1707,11 +1711,15 @@ class DivbloxDomEntityDataListComponent extends DivbloxDomBaseComponent {
 					getComponentElementById(this,"DataListLoading").html("No results").show();
 					getComponentElementById(this,"DataListMoreButton").hide();
 				}
+				this.onAfterLoadPage(data_obj);
 			}.bind(this),
 			function(data_obj) {
 				getComponentElementById(this,"DataList").hide();
 				this.handleComponentError('Could not retrieve data: '+data_obj.Message);
 			}.bind(this),false,false);
+	}
+	onAfterLoadPage(data_obj) {
+		//TODO: Override this as needed;
 	}
 	addRow(row_data_obj) {
 		let current_item_keys = Object.keys(this.current_page_array);
@@ -3049,21 +3057,30 @@ function validateEmail(email) {
 /**
  * Gets the string value for a specified data model attribute
  * @param {String|Object|Null} attribute The attribute to interrogate
+ * @param {String|Null} display_type The display type to interrogate
  * @return {String} The string value for the attribute
  */
-function getDataModelAttributeValue(attribute) {
+function getDataModelAttributeValue(attribute,display_type) {
+	if (typeof display_type === "undefined") {
+		display_type = 'text';
+	}
 	if (typeof attribute === "object") {
 		if (attribute === null) {
 			return '';
 		}
-		if (typeof attribute["date"] !== "undefined") {
+		if (typeof attribute['date'] !== "undefined") {
 			let js_date_str = attribute["date"];
 			let js_date = js_date_str.slice(0,10);
 			let js_time = js_date_str.slice(11,16);
-			if (js_time != "00:00") {
-				return js_date+"T"+js_time;
+			
+			if (display_type === "datetime-local") {
+				if (js_time !== "00:00") {
+					return js_date+"T"+js_time;
+				}
+				return js_date+"T00:00";
+			} else {
+				return js_date;
 			}
-			return js_date+"T00:00";
 		}
 	}
 	return attribute;
