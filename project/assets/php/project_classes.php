@@ -64,7 +64,9 @@ abstract class ProjectAccessManager extends AccessManager {
             foreach ($InheritedUserRoleArray as $InheritedUserStr) {
                 if (isset(DataModelRoleBasedAccess::$AccessArray[$InheritedUserStr])) {
                     foreach (DataModelRoleBasedAccess::$AccessArray[$InheritedUserStr] as $ObjectName => $ObjectArray) {
-                        $HierarchyBasedAccessArray[$ObjectName] = $ObjectArray;
+                        if (!isset($HierarchyBasedAccessArray[$ObjectName])) {
+                            $HierarchyBasedAccessArray[$ObjectName] = $ObjectArray;
+                        }
                     }
                 }
             }
