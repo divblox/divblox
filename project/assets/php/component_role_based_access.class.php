@@ -22,7 +22,16 @@ abstract class ComponentRoleBasedAccess {
             "category_crud_data_series",
             "category_crud_update",
             "category_update",
-            "subcategory_list"
+            "subcategory_list",
+            "subtask_crud",
+            "subtask_crud_create",
+            "subtask_crud_update",
+            "subtask_crud_data_series",
+            "note_crud",
+            "note_crud_create",
+            "note_crud_update",
+            "note_crud_data_series",
+            "note_attachment_uploader"
         ],
         // Define an array for each additional user role in the system here.
     );
