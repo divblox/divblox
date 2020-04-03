@@ -13,14 +13,15 @@ if (typeof component_classes['dashboard_ticket_status_indicator'] === "undefined
         }
 
         loadStatusTotals() {
-            let test = this.getLoadArgument("ticket_status");
-            dxLog(test);
             dxRequestInternal(getComponentControllerPath(this), {
                     f: "loadStatusTotals",
                     ticket_status: this.getLoadArgument("ticket_status")
                 },
                 function (data_obj) {
-                    let html = "";
+                    getComponentElementById(this,'StatusLabel').html(this.getLoadArgument("ticket_status"));
+                    getComponentElementById(this,'StatusCount').html(data_obj.Count);
+                    
+                    /*let html = "";
                     dxLog("Returned: " + data_obj.ReturnData[0]);
                     dxLog("ReturnData array length:  " + data_obj.ReturnData.length);
 
@@ -32,7 +33,7 @@ if (typeof component_classes['dashboard_ticket_status_indicator'] === "undefined
                     let content_html = '<h3>' + data_obj.ReturnData[0] + '</h3>';
                     content_html += '<p> Nr. of Tickets: ' + data_obj.ReturnData[1] + '</p>';
                     html = header_wrapping_html + wrapping_html + content_html + "</a></div>";
-                    getComponentElementById(this, "StatusWrapper").html(html);
+                    getComponentElementById(this, "StatusWrapper").html(html);*/
                 }.bind(this),
                 function (data_obj) {
                     // Failure function

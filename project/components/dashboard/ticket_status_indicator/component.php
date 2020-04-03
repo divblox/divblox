@@ -17,7 +17,8 @@ class TicketStatusIndicatorController extends ProjectComponentController {
         $ReturnArr = [$StatusStr, $TicketCountInt];
 
         $this->setReturnValue("Result", "Success");
-        $this->setReturnValue("ReturnData", $ReturnArr);
+        $this->setReturnValue("ReturnData", $ReturnArr); //JGL: Not required
+        $this->setReturnValue("Count", $TicketCountInt);
         $this->presentOutput();
     }
 }
