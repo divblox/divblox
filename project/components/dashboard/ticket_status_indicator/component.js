@@ -1,3 +1,5 @@
+// import {CountUp} from "../../../../divblox/assets/js/countUp";
+
 if (typeof component_classes['dashboard_ticket_status_indicator'] === "undefined") {
     class dashboard_ticket_status_indicator extends DivbloxDomBaseComponent {
         constructor(inputs, supports_native, requires_native) {
@@ -18,28 +20,31 @@ if (typeof component_classes['dashboard_ticket_status_indicator'] === "undefined
                     ticket_status: this.getLoadArgument("ticket_status")
                 },
                 function (data_obj) {
-                    getComponentElementById(this,'StatusLabel').html(this.getLoadArgument("ticket_status"));
-                    getComponentElementById(this,'StatusCount').html(data_obj.Count);
-                    
-                    /*let html = "";
-                    dxLog("Returned: " + data_obj.ReturnData[0]);
-                    dxLog("ReturnData array length:  " + data_obj.ReturnData.length);
+                    getComponentElementById(this,'StatusLabel').html('<p>' + this.getLoadArgument("ticket_status") + ':</p>');
+                    // getComponentElementById(this,'StatusCount').html(data_obj.Count);
+                    this.animateValue('StatusCount', 0, data_obj.Count, 2000);
 
-                    // data_obj.ReturnData = ["Default_Status", 7];
-
-                    let wrapping_html = '<a href="#" id="' + data_obj.ReturnData[0] + '" class="list-group-item' +
-                        ' list-group-item-action flex-column align-items-start data_list_item dx-data-list-row">';
-                    let header_wrapping_html = '<div class="d-flex w-100 justify-content-between">';
-                    let content_html = '<h3>' + data_obj.ReturnData[0] + '</h3>';
-                    content_html += '<p> Nr. of Tickets: ' + data_obj.ReturnData[1] + '</p>';
-                    html = header_wrapping_html + wrapping_html + content_html + "</a></div>";
-                    getComponentElementById(this, "StatusWrapper").html(html);*/
                 }.bind(this),
                 function (data_obj) {
                     // Failure function
 
                 }
             );
+        }
+
+        animateValue(id, start, end, duration) {
+            let range = end - start;
+            let current = start;
+            let increment = end > start? 1 : 0;
+            let stepTime = Math.abs(Math.floor(duration / range));
+            let obj = getComponentElementById(this, id);
+            let timer = setInterval(function() {
+                current += increment;
+                obj.html(current);
+                if (current == end) {
+                    clearInterval(timer);
+                }
+            }, stepTime);
         }
     }
 

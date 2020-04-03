@@ -85,6 +85,7 @@
 /* -------------------------------------------------------------------------------------------------------------------*/
 
 /* -----------------------------Styles for containers that work with sidebars and nav bars ---------------------------*/
+
 .component-wrapper-top-navbar {
     margin-top: 65px;
 }
@@ -159,4 +160,49 @@
 #AppReloadButton {
     text-transform: uppercase;
     color:#6aa9ec;
+}
+
+/* -------------------------------------------------------------------------------------------------------------------*/
+
+/* --------------------------------------------Styles for Dashboard --------------------------------------------------*/
+
+.dashboard-tile {
+    padding: 5px;
+    border: 2px solid grey;
+    border-radius: 15px;
+}
+
+.StatusLabel p {
+    margin: 0px;
+}
+
+.StatusCount {
+    padding-right: 3px;
+}
+
+.dashboard-tile > .row > .col-10 {
+    margin: 0px;
+}
+.dashboard-tile > .row > .col-2 {
+    margin: 0px;
+}
+
+#dashboard_ticket_status_indicator_1_ComponentContent .dashboard-tile {
+    background: white;
+}
+#dashboard_ticket_status_indicator_2_ComponentContent .dashboard-tile {
+    background: lawngreen;
+}
+#dashboard_ticket_status_indicator_3_ComponentContent .dashboard-tile {
+    background: yellow;
+}
+#dashboard_ticket_status_indicator_4_ComponentContent .dashboard-tile {
+    background: orange;
+}
+#dashboard_ticket_status_indicator_5_ComponentContent .dashboard-tile {
+    background: black;
+    color: white;
+}
+#dashboard_ticket_status_indicator_6_ComponentContent .dashboard-tile {
+    background: red;
 }
