@@ -36,6 +36,10 @@ if (typeof component_classes['navigation_side_navbar'] === "undefined") {
 				loadPageComponent("new_ticket");
 				return false;
 			});
+			getComponentElementById(this,'navigation_item_dashboard').on("click", function () {
+				loadPageComponent("dashboard");
+				return false;
+			});
 			registerEventHandler('.sidebar_toggle_left',"click");
 		}
 	}

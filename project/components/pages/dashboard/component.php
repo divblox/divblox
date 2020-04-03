@@ -1,9 +1,9 @@
 <?php
 require("../../../../divblox/divblox.php");
-class NoteCrudController extends ProjectComponentController {
+class DashboardController extends ProjectComponentController {
     public function __construct($ComponentNameStr = 'Component') {
         parent::__construct($ComponentNameStr);
     }
 }
-$ComponentObj = new NoteCrudController("note_crud");
+$ComponentObj = new DashboardController("dashboard");
 ?>

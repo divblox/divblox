@@ -13,47 +13,25 @@ class CategoryController extends EntityInstanceComponentController {
     }
 
     public function doBeforeDeleteActions($EntityToUpdateObj = null) {
-        // JGL: This function is intended to be overridden in the child class for additional functionality
         if (is_null($EntityToUpdateObj)) {
             return;
         }
 
-        $SubCategoryArr = Category::QueryArray(
-            dxQ::Equal(
-                dxQN::Category()->CategoryParentId,
-                $EntityToUpdateObj->Id
-            )
-        );
+        self::deleteCategoryAndSubCategories();
     }
 
     public function deleteCategoryAndSubCategories(Category $CategoryObj = null, $CategoryToDeleteIdArr = []) {
         $CategoryObj = Category::Load($this->getInputValue("Id"));
-        $CategoryToDeleteIdArr[] = $CategoryObj->Id;
-        $SubCategoryArr = Category::QueryArray(
-            dxQ::AndCondition(
-                dxQ::Equal(
-                    dxQN::Category()->CategoryParentId,
-                    $CategoryObj->Id
-                )
-            )
-        );
-        $SiblingCategoryArr = Category::QueryArray(
-            dxQ::AndCondition(
-                dxQ::NotEqual(
-                    dxQN::Category()->Id,
-                    $CategoryObj->Id
-                ),
-                dxQ::Equal(
-                    dxQN::Category()->CategoryParentId.
-                    $CategoryObj->CategoryParentId
-                )
-            )
-        );
+        $ToDeleteArr = ProjectFunctions::getSubCategoriesRecursive($CategoryObj, $SubCategoryArr = []);
 
-        foreach ($SubCategoryArr as $SubCategoryObj) {
-
+        foreach($ToDeleteArr as $ToDeleteId) {
+            $CategoryObjToDelete = Category::QuerySingle(
+                dxQN::Category()->Id,
+                $ToDeleteId
+            );
+            $CategoryObjToDelete->Delete();
         }
-        return $CategoryObj;
+
     }
 }
 $ComponentObj = new CategoryController("category_crud_update");

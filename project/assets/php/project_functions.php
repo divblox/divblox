@@ -4,12 +4,15 @@
  * When making changes to this file, keep in mind that every back-end process that
  * your project will run will load this file
  * */
-include(FRAMEWORK_ROOT_STR.'/assets/php/framework_functions.php');
-abstract class ProjectFunctions extends FrameworkFunctions {
-    public static function getNewTicketUniqueId() {
+include(FRAMEWORK_ROOT_STR . '/assets/php/framework_functions.php');
+
+abstract class ProjectFunctions extends FrameworkFunctions
+{
+    public static function getNewTicketUniqueId()
+    {
         $CandidateStr = self::generateRandomString(24);
         $DoneBool = false;
-        while(!$DoneBool) {
+        while (!$DoneBool) {
             // Divblox query language to load a ticket from the database,
             // based on the UniqueId field
             $ExistingTicketCount = Ticket::LoadByTicketUniqueId($CandidateStr);
@@ -38,5 +41,26 @@ abstract class ProjectFunctions extends FrameworkFunctions {
 
         return self::getBreadCrumbsRecursive($ParentCategoryObj, $BreadCrumbsArray);
 
+    }
+
+    public static function getSubCategoriesRecursive(Category $CategoryObj = null, $SubCategoryArr = []) {
+        if (is_null($CategoryObj)) {
+            return $CategoryObj;
+        }
+
+        $ChildArr = Category::QueryArray(
+            dxQ::Equal(
+                dxQN::Category()->CategoryParentId,
+                $CategoryObj->Id
+            )
+        );
+        $SubCategoryIdArr[] = $ChildArr;
+
+        if (is_null($ChildArr)) {
+            return $SubCategoryIdArr;
+        }
+        foreach($ChildArr as $ChildObj) {
+            return self::getSubCategoriesRecursive($ChildObj, $SubCategoryArr);
+        }
     }
 }

@@ -46,7 +46,6 @@ class NoteController extends EntityInstanceComponentController {
         if (!is_null($EntityToUpdateObj->FileDocumentObject)) {
             $EntityToUpdateObj->FileDocumentObject->Delete();
         }
-
     }
 }
 $ComponentObj = new NoteController("note_crud_update");

@@ -14,7 +14,7 @@ if (typeof component_classes['data_model_subcategory_list'] === "undefined") {
 			this.initDataListVariables("Category");
 		}
 
-		// Overrride on_clicked function to do itslef and reload the current page ( with new ConstrainById)
+		// Overrride on_clicked function to do itself and reload the current page ( with new ConstrainById)
 		on_item_clicked(id) {
 			super.on_item_clicked(id);
 			loadPageComponent("category_update");
