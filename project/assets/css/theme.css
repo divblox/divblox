@@ -172,37 +172,28 @@
     border-radius: 15px;
 }
 
+.StatusLabel + .StatusCount {
+    font-size: 20px;
+}
 .StatusLabel p {
     margin: 0px;
 }
 
-.StatusCount {
+.StatusPercentage {
     padding-right: 3px;
+    font-weight: bold;
+    font-size: 30px;
+    text-align: center;
 }
 
-.dashboard-tile > .row > .col-10 {
-    margin: 0px;
-}
-.dashboard-tile > .row > .col-2 {
+.dashboard-tile > .row > .col-12 {
     margin: 0px;
 }
 
-#dashboard_ticket_status_indicator_1_ComponentContent .dashboard-tile {
-    background: white;
+.dashboard-tile > .row > .col-9 {
+    margin: 0px;
 }
-#dashboard_ticket_status_indicator_2_ComponentContent .dashboard-tile {
-    background: lawngreen;
-}
-#dashboard_ticket_status_indicator_3_ComponentContent .dashboard-tile {
-    background: yellow;
-}
-#dashboard_ticket_status_indicator_4_ComponentContent .dashboard-tile {
-    background: orange;
-}
-#dashboard_ticket_status_indicator_5_ComponentContent .dashboard-tile {
-    background: black;
-    color: white;
-}
-#dashboard_ticket_status_indicator_6_ComponentContent .dashboard-tile {
-    background: red;
+
+.dashboard-tile > .row > .col-3 {
+    margin: 0px;
 }

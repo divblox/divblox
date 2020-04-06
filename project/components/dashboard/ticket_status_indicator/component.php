@@ -8,17 +8,21 @@ class TicketStatusIndicatorController extends ProjectComponentController {
     public function loadStatusTotals() {
         $StatusStr = $this->getInputValue("ticket_status");
 
-        $TicketCountInt = Ticket::QueryCount(
+        $StatusTicketCountInt = Ticket::QueryCount(
             dxQ::Equal(
                 dxQN::Ticket()->TicketStatus,
                 $StatusStr
             )
         );
-        $ReturnArr = [$StatusStr, $TicketCountInt];
+
+        $TotalTicketCountInt = Ticket::QueryCount(
+            dxQ::All()
+        );
+        $StatusPercentage = $StatusTicketCountInt/$TotalTicketCountInt;
 
         $this->setReturnValue("Result", "Success");
-        $this->setReturnValue("ReturnData", $ReturnArr); //JGL: Not required
-        $this->setReturnValue("Count", $TicketCountInt);
+        $this->setReturnValue("Count", $StatusTicketCountInt);
+        $this->setReturnValue("Percentage", $StatusPercentage);
         $this->presentOutput();
     }
 }

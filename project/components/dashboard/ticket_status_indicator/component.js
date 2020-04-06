@@ -11,7 +11,15 @@ if (typeof component_classes['dashboard_ticket_status_indicator'] === "undefined
 
         reset(inputs) {
             super.reset(inputs);
+            this.applyStatusCssClass();
             this.loadStatusTotals();
+        }
+
+        applyStatusCssClass() {
+            let status = this.getLoadArgument("ticket_status").replace(' ', '-').toLowerCase();
+            getComponentElementById(this, "StatusWrapper").addClass("dashboard-tile-" + status);
+            getComponentElementById(this, "StatusCount").addClass("status-count-" + status);
+            getComponentElementById(this, "StatusPercentage").addClass("status-percentage-" + status);
         }
 
         loadStatusTotals() {
@@ -20,32 +28,36 @@ if (typeof component_classes['dashboard_ticket_status_indicator'] === "undefined
                     ticket_status: this.getLoadArgument("ticket_status")
                 },
                 function (data_obj) {
-                    getComponentElementById(this,'StatusLabel').html('<p>' + this.getLoadArgument("ticket_status") + ':</p>');
-                    // getComponentElementById(this,'StatusCount').html(data_obj.Count);
-                    this.animateValue('StatusCount', 0, data_obj.Count, 2000);
-
+                    getComponentElementById(this, 'StatusLabel').html('<p>' + this.getLoadArgument("ticket_status") + ':</p>');
+                    let status = this.getLoadArgument('ticket_status').replace(' ', '-').toLowerCase();
+                    // Using jquery-easing plugin
+                    $({Counter: 0}).animate({
+                        Counter: data_obj.Count
+                    }, {
+                        duration: 1500,
+                        easing: 'easeInOutExpo',
+                        step: function () {
+                            $('.status-count-'+status).html(Math.ceil(this.Counter));
+                        }
+                    });
+                    dxLog(data_obj.Percentage);
+                    $({Counter: 0}).animate({
+                        Counter: data_obj.Percentage
+                    }, {
+                        duration: 2000,
+                        easing: 'easeInOutExpo',
+                        step: function () {
+                            $('.status-percentage-'+status).html((this.Counter*100).toFixed(2)+'%');
+                        }
+                    });
                 }.bind(this),
                 function (data_obj) {
                     // Failure function
-
+                    dxLog("dxRequestInternal Failure. Data Object returned: " + JSON.stringify(data_obj));
                 }
             );
         }
 
-        animateValue(id, start, end, duration) {
-            let range = end - start;
-            let current = start;
-            let increment = end > start? 1 : 0;
-            let stepTime = Math.abs(Math.floor(duration / range));
-            let obj = getComponentElementById(this, id);
-            let timer = setInterval(function() {
-                current += increment;
-                obj.html(current);
-                if (current == end) {
-                    clearInterval(timer);
-                }
-            }, stepTime);
-        }
     }
 
     component_classes['dashboard_ticket_status_indicator'] = dashboard_ticket_status_indicator;
