@@ -31,21 +31,21 @@ if (typeof component_classes['dashboard_ticket_status_indicator'] === "undefined
                     getComponentElementById(this, 'StatusLabel').html('<p>' + this.getLoadArgument("ticket_status") + ':</p>');
                     let status = this.getLoadArgument('ticket_status').replace(' ', '-').toLowerCase();
                     // Using jquery-easing plugin
+                    // jQuery.easing.def = 'easeInOutExpo';
                     $({Counter: 0}).animate({
                         Counter: data_obj.Count
                     }, {
                         duration: 1500,
-                        easing: 'easeInOutExpo',
+                        easing: 'linear',
                         step: function () {
                             $('.status-count-'+status).html(Math.ceil(this.Counter));
                         }
                     });
-                    dxLog(data_obj.Percentage);
                     $({Counter: 0}).animate({
                         Counter: data_obj.Percentage
                     }, {
                         duration: 2000,
-                        easing: 'easeInOutExpo',
+                        easing: 'linear',
                         step: function () {
                             $('.status-percentage-'+status).html((this.Counter*100).toFixed(2)+'%');
                         }

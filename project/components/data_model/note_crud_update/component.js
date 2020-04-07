@@ -77,7 +77,6 @@ if (typeof component_classes['data_model_note_crud_update'] === "undefined") {
 		}
 
 		onAfterLoadEntity(data_obj) {
-			// TODO: Override this as needed;
 			getComponentElementById(this, "DownloadWrapper").html("");
 			if (typeof data_obj.AttachmentPath !== "undefined") {
 				if (data_obj.AttachmentPath.length > 0) {

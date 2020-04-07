@@ -1159,9 +1159,11 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
                 this.handleComponentError(data_obj.Message);
             }.bind(this));
     }
+
     onAfterLoadEntity(data_obj) {
         //TODO: Override this as needed;
     }
+
     setValues() {
         this.included_attribute_array.forEach(function (attribute) {
             let entity_attribute_properties = data_model.getEntityAttributeProperties(this.entity_name, attribute);

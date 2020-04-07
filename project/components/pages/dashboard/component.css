@@ -1,3 +1,30 @@
 body {
     padding-top:50px !important;
+    background: #F8F8F8;
 }
+
+.dashboard-tile-new {
+    background-image: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);;
+}
+
+.dashboard-tile-in-progress {
+    background-image: linear-gradient(120deg, #f093fb 0%, #f5576c 100%);
+}
+
+.dashboard-tile-due-soon {
+    background-image: linear-gradient(to right, #43e97b 0%, #38f9d7 100%);
+}
+
+.dashboard-tile-urgent {
+    background-image: linear-gradient(to right, #fa709a 0%, #fee140 100%);
+}
+
+
+.dashboard-tile-complete {
+    background-image: linear-gradient(to top, #fddb92 0%, #d1fdff 100%);
+}
+
+.dashboard-tile-overdue {
+    background-image: linear-gradient(to top, #37ecba 0%, #72afd3 100%);
+}
+
