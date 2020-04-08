@@ -82,30 +82,30 @@ if (typeof component_classes['data_model_account_summary_list'] === "undefined")
 			let subtle_components_html = '';
 			let normal_components_html = '';
 			let footer_components_html = '';
+			let profile_picture_html = '<div class="col-1 dashboard-tile-list text-center">';
+			let account_info_html = '<div class="col-3 dashboard-tile-list text-center">';
+			let status_summary_html = '<div class="col-8">';
 
-			included_keys.forEach(function (key) {
-				switch (this.included_all_object[key].toLowerCase()) {
-					case 'header':
-						header_components_html += '<h5 class="mb-1">' + row_data_obj[key] + '</h5>';
-						break;
-					case 'subtle':
-						subtle_components_html += '<small>' + row_data_obj[key] + '</small>';
-						break;
-					case 'normal':
-						normal_components_html += '<p>' + row_data_obj[key] + '</p>';
-						break;
-					case 'footer':
-						footer_components_html += '<small>' + row_data_obj[key] + '</small>';
-						break;
-					default:
-						normal_components_html += '<p>' + row_data_obj[key] + '</p>';
-				}
-			}.bind(this));
-
-			header_wrapping_html += header_components_html + subtle_components_html;
-			header_wrapping_html += '</div>';
-
-			wrapping_html += header_wrapping_html + normal_components_html + footer_components_html;
+			profile_picture_html += row_data_obj["ProfilePicturePath"] + '</div>';
+			account_info_html += '<div class="row text-center">' + row_data_obj["Title"] + " " + row_data_obj['FullName'] + '</div>';
+			account_info_html += '<div class="row text-center">' + row_data_obj["UserRole"] + '</div>';
+			account_info_html += '</div>';
+			status_summary_html += '<div class="row">';
+			let status_array = ["New", "In Progress", "Due Soon", "Urgent", "Complete", "Overdue"];
+			status_array.forEach(function(status) {
+				status_summary_html += '<div class="col-2 dashboard-tile dashboard-tile-list dashboard-tile-' + status.replace(' ', '-').toLowerCase() + '">' +
+					status + ': ' + row_data_obj["StatusCounts"][status] + '</div>';
+			});
+			status_summary_html += '</div>';
+			// header_components_html = '<h5 class="mb-1">' + row_data_obj["Title"] + " " + row_data_obj['FullName'] + '</h5>';
+			// subtle_components_html += '<small>' + row_data_obj["UserRole"] + '</small>';
+			// normal_components_html += '<p>' + row_data_obj["ProfilePicturePath"] + '</p>';
+			// footer_components_html += '<small>' + row_data_obj["StatusCounts"]["New"] + '</small>';
+			// header_wrapping_html += header_components_html + subtle_components_html;
+			// header_wrapping_html += '</div>';
+			// wrapping_html += header_wrapping_html + normal_components_html + footer_components_html;
+			// wrapping_html += '</a>';
+			wrapping_html += '<div class="row">' + profile_picture_html + account_info_html + status_summary_html + '</div>' + '</div>';
 			wrapping_html += '</a>';
 			getComponentElementById(this, "DataList").append(wrapping_html);
 		}

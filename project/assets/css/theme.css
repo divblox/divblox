@@ -173,6 +173,13 @@
     margin-bottom: 10px;
     box-shadow: 0 6px 15px rgba(36, 37, 38, 0.08);
     color: white;
+}
+
+.dashboard-tile-list {
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 6px 15px rgba(36, 37, 38, 0.08);
     /*background-image: linear-gradient(120deg, #F093FB 0%, #F5576C 100%);*/
 }
 
