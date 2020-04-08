@@ -175,14 +175,7 @@
     color: white;
 }
 
-.dashboard-tile-list {
-    min-height: 140px;
-}
 
-.dashboard-tile-profile-picture {
-    padding: 0px;
-    align-content: center;
-}
 
 .dashboard-tile:hover {
 box-shadow: 5px 12px 20px rgba(36, 37, 38, 0.13);
@@ -214,13 +207,4 @@ margin: 0px;
 margin: 0px;
 }
 
-.account-summary-profile-picture {
-    width: 143px;
-    height: 140px;
-    border-radius: 15px;
-}
 
-.account-summary-info {
-    background: linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.15) 100%), radial-gradient(at top center, rgba(255,255,255,0.40) 0%, rgba(0,0,0,0.40) 120%) #989898;
-    background-blend-mode: multiply,multiply;
-}

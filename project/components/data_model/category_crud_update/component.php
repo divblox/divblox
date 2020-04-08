@@ -16,12 +16,33 @@ class CategoryController extends EntityInstanceComponentController {
         if (is_null($EntityToUpdateObj)) {
             return;
         }
-
         self::deleteCategoryAndSubCategories();
     }
-
-    public function deleteCategoryAndSubCategories(Category $CategoryObj = null, $CategoryToDeleteIdArr = []) {
-        $CategoryObj = Category::Load($this->getInputValue("Id"));
+    public function deleteObjectData() {
+        if (is_null($this->getInputValue("Id"))) {
+            $this->setReturnValue("Result","Failed");
+            $this->setReturnValue("Message","No ".$this->EntityNameStr." Id provided");
+            $this->presentOutput();
+        }
+        $EntityNodeNameStr = $this->EntityNameStr;
+        $EntityObj = $EntityNodeNameStr::Load($this->getInputValue("Id",true));
+        if (is_null($EntityObj)) {
+            $this->setReturnValue("Result","Failed");
+            $this->setReturnValue("Message",$this->EntityNameStr." not found");
+            $this->presentOutput();
+        } else {
+            $this->doBeforeDeleteActions($EntityObj);
+            $EntityObj->Delete();
+            $this->doAfterDeleteActions();
+            $this->setReturnValue("Result","Success");
+            $this->setReturnValue("Message",$this->EntityNameStr." deleted");
+            $this->presentOutput();
+        }
+    }
+    public function deleteCategoryAndSubCategories($CategoryToDeleteIdArr = []) {
+        foreach ($CategoryToDeleteIdArr as $CategoryToDeleteId) {
+            $CategoryObj = Category::Load($this->getInputValue("Id"));
+        }
         $ToDeleteArr = ProjectFunctions::getSubCategoriesRecursive($CategoryObj, $SubCategoryArr = []);
 
         foreach($ToDeleteArr as $ToDeleteId) {

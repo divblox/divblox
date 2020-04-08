@@ -4,8 +4,8 @@ require("../../../../divblox/divblox.php");
 class AccountController extends EntityDataSeriesComponentController
 {
     protected $EntityNameStr = "Account";
-    protected $IncludedAttributeArray = ["FullName", "ProfilePicturePath", "Title",];
-    protected $IncludedRelationshipArray = ["UserRole" => "Role",];
+    protected $IncludedAttributeArray = ["FullName", "FirstName", "LastName", "ProfilePicturePath", "Title",];
+    protected $IncludedRelationshipArray = [];
     protected $ConstrainByArray = [];
     protected $RequiredAttributeArray = [];
     protected $NumberValidationAttributeArray = [];
@@ -51,9 +51,11 @@ class AccountController extends EntityDataSeriesComponentController
                 )
             );
         }
+        $this->setReturnValue("This1", $this->getInputValue("SearchText"));
         if (!is_null($this->getInputValue("SearchText"))) {
             if (strlen($this->getInputValue("SearchText")) > 0) {
                 $SearchInputStr = "%" . $this->getInputValue("SearchText") . "%";
+                $this->setReturnValue("This", $SearchInputStr);
                 $QueryOrConditions = null;
                 foreach ($this->IncludedAttributeArray as $Attribute) {
                     if (is_null($QueryOrConditions)) {
@@ -74,6 +76,8 @@ class AccountController extends EntityDataSeriesComponentController
                 };
             }
         }
+
+
         $OrderByClause = dxQ::OrderBy(dxQueryN::$EntityNodeNameStr()->$DefaultSortAttribute);
         if (!is_null($this->getInputValue("SortOptions"))) {
             if (ProjectFunctions::isJson($this->getInputValue("SortOptions"))) {
@@ -104,13 +108,12 @@ class AccountController extends EntityDataSeriesComponentController
 //                $AttributeArr = ['FullName,ProfilePicturePath,Title'] keys for the values
                 if (in_array($this->DataModelObj->getEntityAttributeType($this->EntityNameStr, $Attribute), ["DATE", "DATETIME"])) {
                     $CompleteReturnArray[$Attribute] = is_null($EntityObj->$Attribute) ? 'N/A' : $EntityObj->$Attribute->format(DATE_TIME_FORMAT_PHP_STR . " H:i:s");
-                } else if (!is_null($EntityObj->$Attribute) &&
-                    $Attribute == 'ProfilePicturePath') {
-                    $AttachmentPathStr = "";
-                    if (file_exists(DOCUMENT_ROOT_STR . SUBDIRECTORY_STR . $EntityObj->ProfilePicturePath)) {
-                        $AttachmentPathStr = ProjectFunctions::getBaseUrl() . $EntityObj->$Attribute;
-                    } else {
-                        $AttachmentPathStr = ProjectFunctions::getBaseUrl() . DOCUMENT_ROOT_STR . SUBDIRECTORY_STR . "/divblox/assets/images/divblox_profile_picture_placeholder.svg";
+                } else if ($Attribute == 'ProfilePicturePath') {
+                    $AttachmentPathStr = ProjectFunctions::getBaseUrl(). "/project/assets/images/divblox_profile_picture_placeholder.svg";
+                    if (!is_null($EntityObj->ProfilePicturePath)) {
+                        if (file_exists(DOCUMENT_ROOT_STR . SUBDIRECTORY_STR . $EntityObj->ProfilePicturePath)) {
+                            $AttachmentPathStr = ProjectFunctions::getBaseUrl() . $EntityObj->ProfilePicturePath;
+                        }
                     }
                     $CompleteReturnArray[$Attribute] = $AttachmentPathStr;
                 } else {
@@ -138,7 +141,7 @@ class AccountController extends EntityDataSeriesComponentController
             foreach ($StatusKeys as $Key) {
                 $StatusCountInt = Ticket::QueryCount(
                     dxQ::AndCondition(
-                        dxQ::Equal(
+                        dxQ::Equals(
                             dxQN::Ticket()->AccountObject->Id,
                             $EntityObj->Id
                         ),
@@ -157,8 +160,6 @@ class AccountController extends EntityDataSeriesComponentController
         $this->setReturnValue("Result", "Success");
         $this->setReturnValue("Message", "");
         $this->setReturnValue("Page", $EntityReturnArray);
-//        $this->setReturnValue("StatusContent", $StatusContentArray);
-//        $this->setReturnValue("CategoryContent", $CategoryContentArray);
         $this->setReturnValue("TotalCount", $EntityNodeNameStr::QueryCount($QueryCondition));
         $this->presentOutput();
     }

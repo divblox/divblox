@@ -36,7 +36,6 @@ if (typeof component_classes['data_model_category_crud_update'] === "undefined")
 			}.bind(this));
 		}
 
-
 		deleteCategoryAndSubCategories() {
 			dxRequestInternal(
 				getComponentControllerPath(this),

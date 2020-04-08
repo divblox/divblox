@@ -1809,6 +1809,7 @@ class DivbloxDomEntityDataListComponent extends DivbloxDomBaseComponent {
         dxRequestInternal(getComponentControllerPath(this),
             parameters_obj,
             function (data_obj) {
+            dxLog(JSON.stringify(data_obj));
                 data_obj.Page.forEach(function (item) {
                     this.addRow(item);
                 }.bind(this));

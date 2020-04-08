@@ -28,3 +28,8 @@ body {
     background-image: linear-gradient(to top, #37ecba 0%, #72afd3 100%);
 }
 
+.col-6 {
+    padding: 0px;
+}
+
+
