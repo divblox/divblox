@@ -58,17 +58,27 @@ class ClientAuthenticationToken extends ClientAuthenticationTokenGen {
                 INSERT INTO `ClientAuthenticationToken` (
 							`Token`,
 							`UpdateDateTime`,
+							`ExpiredToken`,
+							`IsNative`,
+							`DeviceUuid`,
+							`DevicePlatform`,
+							`DeviceOs`,
 							`ClientConnection`,
 							`SearchMetaInfo`,
 							`ObjectOwner`,
-							`ExpiredToken`
+							`DeviceRegistrationDateTime`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->strToken) . ',
 							' . $objDatabase->SqlVariable($this->dttUpdateDateTime) . ',
+							' . $objDatabase->SqlVariable($this->strExpiredToken) . ',
+							' . $objDatabase->SqlVariable($this->blnIsNative) . ',
+							' . $objDatabase->SqlVariable($this->strDeviceUuid) . ',
+							' . $objDatabase->SqlVariable($this->strDevicePlatform) . ',
+							' . $objDatabase->SqlVariable($this->strDeviceOs) . ',
 							' . $objDatabase->SqlVariable($this->intClientConnection) . ',
 							' . $objDatabase->SqlVariable($this->strSearchMetaInfo) . ',
 							' . $objDatabase->SqlVariable($this->intObjectOwner) . ',
-							' . $objDatabase->SqlVariable($this->strExpiredToken) . '
+							' . $objDatabase->SqlVariable($this->dttDeviceRegistrationDateTime) . '
 						)
                 ');
                 // Update Identity column and return its value
@@ -99,10 +109,15 @@ class ClientAuthenticationToken extends ClientAuthenticationTokenGen {
             UPDATE `ClientAuthenticationToken` SET
 							`Token` = ' . $objDatabase->SqlVariable($this->strToken) . ',
 							`UpdateDateTime` = ' . $objDatabase->SqlVariable($this->dttUpdateDateTime) . ',
+							`ExpiredToken` = ' . $objDatabase->SqlVariable($this->strExpiredToken) . ',
+							`IsNative` = ' . $objDatabase->SqlVariable($this->blnIsNative) . ',
+							`DeviceUuid` = ' . $objDatabase->SqlVariable($this->strDeviceUuid) . ',
+							`DevicePlatform` = ' . $objDatabase->SqlVariable($this->strDevicePlatform) . ',
+							`DeviceOs` = ' . $objDatabase->SqlVariable($this->strDeviceOs) . ',
 							`ClientConnection` = ' . $objDatabase->SqlVariable($this->intClientConnection) . ',
 							`SearchMetaInfo` = ' . $objDatabase->SqlVariable($this->strSearchMetaInfo) . ',
 							`ObjectOwner` = ' . $objDatabase->SqlVariable($this->intObjectOwner) . ',
-							`ExpiredToken` = ' . $objDatabase->SqlVariable($this->strExpiredToken) . '
+							`DeviceRegistrationDateTime` = ' . $objDatabase->SqlVariable($this->dttDeviceRegistrationDateTime) . '
             WHERE
 							`Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
             }

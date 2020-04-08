@@ -7640,11 +7640,6 @@ class ComponentController_base {
      */
     protected function processAuthenticationToken() {
         $this->CurrentClientAuthenticationToken = $this->getInputValue("AuthenticationToken");
-//        if (is_null($this->CurrentClientAuthenticationToken)) {
-//            $this->CurrentClientAuthenticationToken = $this->checkAuthenticationTokenInSession();
-//        } else {
-//            $_SESSION["AuthenticationToken"] = $this->CurrentClientAuthenticationToken;
-//        }
         if (is_null($this->CurrentClientAuthenticationToken)) {
             $this->initializeNewAuthenticationToken();
             return;
@@ -7698,32 +7693,18 @@ class ComponentController_base {
             $this->initializeNewAuthenticationToken();
             return;
         }
-        if (!$this->checkIsNative()) {
-            if (($ClientConnectionObj->ClientIpAddress != $_SERVER["REMOTE_ADDR"]) ||
-                ($ClientConnectionObj->ClientUserAgent != $this->CurrentUserAgentStr)) {
-                // JGL: This token could have been stolen since it is being used on another device. Let's create a new token
-                $ClientAuthenticationTokenObj->Delete();
-                $this->initializeNewAuthenticationToken();
-                return;
-            }
-            if ($ClientAuthenticationTokenObj->UpdateDateTime < dxDateTime::Now()->AddMinutes(-AUTHENTICATION_TIMEOUT_INT)) {
-                // JGL: The authentication has timed out. Cannot be trusted. Let create a new token.
-                $ClientAuthenticationTokenObj->Delete();
-                $this->initializeNewAuthenticationToken();
-                return;
-            }
-        } else {
+        if (!$ClientAuthenticationTokenObj->IsNative) {
             if ($ClientConnectionObj->ClientUserAgent != $this->CurrentUserAgentStr) {
                 // JGL: This token could have been stolen since it is being used on another device. Let's create a new token
                 $ClientAuthenticationTokenObj->Delete();
                 $this->initializeNewAuthenticationToken();
                 return;
             }
-        }
-        if ($ClientAuthenticationTokenObj->UpdateDateTime < dxDateTime::Now()->AddMinutes(-AUTHENTICATION_REGENERATION_INT)) {
-            // JGL: The authentication should be regenerated
-            $this->regenerateAuthenticationToken($ClientAuthenticationTokenObj);
-            return;
+            if ($ClientAuthenticationTokenObj->UpdateDateTime < dxDateTime::Now()->AddMinutes(-AUTHENTICATION_REGENERATION_INT)) {
+                // JGL: The authentication should be regenerated
+                $this->regenerateAuthenticationToken($ClientAuthenticationTokenObj);
+                return;
+            }
         }
         $this->updateAuthenticationToken($ClientAuthenticationTokenObj);
     }
@@ -7754,6 +7735,10 @@ class ComponentController_base {
     protected function regenerateAuthenticationToken(ClientAuthenticationToken $ClientAuthenticationTokenObj = null) {
         if (is_null($ClientAuthenticationTokenObj)) {
             $this->initializeNewAuthenticationToken();
+            return;
+        }
+        if ($ClientAuthenticationTokenObj->IsNative) {
+            $this->registerAuthenticationTokenInSession($ClientAuthenticationTokenObj->Token);
             return;
         }
         $ClientAuthenticationTokenObj->ExpiredToken = $ClientAuthenticationTokenObj->Token;

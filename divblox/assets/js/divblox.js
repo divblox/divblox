@@ -12,7 +12,7 @@
  * divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "2.5.2";
+let dx_version = "2.6.0"; //Alpha release
 let bootstrap_version = "4.4.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.3.8";
@@ -591,6 +591,8 @@ class DivbloxDomBaseComponent {
 		this.is_loading = false;
 		this.show_loading_overlay = false;
 		this.is_showing_loading_overlay = false;
+		this.prerequisite_array = []; // See DivbloxDomEntityDataTableComponent for example of how to use
+		this.prerequisite_loaded_index = 0;
 	}
 	/**
 	 * Gets the current component's parent component obj
@@ -665,7 +667,14 @@ class DivbloxDomBaseComponent {
 		if (typeof fail_callback !== "function") {
 			fail_callback = function(){};
 		}
-		success_callback();
+		if (this.prerequisite_loaded_index < this.prerequisite_array.length) {
+			dxGetScript(getRootPath()+this.prerequisite_array[this.prerequisite_loaded_index], function() {
+				this.prerequisite_loaded_index++;
+				this.loadPrerequisites(success_callback,fail_callback);
+			}.bind(this));
+		} else {
+			success_callback();
+		}
 	}
 	/**
 	 * This is the very first method that is called when a component is loaded. This triggers additional default
@@ -1261,6 +1270,10 @@ class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
 		this.column_name_array = [];
 		this.current_sort_column = [];
 		this.selected_items_array = [];
+		this.prerequisite_array = [
+			'project/assets/js/tableexport/xlsx.core.min.js',
+			'project/assets/js/tableexport/FileSaver.min.js',
+			'project/assets/js/tableexport/tableexport.min.js'];
 		// Call this.initDataTableVariables("YourEntityName") in the implementing class
 	}
 	initDataTableVariables(entity_name) {
@@ -1292,15 +1305,6 @@ class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
 	reset(inputs,propagate) {
 		this.loadPage();
 		super.reset(inputs,propagate);
-	}
-	loadPrerequisites(success_callback,fail_callback) {
-		dxGetScript(getRootPath()+'project/assets/js/tableexport/xlsx.core.min.js',function() {
-			dxGetScript(getRootPath()+'project/assets/js/tableexport/FileSaver.min.js',function() {
-				dxGetScript(getRootPath()+'project/assets/js/tableexport/tableexport.min.js',function() {
-					success_callback();
-				}.bind(this))
-			}.bind(this))
-		}.bind(this));
 	}
 	registerDomEvents() {
 		getComponentElementById(this,"BulkActionExportXlsx").on("click", function() {
@@ -2208,6 +2212,14 @@ function getUniqueDomCssId() {
 function preparePageInputs(url_parameters_str) {
 	if (typeof url_parameters_str !== "undefined") {
 		updateAppState('page_inputs',url_parameters_str);
+		if (url_parameters_str.length > 0) {
+			let init_url_input_parameters = new URLSearchParams(url_parameters_str);
+			if (init_url_input_parameters.get("init_native") != null) {
+				//JGL: If this is passed, an auth token must also be passed
+				setAuthenticationToken(init_url_input_parameters.get('auth_token'));
+				setIsNative();
+			}
+		}
 	}
 	if (isSpa() || isNative()) {
 		redirectToInternalPath();
@@ -2609,6 +2621,17 @@ function dxRequestInternalQueued(url,parameters,on_success,on_fail,trigger_eleme
 			removeTriggerElementFromLoadingElementArray(trigger_element_id);
 		});
 	return this;
+}
+/**
+ * Sets the given authentication token in the app state
+ * @param authentication_token_to_set
+ */
+function setAuthenticationToken(authentication_token_to_set) {
+	authentication_token = authentication_token_to_set;
+	updateAppState('dxAuthenticationToken',authentication_token);
+}
+function getAuthenticationToken() {
+	return getValueFromAppState('dxAuthenticationToken');
 }
 /**
  * Adds the given request to dx_queue and calls dxProcessRequestQueue()
@@ -3228,7 +3251,7 @@ function dxCheckCurrentUserRole(allowable_role_array,on_not_allowed,on_allowed) 
  */
 function getCurrentUserRole(callback) {
 	dxRequestInternal(getServerRootPath()+'api/global_functions/getUserRole',
-		{},
+		{AuthenticationToken:getAuthenticationToken()},
 		function(data_obj) {
 			if (typeof data_obj.CurrentRole !== "undefined") {
 				updateAppState('dx_role',data_obj.CurrentRole.toLowerCase());
@@ -3304,7 +3327,11 @@ function setIsNative() {
  * @return {Boolean} true if native, false if not
  */
 function isNative() {
-	return is_native;
+	let is_native_stored = getItemInLocalStorage("is_native");
+	if (is_native_stored == null) {
+		return is_native;
+	}
+	return is_native_stored == '1';
 }
 /**
  * Checks whether we are in Single Page Application mode
@@ -3577,6 +3604,7 @@ function getGlobalConstrainById(entity) {
  */
 function initNative() {
 	updateAppState('divblox_config','success');
+	updateAppState('is_native','1');
 }
 /**
  * Stores a key:value pairing in local storage

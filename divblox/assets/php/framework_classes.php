@@ -385,17 +385,19 @@ abstract class PublicApi_Base {
             self::initializeNewAuthenticationToken();
             return;
         }
-        if ($ClientConnectionObj->ClientUserAgent != self::$UserAgent) {
-            // JGL: This token could have been stolen since it is being used on another device. Let's create a new token
-            $ClientAuthenticationTokenObj->Delete();
-            self::initializeNewAuthenticationToken();
-            return;
-        }
+        if (!$ClientAuthenticationTokenObj->IsNative) {
+            if ($ClientConnectionObj->ClientUserAgent != self::$UserAgent) {
+                // JGL: This token could have been stolen since it is being used on another device. Let's create a new token
+                $ClientAuthenticationTokenObj->Delete();
+                self::initializeNewAuthenticationToken();
+                return;
+            }
         
-        if ($ClientAuthenticationTokenObj->UpdateDateTime < dxDateTime::Now()->AddMinutes(-AUTHENTICATION_REGENERATION_INT)) {
-            // JGL: The authentication should be regenerated
-            self::regenerateAuthenticationToken($ClientAuthenticationTokenObj);
-            return;
+            if ($ClientAuthenticationTokenObj->UpdateDateTime < dxDateTime::Now()->AddMinutes(-AUTHENTICATION_REGENERATION_INT)) {
+                // JGL: The authentication should be regenerated
+                self::regenerateAuthenticationToken($ClientAuthenticationTokenObj);
+                return;
+            }
         }
         self::updateAuthenticationToken($ClientAuthenticationTokenObj);
     }
@@ -416,6 +418,12 @@ abstract class PublicApi_Base {
     public static function regenerateAuthenticationToken(ClientAuthenticationToken $ClientAuthenticationTokenObj = null) {
         if (is_null($ClientAuthenticationTokenObj)) {
             self::initializeNewAuthenticationToken();
+            return;
+        }
+        if ($ClientAuthenticationTokenObj->IsNative) {
+            self::$AuthenticationToken = $ClientAuthenticationTokenObj->Token;
+            $_SESSION['AuthenticationToken'] = self::$AuthenticationToken;
+            self::setReturnAuthenticationToken(self::$AuthenticationToken);
             return;
         }
         $ClientAuthenticationTokenObj->ExpiredToken = $ClientAuthenticationTokenObj->Token;

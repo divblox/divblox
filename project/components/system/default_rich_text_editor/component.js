@@ -15,25 +15,14 @@ if (typeof component_classes['system_default_rich_text_editor'] === "undefined")
 				"project/assets/packages/trumbowyg/jquery-resizable.min.js",
 				"project/assets/packages/trumbowyg/plugins/resizimg/trumbowyg.resizimg.js"
 			];
-			this.prerequisite_loaded_index = 0;
 			this.editor_obj = null;
-		}
-		loadPrerequisites(success_callback,fail_callback) {
-			if (this.prerequisite_loaded_index < this.prerequisite_array.length) {
-				dxGetScript(getRootPath()+this.prerequisite_array[this.prerequisite_loaded_index], function() {
-					this.prerequisite_loaded_index++;
-					this.loadPrerequisites(success_callback,fail_callback);
-				}.bind(this));
-			} else {
-				$.trumbowyg.svgPath = getRootPath()+"project/assets/packages/trumbowyg/ui/icons.svg";
-				success_callback();
-			}
 		}
 		reset(inputs, propagate) {
 			this.initEditor();
 			super.reset(inputs, propagate);
 		}
 		initEditor() {
+			$.trumbowyg.svgPath = getRootPath()+"project/assets/packages/trumbowyg/ui/icons.svg";
 			this.editor_obj = getComponentElementById(this,"ComponentRichTextEditor").trumbowyg({
 				resetCss: true,
 				autogrow: true,

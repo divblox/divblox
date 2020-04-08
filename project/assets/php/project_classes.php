@@ -365,11 +365,10 @@ class EntityDataSeriesComponentController extends ProjectComponentController {
                 )
             );
         }
-        
+        $QueryOrConditions = null;
         if (!is_null($this->getInputValue("SearchText"))) {
             if (strlen($this->getInputValue("SearchText")) > 0) {
                 $SearchInputStr = "%".$this->getInputValue("SearchText")."%";
-                $QueryOrConditions = null;
                 foreach ($this->IncludedAttributeArray as $Attribute) {
                     if (is_null($QueryOrConditions)) {
                         $QueryOrConditions = dxQ::Like(dxQueryN::$EntityNodeNameStr()->$Attribute,$SearchInputStr);
@@ -388,6 +387,9 @@ class EntityDataSeriesComponentController extends ProjectComponentController {
                     }
                 };
             }
+        }
+        if (!is_null($QueryOrConditions)) {
+            $QueryCondition = dxQ::AndCondition($QueryCondition,$QueryOrConditions);
         }
         $OrderByClause = dxQ::OrderBy(dxQueryN::$EntityNodeNameStr()->$DefaultSortAttribute);
         if (!is_null($this->getInputValue("SortOptions"))) {
