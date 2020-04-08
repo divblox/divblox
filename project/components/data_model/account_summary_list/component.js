@@ -82,11 +82,11 @@ if (typeof component_classes['data_model_account_summary_list'] === "undefined")
 			let subtle_components_html = '';
 			let normal_components_html = '';
 			let footer_components_html = '';
-			let profile_picture_html = '<div class="col-1 dashboard-tile-list text-center">';
-			let account_info_html = '<div class="col-3 dashboard-tile-list text-center">';
+			let profile_picture_html = '<div class="col-1 dashboard-tile dashboard-tile-list dashboard-tile-profile-picture align-content-center">';
+			let account_info_html = '<div class="col-3 account-summary-info dashboard-tile dashboard-tile-list text-center">';
 			let status_summary_html = '<div class="col-8">';
 
-			profile_picture_html += row_data_obj["ProfilePicturePath"] + '</div>';
+			profile_picture_html += '<img class="account-summary-profile-picture" src="' + row_data_obj['ProfilePicturePath'] + '">' + '</div>';
 			account_info_html += '<div class="row text-center">' + row_data_obj["Title"] + " " + row_data_obj['FullName'] + '</div>';
 			account_info_html += '<div class="row text-center">' + row_data_obj["UserRole"] + '</div>';
 			account_info_html += '</div>';
