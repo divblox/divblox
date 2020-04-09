@@ -127,7 +127,7 @@
     position:fixed;
     top:2px;
     left:65px;
-    z-index: 3;
+    z-index: 4;
 }
 .sidebar_compact_left_visible > .sidebar_toggle_in_content {
     display:none;
