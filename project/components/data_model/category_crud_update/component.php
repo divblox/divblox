@@ -12,12 +12,6 @@ class CategoryController extends EntityInstanceComponentController {
         parent::__construct($ComponentNameStr);
     }
 
-    public function doBeforeDeleteActions($EntityToUpdateObj = null) {
-        if (is_null($EntityToUpdateObj)) {
-            return;
-        }
-        self::deleteCategoryAndSubCategories();
-    }
     public function deleteObjectData() {
         if (is_null($this->getInputValue("Id"))) {
             $this->setReturnValue("Result","Failed");
@@ -34,26 +28,14 @@ class CategoryController extends EntityInstanceComponentController {
             $this->doBeforeDeleteActions($EntityObj);
             $EntityObj->Delete();
             $this->doAfterDeleteActions();
+
+            $this->setReturnValue("CategoryParentId", $EntityObj->CategoryParentId);
             $this->setReturnValue("Result","Success");
             $this->setReturnValue("Message",$this->EntityNameStr." deleted");
             $this->presentOutput();
         }
     }
-    public function deleteCategoryAndSubCategories($CategoryToDeleteIdArr = []) {
-        foreach ($CategoryToDeleteIdArr as $CategoryToDeleteId) {
-            $CategoryObj = Category::Load($this->getInputValue("Id"));
-        }
-        $ToDeleteArr = ProjectFunctions::getSubCategoriesRecursive($CategoryObj, $SubCategoryArr = []);
 
-        foreach($ToDeleteArr as $ToDeleteId) {
-            $CategoryObjToDelete = Category::QuerySingle(
-                dxQN::Category()->Id,
-                $ToDeleteId
-            );
-            $CategoryObjToDelete->Delete();
-        }
-
-    }
 }
 $ComponentObj = new CategoryController("category_crud_update");
 ?>

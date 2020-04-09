@@ -38,17 +38,17 @@ if (typeof component_classes['data_model_account_summary_list'] === "undefined")
 			let subtle_components_html = '';
 			let normal_components_html = '';
 			let footer_components_html = '';
-			let profile_picture_html = '<div class="col-1">';
-			let account_info_html = '<div class="col-3">';
-			let status_summary_html = '<div class="col-8">';
+			let profile_picture_html = '<div class="col-2">';
+			let account_info_html = '<div class="col-4">';
+			let status_summary_html = '<div class="col-6">';
 
 			profile_picture_html += '<img class="dashboard-tile-profile-picture" src="' + row_data_obj['ProfilePicturePath'] + '" alt="Profile Picture">' + '</div>';
 			account_info_html += '<div class="row"> <div class="col-12 dashboard-tile-list">' + row_data_obj['FirstName'] + '<br>' + row_data_obj["LastName"] + '</div>';
 			account_info_html += '</div>' + '</div>';
 			status_summary_html += '<div class="row">';
-			let status_array = ["New", "In Progress", "Complete", "Overdue"];
+			let status_array = ["In Progress", "Overdue"];
 			status_array.forEach(function(status) {
-				status_summary_html += '<div class="col-3 dashboard-tile-list">' +
+				status_summary_html += '<div class="col-6 dashboard-tile-list">' +
 					status + ' <br> <strong>' + row_data_obj["StatusCounts"][status] + '</strong></div>';
 			});
 			status_summary_html += '</div>';

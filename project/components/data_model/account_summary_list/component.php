@@ -141,7 +141,7 @@ class AccountController extends EntityDataSeriesComponentController
             foreach ($StatusKeys as $Key) {
                 $StatusCountInt = Ticket::QueryCount(
                     dxQ::AndCondition(
-                        dxQ::Equals(
+                        dxQ::Equal(
                             dxQN::Ticket()->AccountObject->Id,
                             $EntityObj->Id
                         ),
