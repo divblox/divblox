@@ -1,0 +1,33 @@
+body {
+    padding-top:50px !important;
+}
+
+.mock-tile {
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 6px 15px rgba(36, 37, 38, 0.08);
+    color: white;
+}
+
+
+
+.mock-tile:hover {
+    box-shadow: 5px 12px 20px rgba(36, 37, 38, 0.13);
+}
+
+.mock-tile-orders {
+    background-image: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);;
+}
+
+.mock-tile-customers {
+    background-image: linear-gradient(120deg, #f093fb 0%, #f5576c 100%);
+}
+
+.mock-tile-sales {
+    background-image: linear-gradient(to right, #43e97b 0%, #38f9d7 100%);
+}
+
+.mock-tile-performance {
+    background-image: linear-gradient(to right, #fa709a 0%, #fee140 100%);
+}

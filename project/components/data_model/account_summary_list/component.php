@@ -15,8 +15,7 @@ class AccountController extends EntityDataSeriesComponentController
         parent::__construct($ComponentNameStr);
     }
 
-    public function getPage()
-    {
+    public function getPage() {
         error_log("Constrain by values: " . json_encode($this->ConstrainByArray));
         $EntityNodeNameStr = $this->EntityNameStr;
         $DefaultSortAttribute = $this->IncludedAttributeArray[0];

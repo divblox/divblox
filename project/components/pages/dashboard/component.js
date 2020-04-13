@@ -11,7 +11,7 @@ if (typeof component_classes['pages_dashboard'] === "undefined") {
             {"component_load_path":"dashboard/ticket_status_indicator","parent_element":"hCQoB","arguments":{"uid":"dashboard_ticket_status_indicator_4","ticket_status":"Urgent"}},
             {"component_load_path":"dashboard/ticket_status_indicator","parent_element":"Vfrds","arguments":{"uid":"dashboard_ticket_status_indicator_5","ticket_status":"Complete"}},
             {"component_load_path":"dashboard/ticket_status_indicator","parent_element":"zo9n7","arguments":{"uid":"dashboard_ticket_status_indicator_6","ticket_status":"Overdue"}},
-            {"component_load_path":"data_model/account_summary_list","parent_element":"Z0fDv","arguments":{}}];
+            {"component_load_path":"data_model/account_summary_list","parent_element":"Z0fDv","arguments":{"uid":"data_model_account_summary_list_1"}},];
             // Sub component config end
         }
 
