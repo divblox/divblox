@@ -18,8 +18,8 @@ if (typeof component_classes['system_entity_select'] === "undefined") {
 				}
 			}
 		}
-		reset(inputs) {
-			super.reset(inputs);
+		reset(inputs,propagate) {
+			super.reset(inputs,propagate);
 			getComponentElementById(this,'EntitySelectLabel').text('Select '+this.getEntityTypeDisplay()+':');
 			getComponentElementById(this,'SelectList').hide();
 		}

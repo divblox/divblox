@@ -12,7 +12,7 @@
  * divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "2.6.1";
+let dx_version = "2.6.2";
 let bootstrap_version = "4.4.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.3.8";
@@ -635,6 +635,9 @@ class DivbloxDomBaseComponent {
 		} else {
 			let sub_component_ready_uids = Object.keys(this.sub_component_ready);
 			let all_ready = true;
+			if (sub_component_ready_uids.length < this.sub_component_definitions.length) {
+				all_ready = false;
+			}
 			sub_component_ready_uids.forEach(function(uid) {
 				all_ready &= this.sub_component_ready[uid];
 			}.bind(this));
@@ -1148,7 +1151,7 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
 		}
 		let parameters_obj = {f:"saveObjectData",
 			ObjectData:JSON.stringify(current_component_obj),
-			Id:this.getLoadArgument("entity_id")};
+			Id:this.getEntityId()};
 		if (this.constrain_by_array.length > 0) {
 			this.constrain_by_array.forEach(function(relationship) {
 				parameters_obj['Constraining'+relationship+'Id'] = getGlobalConstrainById(relationship);
@@ -1167,10 +1170,14 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
                 }
 				this.loadEntity();
 				this.resetValidation();
+				this.onAfterSaveEntity(data_obj);
 			}.bind(this),
 			function(data_obj) {
 				showAlert("Error saving "+this.lowercase_entity_name+": "+data_obj.Message,"error","OK",false);
 			}.bind(this));
+	}
+	onAfterSaveEntity(data_obj) {
+		//TODO: Override this as needed;
 	}
 	deleteEntity() {
 		dxRequestInternal(
@@ -1180,10 +1187,14 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
 			function(data_obj) {
 				this.loadEntity();
 				pageEventTriggered(this.lowercase_entity_name+"_deleted");
+				this.onAfterDeleteEntity(data_obj);
 			}.bind(this),
 			function (data_obj) {
 				showAlert("Error deleting "+this.lowercase_entity_name+": "+data_obj.Message,"error","OK",false);
 			}.bind(this));
+	}
+	onAfterDeleteEntity(data_obj) {
+		//TODO: Override this as needed;
 	}
 	validateEntity() {
 		let validation_succeeded = true;
@@ -1503,10 +1514,14 @@ class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
 				this.current_page = 1;
 				this.loadPage();
 				pageEventTriggered(this.lowercase_entity_name+"_selection_deleted",{});
+				this.onAfterDeleteSelected(data_obj);
 			}.bind(this),
 			function(data_obj) {
 				showAlert("Error deleting items: "+data_obj.Message,"error","OK",false);
 			}.bind(this));
+	}
+	onAfterDeleteSelected(data_obj) {
+		//TODO: Override this as needed;
 	}
 	loadPage() {
 		let uid = this.getUid();
@@ -3150,21 +3165,7 @@ function addOfflineWrapper() {
  * @return {boolean} true if online, false if not
  */
 function checkOnlineStatus() {
-	if (!isNative()) {
-		return navigator.onLine;
-	}
-	let networkState = navigator.connection.type;
-	let states = {};
-	states[Connection.UNKNOWN]  = 'Unknown connection';
-	states[Connection.ETHERNET] = 'Ethernet connection';
-	states[Connection.WIFI]     = 'WiFi connection';
-	states[Connection.CELL_2G]  = 'Cell 2G connection';
-	states[Connection.CELL_3G]  = 'Cell 3G connection';
-	states[Connection.CELL_4G]  = 'Cell 4G connection';
-	states[Connection.CELL]     = 'Cell generic connection';
-	states[Connection.NONE]     = 'No network connection';
-	
-	return networkState !== Connection.NONE;
+	return navigator.onLine;
 }
 /**
  * Triggers the required user feedback when offline

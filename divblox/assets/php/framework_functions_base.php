@@ -540,6 +540,32 @@ abstract class FrameworkFunctions_base {
         }
         return $ClientAuthenticationTokenObj;
     }
+    
+    /**
+     * Links all valid PushRegistrations to the provided Account. This is called during authentication to ensure that
+     * we can send push notifications to specific users and not just devices
+     * @param ClientAuthenticationToken|null $ClientAuthenticationTokenObj
+     * @param Account|null $AccountObj
+     * @throws dxCallerException
+     * @throws dxInvalidCastException
+     */
+    public static function linkPushRegistrationsToAccount(
+        ClientAuthenticationToken $ClientAuthenticationTokenObj = null,
+        Account $AccountObj = null) {
+        if (is_null($ClientAuthenticationTokenObj) || is_null($AccountObj)) {return;}
+        
+        $PushRegistrations = PushRegistration::QueryArray(
+            dxQ::Equal(
+                dxQN::PushRegistration()->ClientAuthenticationTokenObject->Id, $ClientAuthenticationTokenObj->Id)
+        );
+        if (self::getDataSetSize($PushRegistrations) > 0) {
+            foreach ($PushRegistrations as $pushRegistration) {
+                $pushRegistration->AccountObject = $AccountObj;
+                $pushRegistration->Save();
+            }
+        }
+    }
+    
     /**
      * @param string $attr The attribute you would like to receive
      * @return string

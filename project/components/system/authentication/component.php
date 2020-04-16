@@ -46,6 +46,7 @@ class AuthenticationController extends ProjectComponentController {
             $this->presentOutput();
         }
         $ClientConnectionObj->AccountObject = $AccountObj;
+        ProjectFunctions::linkPushRegistrationsToAccount($ClientAuthenticationTokenObj,$AccountObj);
         try {
             $ClientConnectionObj->Save();
             $this->setReturnValue("Result","Success");

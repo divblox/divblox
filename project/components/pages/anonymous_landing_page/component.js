@@ -11,9 +11,9 @@ if (typeof component_classes['pages_anonymous_landing_page'] === "undefined") {
 				loadPageComponent("login");
 			});
 		}
-		reset(inputs) {
+		reset(inputs,propagate) {
 			setActivePage("","dx Home");
-			super.reset(inputs);
+			super.reset(inputs,propagate);
 		}
 		subComponentLoadedCallBack(component) {
             super.subComponentLoadedCallBack(component);

@@ -6,12 +6,12 @@ if (typeof component_classes['navigation_side_navbar'] === "undefined") {
 			this.sub_component_definitions = {};
 			// Sub component config end
 		}
-		reset(inputs) {
+		reset(inputs,propagate) {
 			if (isMobile()) {
 				$(".component-wrapper-compact-sidebar").removeClass("sidebar_compact_left_visible");
 				$(".sidebar-left").css("margin-left","-100px").addClass("slide-left");
 			}
-			super.reset(inputs);
+			super.reset(inputs,propagate);
 		}
 		registerDomEvents() {
 			$(".sidebar_toggle_left").on("click", function() {

@@ -6,9 +6,9 @@ if (typeof component_classes['pages_blank_page_with_side_nav'] === "undefined") 
 			this.sub_component_definitions = [{"component_load_path":"navigation/side_navbar","parent_element":"s8gjT","arguments":{}}];
 			// Sub component config end
 		}
-		reset(inputs) {
+		reset(inputs,propagate) {
 			setActivePage("page_component_name","Page Title");
-			super.reset(inputs);
+			super.reset(inputs,propagate);
 		}
 	}
 	component_classes['pages_blank_page_with_side_nav'] = pages_blank_page_with_side_nav;

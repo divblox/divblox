@@ -6,9 +6,9 @@ if (typeof component_classes['pages_blank_page_with_bottom_nav'] === "undefined"
 			this.sub_component_definitions = [{"component_load_path":"navigation/bottom_navbar","parent_element":"8kYvw","arguments":{}}];
 			// Sub component config end
 		}
-		reset(inputs) {
+		reset(inputs,propagate) {
 			setActivePage("page_component_name","Page Title");
-			super.reset(inputs);
+			super.reset(inputs,propagate);
 		}
 	}
 	component_classes['pages_blank_page_with_bottom_nav'] = pages_blank_page_with_bottom_nav;

@@ -8,7 +8,7 @@ if (typeof component_classes['pages_login'] === "undefined") {
 				{"component_load_path":"system/authentication","parent_element":"AuthenticationComponent","arguments":{"uid":"system_authentication_1"}}];
 			// Sub component config end
 		}
-		reset(inputs) {
+		reset(inputs,propagate) {
 			setActivePage("login","Login");
 			getCurrentUserRole(function(role) {
 				if (typeof role !== "undefined") {
@@ -19,7 +19,7 @@ if (typeof component_classes['pages_login'] === "undefined") {
 					}
 				}
 			}.bind(this));
-			super.reset(inputs);
+			super.reset(inputs,propagate);
 		}
 		registerDomEvents() {
 			getComponentElementById(this,"AuthenticationComponent").keypress(function( event ) {

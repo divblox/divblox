@@ -8,9 +8,9 @@ if (typeof component_classes['pages_my_profile'] === "undefined") {
 				{"component_load_path":"data_model/current_user_profile_manager","parent_element":"crXWF","arguments":{}}];
 			// Sub component config end
 		}
-		reset(inputs) {
+		reset(inputs,propagate) {
 			setActivePage("profile","My Profile");
-			super.reset(inputs);
+			super.reset(inputs,propagate);
 		}
 	}
 	component_classes['pages_my_profile'] = pages_my_profile;

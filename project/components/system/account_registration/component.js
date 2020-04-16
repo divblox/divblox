@@ -9,9 +9,9 @@ if (typeof component_classes['system_account_registration_this_too'] === "undefi
 			this.custom_validation_array = ['EmailAddress'];
 			this.required_validation_array = ['FirstName','LastName','Password'].concat(this.data_validation_array).concat(this.custom_validation_array);
 		}
-		reset(inputs) {
+		reset(inputs,propagate) {
 			this.loadAccount();
-			super.reset(inputs);
+			super.reset(inputs,propagate);
 		}
 		registerDomEvents() {
 			getComponentElementById(this,"btnSave").on("click", function() {

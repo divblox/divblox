@@ -6,11 +6,11 @@ if (typeof component_classes['ungrouped_imageviewer'] === "undefined") {
 			this.sub_component_definitions = [];
 			// Sub component config end
 		}
-		reset(inputs) {
+		reset(inputs,propagate) {
 			if (typeof(this.getImagePath()) !== "undefined") {
 				$("#"+this.uid+"_image").attr("src",this.getImagePath());
 			}
-			super.reset(inputs);
+			super.reset(inputs,propagate);
 		}
 		getImagePath() {
 			return this.arguments["image_path"];
