@@ -114,7 +114,7 @@ include(DATA_MODEL_ORM_PATH_STR.'/generated/_class_paths.inc.php');
 include(DATA_MODEL_ORM_PATH_STR.'/generated/dxQueryN.class.php');
 
 spl_autoload_register(array('ProjectFunctions', 'Autoload'));
-ProjectFunctions::InitializeDatabaseConnections();
+FrameworkFunctions::InitializeDatabaseConnections();
 session_start();
 set_error_handler("divbloxErrorHandler");
 set_exception_handler('divbloxHandleException');

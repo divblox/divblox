@@ -6,28 +6,24 @@ if (typeof component_classes['system_default_rich_text_editor'] === "undefined")
 			// Sub component config start
 			this.sub_component_definitions = [];
 			// Sub component config end
+			this.prerequisite_array = [
+				"project/assets/packages/trumbowyg/trumbowyg.js",
+				"project/assets/packages/trumbowyg/plugins/base64/trumbowyg.base64.js",
+				"project/assets/packages/trumbowyg/plugins/colors/trumbowyg.colors.js",
+				"project/assets/packages/trumbowyg/prism.min.js",
+				"project/assets/packages/trumbowyg/plugins/highlight/trumbowyg.highlight.js",
+				"project/assets/packages/trumbowyg/jquery-resizable.min.js",
+				"project/assets/packages/trumbowyg/plugins/resizimg/trumbowyg.resizimg.js"
+			];
+			this.editor_obj = null;
 		}
-		loadPrerequisites(success_callback,fail_callback) {
-			dxGetScript(getRootPath()+"project/assets/packages/trumbowyg/trumbowyg.js", function() {
-				$.trumbowyg.svgPath = getRootPath()+"project/assets/packages/trumbowyg/ui/icons.svg";
-				dxGetScript(getRootPath()+"project/assets/packages/trumbowyg/plugins/base64/trumbowyg.base64.js", function() {
-					dxGetScript(getRootPath()+"project/assets/packages/trumbowyg/plugins/colors/trumbowyg.colors.js", function() {
-						dxGetScript(getRootPath()+"project/assets/packages/trumbowyg/prism.min.js", function() {
-							dxGetScript(getRootPath()+"project/assets/packages/trumbowyg/plugins/highlight/trumbowyg.highlight.js", function() {
-								dxGetScript(getRootPath()+"project/assets/packages/trumbowyg/jquery-resizable.min.js", function() {
-									dxGetScript(getRootPath()+"project/assets/packages/trumbowyg/plugins/resizimg/trumbowyg.resizimg.js", function() {
-										this.initEditor();
-										success_callback();
-									}.bind(this));
-								}.bind(this));
-							}.bind(this));
-						}.bind(this));
-					}.bind(this));
-				}.bind(this));
-			}.bind(this));
+		reset(inputs, propagate) {
+			this.initEditor();
+			super.reset(inputs, propagate);
 		}
 		initEditor() {
-			let trumbowyg_obj = getComponentElementById(this,"ComponentRichTextEditor").trumbowyg({
+			$.trumbowyg.svgPath = getRootPath()+"project/assets/packages/trumbowyg/ui/icons.svg";
+			this.editor_obj = getComponentElementById(this,"ComponentRichTextEditor").trumbowyg({
 				resetCss: true,
 				autogrow: true,
 				autogrowOnEnter: true,
@@ -62,31 +58,23 @@ if (typeof component_classes['system_default_rich_text_editor'] === "undefined")
 					['fullscreen']
 				]
 			});
-			let this_component = this;
-			dxRequestInternal(getComponentControllerPath(this_component),
-				{f:"getInitData"},
-				function(data_obj) {
-					trumbowyg_obj.html(data_obj.Html);
-				},
-				function(data_obj) {
-					throw new Error(data_obj.Message);
-				},false,false);
-			trumbowyg_obj.on('tbwchange', function() {
-				let current_data = trumbowyg_obj.html();
+			this.editor_obj.on('tbwchange', function() {
+				let current_data = this.editor_obj.html();
 				setTimeout(function() {
-					if (current_data == trumbowyg_obj.html()) {
-						dxRequestInternal(getComponentControllerPath(this_component),
-							{f:"saveData",
-								html:trumbowyg_obj.html()},
-							function(data_obj) {
-								dxLog(data_obj.Message);
-							},
-							function(data_obj) {
-								throw new Error(data_obj.Message);
-							},false,false);
+					if (current_data == this.editor_obj.html()) {
+						this.doAutoSave();
 					}
-				},1000);
-			});
+				}.bind(this),1000);
+			}.bind(this));
+		}
+		setData(html) {
+			this.editor_obj.html(html);
+		}
+		getData() {
+			return this.editor_obj.html();
+		}
+		doAutoSave() {
+			dxLog("Auto save function for rich text editor not implemented");
 		}
 	}
 	component_classes['system_default_rich_text_editor'] = system_default_rich_text_editor;

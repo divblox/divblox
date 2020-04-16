@@ -561,6 +561,46 @@
                 "Placeholder": "Expired Token",
                 "Data": null,
                 "ValidationMessage": "Please provide a valid Expired Token"
+            },
+            "IsNative": {
+                "DisplayType": "checkbox",
+                "InputLabel": "Is Native",
+                "DefaultValue": true,
+                "Placeholder": "Is Native",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Is Native"
+            },
+            "DeviceUuid": {
+                "DisplayType": "text",
+                "InputLabel": "Device Uuid:",
+                "DefaultValue": "",
+                "Placeholder": "Device Uuid",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Device Uuid"
+            },
+            "DevicePlatform": {
+                "DisplayType": "text",
+                "InputLabel": "Device Platform:",
+                "DefaultValue": "",
+                "Placeholder": "Device Platform",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Device Platform"
+            },
+            "DeviceOs": {
+                "DisplayType": "text",
+                "InputLabel": "Device Os:",
+                "DefaultValue": "",
+                "Placeholder": "Device Os",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Device Os"
+            },
+            "DeviceRegistrationDateTime": {
+                "DisplayType": "datetime-local",
+                "InputLabel": "Device Registration Date Time:",
+                "DefaultValue": "",
+                "Placeholder": "Device Registration Date Time",
+                "Data": null,
+                "ValidationMessage": "Please provide a valid Device Registration Date Time"
             }
         },
         "Relationships": {

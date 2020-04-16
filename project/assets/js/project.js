@@ -82,10 +82,14 @@ function logout() {
 	current_user_profile_picture_path = "";
     registerUserRole("anonymous");
 	dxRequestInternal(getServerRootPath()+"api/global_functions/logoutCurrentAccount",
-		{},
+		{AuthenticationToken:getAuthenticationToken()},
 		function(data_obj) {
 			if (data_obj.LogoutResult === true) {
-				loadUserRoleLandingPage("anonymous");
+				if (!isNative()) {
+					loadUserRoleLandingPage("anonymous");
+				} else {
+					loadUserRoleLandingPage("native_landing");
+				}
 			} else {
 				throw new Error("Could not logout user: "+JSON.stringify(data_obj));
 			}
@@ -105,6 +109,14 @@ function loadUserRoleLandingPage(user_role) {
 	}
 	if (typeof user_role_landing_pages[user_role] === "undefined") {
 		loadPageComponent('my_profile');
+		return;
+	}
+	if (user_role.toLowerCase() === 'anonymous') {
+		if (!isNative()) {
+			loadPageComponent(user_role_landing_pages[user_role]);
+		} else {
+			loadPageComponent('native_landing');
+		}
 		return;
 	}
 	loadPageComponent(user_role_landing_pages[user_role]);
@@ -143,7 +155,7 @@ function getCurrentUserAttribute(attribute,callback) {
 		attribute_to_return = getRootPath()+"project/assets/images/divblox_profile_picture_placeholder.svg";
 	}
 	dxRequestInternal(getServerRootPath()+'api/global_functions/getCurrentAccountAttribute',
-		{attribute:attribute},
+		{attribute:attribute,AuthenticationToken:getAuthenticationToken()},
 		function(data_obj) {
 			if (typeof data_obj.Result === "undefined") {
 				callback(attribute_to_return);
@@ -198,6 +210,7 @@ function createPushRegistration(registration_id,success_callback,failure_callbac
 			device_uuid: device_uuid,
 			device_platform: device_platform,
 			device_os:device_os,
+			AuthenticationToken:getAuthenticationToken()
 		},
 		function(data_obj) {
 			success_callback(data_obj.InternalId);
@@ -320,4 +333,3 @@ function getApplicationIconBadgeNumber(callback) {
  */
 function doAfterAuthenticationActions() {
 }
-

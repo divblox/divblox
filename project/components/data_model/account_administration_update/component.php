@@ -11,9 +11,8 @@ class AccountController extends EntityInstanceComponentController {
     public function __construct($ComponentNameStr = 'Component') {
         parent::__construct($ComponentNameStr);
     }
-    public function assignAdditionalValuesAfterSave($EntityToUpdateObj = null) {
+    public function doBeforeSaveActions($EntityToUpdateObj = null)  {
         $EntityToUpdateObj->FullName = trim($EntityToUpdateObj->FirstName).' '.trim($EntityToUpdateObj->MiddleNames).' '.trim($EntityToUpdateObj->LastName);
-        $EntityToUpdateObj->Save();
     }
 }
 $ComponentObj = new AccountController("account_administration_update");

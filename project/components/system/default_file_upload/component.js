@@ -6,17 +6,13 @@ if (typeof component_classes['system_default_file_upload'] === "undefined") {
 			this.sub_component_definitions = [];
 			// Sub component config end
 			this.file_upload_array = [];
+			this.prerequisite_array = ['project/assets/js/jquery_fileuploader/jquery.fileuploader.min.js'];
 		}
         reset(inputs) {
+	        this.initFileUploader();
             let api = $.fileuploader.getInstance('#'+this.getUid()+'_file_uploader');
             api.reset();
         }
-		loadPrerequisites(success_callback,fail_callback) {
-			dxGetScript(getRootPath()+"project/assets/js/jquery_fileuploader/jquery.fileuploader.min.js", function( data, textStatus, jqxhr ) {
-				this.initFileUploader();
-				success_callback();
-			}.bind(this));
-		}
 		initFileUploader() {
 			let uid = this.uid;
 			let this_component = this;

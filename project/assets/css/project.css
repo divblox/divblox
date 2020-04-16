@@ -386,7 +386,7 @@ label {
     left: 0;
     height: 40px;
     background-color: white;
-    z-index: 2;
+    z-index: 3;
 }
 .left-full-sidebar {
     width:220px;

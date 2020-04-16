@@ -51,6 +51,11 @@ class ApiCrudAccount extends ApiCrudBase {
             PublicApi::addApiOutput("Message","Invalid input provided");
             PublicApi::printApiResult();
         }
+        if ($AccountObj->AccessBlocked == 1) {
+            PublicApi::addApiOutput("Result","Failed");
+            PublicApi::addApiOutput("Message","Account access blocked");
+            PublicApi::printApiResult();
+        }
         if (!password_verify(PublicApi::getInputParameter("Password"), $AccountObj->Password)) {
             PublicApi::addApiOutput("Result","Failed");
             PublicApi::addApiOutput("Message","Invalid input provided");

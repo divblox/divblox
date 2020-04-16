@@ -7,6 +7,7 @@
 include(FRAMEWORK_ROOT_STR."/assets/php/framework_classes.php");
 include(PROJECT_ROOT_STR.'/assets/php/component_role_based_access.class.php');
 include(PROJECT_ROOT_STR.'/assets/php/data_model_role_based_access.class.php');
+include(PROJECT_ROOT_STR.'/assets/php/user_role_hierarchy.class.php');
 //region Project Access related
 
 /**
@@ -52,13 +53,29 @@ abstract class ProjectAccessManager extends AccessManager {
             }
         }
         
-        if (!isset(DataModelRoleBasedAccess::$AccessArray[$UserRoleStr])) {
+        $HierarchyBasedAccessArray = [];
+        if (isset(DataModelRoleBasedAccess::$AccessArray[$UserRoleStr])) {
+            foreach (DataModelRoleBasedAccess::$AccessArray[$UserRoleStr] as $ObjectName => $ObjectArray) {
+                $HierarchyBasedAccessArray[$ObjectName] = $ObjectArray;
+            }
+        }
+        if (isset(UserRoleHierarchy::$PermissionInheritanceArray[$UserRoleStr])) {
+            $InheritedUserRoleArray = UserRoleHierarchy::$PermissionInheritanceArray[$UserRoleStr];
+            foreach ($InheritedUserRoleArray as $InheritedUserStr) {
+                if (isset(DataModelRoleBasedAccess::$AccessArray[$InheritedUserStr])) {
+                    foreach (DataModelRoleBasedAccess::$AccessArray[$InheritedUserStr] as $ObjectName => $ObjectArray) {
+                        if (!isset($HierarchyBasedAccessArray[$ObjectName])) {
+                            $HierarchyBasedAccessArray[$ObjectName] = $ObjectArray;
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (!isset($HierarchyBasedAccessArray[$ObjectType])) {
             return $ReturnArray;
         }
-        if (!isset(DataModelRoleBasedAccess::$AccessArray[$UserRoleStr][$ObjectType])) {
-            return $ReturnArray;
-        }
-        return DataModelRoleBasedAccess::$AccessArray[$UserRoleStr][$ObjectType];
+        return $HierarchyBasedAccessArray[$ObjectType];
     }
 
     /**
@@ -81,11 +98,26 @@ abstract class ProjectAccessManager extends AccessManager {
                 $UserRoleStr = $UserRoleObj->Role;
             }
         }
-        
-        if (!isset(ComponentRoleBasedAccess::$AccessArray[$UserRoleStr])) {
-            return false;
+    
+        $HierarchyBasedAccessArray = [];
+        if (isset(ComponentRoleBasedAccess::$AccessArray[$UserRoleStr])) {
+            foreach (ComponentRoleBasedAccess::$AccessArray[$UserRoleStr] as $ComponentNameStr) {
+                $HierarchyBasedAccessArray[] = $ComponentNameStr;
+            }
         }
-        if (in_array($ComponentName, ComponentRoleBasedAccess::$AccessArray[$UserRoleStr])) {
+    
+        if (isset(UserRoleHierarchy::$PermissionInheritanceArray[$UserRoleStr])) {
+            $InheritedUserRoleArray = UserRoleHierarchy::$PermissionInheritanceArray[$UserRoleStr];
+            foreach ($InheritedUserRoleArray as $InheritedUserStr) {
+                if (isset(ComponentRoleBasedAccess::$AccessArray[$InheritedUserStr])) {
+                    foreach (ComponentRoleBasedAccess::$AccessArray[$InheritedUserStr] as $ComponentNameStr) {
+                        $HierarchyBasedAccessArray[] = $ComponentNameStr;
+                    }
+                }
+            }
+        }
+        
+        if (in_array($ComponentName, $HierarchyBasedAccessArray)) {
             return true;
         }
         
@@ -123,9 +155,7 @@ class EntityInstanceComponentController extends ProjectComponentController {
         parent::__construct($ComponentNameStr);
     }
     public function getObjectData() {
-        $EntityObj = $this->EntityNameStr::Load(
-            $this->getInputValue("Id",true)
-        );
+        $EntityObj = $this->EntityNameStr::Load($this->getInputValue("Id",true));
         $EntityJsonDecoded = array();
         if (!is_null($EntityObj)) {
             $EntityJsonDecoded = json_decode($EntityObj->getJson());
@@ -303,7 +333,6 @@ class EntityDataSeriesComponentController extends ProjectComponentController {
         parent::__construct($ComponentNameStr);
     }
     public function getPage() {
-        error_log("Constrain by values: ".json_encode($this->ConstrainByArray));
         $EntityNodeNameStr = $this->EntityNameStr;
         $DefaultSortAttribute = $this->IncludedAttributeArray[0];
         
@@ -336,11 +365,10 @@ class EntityDataSeriesComponentController extends ProjectComponentController {
                 )
             );
         }
-        
+        $QueryOrConditions = null;
         if (!is_null($this->getInputValue("SearchText"))) {
             if (strlen($this->getInputValue("SearchText")) > 0) {
                 $SearchInputStr = "%".$this->getInputValue("SearchText")."%";
-                $QueryOrConditions = null;
                 foreach ($this->IncludedAttributeArray as $Attribute) {
                     if (is_null($QueryOrConditions)) {
                         $QueryOrConditions = dxQ::Like(dxQueryN::$EntityNodeNameStr()->$Attribute,$SearchInputStr);
@@ -359,6 +387,9 @@ class EntityDataSeriesComponentController extends ProjectComponentController {
                     }
                 };
             }
+        }
+        if (!is_null($QueryOrConditions)) {
+            $QueryCondition = dxQ::AndCondition($QueryCondition,$QueryOrConditions);
         }
         $OrderByClause = dxQ::OrderBy(dxQueryN::$EntityNodeNameStr()->$DefaultSortAttribute);
         if (!is_null($this->getInputValue("SortOptions"))) {
@@ -382,7 +413,9 @@ class EntityDataSeriesComponentController extends ProjectComponentController {
         foreach($EntityArray as $EntityObj) {
             $CompleteReturnArray = ["Id" => $EntityObj->Id];
             foreach ($this->IncludedAttributeArray as $Attribute) {
-                if (in_array($this->DataModelObj->getEntityAttributeType($this->EntityNameStr, $Attribute),["DATE","DATETIME"])) {
+                if ($this->DataModelObj->getEntityAttributeType($this->EntityNameStr, $Attribute) == "DATE") {
+                    $CompleteReturnArray[$Attribute] = is_null($EntityObj->$Attribute)? 'N/A':$EntityObj->$Attribute->format(DATE_TIME_FORMAT_PHP_STR);
+                } elseif ($this->DataModelObj->getEntityAttributeType($this->EntityNameStr, $Attribute) == "DATETIME") {
                     $CompleteReturnArray[$Attribute] = is_null($EntityObj->$Attribute)? 'N/A':$EntityObj->$Attribute->format(DATE_TIME_FORMAT_PHP_STR." H:i:s");
                 } else {
                     $CompleteReturnArray[$Attribute] = is_null($EntityObj->$Attribute)? 'N/A':$EntityObj->$Attribute;
@@ -394,11 +427,15 @@ class EntityDataSeriesComponentController extends ProjectComponentController {
                 $RelationshipNodeStr = $this->DataModelObj->getEntityRelationshipPathAsNode($EntityObj,$this->EntityNameStr,$Relationship,[]);
                 if (!is_null($RelationshipNodeStr)) {
                     if (!is_null($RelationshipNodeStr->$DisplayAttribute)) {
-                        if (in_array($this->DataModelObj->getEntityAttributeType($Relationship, $DisplayAttribute),["DATE","DATETIME"])) {
+                        if ($this->DataModelObj->getEntityAttributeType($Relationship, $DisplayAttribute) == "DATE") {
+                            $RelationshipReturnStr = $RelationshipNodeStr->$DisplayAttribute->format(DATE_TIME_FORMAT_PHP_STR);
+                        } elseif ($this->DataModelObj->getEntityAttributeType($Relationship, $DisplayAttribute) == "DATETIME") {
                             $RelationshipReturnStr = $RelationshipNodeStr->$DisplayAttribute->format(DATE_TIME_FORMAT_PHP_STR." H:i:s");
                         } else {
-                            $RelationshipReturnStr = is_null($RelationshipNodeStr->$DisplayAttribute)? 'N/A':$RelationshipNodeStr->$DisplayAttribute;
+                            $RelationshipReturnStr = $RelationshipNodeStr->$DisplayAttribute;
                         }
+                    } else {
+                        $RelationshipReturnStr = 'N/A';
                     }
                 }
                 $CompleteReturnArray[$Relationship] = $RelationshipReturnStr;

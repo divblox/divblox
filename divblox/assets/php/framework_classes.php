@@ -69,7 +69,7 @@ abstract class PublicApi_Base {
         $_SESSION["API_CALL_ACTIVE"] = 1;
         $_SESSION["API_CALL_KEY"] = self::getInputParameter("api_key");
         self::$ApiResultArray["Result"] = "Failed";
-        self::$InputOperation = ProjectFunctions::getPathInfo(0);
+        self::$InputOperation = FrameworkFunctions::getPathInfo(0);
         if (is_null(self::$InputOperation)) {
             if (isset($_GET['operation'])) {
                 self::$InputOperation = $_GET['operation'];
@@ -82,13 +82,13 @@ abstract class PublicApi_Base {
         }
         self::$ApiDescription = $ApiDescriptionStr;
         self::$ApiEndPointName = $EndPointNameStr;
-        if (ProjectFunctions::getPathInfo(0) == "doc") {
+        if (FrameworkFunctions::getPathInfo(0) == "doc") {
             $DocumentationHtml = file_get_contents(DOCUMENT_ROOT_STR.SUBDIRECTORY_STR.'/divblox/assets/html_templates/api_documentation_wrapper.html');
             $DocumentationHtml = str_replace('{api_endpoint}', self::$ApiEndPointName, $DocumentationHtml);
             $DocumentationHtml = str_replace('{introduction}', self::$ApiDescription, $DocumentationHtml);
             
             $OperationHtml = '';
-            if (ProjectFunctions::getDataSetSize(self::$AvailableOperationsArray) > 0) {
+            if (FrameworkFunctions::getDataSetSize(self::$AvailableOperationsArray) > 0) {
                 foreach(self::$AvailableOperationsArray as $AvailableOperation => $DetailArray) {
                     $OperationTemplateHtml = file_get_contents(DOCUMENT_ROOT_STR.SUBDIRECTORY_STR.'/divblox/assets/html_templates/api_operation_wrapper.html');
                     $OperationTemplateHtml = str_replace('{operation_name}', self::$NamedOperationsArray[$AvailableOperation], $OperationTemplateHtml);
@@ -121,7 +121,7 @@ abstract class PublicApi_Base {
                     if (strlen($CurlInputListStr) > 0) {
                         $CurlInputListStr = substr($CurlInputListStr,0,strlen($CurlInputListStr)-2)."\n}'";
                     }
-                    if (ProjectFunctions::getDataSetSize($InputListArray) > 0) {
+                    if (FrameworkFunctions::getDataSetSize($InputListArray) > 0) {
                         $OperationTemplateHtml = str_replace('{operation_inputs}', json_encode($InputListArray,JSON_PRETTY_PRINT), $OperationTemplateHtml);
                     } else {
                         $OperationTemplateHtml = str_replace('{operation_inputs}', 'No inputs required', $OperationTemplateHtml);
@@ -178,7 +178,7 @@ abstract class PublicApi_Base {
             }
             $DocumentationHtml = str_replace('{operation_wrapper}', $OperationHtml, $DocumentationHtml);
             echo $DocumentationHtml;
-            ProjectFunctions::printCleanOutput("Content-Type: text/html");
+            FrameworkFunctions::printCleanOutput("Content-Type: text/html");
             die();
         }
         if (function_exists(PublicApi::getOperation())) {
@@ -272,13 +272,13 @@ abstract class PublicApi_Base {
             }
         }
         
-        $PathInfoArray = ProjectFunctions::getPathInfo(-1);
-        if (ProjectFunctions::getDataSetSize($PathInfoArray) == 0) {
+        $PathInfoArray = FrameworkFunctions::getPathInfo(-1);
+        if (FrameworkFunctions::getDataSetSize($PathInfoArray) == 0) {
             return null;
         }
         foreach($PathInfoArray as $item) {
             $ItemComponents = explode("=", $item);
-            if (ProjectFunctions::getDataSetSize($ItemComponents) == 2) {
+            if (FrameworkFunctions::getDataSetSize($ItemComponents) == 2) {
                 if ($ItemComponents[0] == $InputParameter) {
                     return $ItemComponents[1];
                 }
@@ -289,7 +289,7 @@ abstract class PublicApi_Base {
     public static function getRawInputAsArray() {
         $RawInput = file_get_contents('php://input');
         $RawInputObj = null;
-        if (ProjectFunctions::isJson($RawInput)) {
+        if (FrameworkFunctions::isJson($RawInput)) {
             $RawInputObj = json_decode($RawInput, true);
         }
         return $RawInputObj;
@@ -312,15 +312,15 @@ abstract class PublicApi_Base {
     }
     public static function printApiResult() {
         echo json_encode(self::$ApiResultArray);
-        ProjectFunctions::printCleanOutput("Content-Type: application/json");
+        FrameworkFunctions::printCleanOutput("Content-Type: application/json");
         die();
     }
     
     public static function getApiHost() {
         $protocol = 'http://';
-        if (ProjectFunctions::isSecure())
+        if (FrameworkFunctions::isSecure())
             $protocol = 'https://';
-        $www = ProjectFunctions::HostHasWWW()?'www.':'';
+        $www = FrameworkFunctions::HostHasWWW()?'www.':'';
         $server = $_SERVER['SERVER_NAME'];
         $port = '';
         if (($_SERVER["SERVER_PORT"] != "80") && ($_SERVER["SERVER_PORT"] != "443")) {
@@ -349,13 +349,13 @@ abstract class PublicApi_Base {
         if (is_null(self::$AuthenticationToken)) {
             self::initializeNewAuthenticationToken();
         } else {
-            self::checkValidAuthenticationToken(ProjectFunctions::getCurrentAuthTokenObject(self::$AuthenticationToken));
+            self::checkValidAuthenticationToken(FrameworkFunctions::getCurrentAuthTokenObject(self::$AuthenticationToken));
         }
     }
     public static function initializeNewAuthenticationToken() {
         // JGL: We need to create a new auth token that will initially not be linked to an account
         $ClientAuthenticationTokenObj = new ClientAuthenticationToken();
-        $ClientAuthenticationTokenObj->Token = ProjectFunctions::generateUniqueClientAuthenticationToken();
+        $ClientAuthenticationTokenObj->Token = FrameworkFunctions::generateUniqueClientAuthenticationToken();
         $ClientAuthenticationTokenObj->UpdateDateTime = dxDateTime::Now();
         $ClientConnectionObj = new ClientConnection();
         $RemoteAddress = 'Unknown';
@@ -385,17 +385,19 @@ abstract class PublicApi_Base {
             self::initializeNewAuthenticationToken();
             return;
         }
-        if ($ClientConnectionObj->ClientUserAgent != self::$UserAgent) {
-            // JGL: This token could have been stolen since it is being used on another device. Let's create a new token
-            $ClientAuthenticationTokenObj->Delete();
-            self::initializeNewAuthenticationToken();
-            return;
-        }
+        if (!$ClientAuthenticationTokenObj->IsNative) {
+            if ($ClientConnectionObj->ClientUserAgent != self::$UserAgent) {
+                // JGL: This token could have been stolen since it is being used on another device. Let's create a new token
+                $ClientAuthenticationTokenObj->Delete();
+                self::initializeNewAuthenticationToken();
+                return;
+            }
         
-        if ($ClientAuthenticationTokenObj->UpdateDateTime < dxDateTime::Now()->AddMinutes(-AUTHENTICATION_REGENERATION_INT)) {
-            // JGL: The authentication should be regenerated
-            self::regenerateAuthenticationToken($ClientAuthenticationTokenObj);
-            return;
+            if ($ClientAuthenticationTokenObj->UpdateDateTime < dxDateTime::Now()->AddMinutes(-AUTHENTICATION_REGENERATION_INT)) {
+                // JGL: The authentication should be regenerated
+                self::regenerateAuthenticationToken($ClientAuthenticationTokenObj);
+                return;
+            }
         }
         self::updateAuthenticationToken($ClientAuthenticationTokenObj);
     }
@@ -418,8 +420,14 @@ abstract class PublicApi_Base {
             self::initializeNewAuthenticationToken();
             return;
         }
+        if ($ClientAuthenticationTokenObj->IsNative) {
+            self::$AuthenticationToken = $ClientAuthenticationTokenObj->Token;
+            $_SESSION['AuthenticationToken'] = self::$AuthenticationToken;
+            self::setReturnAuthenticationToken(self::$AuthenticationToken);
+            return;
+        }
         $ClientAuthenticationTokenObj->ExpiredToken = $ClientAuthenticationTokenObj->Token;
-        $ClientAuthenticationTokenObj->Token = ProjectFunctions::generateUniqueClientAuthenticationToken();
+        $ClientAuthenticationTokenObj->Token = FrameworkFunctions::generateUniqueClientAuthenticationToken();
         $ClientAuthenticationTokenObj->UpdateDateTime = dxDateTime::Now();
         $ClientConnectionObj = $ClientAuthenticationTokenObj->ClientConnectionObject;
         $ClientConnectionObj->UpdateDateTime = dxDateTime::Now();

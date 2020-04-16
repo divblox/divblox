@@ -42,7 +42,7 @@ if (typeof component_classes['pages_login'] === "undefined") {
 		subComponentLoadedCallBack(component) {
 			super.subComponentLoadedCallBack(component);
 			if (component.getComponentName() === "ungrouped_imageviewer") {
-				component.updateImage("project/assets/images/app_logo.png");
+				component.updateImage("project/assets/images/divblox_logo.svg");
 			}
 		}
 		postPageLoadActions() {
