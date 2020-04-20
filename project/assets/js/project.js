@@ -175,46 +175,6 @@ function getCurrentUserAttribute(attribute,callback) {
 		},true);
 }
 /**
- * Creates a push registration on the server for the current device
- * @param {String} registration_id The given registration Id as received from the push service
- * @param {Function} success_callback Function that will receive the internal push id that is stored on the server
- * @param failure_callback Function that will receive a failure message
- */
-function createPushRegistration(registration_id,success_callback,failure_callback) {
-	if (typeof success_callback !== "function") {
-		success_callback = function() {};
-	}
-	if (typeof failure_callback !== "function") {
-		failure_callback = function() {};
-	}
-	if (typeof registration_id === "undefined") {
-		failure_callback("No registration id provided");
-		return;
-	}
-	let device_uuid = 'browser';
-	let device_platform = 'browser';
-	let device_os = 'browser';
-	if (isNative()) {
-		device_uuid = device.uuid;
-		device_platform = device.platform;
-		device_os = device.version;
-	}
-	setItemInLocalStorage("PushRegistrationId",registration_id);
-	dxRequestInternal(getServerRootPath()+'api/global_functions/updatePushRegistration',
-		{registration_id: registration_id,
-			device_uuid: device_uuid,
-			device_platform: device_platform,
-			device_os:device_os,
-			AuthenticationToken:getAuthenticationToken()
-		},
-		function(data_obj) {
-			success_callback(data_obj.InternalId);
-		},
-		function(data_obj) {
-			failure_callback(data_obj.Message);
-		});
-}
-/**
  * @todo Any actions that should happen once the document is ready and all dx dependencies have been loaded can be placed
  * here.
  */

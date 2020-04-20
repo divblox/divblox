@@ -12,7 +12,7 @@
  * divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "2.6.2";
+let dx_version = "2.6.3";
 let bootstrap_version = "4.4.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.3.8";
@@ -192,7 +192,6 @@ function callInstallPrompt() {
 function checkFrameworkReady() {
 	if (isNative()) {
 		allow_feedback = local_config.allow_feedback;
-		spa_mode = true;
 		doAfterInitActions();
 		on_divblox_ready();
 		return;
@@ -328,9 +327,6 @@ function removeServiceWorker() {
  * @return {String} The root path which is a valid url, e.g https://divblox.com/
  */
 function getServerRootPath() {
-	if (isNative()) {
-		return server_final_url;
-	}
 	let port_number_str = window.location.port;
 	if (port_number_str.length > 0) {
 		port_number_str = ":"+port_number_str;
@@ -1948,7 +1944,7 @@ function loadPageComponent(component_name,load_arguments,callback) {
         });
     }
 	
-	if (!isSpa() && !isNative()) {
+	if (!isSpa()) {
 		redirectToInternalPath('?view='+component_name+parameters_str);
 		return;
 	}
@@ -2152,9 +2148,6 @@ function pageEventTriggered(event_name,parameters_obj) {
  * @return {string} The path to the component's php script
  */
 function getComponentControllerPath(component) {
-	if (isNative()) {
-		return server_final_url+component.arguments["component_path"]+"/component.php";
-	}
 	return component.arguments["component_path"]+"/component.php";
 }
 /**
@@ -2167,8 +2160,7 @@ function loadComponentHtmlAsDOMObject(component_path,callback) {
 		let doctype = document.implementation.createDocumentType('html', '', '');
 		let component_dom = document.implementation.createDocument('', 'html', doctype);
 		let jq_dom = jQuery(component_dom);
-		let jq_html = $.parseHTML(html);
-		jq_dom.find('html').append(jq_html);
+		jq_dom.find('html').append(html);
 		callback(jq_dom);
 	}, function() {
 	
@@ -2236,7 +2228,7 @@ function preparePageInputs(url_parameters_str) {
 			}
 		}
 	}
-	if (isSpa() || isNative()) {
+	if (isSpa()) {
 		redirectToInternalPath();
 	} else {
 		processPageInputs();
@@ -2552,14 +2544,6 @@ function removeTriggerElementFromLoadingElementArray(trigger_element_id) {
  * @param {String} loading_text The text to display while loading (Optional)
  */
 function dxRequestInternal(url,parameters,on_success,on_fail,queue_on_offline,element,loading_text) {
-	if (isNative()) {
-		if (url.indexOf(server_final_url) === -1) {
-			if (url.substr(0,1) === ".") {
-				url = url.substr(1);
-			}
-			url = server_final_url+url;
-		}
-	}
 	if (typeof queue_on_offline === "undefined") {
 		queue_on_offline = false;
 	}
@@ -2701,37 +2685,7 @@ function dxGetScript(url,on_success,on_fail,force_cache) {
 			cache_scripts_requested.push(url);
 		}
 	}
-	if ((isNative() && (url.indexOf(".js") !== -1))) {
-		let len = $('script').filter(function () {
-			return ($(this).attr('src') == url);
-		}).length;
-		
-		if (len === 0) {
-			let script_element = document.createElement('script');
-			document.getElementsByTagName('head')[0].appendChild(script_element);
-			script_element.src = url;
-			script_element.onreadystatechange = function() {
-				if (script_element.readyState == 4 || script_element.readyState == "complete") {
-					if (force_cache) {
-						cache_scripts_loaded.push(url);
-					}
-					on_success();
-				}
-			};
-			script_element.onload = function() {
-				if (force_cache) {
-					cache_scripts_loaded.push(url);
-				}
-				on_success();
-			};
-		} else {
-			if (force_cache) {
-				cache_scripts_loaded.push(url);
-			}
-			on_success();
-		}
-	} else {
-		$.get(url, function(data, status) {
+	$.get(url, function(data, status) {
 			if (status != "success") {
 				on_fail();
 			} else {
@@ -2743,7 +2697,6 @@ function dxGetScript(url,on_success,on_fail,force_cache) {
 		}).done(function() {}).fail(function() {
 			on_fail();
 		});
-	}
 }
 /**
  * Used by the component builder and setup scripts to do server requests
@@ -3263,7 +3216,7 @@ function getCurrentUserRole(callback) {
 		},
 		function(data_obj) {
 			callback(undefined);
-		});
+		},false,false,'');
 }
 
 /**
@@ -3328,7 +3281,7 @@ function setIsNative() {
  * @return {Boolean} true if native, false if not
  */
 function isNative() {
-	let is_native_stored = getItemInLocalStorage("is_native");
+	let is_native_stored = getValueFromAppState("is_native");
 	if (is_native_stored == null) {
 		return is_native;
 	}
@@ -3339,10 +3292,7 @@ function isNative() {
  * @return {Boolean} true if SPA or native, false if not
  */
 function isSpa() {
-	if (!isNative()) {
-		return spa_mode;
-	}
-	return isNative();
+	return spa_mode;
 }
 /**
  * Updates the navigation class for the active page to highlight the menu item that relates to the page
@@ -3384,9 +3334,7 @@ function redirectToExternalPath(url) {
 		throw new Error("Path url not provided");
 	}
 	if (isNative()) {
-		if (confirm("We are now going to web. Do you want to continue?")) {
-			window.open(url,"_blank");
-		}
+		window.postMessage(JSON.stringify({function:"redirectToExternalPath",redirect_url:url}),"*");
 	} else {
 		window.open(url,"_blank");
 	}
@@ -3646,19 +3594,5 @@ function onNativePause() {
  */
 function onNativeResume() {
 	getRegisteredComponent(page_uid).onNativeResume();
-	initPushNotifications();
-}
-/**
- * Function to be implemented in project.js for handling the reception of push notifications
- * @param data The data received.
- // data.message,
- // data.title,
- // data.count,
- // data.sound,
- // data.image,
- // data.additionalData
- */
-function handleReceivePushNotification(data) {
-	dxLog("Push notification received. Data: "+JSON.stringify(data));
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
