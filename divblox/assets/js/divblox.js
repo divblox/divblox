@@ -3334,7 +3334,7 @@ function redirectToExternalPath(url) {
 		throw new Error("Path url not provided");
 	}
 	if (isNative()) {
-		window.postMessage(JSON.stringify({function:"redirectToExternalPath",redirect_url:url}),"*");
+		window.ReactNativeWebView.postMessage(JSON.stringify({function_to_execute:"redirectToExternalPath",redirect_url:url}),"*");
 	} else {
 		window.open(url,"_blank");
 	}
