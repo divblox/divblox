@@ -12,6 +12,18 @@ if (typeof component_classes['navigation_side_navbar'] === "undefined") {
 				$(".sidebar-left").css("margin-left","-100px").addClass("slide-left");
 			}
 			super.reset(inputs,propagate);
+			let default_sub_menu_wrapper_template =
+				'<li class="nav-item dropright">\n' +
+				'   <a class="nav-link navigation-activate-on-{item_active_class} dropdown-toggle"' +
+				' href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+				'{item_label}</a>\n' +
+				'<div class="dropdown-menu">\n'+
+				'<ul class="nav flex-column">\n'+
+				'{sub_menu}'+
+				'</ul>\n'+
+				'</div>\n' +
+				'</li>\n';
+			menu_manager.renderMenu('example-side-menu',"default_side_nav",undefined,default_sub_menu_wrapper_template)
 		}
 		registerDomEvents() {
 			$(".sidebar_toggle_left").on("click", function() {

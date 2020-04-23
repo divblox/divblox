@@ -12,7 +12,7 @@
  * divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "2.6.3";
+let dx_version = "3.0.0";
 let bootstrap_version = "4.4.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.3.8";
@@ -45,6 +45,7 @@ let url_input_parameters = null;
 let is_native = false;
 let registered_event_handlers = [];
 let force_logout_occurred = false;
+let no_cache_force_str = '';
 if(window.jQuery === undefined) {
 	// JGL: We assume that we have jquery available here...
 	throw new Error("jQuery has not been loaded. Please ensure that jQuery is loaded before divblox");
@@ -62,6 +63,7 @@ let dependency_array = [
 	"project/assets/js/project.js",
 	"project/assets/js/momentjs/moment.js",
 	"project/assets/js/data_model.js",
+	"project/assets/js/menus.js",
 ];
 
 /**
@@ -931,6 +933,7 @@ class DivbloxDomBaseComponent {
 	 * Processes the post page load actions if this component is the main page component
 	 */
 	postPageLoadActions() {
+		menu_manager.renderAllMenus();
 		initFeedbackCapture();
 		loadCurrentUserProfilePicture();
 		renderAppLogo();
