@@ -12,7 +12,7 @@
  * divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "3.0.0";
+let dx_version = "3.0.1";
 let bootstrap_version = "4.4.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.3.8";
@@ -940,9 +940,9 @@ class DivbloxDomBaseComponent {
 		let current_user_role = getCurrentUserRoleFromAppState();
 		if (current_user_role == null) {return;}
 		if (dx_admin_roles.indexOf(current_user_role.toLowerCase()) != -1) {
-			$('.administrator-visible').show();
+			$('.administrator-visible').removeClass("user-role-visible");
 		} else {
-			$('.'+current_user_role.toLowerCase()+'-visible').show();
+			$('.'+current_user_role.toLowerCase()+'-visible').removeClass("user-role-visible");
 		}
 	}
 	/**

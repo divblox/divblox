@@ -226,7 +226,7 @@ label {
 }
 /*This class is used to indicate the the element will only be shown, based on the current user role*/
 .user-role-visible {
-    display:none;
+    display:none !important;
 }
 /* -------------------------------------------------------------------------------------------------------------------*/
 
