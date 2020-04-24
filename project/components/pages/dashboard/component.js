@@ -12,8 +12,9 @@ if (typeof component_classes['pages_dashboard'] === "undefined") {
             {"component_load_path":"dashboard/ticket_status_indicator","parent_element":"Vfrds","arguments":{"uid":"dashboard_ticket_status_indicator_5","ticket_status":"Complete"}},
             {"component_load_path":"dashboard/ticket_status_indicator","parent_element":"zo9n7","arguments":{"uid":"dashboard_ticket_status_indicator_6","ticket_status":"Overdue"}},
             {"component_load_path":"data_model/account_summary_list","parent_element":"Z0fDv","arguments":{"uid":"data_model_account_summary_list_1"}},
-            {"component_load_path":"data_visualization/category_pie_chart","parent_element":"yR4CW","arguments":{"uid":"data_visualization_category_pie_chart_1"}},
-            {"component_load_path":"data_visualization/status_bar_chart","parent_element":"Yoyqb","arguments":{}}];
+            {"component_load_path":"data_model/ticket_summary_list","parent_element":"pxTvY","arguments":{"uid":"data_model_ticket_summary_list_1"}},
+            {"component_load_path":"data_visualization/status_bar_chart","parent_element":"pnkiH","arguments":{"uid":"data_visualization_status_bar_chart_1"}},
+            {"component_load_path":"data_visualization/category_pie_chart","parent_element":"YdsKf","arguments":{}}];
             // Sub component config end
         }
 

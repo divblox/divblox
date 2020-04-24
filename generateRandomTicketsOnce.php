@@ -1,6 +1,26 @@
 <?php
 require("divblox/divblox.php");
 
+Account::DeleteAll();
+Category::DeleteAll();
+
+if (!Account::LoadAll()) {
+    $AccountObj = new Account();
+    $AccountObj->FirstName = ProjectFunctions::generateRandomString(8);
+    $AccountObj->LastName = ProjectFunctions::generateRandomString(8);
+    $AccountObj->FullName = $AccountObj->FirstName . " " . $AccountObj->LastName;
+    $AccountObj->EmailAddress = ProjectFunctions::generateTimeBasedRandomString();
+    $AccountObj->Username = $AccountObj->EmailAddress;
+    $AccountObj->Save();
+}
+if (!Category::LoadAll()) {
+    $CategoryObj = new Category();
+    $CategoryObj->CategoryLabel = ProjectFunctions::generateTimeBasedRandomString();
+    $CategoryObj->Save();
+}
+
+
+
 $AccountDataSize = 50;
 $CategoryDataSize = 8;
 $TicketDataSize = 500;
@@ -35,11 +55,57 @@ for ($i = 0; $i < $TicketDataSize; $i++) {
         $TicketObj->TicketStatus = $TicketStatusArray[5];
     }
 
+
+    $AccountMinObj = Account::QuerySingle(
+        dxQ::All(),
+        dxQ::Clause(
+            dxQ::OrderBy(
+                dxQN::Account()->Id,
+                true
+            )
+        )
+    );
+    $AccountMaxObj = Account::QuerySingle(
+        dxQ::All(),
+        dxQ::Clause(
+            dxQ::OrderBy(
+                dxQN::Account()->Id,
+                false
+            )
+        )
+    );
+    $CategoryMinObj = Category::QuerySingle(
+        dxQ::All(),
+        dxQ::Clause(
+            dxQ::OrderBy(
+                dxQN::Category()->Id,
+                true
+            )
+        )
+    );
+    $CategoryMaxObj = Category::QuerySingle(
+        dxQ::All(),
+        dxQ::Clause(
+            dxQ::OrderBy(
+                dxQN::Category()->Id,
+                false
+            )
+        )
+    );
+
+
     $TicketObj->TicketDueDate = dxDateTime::Now()->AddDays(rand(1, 20));
-    $TicketObj->AccountObject = Account::Load(rand(0, Account::CountAll() - 1));
-    $Category = Category::Load(rand(0, Category::CountAll() - 1));
+    $TicketObj->AccountObject = Account::Load(rand($AccountMinObj->Id, $AccountMaxObj->Id));
+    $Category = Category::Load(rand($CategoryMinObj->Id, $CategoryMaxObj->Id));
     $TicketObj->CategoryObject = $Category;
-    $TicketObj->Category = $Category;
+//    $TicketObj->Category = $Category;
+
+    foreach($TicketObj as $key => $val) {
+        if (!is_null($val)) {
+            echo $key . ":" . $val . "<br>";
+        }
+        echo "<br>";
+    }
     $TicketObj->Save();
 
     if ($i >= $AccountDataSize) {

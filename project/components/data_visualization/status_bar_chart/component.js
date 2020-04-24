@@ -36,6 +36,8 @@ if (typeof component_classes['data_visualization_status_bar_chart'] === "undefin
 								beginAtZero:true
 							}
 						}]
+					}, legend: {
+						display: false
 					}
 				}
 			});

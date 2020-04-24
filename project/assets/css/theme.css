@@ -167,14 +167,13 @@
 
 
 .dashboard-tile {
-    padding: 20px;
+    padding: 5px;
     border-radius: 15px;
     margin-bottom: 10px;
+    margin-top: 35px;
     box-shadow: 0 6px 15px rgba(36, 37, 38, 0.08);
     color: white;
 }
-
-
 
 .dashboard-tile:hover {
     box-shadow: 5px 12px 20px rgba(36, 37, 38, 0.13);
@@ -182,9 +181,11 @@
 
 .StatusLabel + .StatusCount {
     font-size: 20px;
+    font-weight: bold;
 }
 .StatusLabel p {
     margin: 0px;
+
 }
 
 .StatusPercentage {

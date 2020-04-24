@@ -14,6 +14,15 @@ if (typeof component_classes['pages_admin'] === "undefined") {
 			super.reset(inputs);
 			setGlobalConstrainById("Category", -1);
 		}
-	}
+	    initCustomFunctions() {
+            //Popover Related JS
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            $(function () {
+                $('[data-toggle="popover"]').popover();
+            });
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            
+        }
+   	}
 	component_classes['pages_admin'] = pages_admin;
 }

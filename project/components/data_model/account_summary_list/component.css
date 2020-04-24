@@ -30,14 +30,14 @@
     margin-top: 0px !important;
 }
 
-.dashboard-tile {
-    padding: 20px;
-    margin-bottom: 0px;
-    border-radius: 5px;
-    box-shadow: 0 6px 15px rgba(36, 37, 38, 0.08);
-    font-weight: bold;
-    color: white;
-}
+/*.dashboard-tile {*/
+/*    padding: 20px;*/
+/*    margin-bottom: 0px;*/
+/*    border-radius: 5px;*/
+/*    box-shadow: 0 6px 15px rgba(36, 37, 38, 0.08);*/
+/*    font-weight: bold;*/
+/*    color: white;*/
+/*}*/
 
 .dashboard-tile-list {
     max-height: 50px;

@@ -15,8 +15,9 @@
   "TicketStatuses": [
     "New",
     "In Progress",
+    "DueSoon",
+    "Urgent",
     "Complete",
-    "Backlog",
-    "Urgent"
+    "Overdue"
   ]
 }

@@ -2152,8 +2152,8 @@ function loadComponentHtmlAsDOMObject(component_path,callback) {
 		let doctype = document.implementation.createDocumentType('html', '', '');
 		let component_dom = document.implementation.createDocument('', 'html', doctype);
 		let jq_dom = jQuery(component_dom);
-		let jq_html = $.parseHTML(html);
-		jq_dom.find('html').append(jq_html);
+		// let jq_html = $.parseHTML(html);
+		jq_dom.find('html').append(html);
 		callback(jq_dom);
 	}, function() {
 	
