@@ -71,6 +71,7 @@ class ApiCrudAccount extends ApiCrudBase {
         }
         $ClientConnectionObj->AccountObject = $AccountObj;
         $ClientConnectionObj->Save();
+        ProjectFunctions::linkPushRegistrationsToAccount($ClientAuthenticationTokenObj,$AccountObj);
         PublicApi::addApiOutput("Result","Success");
         $UserRole = "";
         if (!is_null($AccountObj->UserRoleObject)) {

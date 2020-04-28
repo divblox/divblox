@@ -11,7 +11,7 @@ if (typeof component_classes['data_model_current_user_profile_manager'] === "und
 			this.custom_validation_array = [];
 			this.required_validation_array = ['EmailAddress','Username',].concat(this.data_validation_array).concat(this.custom_validation_array);
 		}
-		reset(inputs) {
+		reset(inputs,propagate) {
 			getCurrentUserAttribute("Id",function(attribute) {
 				if (attribute == null) {
 					loadPageComponent("login");
@@ -22,7 +22,7 @@ if (typeof component_classes['data_model_current_user_profile_manager'] === "und
 					this.loadAccount();
 				}
 			}.bind(this));
-			super.reset(inputs);
+			super.reset(inputs,propagate);
 		}
 		eventTriggered(event_name,parameters_obj) {
 			// Handle specific events here. This is useful if the component needs to update because one of its

@@ -12,7 +12,7 @@
  * divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "2.6.1";
+let dx_version = "3.0.1";
 let bootstrap_version = "4.4.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.3.8";
@@ -45,6 +45,7 @@ let url_input_parameters = null;
 let is_native = false;
 let registered_event_handlers = [];
 let force_logout_occurred = false;
+let no_cache_force_str = '';
 if(window.jQuery === undefined) {
 	// JGL: We assume that we have jquery available here...
 	throw new Error("jQuery has not been loaded. Please ensure that jQuery is loaded before divblox");
@@ -62,6 +63,7 @@ let dependency_array = [
 	"project/assets/js/project.js",
 	"project/assets/js/momentjs/moment.js",
 	"project/assets/js/data_model.js",
+	"project/assets/js/menus.js",
 ];
 
 /**
@@ -192,7 +194,6 @@ function callInstallPrompt() {
 function checkFrameworkReady() {
 	if (isNative()) {
 		allow_feedback = local_config.allow_feedback;
-		spa_mode = true;
 		doAfterInitActions();
 		on_divblox_ready();
 		return;
@@ -328,9 +329,6 @@ function removeServiceWorker() {
  * @return {String} The root path which is a valid url, e.g https://divblox.com/
  */
 function getServerRootPath() {
-	if (isNative()) {
-		return server_final_url;
-	}
 	let port_number_str = window.location.port;
 	if (port_number_str.length > 0) {
 		port_number_str = ":"+port_number_str;
@@ -635,6 +633,9 @@ class DivbloxDomBaseComponent {
 		} else {
 			let sub_component_ready_uids = Object.keys(this.sub_component_ready);
 			let all_ready = true;
+			if (sub_component_ready_uids.length < this.sub_component_definitions.length) {
+				all_ready = false;
+			}
 			sub_component_ready_uids.forEach(function(uid) {
 				all_ready &= this.sub_component_ready[uid];
 			}.bind(this));
@@ -932,15 +933,16 @@ class DivbloxDomBaseComponent {
 	 * Processes the post page load actions if this component is the main page component
 	 */
 	postPageLoadActions() {
+		menu_manager.renderAllMenus();
 		initFeedbackCapture();
 		loadCurrentUserProfilePicture();
 		renderAppLogo();
 		let current_user_role = getCurrentUserRoleFromAppState();
 		if (current_user_role == null) {return;}
 		if (dx_admin_roles.indexOf(current_user_role.toLowerCase()) != -1) {
-			$('.administrator-visible').show();
+			$('.administrator-visible').removeClass("user-role-visible");
 		} else {
-			$('.'+current_user_role.toLowerCase()+'-visible').show();
+			$('.'+current_user_role.toLowerCase()+'-visible').removeClass("user-role-visible");
 		}
 	}
 	/**
@@ -1148,7 +1150,7 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
 		}
 		let parameters_obj = {f:"saveObjectData",
 			ObjectData:JSON.stringify(current_component_obj),
-			Id:this.getLoadArgument("entity_id")};
+			Id:this.getEntityId()};
 		if (this.constrain_by_array.length > 0) {
 			this.constrain_by_array.forEach(function(relationship) {
 				parameters_obj['Constraining'+relationship+'Id'] = getGlobalConstrainById(relationship);
@@ -1167,10 +1169,14 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
                 }
 				this.loadEntity();
 				this.resetValidation();
+				this.onAfterSaveEntity(data_obj);
 			}.bind(this),
 			function(data_obj) {
 				showAlert("Error saving "+this.lowercase_entity_name+": "+data_obj.Message,"error","OK",false);
 			}.bind(this));
+	}
+	onAfterSaveEntity(data_obj) {
+		//TODO: Override this as needed;
 	}
 	deleteEntity() {
 		dxRequestInternal(
@@ -1180,10 +1186,14 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
 			function(data_obj) {
 				this.loadEntity();
 				pageEventTriggered(this.lowercase_entity_name+"_deleted");
+				this.onAfterDeleteEntity(data_obj);
 			}.bind(this),
 			function (data_obj) {
 				showAlert("Error deleting "+this.lowercase_entity_name+": "+data_obj.Message,"error","OK",false);
 			}.bind(this));
+	}
+	onAfterDeleteEntity(data_obj) {
+		//TODO: Override this as needed;
 	}
 	validateEntity() {
 		let validation_succeeded = true;
@@ -1503,10 +1513,14 @@ class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
 				this.current_page = 1;
 				this.loadPage();
 				pageEventTriggered(this.lowercase_entity_name+"_selection_deleted",{});
+				this.onAfterDeleteSelected(data_obj);
 			}.bind(this),
 			function(data_obj) {
 				showAlert("Error deleting items: "+data_obj.Message,"error","OK",false);
 			}.bind(this));
+	}
+	onAfterDeleteSelected(data_obj) {
+		//TODO: Override this as needed;
 	}
 	loadPage() {
 		let uid = this.getUid();
@@ -1933,7 +1947,7 @@ function loadPageComponent(component_name,load_arguments,callback) {
         });
     }
 	
-	if (!isSpa() && !isNative()) {
+	if (!isSpa()) {
 		redirectToInternalPath('?view='+component_name+parameters_str);
 		return;
 	}
@@ -2137,9 +2151,6 @@ function pageEventTriggered(event_name,parameters_obj) {
  * @return {string} The path to the component's php script
  */
 function getComponentControllerPath(component) {
-	if (isNative()) {
-		return server_final_url+component.arguments["component_path"]+"/component.php";
-	}
 	return component.arguments["component_path"]+"/component.php";
 }
 /**
@@ -2152,7 +2163,6 @@ function loadComponentHtmlAsDOMObject(component_path,callback) {
 		let doctype = document.implementation.createDocumentType('html', '', '');
 		let component_dom = document.implementation.createDocument('', 'html', doctype);
 		let jq_dom = jQuery(component_dom);
-		// let jq_html = $.parseHTML(html);
 		jq_dom.find('html').append(html);
 		callback(jq_dom);
 	}, function() {
@@ -2221,7 +2231,7 @@ function preparePageInputs(url_parameters_str) {
 			}
 		}
 	}
-	if (isSpa() || isNative()) {
+	if (isSpa()) {
 		redirectToInternalPath();
 	} else {
 		processPageInputs();
@@ -2537,14 +2547,6 @@ function removeTriggerElementFromLoadingElementArray(trigger_element_id) {
  * @param {String} loading_text The text to display while loading (Optional)
  */
 function dxRequestInternal(url,parameters,on_success,on_fail,queue_on_offline,element,loading_text) {
-	if (isNative()) {
-		if (url.indexOf(server_final_url) === -1) {
-			if (url.substr(0,1) === ".") {
-				url = url.substr(1);
-			}
-			url = server_final_url+url;
-		}
-	}
 	if (typeof queue_on_offline === "undefined") {
 		queue_on_offline = false;
 	}
@@ -2686,37 +2688,7 @@ function dxGetScript(url,on_success,on_fail,force_cache) {
 			cache_scripts_requested.push(url);
 		}
 	}
-	if ((isNative() && (url.indexOf(".js") !== -1))) {
-		let len = $('script').filter(function () {
-			return ($(this).attr('src') == url);
-		}).length;
-		
-		if (len === 0) {
-			let script_element = document.createElement('script');
-			document.getElementsByTagName('head')[0].appendChild(script_element);
-			script_element.src = url;
-			script_element.onreadystatechange = function() {
-				if (script_element.readyState == 4 || script_element.readyState == "complete") {
-					if (force_cache) {
-						cache_scripts_loaded.push(url);
-					}
-					on_success();
-				}
-			};
-			script_element.onload = function() {
-				if (force_cache) {
-					cache_scripts_loaded.push(url);
-				}
-				on_success();
-			};
-		} else {
-			if (force_cache) {
-				cache_scripts_loaded.push(url);
-			}
-			on_success();
-		}
-	} else {
-		$.get(url, function(data, status) {
+	$.get(url, function(data, status) {
 			if (status != "success") {
 				on_fail();
 			} else {
@@ -2728,7 +2700,6 @@ function dxGetScript(url,on_success,on_fail,force_cache) {
 		}).done(function() {}).fail(function() {
 			on_fail();
 		});
-	}
 }
 /**
  * Used by the component builder and setup scripts to do server requests
@@ -3150,21 +3121,7 @@ function addOfflineWrapper() {
  * @return {boolean} true if online, false if not
  */
 function checkOnlineStatus() {
-	if (!isNative()) {
-		return navigator.onLine;
-	}
-	let networkState = navigator.connection.type;
-	let states = {};
-	states[Connection.UNKNOWN]  = 'Unknown connection';
-	states[Connection.ETHERNET] = 'Ethernet connection';
-	states[Connection.WIFI]     = 'WiFi connection';
-	states[Connection.CELL_2G]  = 'Cell 2G connection';
-	states[Connection.CELL_3G]  = 'Cell 3G connection';
-	states[Connection.CELL_4G]  = 'Cell 4G connection';
-	states[Connection.CELL]     = 'Cell generic connection';
-	states[Connection.NONE]     = 'No network connection';
-	
-	return networkState !== Connection.NONE;
+	return navigator.onLine;
 }
 /**
  * Triggers the required user feedback when offline
@@ -3262,7 +3219,7 @@ function getCurrentUserRole(callback) {
 		},
 		function(data_obj) {
 			callback(undefined);
-		});
+		},false,false,'');
 }
 
 /**
@@ -3327,7 +3284,7 @@ function setIsNative() {
  * @return {Boolean} true if native, false if not
  */
 function isNative() {
-	let is_native_stored = getItemInLocalStorage("is_native");
+	let is_native_stored = getValueFromAppState("is_native");
 	if (is_native_stored == null) {
 		return is_native;
 	}
@@ -3338,10 +3295,7 @@ function isNative() {
  * @return {Boolean} true if SPA or native, false if not
  */
 function isSpa() {
-	if (!isNative()) {
-		return spa_mode;
-	}
-	return isNative();
+	return spa_mode;
 }
 /**
  * Updates the navigation class for the active page to highlight the menu item that relates to the page
@@ -3383,9 +3337,7 @@ function redirectToExternalPath(url) {
 		throw new Error("Path url not provided");
 	}
 	if (isNative()) {
-		if (confirm("We are now going to web. Do you want to continue?")) {
-			window.open(url,"_blank");
-		}
+		window.ReactNativeWebView.postMessage(JSON.stringify({function_to_execute:"redirectToExternalPath",redirect_url:url}),"*");
 	} else {
 		window.open(url,"_blank");
 	}
@@ -3645,19 +3597,5 @@ function onNativePause() {
  */
 function onNativeResume() {
 	getRegisteredComponent(page_uid).onNativeResume();
-	initPushNotifications();
-}
-/**
- * Function to be implemented in project.js for handling the reception of push notifications
- * @param data The data received.
- // data.message,
- // data.title,
- // data.count,
- // data.sound,
- // data.image,
- // data.additionalData
- */
-function handleReceivePushNotification(data) {
-	dxLog("Push notification received. Data: "+JSON.stringify(data));
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

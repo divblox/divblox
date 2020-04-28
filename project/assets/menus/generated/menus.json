@@ -1,0 +1,273 @@
+{
+    "advanced-training-exercise-menu": [
+        {
+            "index": 1,
+            "item_label": "<i class=\"fa fa-link\" aria-hidden=\"true\"><\/i><br\/>Admin",
+            "item_active_class": "admin",
+            "item_click_class": "menu-advanced-training-exercise-menu-1",
+            "sub_menu": null,
+            "page_to_load": "admin",
+            "show_divider": false,
+            "allowed_user_roles": null,
+            "function_to_execute": null
+        },
+        {
+            "index": 2,
+            "item_label": "<i class=\"fa fa-plus\" aria-hidden=\"true\"><\/i><br>New Ticket",
+            "item_active_class": "new_ticket",
+            "item_click_class": "menu-advanced-training-exercise-menu-2",
+            "sub_menu": null,
+            "page_to_load": "new_ticket",
+            "show_divider": false,
+            "allowed_user_roles": null,
+            "function_to_execute": null
+        },
+        {
+            "index": 3,
+            "item_label": "<i class=\"fa fa-book-open\" aria-hidden=\"true\"><\/i><br>Dashboard",
+            "item_active_class": "dashboard",
+            "item_click_class": "menu-advanced-training-exercise-menu-3",
+            "sub_menu": null,
+            "page_to_load": "dashboard",
+            "show_divider": false,
+            "allowed_user_roles": null,
+            "function_to_execute": null
+        }
+    ],
+    "default": [
+        {
+            "index": 1,
+            "item_label": "<i class=\"fa fa-link\" aria-hidden=\"true\"><\/i><br\/>Item 1",
+            "item_active_class": "my_profile",
+            "item_click_class": "menu-default-1",
+            "sub_menu": null,
+            "page_to_load": "my_profile",
+            "show_divider": false,
+            "allowed_user_roles": null,
+            "function_to_execute": null
+        },
+        {
+            "index": 2,
+            "item_label": "<i class=\"fa fa-link\" aria-hidden=\"true\"><\/i><br\/>Item 2",
+            "item_active_class": null,
+            "item_click_class": "menu-default-2",
+            "sub_menu": null,
+            "page_to_load": null,
+            "show_divider": true,
+            "allowed_user_roles": null,
+            "function_to_execute": null
+        },
+        {
+            "index": 3,
+            "item_label": "<i class=\"fa fa-link\" aria-hidden=\"true\"><\/i><br\/>Item 3",
+            "item_active_class": null,
+            "item_click_class": "menu-default-3",
+            "sub_menu": null,
+            "page_to_load": null,
+            "show_divider": false,
+            "allowed_user_roles": null,
+            "function_to_execute": null
+        },
+        {
+            "index": 4,
+            "item_label": "<i class=\"fa fa-link\" aria-hidden=\"true\"><\/i><br\/>Item 4",
+            "item_active_class": null,
+            "item_click_class": "menu-default-4",
+            "sub_menu": null,
+            "page_to_load": null,
+            "show_divider": false,
+            "allowed_user_roles": null,
+            "function_to_execute": null
+        },
+        {
+            "index": 5,
+            "item_label": "<i class=\"fa fa-link\" aria-hidden=\"true\"><\/i><br\/>Item 5",
+            "item_active_class": null,
+            "item_click_class": "menu-default-5",
+            "sub_menu": null,
+            "page_to_load": null,
+            "show_divider": false,
+            "allowed_user_roles": null,
+            "function_to_execute": null
+        }
+    ],
+    "default_bottom_nav": [
+        {
+            "index": 1,
+            "item_label": "<i class=\"fa fa-link\" aria-hidden=\"true\"><\/i><br\/>Item 1",
+            "item_active_class": null,
+            "item_click_class": "menu-default_bottom_nav-1",
+            "sub_menu": null,
+            "page_to_load": null,
+            "show_divider": false,
+            "allowed_user_roles": null,
+            "function_to_execute": null
+        },
+        {
+            "index": 2,
+            "item_label": "<i class=\"fa fa-link\" aria-hidden=\"true\"><\/i><br\/>Item 2",
+            "item_active_class": null,
+            "item_click_class": "menu-default_bottom_nav-2",
+            "sub_menu": null,
+            "page_to_load": null,
+            "show_divider": true,
+            "allowed_user_roles": null,
+            "function_to_execute": null
+        },
+        {
+            "index": 3,
+            "item_label": "<i class=\"fa fa-link\" aria-hidden=\"true\"><\/i><br\/>Item 3",
+            "item_active_class": null,
+            "item_click_class": "menu-default_bottom_nav-3",
+            "sub_menu": null,
+            "page_to_load": null,
+            "show_divider": false,
+            "allowed_user_roles": null,
+            "function_to_execute": null
+        },
+        {
+            "index": 4,
+            "item_label": "<i class=\"fa fa-link\" aria-hidden=\"true\"><\/i><br\/>Item 4",
+            "item_active_class": null,
+            "item_click_class": "menu-default_bottom_nav-4",
+            "sub_menu": null,
+            "page_to_load": null,
+            "show_divider": false,
+            "allowed_user_roles": null,
+            "function_to_execute": null
+        },
+        {
+            "index": 5,
+            "item_label": "<i class=\"fa fa-link\" aria-hidden=\"true\"><\/i><br\/>Item 5",
+            "item_active_class": null,
+            "item_click_class": "menu-default_bottom_nav-5",
+            "sub_menu": null,
+            "page_to_load": null,
+            "show_divider": false,
+            "allowed_user_roles": null,
+            "function_to_execute": null
+        }
+    ],
+    "default_side_nav": [
+        {
+            "index": 1,
+            "item_label": "<i class=\"fa fa-link\" aria-hidden=\"true\"><\/i><br\/>Item 1",
+            "item_active_class": "item_1",
+            "item_click_class": "menu-default_side_nav-1",
+            "sub_menu": null,
+            "page_to_load": "item_1",
+            "show_divider": false,
+            "allowed_user_roles": [
+                "administrator"
+            ],
+            "function_to_execute": null
+        },
+        {
+            "index": 2,
+            "item_label": "<i class=\"fa fa-link\" aria-hidden=\"true\"><\/i><br\/>Item 2",
+            "item_active_class": null,
+            "item_click_class": "menu-default_side_nav-2",
+            "sub_menu": "default",
+            "page_to_load": null,
+            "show_divider": false,
+            "allowed_user_roles": null,
+            "function_to_execute": null
+        },
+        {
+            "index": 3,
+            "item_label": "<i class=\"fa fa-power-off\" aria-hidden=\"true\"><\/i><br\/>Logout",
+            "item_active_class": null,
+            "item_click_class": "menu-default_side_nav-3",
+            "sub_menu": null,
+            "page_to_load": null,
+            "show_divider": false,
+            "allowed_user_roles": null,
+            "function_to_execute": "logout"
+        }
+    ],
+    "default_top_nav": [
+        {
+            "index": 1,
+            "item_label": "<i class=\"fa fa-link\" aria-hidden=\"true\"><\/i><br\/>Item 1",
+            "item_active_class": "item_1",
+            "item_click_class": "menu-default_top_nav-1",
+            "sub_menu": null,
+            "page_to_load": "item_1",
+            "show_divider": false,
+            "allowed_user_roles": [
+                "administrator"
+            ],
+            "function_to_execute": null
+        },
+        {
+            "index": 2,
+            "item_label": "<i class=\"fa fa-link\" aria-hidden=\"true\"><\/i><br\/>Item 2",
+            "item_active_class": null,
+            "item_click_class": "menu-default_top_nav-2",
+            "sub_menu": "sub_menu_1",
+            "page_to_load": null,
+            "show_divider": false,
+            "allowed_user_roles": null,
+            "function_to_execute": null
+        },
+        {
+            "index": 3,
+            "item_label": "<i class=\"fa fa-power-off\" aria-hidden=\"true\"><\/i><br\/>Logout",
+            "item_active_class": null,
+            "item_click_class": "menu-default_top_nav-3",
+            "sub_menu": null,
+            "page_to_load": null,
+            "show_divider": false,
+            "allowed_user_roles": null,
+            "function_to_execute": "logout"
+        }
+    ],
+    "profile_menu": [
+        {
+            "index": 1,
+            "item_label": "<i class=\"fa fa-user-circle-o\" aria-hidden=\"true\"><\/i>",
+            "item_active_class": "my_profile",
+            "item_click_class": "menu-profile_menu-1",
+            "sub_menu": null,
+            "page_to_load": "my_profile",
+            "show_divider": false,
+            "allowed_user_roles": null,
+            "function_to_execute": null
+        }
+    ],
+    "sub_menu_1": [
+        {
+            "index": 1,
+            "item_label": "Sub Item 1",
+            "item_active_class": null,
+            "item_click_class": "menu-sub_menu_1-1",
+            "sub_menu": null,
+            "page_to_load": null,
+            "show_divider": false,
+            "allowed_user_roles": null,
+            "function_to_execute": null
+        },
+        {
+            "index": 2,
+            "item_label": "Sub Item 2",
+            "item_active_class": null,
+            "item_click_class": "menu-sub_menu_1-2",
+            "sub_menu": null,
+            "page_to_load": null,
+            "show_divider": true,
+            "allowed_user_roles": null,
+            "function_to_execute": null
+        },
+        {
+            "index": 3,
+            "item_label": "Sub Item 3",
+            "item_active_class": null,
+            "item_click_class": "menu-sub_menu_1-3",
+            "sub_menu": null,
+            "page_to_load": null,
+            "show_divider": false,
+            "allowed_user_roles": null,
+            "function_to_execute": null
+        }
+    ]
+}

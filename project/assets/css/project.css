@@ -226,7 +226,7 @@ label {
 }
 /*This class is used to indicate the the element will only be shown, based on the current user role*/
 .user-role-visible {
-    display:none;
+    display:none !important;
 }
 /* -------------------------------------------------------------------------------------------------------------------*/
 
@@ -371,13 +371,6 @@ label {
     padding-left: 0;
 }
 /* -------------------------------------------------------------------------------------------------------------------*/
-
-/* -----------------------------Styles for containers that work with sidebars and nav bars ---------------------------*/
-.component-wrapper-top-navbar {
-    margin-top: 65px;
-}
-/* -------------------------------------------------------------------------------------------------------------------*/
-
 /* ---------------------------------------------Styles for sidebars---------------------------------------------------*/
 .sidebar-top_wrapper {
     width: 100%;
@@ -490,7 +483,7 @@ label {
         display:inline-block;
     }
 }
-.nav-link {
+.sidebar >.nav >.nav-item >.nav-link {
     display: block;
     padding: .5rem 1rem;
 }
@@ -502,7 +495,7 @@ label {
     background-color: #eaeaea;
     z-index: 1030;
 }
-.nav-link >.fa {
+.sidebar >.nav >.nav-item >.nav-link >.fa {
     font-size:20px;
 }
 .sidebar-dark .nav-link {
@@ -567,7 +560,7 @@ label {
     -webkit-animation: slide-right 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
     animation: slide-right 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
 }
-.nav-item > .dropdown-menu {
+.sidebar >.nav >.nav-item > .dropdown-menu {
     box-shadow: 3px 1px 12px 0px #d6d6d6;
     left: -2px !important;
 }
@@ -619,6 +612,79 @@ label {
     100% {
         -webkit-transform: translateX(100px);
         transform: translateX(100px);
+    }
+}
+/* -------------------------------------------------------------------------------------------------------------------*/
+/* ---------------------------------------------Styles for top navbars---------------------------------------------*/
+.dx-top-nav {
+    min-height:60px !important;
+    padding: 0rem 1rem !important;
+}
+.dx-top-nav >.navbar-collapse >.navbar-nav >.nav-item >.nav-link >.nav-profile-picture {
+    max-height:35px !important;
+}
+.dx-top-nav >.navbar-collapse >.navbar-nav >.nav-item >.nav-link {
+    padding:0rem 1rem !important;
+}
+@media screen and (max-width: 992px) {
+    .dx-top-nav {
+        min-height:60px !important;
+        padding: 0.55rem 1rem !important;
+        text-align: left !important;
+    }
+    .dx-top-nav >.navbar-collapse >.navbar-nav >.nav-item {
+        padding:0.55rem 1rem !important;
+    }
+}
+/* -------------------------------------------------------------------------------------------------------------------*/
+/* ---------------------------------------------Styles for bottom navbars---------------------------------------------*/
+.dx-bottom-nav {
+    height:65px !important;
+    padding: .1rem 1rem !important;
+}
+.dx-bottom-nav >.navbar-nav {
+    font-size:1em;
+    display: contents;
+}
+.dx-bottom-nav >.navbar-nav >.nav-item >.nav-link >.fa {
+    font-size: 1.2em;
+}
+@media screen and (max-width: 415px) {
+    .dx-bottom-nav >.navbar-nav {
+        font-size:0.7em;
+    }
+    .dx-bottom-nav >.navbar-nav >.nav-item >.nav-link >.fa {
+        font-size: 1.5em;
+    }
+}
+@media screen and (max-width: 375px) {
+    .dx-bottom-nav {
+        height:55px !important;
+    }
+    .dx-bottom-nav >.navbar-nav {
+        font-size:0.6em;
+    }
+    .dx-bottom-nav >.navbar-nav >.nav-item >.nav-link >.fa {
+        font-size: 1.5em;
+    }
+}
+/* -------------------------------------------------------------------------------------------------------------------*/
+/* ---------------------------------------------Styles for generic navbars--------------------------------------------*/
+.dx-generic-nav {
+    min-height:60px !important;
+    padding: 0rem 1rem !important;
+}
+.dx-generic-nav >.navbar-collapse >.navbar-nav >.nav-item >.nav-link >.nav-profile-picture {
+    max-height:35px !important;
+}
+@media screen and (max-width: 992px) {
+    .dx-generic-nav {
+        min-height:60px !important;
+        padding: 0.55rem 1rem !important;
+        text-align: left !important;
+    }
+    .dx-generic-nav >.navbar-collapse >.navbar-nav >.nav-item {
+        padding:0.55rem 1rem !important;
     }
 }
 /* -------------------------------------------------------------------------------------------------------------------*/

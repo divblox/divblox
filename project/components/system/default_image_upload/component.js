@@ -8,10 +8,11 @@ if (typeof component_classes['system_default_image_upload'] === "undefined") {
 			this.file_upload_array = [];
 			this.prerequisite_array = ['project/assets/js/jquery_fileuploader/jquery.fileuploader.min.js'];
 		}
-        reset(inputs) {
+        reset(inputs,propagate) {
 	        this.initFileUploader();
             let api = $.fileuploader.getInstance('#'+this.getUid()+'_file_uploader');
             api.reset();
+            super.reset(inputs,propagate);
         }
 		saveEditedImage(item) {
 			let uid = this.uid;

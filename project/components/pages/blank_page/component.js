@@ -6,9 +6,9 @@ if (typeof component_classes['pages_blank_page'] === "undefined") {
 			this.sub_component_definitions = {};
 			// Sub component config end
 		}
-		reset(inputs) {
+		reset(inputs,propagate) {
 			setActivePage("page_component_name","Page Title");
-			super.reset(inputs);
+			super.reset(inputs,propagate);
 		}
 	}
 	component_classes['pages_blank_page'] = pages_blank_page;

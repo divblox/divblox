@@ -123,7 +123,15 @@ for ($i = 0; $i < $TicketDataSize; $i++) {
         continue;
     }
 
+    $Random1 = rand(1,6);
     $CategoryObj = new Category();
-    $CategoryObj->CategoryLabel = ProjectFunctions::generateTimeBasedRandomString();
+    if ( $Random1 <= 3) {
+        $CategoryObj->CategoryLabel = "Work";
+    } else if ($Random1 <= 5) {
+        $CategoryObj->CategoryLabel = "Sport";
+    }else {
+        $CategoryObj->CategoryLabel = "Leisure";
+    }
+    // $CategoryObj->CategoryLabel = ProjectFunctions::generateTimeBasedRandomString();
     $CategoryObj->Save();
 }

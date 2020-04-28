@@ -17,9 +17,9 @@ if (typeof component_classes['pages_blank_page_with_instance_top_nav'] === "unde
 				});
 			}
 		}
-		reset(inputs) {
+		reset(inputs,propagate) {
 			setActivePage("page_component_name","Page Title");
-			super.reset(inputs);
+			super.reset(inputs,propagate);
 		}
 	}
 	component_classes['pages_blank_page_with_instance_top_nav'] = pages_blank_page_with_instance_top_nav;

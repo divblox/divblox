@@ -8,7 +8,7 @@ if (typeof component_classes['pages_register'] === "undefined") {
 				{"component_load_path":"system/account_registration","parent_element":"RegistrationComponent","arguments":{"uid":"system_account_registration_1"}}];
 			// Sub component config end
 		}
-		reset(inputs) {
+		reset(inputs,propagate) {
 			setActivePage("","Register Account");
 			getCurrentUserRole(function(role) {
 				if (typeof role !== "undefined") {
@@ -19,7 +19,7 @@ if (typeof component_classes['pages_register'] === "undefined") {
 					}
 				}
 			}.bind(this));
-			super.reset(inputs);
+			super.reset(inputs,propagate);
 		}
 		eventTriggered(event_name,parameters_obj) {
 			// Handle specific events here. This is useful if the component needs to update because one of its

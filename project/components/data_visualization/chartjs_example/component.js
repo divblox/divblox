@@ -7,7 +7,7 @@ if (typeof component_classes['data_visualization_chartjs_example'] === "undefine
 			this.sub_component_definitions = {};
 			// Sub component config end
 			this.chart_obj = null;
-			this.prerequisite_array = ['project/assets/js/chartjs/Chart.min.js'];
+			this.prerequisite_array = ['project/assets/js/chartjs/Chart.bundle.min.js'];
 		}
 		reset(inputs,propagate) {
 			super.reset(inputs,propagate);
