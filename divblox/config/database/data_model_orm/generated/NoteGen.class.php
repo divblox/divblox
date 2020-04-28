@@ -17,12 +17,12 @@
  * @subpackage GeneratedDataObjects
  * @property-read integer $Id the value for intId (Read-Only PK)
  * @property string $NoteDescription the value for strNoteDescription 
+ * @property dxDateTime $NoteCreatedDate the value for dttNoteCreatedDate 
  * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
  * @property integer $Ticket the value for intTicket 
  * @property string $SearchMetaInfo the value for strSearchMetaInfo 
- * @property integer $ObjectOwner the value for intObjectOwner 
- * @property dxDateTime $NoteCreatedDate the value for dttNoteCreatedDate 
  * @property integer $FileDocument the value for intFileDocument 
+ * @property integer $ObjectOwner the value for intObjectOwner 
  * @property Ticket $TicketObject the value for the Ticket object referenced by intTicket 
  * @property FileDocument $FileDocumentObject the value for the FileDocument object referenced by intFileDocument 
  * @property-read boolean $__Restored whether or not this object was restored from the database (as opposed to created new)
@@ -50,6 +50,14 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
+     * Protected member variable that maps to the database column Note.NoteCreatedDate
+     * @var dxDateTime dttNoteCreatedDate
+     */
+    protected $dttNoteCreatedDate;
+    const NoteCreatedDateDefault = null;
+
+
+    /**
      * Protected member variable that maps to the database column Note.LastUpdated
      * @var string strLastUpdated
      */
@@ -74,27 +82,19 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
 
 
     /**
-     * Protected member variable that maps to the database column Note.ObjectOwner
-     * @var integer intObjectOwner
-     */
-    protected $intObjectOwner;
-    const ObjectOwnerDefault = null;
-
-
-    /**
-     * Protected member variable that maps to the database column Note.NoteCreatedDate
-     * @var dxDateTime dttNoteCreatedDate
-     */
-    protected $dttNoteCreatedDate;
-    const NoteCreatedDateDefault = null;
-
-
-    /**
      * Protected member variable that maps to the database column Note.FileDocument
      * @var integer intFileDocument
      */
     protected $intFileDocument;
     const FileDocumentDefault = null;
+
+
+    /**
+     * Protected member variable that maps to the database column Note.ObjectOwner
+     * @var integer intObjectOwner
+     */
+    protected $intObjectOwner;
+    const ObjectOwnerDefault = null;
 
 
     /**
@@ -143,12 +143,12 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
     public function Initialize() {
         $this->intId = Note::IdDefault;
         $this->strNoteDescription = Note::NoteDescriptionDefault;
+        $this->dttNoteCreatedDate = (Note::NoteCreatedDateDefault === null)?null:new dxDateTime(Note::NoteCreatedDateDefault);
         $this->strLastUpdated = Note::LastUpdatedDefault;
         $this->intTicket = Note::TicketDefault;
         $this->strSearchMetaInfo = Note::SearchMetaInfoDefault;
-        $this->intObjectOwner = Note::ObjectOwnerDefault;
-        $this->dttNoteCreatedDate = (Note::NoteCreatedDateDefault === null)?null:new dxDateTime(Note::NoteCreatedDateDefault);
         $this->intFileDocument = Note::FileDocumentDefault;
+        $this->intObjectOwner = Note::ObjectOwnerDefault;
     }
 
     ///////////////////////////////
@@ -487,12 +487,12 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
         } else {
             $objBuilder->AddSelectItem($strTableName, 'Id', $strAliasPrefix . 'Id');
             $objBuilder->AddSelectItem($strTableName, 'NoteDescription', $strAliasPrefix . 'NoteDescription');
+            $objBuilder->AddSelectItem($strTableName, 'NoteCreatedDate', $strAliasPrefix . 'NoteCreatedDate');
             $objBuilder->AddSelectItem($strTableName, 'LastUpdated', $strAliasPrefix . 'LastUpdated');
             $objBuilder->AddSelectItem($strTableName, 'Ticket', $strAliasPrefix . 'Ticket');
             $objBuilder->AddSelectItem($strTableName, 'SearchMetaInfo', $strAliasPrefix . 'SearchMetaInfo');
-            $objBuilder->AddSelectItem($strTableName, 'ObjectOwner', $strAliasPrefix . 'ObjectOwner');
-            $objBuilder->AddSelectItem($strTableName, 'NoteCreatedDate', $strAliasPrefix . 'NoteCreatedDate');
             $objBuilder->AddSelectItem($strTableName, 'FileDocument', $strAliasPrefix . 'FileDocument');
+            $objBuilder->AddSelectItem($strTableName, 'ObjectOwner', $strAliasPrefix . 'ObjectOwner');
         }
     }
     ///////////////////////////////
@@ -620,6 +620,9 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
         $strAlias = $strAliasPrefix . 'NoteDescription';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->strNoteDescription = $objDbRow->GetColumn($strAliasName, 'Blob');
+        $strAlias = $strAliasPrefix . 'NoteCreatedDate';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->dttNoteCreatedDate = $objDbRow->GetColumn($strAliasName, 'DateTime');
         $strAlias = $strAliasPrefix . 'LastUpdated';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->strLastUpdated = $objDbRow->GetColumn($strAliasName, 'VarChar');
@@ -629,15 +632,12 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
         $strAlias = $strAliasPrefix . 'SearchMetaInfo';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->strSearchMetaInfo = $objDbRow->GetColumn($strAliasName, 'Blob');
-        $strAlias = $strAliasPrefix . 'ObjectOwner';
-        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->intObjectOwner = $objDbRow->GetColumn($strAliasName, 'Integer');
-        $strAlias = $strAliasPrefix . 'NoteCreatedDate';
-        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->dttNoteCreatedDate = $objDbRow->GetColumn($strAliasName, 'DateTime');
         $strAlias = $strAliasPrefix . 'FileDocument';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intFileDocument = $objDbRow->GetColumn($strAliasName, 'Integer');
+        $strAlias = $strAliasPrefix . 'ObjectOwner';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->intObjectOwner = $objDbRow->GetColumn($strAliasName, 'Integer');
 
         if (isset($objPreviousItemArray) && is_array($objPreviousItemArray)) {
             foreach ($objPreviousItemArray as $objPreviousItem) {
@@ -871,12 +871,12 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
             $newAuditLogEntry->ModificationType = 'Create';
             $ChangedArray = array_merge($ChangedArray,array("Id" => $this->intId));
             $ChangedArray = array_merge($ChangedArray,array("NoteDescription" => $this->strNoteDescription));
+            $ChangedArray = array_merge($ChangedArray,array("NoteCreatedDate" => $this->dttNoteCreatedDate));
             $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
             $ChangedArray = array_merge($ChangedArray,array("Ticket" => $this->intTicket));
             $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
-            $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
-            $ChangedArray = array_merge($ChangedArray,array("NoteCreatedDate" => $this->dttNoteCreatedDate));
             $ChangedArray = array_merge($ChangedArray,array("FileDocument" => $this->intFileDocument));
+            $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
             $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         } else {
             $newAuditLogEntry->ModificationType = 'Update';
@@ -895,6 +895,14 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
             if ($ExistingObj->NoteDescription != $this->strNoteDescription) {
                 $ChangedArray = array_merge($ChangedArray,array("NoteDescription" => array("Before" => $ExistingValueStr,"After" => $this->strNoteDescription)));
                 //$ChangedArray = array_merge($ChangedArray,array("NoteDescription" => "From: ".$ExistingValueStr." to: ".$this->strNoteDescription));
+            }
+            $ExistingValueStr = "NULL";
+            if (!is_null($ExistingObj->NoteCreatedDate)) {
+                $ExistingValueStr = $ExistingObj->NoteCreatedDate;
+            }
+            if ($ExistingObj->NoteCreatedDate != $this->dttNoteCreatedDate) {
+                $ChangedArray = array_merge($ChangedArray,array("NoteCreatedDate" => array("Before" => $ExistingValueStr,"After" => $this->dttNoteCreatedDate)));
+                //$ChangedArray = array_merge($ChangedArray,array("NoteCreatedDate" => "From: ".$ExistingValueStr." to: ".$this->dttNoteCreatedDate));
             }
             $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->LastUpdated)) {
@@ -921,28 +929,20 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
                 //$ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => "From: ".$ExistingValueStr." to: ".$this->strSearchMetaInfo));
             }
             $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->ObjectOwner)) {
-                $ExistingValueStr = $ExistingObj->ObjectOwner;
-            }
-            if ($ExistingObj->ObjectOwner != $this->intObjectOwner) {
-                $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => array("Before" => $ExistingValueStr,"After" => $this->intObjectOwner)));
-                //$ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => "From: ".$ExistingValueStr." to: ".$this->intObjectOwner));
-            }
-            $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->NoteCreatedDate)) {
-                $ExistingValueStr = $ExistingObj->NoteCreatedDate;
-            }
-            if ($ExistingObj->NoteCreatedDate != $this->dttNoteCreatedDate) {
-                $ChangedArray = array_merge($ChangedArray,array("NoteCreatedDate" => array("Before" => $ExistingValueStr,"After" => $this->dttNoteCreatedDate)));
-                //$ChangedArray = array_merge($ChangedArray,array("NoteCreatedDate" => "From: ".$ExistingValueStr." to: ".$this->dttNoteCreatedDate));
-            }
-            $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->FileDocument)) {
                 $ExistingValueStr = $ExistingObj->FileDocument;
             }
             if ($ExistingObj->FileDocument != $this->intFileDocument) {
                 $ChangedArray = array_merge($ChangedArray,array("FileDocument" => array("Before" => $ExistingValueStr,"After" => $this->intFileDocument)));
                 //$ChangedArray = array_merge($ChangedArray,array("FileDocument" => "From: ".$ExistingValueStr." to: ".$this->intFileDocument));
+            }
+            $ExistingValueStr = "NULL";
+            if (!is_null($ExistingObj->ObjectOwner)) {
+                $ExistingValueStr = $ExistingObj->ObjectOwner;
+            }
+            if ($ExistingObj->ObjectOwner != $this->intObjectOwner) {
+                $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => array("Before" => $ExistingValueStr,"After" => $this->intObjectOwner)));
+                //$ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => "From: ".$ExistingValueStr." to: ".$this->intObjectOwner));
             }
             $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         }
@@ -956,18 +956,18 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
                 $objDatabase->NonQuery('
                 INSERT INTO `Note` (
 							`NoteDescription`,
+							`NoteCreatedDate`,
 							`Ticket`,
 							`SearchMetaInfo`,
-							`ObjectOwner`,
-							`NoteCreatedDate`,
-							`FileDocument`
+							`FileDocument`,
+							`ObjectOwner`
 						) VALUES (
 							' . $objDatabase->SqlVariable($this->strNoteDescription) . ',
+							' . $objDatabase->SqlVariable($this->dttNoteCreatedDate) . ',
 							' . $objDatabase->SqlVariable($this->intTicket) . ',
 							' . $objDatabase->SqlVariable($this->strSearchMetaInfo) . ',
-							' . $objDatabase->SqlVariable($this->intObjectOwner) . ',
-							' . $objDatabase->SqlVariable($this->dttNoteCreatedDate) . ',
-							' . $objDatabase->SqlVariable($this->intFileDocument) . '
+							' . $objDatabase->SqlVariable($this->intFileDocument) . ',
+							' . $objDatabase->SqlVariable($this->intObjectOwner) . '
 						)
                 ');
 					// Update Identity column and return its value
@@ -994,11 +994,11 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
             $objDatabase->NonQuery('
             UPDATE `Note` SET
 							`NoteDescription` = ' . $objDatabase->SqlVariable($this->strNoteDescription) . ',
+							`NoteCreatedDate` = ' . $objDatabase->SqlVariable($this->dttNoteCreatedDate) . ',
 							`Ticket` = ' . $objDatabase->SqlVariable($this->intTicket) . ',
 							`SearchMetaInfo` = ' . $objDatabase->SqlVariable($this->strSearchMetaInfo) . ',
-							`ObjectOwner` = ' . $objDatabase->SqlVariable($this->intObjectOwner) . ',
-							`NoteCreatedDate` = ' . $objDatabase->SqlVariable($this->dttNoteCreatedDate) . ',
-							`FileDocument` = ' . $objDatabase->SqlVariable($this->intFileDocument) . '
+							`FileDocument` = ' . $objDatabase->SqlVariable($this->intFileDocument) . ',
+							`ObjectOwner` = ' . $objDatabase->SqlVariable($this->intObjectOwner) . '
             WHERE
 							`Id` = ' . $objDatabase->SqlVariable($this->intId) . '');
             }
@@ -1054,12 +1054,12 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
         $newAuditLogEntry->ModificationType = 'Delete';
         $ChangedArray = array_merge($ChangedArray,array("Id" => $this->intId));
         $ChangedArray = array_merge($ChangedArray,array("NoteDescription" => $this->strNoteDescription));
+        $ChangedArray = array_merge($ChangedArray,array("NoteCreatedDate" => $this->dttNoteCreatedDate));
         $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
         $ChangedArray = array_merge($ChangedArray,array("Ticket" => $this->intTicket));
         $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
-        $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
-        $ChangedArray = array_merge($ChangedArray,array("NoteCreatedDate" => $this->dttNoteCreatedDate));
         $ChangedArray = array_merge($ChangedArray,array("FileDocument" => $this->intFileDocument));
+        $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
         $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         try {
             $newAuditLogEntry->Save();
@@ -1138,12 +1138,12 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
 
         // Update $this's local variables to match
         $this->strNoteDescription = $objReloaded->strNoteDescription;
+        $this->dttNoteCreatedDate = $objReloaded->dttNoteCreatedDate;
         $this->strLastUpdated = $objReloaded->strLastUpdated;
         $this->Ticket = $objReloaded->Ticket;
         $this->strSearchMetaInfo = $objReloaded->strSearchMetaInfo;
-        $this->intObjectOwner = $objReloaded->intObjectOwner;
-        $this->dttNoteCreatedDate = $objReloaded->dttNoteCreatedDate;
         $this->FileDocument = $objReloaded->FileDocument;
+        $this->intObjectOwner = $objReloaded->intObjectOwner;
     }
     ////////////////////
     // PUBLIC OVERRIDERS
@@ -1175,6 +1175,13 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
                  */
                 return $this->strNoteDescription;
 
+            case 'NoteCreatedDate':
+                /**
+                 * Gets the value for dttNoteCreatedDate 
+                 * @return dxDateTime
+                 */
+                return $this->dttNoteCreatedDate;
+
             case 'LastUpdated':
                 /**
                  * Gets the value for strLastUpdated (Read-Only Timestamp)
@@ -1196,26 +1203,19 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
                  */
                 return $this->strSearchMetaInfo;
 
-            case 'ObjectOwner':
-                /**
-                 * Gets the value for intObjectOwner 
-                 * @return integer
-                 */
-                return $this->intObjectOwner;
-
-            case 'NoteCreatedDate':
-                /**
-                 * Gets the value for dttNoteCreatedDate 
-                 * @return dxDateTime
-                 */
-                return $this->dttNoteCreatedDate;
-
             case 'FileDocument':
                 /**
                  * Gets the value for intFileDocument 
                  * @return integer
                  */
                 return $this->intFileDocument;
+
+            case 'ObjectOwner':
+                /**
+                 * Gets the value for intObjectOwner 
+                 * @return integer
+                 */
+                return $this->intObjectOwner;
 
 
             ///////////////////
@@ -1294,6 +1294,19 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
                     throw $objExc;
                 }
 
+            case 'NoteCreatedDate':
+                /**
+                 * Sets the value for dttNoteCreatedDate 
+                 * @param dxDateTime $mixValue
+                 * @return dxDateTime
+                 */
+                try {
+                    return ($this->dttNoteCreatedDate = dxType::Cast($mixValue, dxType::DateTime));
+                } catch (dxCallerException $objExc) {
+                    $objExc->IncrementOffset();
+                    throw $objExc;
+                }
+
             case 'Ticket':
                 /**
                  * Sets the value for intTicket 
@@ -1321,32 +1334,6 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
                     throw $objExc;
                 }
 
-            case 'ObjectOwner':
-                /**
-                 * Sets the value for intObjectOwner 
-                 * @param integer $mixValue
-                 * @return integer
-                 */
-                try {
-                    return ($this->intObjectOwner = dxType::Cast($mixValue, dxType::Integer));
-                } catch (dxCallerException $objExc) {
-                    $objExc->IncrementOffset();
-                    throw $objExc;
-                }
-
-            case 'NoteCreatedDate':
-                /**
-                 * Sets the value for dttNoteCreatedDate 
-                 * @param dxDateTime $mixValue
-                 * @return dxDateTime
-                 */
-                try {
-                    return ($this->dttNoteCreatedDate = dxType::Cast($mixValue, dxType::DateTime));
-                } catch (dxCallerException $objExc) {
-                    $objExc->IncrementOffset();
-                    throw $objExc;
-                }
-
             case 'FileDocument':
                 /**
                  * Sets the value for intFileDocument 
@@ -1356,6 +1343,19 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
                 try {
                     $this->objFileDocumentObject = null;
                     return ($this->intFileDocument = dxType::Cast($mixValue, dxType::Integer));
+                } catch (dxCallerException $objExc) {
+                    $objExc->IncrementOffset();
+                    throw $objExc;
+                }
+
+            case 'ObjectOwner':
+                /**
+                 * Sets the value for intObjectOwner 
+                 * @param integer $mixValue
+                 * @return integer
+                 */
+                try {
+                    return ($this->intObjectOwner = dxType::Cast($mixValue, dxType::Integer));
                 } catch (dxCallerException $objExc) {
                     $objExc->IncrementOffset();
                     throw $objExc;
@@ -1495,12 +1495,12 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
         $strToReturn = '<complexType name="Note"><sequence>';
         $strToReturn .= '<element name="Id" type="xsd:int"/>';
         $strToReturn .= '<element name="NoteDescription" type="xsd:string"/>';
+        $strToReturn .= '<element name="NoteCreatedDate" type="xsd:dateTime"/>';
         $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
         $strToReturn .= '<element name="TicketObject" type="xsd1:Ticket"/>';
         $strToReturn .= '<element name="SearchMetaInfo" type="xsd:string"/>';
-        $strToReturn .= '<element name="ObjectOwner" type="xsd:int"/>';
-        $strToReturn .= '<element name="NoteCreatedDate" type="xsd:dateTime"/>';
         $strToReturn .= '<element name="FileDocumentObject" type="xsd1:FileDocument"/>';
+        $strToReturn .= '<element name="ObjectOwner" type="xsd:int"/>';
         $strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
         $strToReturn .= '</sequence></complexType>';
         return $strToReturn;
@@ -1529,6 +1529,8 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
             $objToReturn->intId = $objSoapObject->Id;
         if (property_exists($objSoapObject, 'NoteDescription'))
             $objToReturn->strNoteDescription = $objSoapObject->NoteDescription;
+        if (property_exists($objSoapObject, 'NoteCreatedDate'))
+            $objToReturn->dttNoteCreatedDate = new dxDateTime($objSoapObject->NoteCreatedDate);
         if (property_exists($objSoapObject, 'LastUpdated'))
             $objToReturn->strLastUpdated = $objSoapObject->LastUpdated;
         if ((property_exists($objSoapObject, 'TicketObject')) &&
@@ -1536,13 +1538,11 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
             $objToReturn->TicketObject = Ticket::GetObjectFromSoapObject($objSoapObject->TicketObject);
         if (property_exists($objSoapObject, 'SearchMetaInfo'))
             $objToReturn->strSearchMetaInfo = $objSoapObject->SearchMetaInfo;
-        if (property_exists($objSoapObject, 'ObjectOwner'))
-            $objToReturn->intObjectOwner = $objSoapObject->ObjectOwner;
-        if (property_exists($objSoapObject, 'NoteCreatedDate'))
-            $objToReturn->dttNoteCreatedDate = new dxDateTime($objSoapObject->NoteCreatedDate);
         if ((property_exists($objSoapObject, 'FileDocumentObject')) &&
             ($objSoapObject->FileDocumentObject))
             $objToReturn->FileDocumentObject = FileDocument::GetObjectFromSoapObject($objSoapObject->FileDocumentObject);
+        if (property_exists($objSoapObject, 'ObjectOwner'))
+            $objToReturn->intObjectOwner = $objSoapObject->ObjectOwner;
         if (property_exists($objSoapObject, '__blnRestored'))
             $objToReturn->__blnRestored = $objSoapObject->__blnRestored;
         return $objToReturn;
@@ -1561,12 +1561,12 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
     }
 
     public static function GetSoapObjectFromObject($objObject, $blnBindRelatedObjects) {
+        if ($objObject->dttNoteCreatedDate)
+            $objObject->dttNoteCreatedDate = $objObject->dttNoteCreatedDate->qFormat(dxDateTime::FormatSoap);
         if ($objObject->objTicketObject)
             $objObject->objTicketObject = Ticket::GetSoapObjectFromObject($objObject->objTicketObject, false);
         else if (!$blnBindRelatedObjects)
             $objObject->intTicket = null;
-        if ($objObject->dttNoteCreatedDate)
-            $objObject->dttNoteCreatedDate = $objObject->dttNoteCreatedDate->qFormat(dxDateTime::FormatSoap);
         if ($objObject->objFileDocumentObject)
             $objObject->objFileDocumentObject = FileDocument::GetSoapObjectFromObject($objObject->objFileDocumentObject, false);
         else if (!$blnBindRelatedObjects)
@@ -1587,12 +1587,12 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
         ///////////////////
         $iArray['Id'] = $this->intId;
         $iArray['NoteDescription'] = $this->strNoteDescription;
+        $iArray['NoteCreatedDate'] = $this->dttNoteCreatedDate;
         $iArray['LastUpdated'] = $this->strLastUpdated;
         $iArray['Ticket'] = $this->intTicket;
         $iArray['SearchMetaInfo'] = $this->strSearchMetaInfo;
-        $iArray['ObjectOwner'] = $this->intObjectOwner;
-        $iArray['NoteCreatedDate'] = $this->dttNoteCreatedDate;
         $iArray['FileDocument'] = $this->intFileDocument;
+        $iArray['ObjectOwner'] = $this->intObjectOwner;
         return new ArrayIterator($iArray);
     }
 
@@ -1629,14 +1629,14 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
      *
      * @property-read dxQueryNode $Id
      * @property-read dxQueryNode $NoteDescription
+     * @property-read dxQueryNode $NoteCreatedDate
      * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $Ticket
      * @property-read dxQueryNodeTicket $TicketObject
      * @property-read dxQueryNode $SearchMetaInfo
-     * @property-read dxQueryNode $ObjectOwner
-     * @property-read dxQueryNode $NoteCreatedDate
      * @property-read dxQueryNode $FileDocument
      * @property-read dxQueryNodeFileDocument $FileDocumentObject
+     * @property-read dxQueryNode $ObjectOwner
      *
      *
 
@@ -1652,6 +1652,8 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNode('Id', 'Id', 'Integer', $this);
 				case 'NoteDescription':
 					return new dxQueryNode('NoteDescription', 'NoteDescription', 'Blob', $this);
+				case 'NoteCreatedDate':
+					return new dxQueryNode('NoteCreatedDate', 'NoteCreatedDate', 'DateTime', $this);
 				case 'LastUpdated':
 					return new dxQueryNode('LastUpdated', 'LastUpdated', 'VarChar', $this);
 				case 'Ticket':
@@ -1660,14 +1662,12 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNodeTicket('Ticket', 'TicketObject', 'Integer', $this);
 				case 'SearchMetaInfo':
 					return new dxQueryNode('SearchMetaInfo', 'SearchMetaInfo', 'Blob', $this);
-				case 'ObjectOwner':
-					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'Integer', $this);
-				case 'NoteCreatedDate':
-					return new dxQueryNode('NoteCreatedDate', 'NoteCreatedDate', 'DateTime', $this);
 				case 'FileDocument':
 					return new dxQueryNode('FileDocument', 'FileDocument', 'Integer', $this);
 				case 'FileDocumentObject':
 					return new dxQueryNodeFileDocument('FileDocument', 'FileDocumentObject', 'Integer', $this);
+				case 'ObjectOwner':
+					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'Integer', $this);
 
 				case '_PrimaryKeyNode':
 					return new dxQueryNode('Id', 'Id', 'Integer', $this);
@@ -1685,14 +1685,14 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
     /**
      * @property-read dxQueryNode $Id
      * @property-read dxQueryNode $NoteDescription
+     * @property-read dxQueryNode $NoteCreatedDate
      * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $Ticket
      * @property-read dxQueryNodeTicket $TicketObject
      * @property-read dxQueryNode $SearchMetaInfo
-     * @property-read dxQueryNode $ObjectOwner
-     * @property-read dxQueryNode $NoteCreatedDate
      * @property-read dxQueryNode $FileDocument
      * @property-read dxQueryNodeFileDocument $FileDocumentObject
+     * @property-read dxQueryNode $ObjectOwner
      *
      *
 
@@ -1708,6 +1708,8 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNode('Id', 'Id', 'integer', $this);
 				case 'NoteDescription':
 					return new dxQueryNode('NoteDescription', 'NoteDescription', 'string', $this);
+				case 'NoteCreatedDate':
+					return new dxQueryNode('NoteCreatedDate', 'NoteCreatedDate', 'dxDateTime', $this);
 				case 'LastUpdated':
 					return new dxQueryNode('LastUpdated', 'LastUpdated', 'string', $this);
 				case 'Ticket':
@@ -1716,14 +1718,12 @@ class NoteGen extends dxBaseClass implements IteratorAggregate {
 					return new dxQueryNodeTicket('Ticket', 'TicketObject', 'integer', $this);
 				case 'SearchMetaInfo':
 					return new dxQueryNode('SearchMetaInfo', 'SearchMetaInfo', 'string', $this);
-				case 'ObjectOwner':
-					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'integer', $this);
-				case 'NoteCreatedDate':
-					return new dxQueryNode('NoteCreatedDate', 'NoteCreatedDate', 'dxDateTime', $this);
 				case 'FileDocument':
 					return new dxQueryNode('FileDocument', 'FileDocument', 'integer', $this);
 				case 'FileDocumentObject':
 					return new dxQueryNodeFileDocument('FileDocument', 'FileDocumentObject', 'integer', $this);
+				case 'ObjectOwner':
+					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'integer', $this);
 
 				case '_PrimaryKeyNode':
 					return new dxQueryNode('Id', 'Id', 'integer', $this);
