@@ -2,7 +2,7 @@
     "advanced-training-exercise-menu": [
         {
             "index": 1,
-            "item_label": "<i class=\"fa fa-link\" aria-hidden=\"true\"><\/i><br\/>Admin",
+            "item_label": "<i class=\"fa fa-home\"><\/i><br\/>Admin",
             "item_active_class": "admin",
             "item_click_class": "menu-advanced-training-exercise-menu-1",
             "sub_menu": null,
@@ -24,7 +24,7 @@
         },
         {
             "index": 3,
-            "item_label": "<i class=\"fa fa-book-open\" aria-hidden=\"true\"><\/i><br>Dashboard",
+            "item_label": "<i class=\"fa fa-tachometer\" aria-hidden=\"true\"><\/i><br>Dashboard",
             "item_active_class": "dashboard",
             "item_click_class": "menu-advanced-training-exercise-menu-3",
             "sub_menu": null,
