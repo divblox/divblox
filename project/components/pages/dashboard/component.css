@@ -61,18 +61,8 @@ body {
 
 
 
-body {
-    padding-top: 0px !important;
-}
 
-/*.dashboard-tile {*/
-/*    padding: 20px;*/
-/*    margin-bottom: 0px;*/
-/*    margin-top: 15px;*/
-/*    box-shadow: 0 6px 15px rgba(36, 37, 38, 0.08);*/
-/*    font-weight: bold;*/
-/*    color: white;*/
-/*}*/
+
 
 .dashboard-tile-info {
     padding: 5px 0px 5px 25px;

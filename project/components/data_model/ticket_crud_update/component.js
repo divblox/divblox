@@ -21,9 +21,29 @@ if (typeof component_classes['data_model_ticket_crud_update'] === "undefined") {
 			}
 			super.reset(inputs,propagate);
 		}
-	    initCustomFunctions() {
-            //Custom javascript here
-        }
+		initCustomFunctions() {        
+            // gPDeh_button Related functionality
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            getComponentElementById(this,"gPDeh_btn").on("click", function() {
+				// dxRequestInternal() is the global function used to communicate
+				// from the component's JavaScript to its back-end php component
+				dxRequestInternal(
+					// The first parameter tells the function where to send the request
+					// getComponentControllerPath(this) returns the path to current component's php script
+					getComponentControllerPath(this),
+					// Tell component.php which function to execute
+					{ f: "getNewTicketUniqueId" },
+					function(data_obj) {
+						// Success function
+						getComponentElementById(this, "TicketUniqueId").val(data_obj.TicketId);
+					}.bind(this),
+					function(data_obj) {
+						// Fail function
+					}.bind(this)
+				);
+            }.bind(this));
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		}
    	}
 	component_classes['data_model_ticket_crud_update'] = data_model_ticket_crud_update;
 }

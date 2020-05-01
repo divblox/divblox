@@ -4,17 +4,61 @@ if (typeof component_classes['pages_dashboard'] === "undefined") {
             super(inputs, supports_native, requires_native);
             // Sub component config start
             this.sub_component_definitions =
-                [{"component_load_path":"navigation/side_navbar","parent_element":"s8gjT","arguments":{"uid":"navigation_side_navbar_1"}},
-            {"component_load_path":"dashboard/ticket_status_indicator","parent_element":"FVKl3","arguments":{"uid":"dashboard_ticket_status_indicator_1","ticket_status":"New"}},
-            {"component_load_path":"dashboard/ticket_status_indicator","parent_element":"5i4hs","arguments":{"uid":"dashboard_ticket_status_indicator_2","ticket_status":"In Progress"}},
-            {"component_load_path":"dashboard/ticket_status_indicator","parent_element":"GXoTk","arguments":{"uid":"dashboard_ticket_status_indicator_3","ticket_status":"Due Soon"}},
-            {"component_load_path":"dashboard/ticket_status_indicator","parent_element":"hCQoB","arguments":{"uid":"dashboard_ticket_status_indicator_4","ticket_status":"Urgent"}},
-            {"component_load_path":"dashboard/ticket_status_indicator","parent_element":"Vfrds","arguments":{"uid":"dashboard_ticket_status_indicator_5","ticket_status":"Complete"}},
-            {"component_load_path":"dashboard/ticket_status_indicator","parent_element":"zo9n7","arguments":{"uid":"dashboard_ticket_status_indicator_6","ticket_status":"Overdue"}},
-            {"component_load_path":"data_model/account_summary_list","parent_element":"Z0fDv","arguments":{"uid":"data_model_account_summary_list_1"}},
-            {"component_load_path":"data_model/ticket_summary_list","parent_element":"pxTvY","arguments":{"uid":"data_model_ticket_summary_list_1"}},
-            {"component_load_path":"data_visualization/status_bar_chart","parent_element":"pnkiH","arguments":{"uid":"data_visualization_status_bar_chart_1"}},
-            {"component_load_path":"data_visualization/category_pie_chart","parent_element":"YdsKf","arguments":{}}];
+                [{
+                    "component_load_path": "navigation/side_navbar",
+                    "parent_element": "s8gjT",
+                    "arguments": {"uid": "navigation_side_navbar_1"}
+                },
+                    {
+                        "component_load_path": "dashboard/ticket_status_indicator",
+                        "parent_element": "FVKl3",
+                        "arguments": {"uid": "dashboard_ticket_status_indicator_1", "ticket_status": "New"}
+                    },
+                    {
+                        "component_load_path": "dashboard/ticket_status_indicator",
+                        "parent_element": "5i4hs",
+                        "arguments": {"uid": "dashboard_ticket_status_indicator_2", "ticket_status": "In Progress"}
+                    },
+                    {
+                        "component_load_path": "dashboard/ticket_status_indicator",
+                        "parent_element": "GXoTk",
+                        "arguments": {"uid": "dashboard_ticket_status_indicator_3", "ticket_status": "Due Soon"}
+                    },
+                    {
+                        "component_load_path": "dashboard/ticket_status_indicator",
+                        "parent_element": "hCQoB",
+                        "arguments": {"uid": "dashboard_ticket_status_indicator_4", "ticket_status": "Urgent"}
+                    },
+                    {
+                        "component_load_path": "dashboard/ticket_status_indicator",
+                        "parent_element": "Vfrds",
+                        "arguments": {"uid": "dashboard_ticket_status_indicator_5", "ticket_status": "Complete"}
+                    },
+                    {
+                        "component_load_path": "dashboard/ticket_status_indicator",
+                        "parent_element": "zo9n7",
+                        "arguments": {"uid": "dashboard_ticket_status_indicator_6", "ticket_status": "Overdue"}
+                    },
+                    {
+                        "component_load_path": "data_model/account_summary_list",
+                        "parent_element": "Z0fDv",
+                        "arguments": {"uid": "data_model_account_summary_list_1"}
+                    },
+                    {
+                        "component_load_path": "data_model/ticket_summary_list",
+                        "parent_element": "pxTvY",
+                        "arguments": {"uid": "data_model_ticket_summary_list_1"}
+                    },
+                    {
+                        "component_load_path": "data_visualization/status_bar_chart",
+                        "parent_element": "pnkiH",
+                        "arguments": {"uid": "data_visualization_status_bar_chart_1"}
+                    },
+                    {
+                        "component_load_path": "data_visualization/category_pie_chart",
+                        "parent_element": "YdsKf",
+                        "arguments": {}
+                    }];
             // Sub component config end
         }
 
