@@ -6,61 +6,39 @@
  * */
 include(FRAMEWORK_ROOT_STR . '/assets/php/framework_functions.php');
 
-abstract class ProjectFunctions extends FrameworkFunctions
-{
-    public static function getNewTicketUniqueId()
-    {
-        $CandidateStr = self::generateRandomString(24);
-        $DoneBool = false;
-        while (!$DoneBool) {
-            // Divblox query language to load a ticket from the database,
-            // based on the UniqueId field
-            $ExistingTicketCount = Ticket::LoadByTicketUniqueId($CandidateStr);
-            if ($ExistingTicketCount == 0) {
-                $DoneBool = true;
-            } else {
-                $CandidateStr = self::generateRandomString(24);
-            }
-        }
-        return $CandidateStr;
-    }
+abstract class ProjectFunctions extends FrameworkFunctions {
+	public static function getNewTicketUniqueId() {
+		$CandidateStr = self::generateRandomString(24);
+		$DoneBool = false;
+		while (!$DoneBool) {
+			// Divblox query language to load a ticket from the database,
+			// based on the UniqueId field
+			$ExistingTicketCount = Ticket::LoadByTicketUniqueId($CandidateStr);
+			if ($ExistingTicketCount == 0) {
+				$DoneBool = true;
+			} else {
+				$CandidateStr = self::generateRandomString(24);
+			}
+		}
+		return $CandidateStr;
+	}
 
-    // Strict typing
-    public static function getBreadCrumbsRecursive(Category $CategoryObj = null, $BreadCrumbsArray = []) {
-        if (is_null($CategoryObj)) {
-            return $BreadCrumbsArray;
-        }
+	// Strict typing
+	public static function getBreadCrumbsRecursive(Category $CategoryObj = null, $BreadCrumbsArray = []) {
+		if (is_null($CategoryObj)) {
+			return $BreadCrumbsArray;
+		}
 
-        $BreadCrumbsArray[$CategoryObj->CategoryLabel] = $CategoryObj->Id;
+		$BreadCrumbsArray[$CategoryObj->CategoryLabel] = $CategoryObj->Id;
 
-        if (is_null($CategoryObj->CategoryParentId) || ($CategoryObj->CategoryParentId < 1)) {
-            return $BreadCrumbsArray;
-        }
+		if (is_null($CategoryObj->CategoryParentId) || ($CategoryObj->CategoryParentId < 1)) {
+			return $BreadCrumbsArray;
+		}
 
-        $ParentCategoryObj = Category::Load($CategoryObj->CategoryParentId);
+		$ParentCategoryObj = Category::Load($CategoryObj->CategoryParentId);
 
-        return self::getBreadCrumbsRecursive($ParentCategoryObj, $BreadCrumbsArray);
+		return self::getBreadCrumbsRecursive($ParentCategoryObj, $BreadCrumbsArray);
 
-    }
+	}
 
-    public static function getSubCategoriesRecursive(Category $CategoryObj = null, $SubCategoryArr = []) {
-        if (is_null($CategoryObj)) {
-            return $CategoryObj;
-        }
-
-        $ChildArr = Category::QueryArray(
-            dxQ::Equal(
-                dxQN::Category()->CategoryParentId,
-                $CategoryObj->Id
-            )
-        );
-        $SubCategoryIdArr[] = $ChildArr;
-
-        if (is_null($ChildArr)) {
-            return $SubCategoryIdArr;
-        }
-        foreach($ChildArr as $ChildObj) {
-            return self::getSubCategoriesRecursive($ChildObj, $SubCategoryArr);
-        }
-    }
 }

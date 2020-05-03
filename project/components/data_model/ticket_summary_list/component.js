@@ -36,20 +36,20 @@ if (typeof component_classes['data_model_ticket_summary_list'] === "undefined") 
                 ' list-group-item-action flex-column align-items-start data_list_item data_list_item_' + this.getUid() + ' dx-data-list-row">';
             let header_wrapping_html = '<div class="d-flex w-100 justify-content-between">';
 
-            let ticket_name_html = '<div class="col-4">';
+            let ticket_name_html = '<div class="col-3">';
             let account_name_html = '<div class="col-4">';
             let ticket_date_html = '<div class="col-4">';
+            let ticket_progress_html = '<div class="col-1 float-right" style="color: red;">';
 
             let account_names = row_data_obj["Account"].split(" ");
             let return_account_name = account_names[0].slice(0, 1) + ". " + account_names[1];
 			ticket_name_html += row_data_obj["TicketName"] + '</div>';
             account_name_html += return_account_name + '</div>';
             ticket_date_html += row_data_obj["TicketDueDate"] + '</div>';
+            ticket_progress_html +=row_data_obj["TicketProgress"] + '%</div>';
 
-            // header_wrapping_html += header_components_html + subtle_components_html;
-            // header_wrapping_html += '</div>';
 
-            wrapping_html += '<div class="row">' + ticket_name_html + account_name_html + ticket_date_html + '</div>'+ '</div>';
+            wrapping_html += '<div class="row">' + ticket_name_html + account_name_html + ticket_date_html + ticket_progress_html + '</div>'+ '</div>';
             wrapping_html += '</a>';
             getComponentElementById(this, "DataList").append(wrapping_html);
         }

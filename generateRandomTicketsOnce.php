@@ -98,7 +98,6 @@ for ($i = 0; $i < $TicketDataSize; $i++) {
     $TicketObj->AccountObject = Account::Load(rand($AccountMinObj->Id, $AccountMaxObj->Id));
     $Category = Category::Load(rand($CategoryMinObj->Id, $CategoryMaxObj->Id));
     $TicketObj->CategoryObject = $Category;
-//    $TicketObj->Category = $Category;
 
     foreach($TicketObj as $key => $val) {
         if (!is_null($val)) {
@@ -135,3 +134,4 @@ for ($i = 0; $i < $TicketDataSize; $i++) {
     // $CategoryObj->CategoryLabel = ProjectFunctions::generateTimeBasedRandomString();
     $CategoryObj->Save();
 }
+
