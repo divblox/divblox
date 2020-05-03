@@ -45,7 +45,7 @@ class Ticket extends TicketGen {
 		}
 		$ExistingObj = Ticket::Load($this->intId);
 
-		// Calculating TicketProgression ///////////////////////////////////////////////////////
+		// Calculating TicketProgression ///////////////////////////////////////
 		$TotalInt = SubTask::QueryCount(
 			dxQ::Equal(
 				dxQN::SubTask()->TicketObject->Id,
@@ -63,10 +63,12 @@ class Ticket extends TicketGen {
 			)
 			)
 		);
-		if ($TotalInt !== 0) {
-			$TicketProgress = round(($CompletedInt / $TotalInt) * 100);
-		} else if ($ExistingObj && $ExistingObj->TicketStatus == "Complete") {
-			$TicketProgress = 100;
+		if ($ExistingObj) {
+			if ($TotalInt !== 0) {
+				$TicketProgress = round(($CompletedInt / $TotalInt) * 100);
+			} else if ($ExistingObj->TicketStatus == "Complete") {
+				$TicketProgress = 100;
+			}
 		} else {
 			$TicketProgress = 0;
 		}
@@ -311,7 +313,8 @@ class Ticket extends TicketGen {
 	 * Delete this Ticket
 	 * @return void
 	 */
-	public function Delete() {
+	public
+	function Delete() {
 		$CategoryObj = Category::Load($this->intCategory);
 		parent::Delete();
 
