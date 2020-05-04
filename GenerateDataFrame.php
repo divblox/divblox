@@ -1,6 +1,5 @@
 <?php
 require("divblox/divblox.php");
-
 // Clear Database
 Account::DeleteAll();
 Category::DeleteAll();
