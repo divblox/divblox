@@ -20,8 +20,8 @@ $EnvironmentArray = array(
                 'server' => 'localhost',
                 'port' => null,
                 'database' => 'advanced-training-exercise',
-                'username' => 'dani',
-                'password' => '0704',
+                'username' => 'divblox',
+                'password' => '1',
                 'ssl_cert_path' => ''
             ),
         )

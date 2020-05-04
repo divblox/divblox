@@ -13,8 +13,7 @@ if (typeof component_classes['pages_ticket_update'] === "undefined") {
 			super.reset(inputs);
 			getRegisteredComponent("ticket_crud_update_1").reset(getGlobalConstrainById("Ticket"));
 		}
-
-
+		
 	}
 	component_classes['pages_ticket_update'] = pages_ticket_update;
 }
