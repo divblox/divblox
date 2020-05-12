@@ -191,7 +191,7 @@
         {
             "index": 1,
             "item_label": "<i class=\"fa fa-user-circle-o\" aria-hidden=\"true\"><\/i>",
-            "item_active_class": "my_profile",
+            "item_active_class": "profile",
             "item_click_class": "menu-profile_menu-1",
             "sub_menu": null,
             "page_to_load": "my_profile",

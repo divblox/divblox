@@ -28,12 +28,6 @@ if (typeof component_classes['data_model_current_user_profile_manager'] === "und
 			// Handle specific events here. This is useful if the component needs to update because one of its
 			// sub-components did something
 			switch(event_name) {
-				case 'ProfilePictureChanged':
-					setTimeout(function() {
-						getComponentElementById(this,"ProfilePictureRender").attr("src",current_user_profile_picture_path);
-						getComponentElementById(this,"ProfilePictureModal").modal('hide');
-					}.bind(this),1000);
-					break;
 				default:
 					dxLog("Event triggered: "+event_name+": "+JSON.stringify(parameters_obj));
 			}
@@ -181,6 +175,16 @@ if (typeof component_classes['data_model_current_user_profile_manager'] === "und
 		}
 		doNothing() {
 			//Just a helper function to reference on cancel of confirmation
+		}
+		initCustomFunctions() {
+			super.initCustomFunctions();
+			getComponentElementById(this,'ProfilePictureModal').on('hidden.bs.modal', function (e) {
+				setTimeout(function() {
+					loadCurrentUserProfilePicture(function(path) {
+						getComponentElementById(this,"ProfilePictureRender").attr("src",path);
+					}.bind(this));
+				}.bind(this),1000);
+			}.bind(this))
 		}
 	}
 	component_classes['data_model_current_user_profile_manager'] = data_model_current_user_profile_manager;

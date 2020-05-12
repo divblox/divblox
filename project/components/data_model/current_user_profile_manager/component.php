@@ -17,12 +17,18 @@ class AccountController extends ProjectComponentController {
             $this->presentOutput();
         }
         $AccountObj = Account::Load($this->getInputValue("Id"));
+        $ProfilePicturePath =  'project/assets/images/divblox_profile_picture_placeholder.svg';
+        if (!is_null($AccountObj->ProfilePicturePath) && (file_exists(DOCUMENT_ROOT_STR.SUBDIRECTORY_STR.$AccountObj->ProfilePicturePath))) {
+            $ProfilePicturePath = $AccountObj->ProfilePicturePath;
+        }
         if (is_null($AccountObj)) {
             $this->setReturnValue("Result","Failed");
             $this->setReturnValue("Message","Account not found");
             $this->presentOutput();
         } else {
-            $this->setReturnValue("Object",json_decode($AccountObj->getJson()));
+            $AccountJson = json_decode($AccountObj->getJson());
+            $AccountJson->ProfilePicturePath = $ProfilePicturePath;
+            $this->setReturnValue("Object",$AccountJson);
             $this->presentOutput();
         }
     }

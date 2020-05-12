@@ -148,7 +148,7 @@ if (typeof component_classes['system_profile_picture_uploader'] === "undefined")
 							if (item.editor && item.editor.isUploadPending) {
 								delete item.editor.isUploadPending;
 								
-								saveEditedImage(item);
+								this_component.saveEditedImage(item);
 							}
 						}
 						// if warnings
@@ -167,8 +167,6 @@ if (typeof component_classes['system_profile_picture_uploader'] === "undefined")
 						setTimeout(function() {
 							item.html.find('.progress-bar2').fadeOut(400);
 						}, 400);
-						loadCurrentUserProfilePicture();
-						pageEventTriggered("ProfilePictureChanged");
 					},
 					onError: function(item) {
 						var progressBar = item.html.find('.progress-bar2');
@@ -204,7 +202,7 @@ if (typeof component_classes['system_profile_picture_uploader'] === "undefined")
 						showGrid: true,
 					},
 					onSave: function(dataURL, item) {
-						saveEditedImage(item);
+						this_component.saveEditedImage(item);
 					}
 				},
 				captions: {

@@ -20,6 +20,7 @@ if (typeof component_classes['pages_login'] === "undefined") {
 				}
 			}.bind(this));
 			super.reset(inputs,propagate);
+			$('body').addClass('grey-area');
 		}
 		registerDomEvents() {
 			getComponentElementById(this,"AuthenticationComponent").keypress(function( event ) {

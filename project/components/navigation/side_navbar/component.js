@@ -5,6 +5,9 @@ if (typeof component_classes['navigation_side_navbar'] === "undefined") {
 			// Sub component config start
 			this.sub_component_definitions = {};
 			// Sub component config end
+			this.sidebar_width = 150;
+			this.sidebar_hidden_margin = Math.round(this.sidebar_width/2);
+			this.sidebar_shown_margin = this.sidebar_hidden_margin+25;
 		}
 		reset(inputs,propagate) {
 			if (isMobile()) {
@@ -29,13 +32,13 @@ if (typeof component_classes['navigation_side_navbar'] === "undefined") {
 			$(".sidebar_toggle_left").on("click", function() {
 				let content_wrapper = $(".component-wrapper-compact-sidebar");
 				if (content_wrapper.hasClass("sidebar_compact_left_visible")) {
-					$(".sidebar-left").removeClass("slide-left").removeClass("slide-right").addClass("slide-left").css("margin-left","0px");
+					$(".sidebar-left").removeClass("slide-left").removeClass("slide-right").addClass("slide-left").css("margin-left","-"+this.sidebar_hidden_margin+"px");
 					$(".component-wrapper-compact-sidebar").removeClass("sidebar_compact_left_visible");
 				} else {
-					$(".sidebar-left").removeClass("slide-left").removeClass("slide-right").css("margin-left","-100px").addClass("slide-right");
+					$(".sidebar-left").removeClass("slide-left").removeClass("slide-right").addClass("slide-right").css("margin-left","-"+this.sidebar_shown_margin+"px").addClass("slide-right");
 					$(".component-wrapper-compact-sidebar").addClass("sidebar_compact_left_visible");
 				}
-			});
+			}.bind(this));
 			getComponentElementById(this,'navigation_item_my_profile').on("click", function () {
 				loadPageComponent("my_profile");
 				return false;
