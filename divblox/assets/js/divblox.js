@@ -12,7 +12,7 @@
  * divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "3.1.2";
+let dx_version = "3.1.3";
 let bootstrap_version = "4.4.1";
 let jquery_version = "3.4.1";
 let minimum_required_php_version = "7.3.8";
@@ -2195,22 +2195,14 @@ function getComponentControllerPath(component) {
  * @param {Function} callback The function to execute once the DOM object has been created
  */
 function loadComponentHtmlAsDOMObject(component_path,callback) {
-	let isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
-	if (!isChrome) {
-		alert("The Divblox Component Builder is currently only supported in Google Chrome. To use this" +
-			" functionality, please load this page in Chrome.")
-		return;
-	}
 	dxGetScript(component_path+"/component.html"+getRandomFilePostFix(), function(html) {
 		let doctype = document.implementation.createDocumentType('html', '', '');
 		let component_dom = document.implementation.createDocument('', 'html', doctype);
-		let jq_dom = jQuery(component_dom);
+		let jq_dom = $(component_dom);
 		try {
-			let jq_html = $.parseHTML(html);
-			jq_dom.find('html').append(jq_html);
+			jq_dom.find('html').html(html);
 		} catch (e) {
-			alert("A parse error occurred. Please ensure that you are using Google Chrome.");
-			return;
+			alert("A parse error occurred. Please ensure that you are using Google Chrome. Error: "+e);
 		}
 		callback(jq_dom);
 	}, function() {
@@ -2836,9 +2828,10 @@ function dxPostExternal(url,parameters,on_success,on_fail) {
 			}
 			on_success(data)
 		})
-		.fail(function(data) {
+		// Removing this since it is causing issues on firefox
+		/*.fail(function(data) {
 			on_fail(data)
-		});
+		})*/;
 }
 /**
  * Determines whether a string is a valid JSON string
