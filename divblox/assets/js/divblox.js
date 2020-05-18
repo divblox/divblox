@@ -12,9 +12,9 @@
  * divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "3.1.3";
-let bootstrap_version = "4.4.1";
-let jquery_version = "3.4.1";
+let dx_version = "3.1.4";
+let bootstrap_version = "4.5.0";
+let jquery_version = "3.5.1";
 let minimum_required_php_version = "7.3.8";
 let spa_mode = false;
 let debug_mode = true;
@@ -49,6 +49,12 @@ let no_cache_force_str = '';
 if(window.jQuery === undefined) {
 	// JGL: We assume that we have jquery available here...
 	throw new Error("jQuery has not been loaded. Please ensure that jQuery is loaded before divblox");
+} else {
+	//JGL : This is a temporary fix for jquery to work with the component builder for jquery v3.5+
+	let rxhtmlTag = /<(?!area|br|col|embed|hr|img|input|link|meta|param)(([a-z][^\/\0>\x20\t\r\n\f]*)[^>]*)\/>/gi;
+	jQuery.htmlPrefilter = function( html ) {
+		return html.replace( rxhtmlTag, "<$1></$2>" );
+	};
 }
 let component_classes = {};
 let dx_admin_roles = ["dxadmin","administrator"];
@@ -58,7 +64,7 @@ let dx_admin_roles = ["dxadmin","administrator"];
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 let dependency_array = [
-	"divblox/assets/js/bootstrap/4.4.1/bootstrap.bundle.min.js",
+	"divblox/assets/js/bootstrap/4.5.0/bootstrap.bundle.min.js",
 	"divblox/assets/js/sweetalert/sweetalert.min.js",
 	"project/assets/js/project.js",
 	"project/assets/js/momentjs/moment.js",
