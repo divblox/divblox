@@ -12,9 +12,9 @@
  * divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "3.0.1";
-let bootstrap_version = "4.4.1";
-let jquery_version = "3.4.1";
+let dx_version = "3.1.4";
+let bootstrap_version = "4.5.0";
+let jquery_version = "3.5.1";
 let minimum_required_php_version = "7.3.8";
 let spa_mode = false;
 let debug_mode = true;
@@ -49,6 +49,12 @@ let no_cache_force_str = '';
 if(window.jQuery === undefined) {
 	// JGL: We assume that we have jquery available here...
 	throw new Error("jQuery has not been loaded. Please ensure that jQuery is loaded before divblox");
+} else {
+	//JGL : This is a temporary fix for jquery to work with the component builder for jquery v3.5+
+	let rxhtmlTag = /<(?!area|br|col|embed|hr|img|input|link|meta|param)(([a-z][^\/\0>\x20\t\r\n\f]*)[^>]*)\/>/gi;
+	jQuery.htmlPrefilter = function( html ) {
+		return html.replace( rxhtmlTag, "<$1></$2>" );
+	};
 }
 let component_classes = {};
 let dx_admin_roles = ["dxadmin","administrator"];
@@ -58,14 +64,13 @@ let dx_admin_roles = ["dxadmin","administrator"];
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 let dependency_array = [
-	"divblox/assets/js/bootstrap/4.4.1/bootstrap.bundle.min.js",
+	"divblox/assets/js/bootstrap/4.5.0/bootstrap.bundle.min.js",
 	"divblox/assets/js/sweetalert/sweetalert.min.js",
 	"project/assets/js/project.js",
 	"project/assets/js/momentjs/moment.js",
 	"project/assets/js/data_model.js",
 	"project/assets/js/menus.js",
 ];
-
 /**
  * Loads the divblox chat widget for the setup page
  */
@@ -94,7 +99,11 @@ function initDx(as_native) {
 	if (stored_global_vars !== null) {
 		global_vars = stored_global_vars;
 	}
-	loadDependencies();
+	// It is important to call this before other loading functions, since we might need to load a page before all
+	// dependencies are ready
+	dx_page_manager.loadMobilePageAlternatives(function () {
+		loadDependencies();
+	});
 }
 /**
  * Loads the divblox dependencies, recursively. When all dependencies are loaded, checkFrameworkReady() is called.
@@ -549,6 +558,39 @@ let dx_renderer = {
 		}
 		
 		wrapper_node.html(complete_html);
+	}
+};
+/**
+ * Responsible for determining whether the current page to be loaded has a mobile alternative
+ * @type {{loadMobilePageAlternatives(*): void, page_mobile_alternates: {}, getMobilePageAlternate(*): (*)}}
+ */
+let dx_page_manager = {
+	page_mobile_alternates: {},
+	/**
+	 * Loads the page alternate definitions from json
+	 * @param callback
+	 */
+	loadMobilePageAlternatives(callback) {
+		if (debug_mode) {
+			no_cache_force_str = getRandomFilePostFix();
+		}
+		loadJsonFromFile(getRootPath()+'project/assets/configurations/page_mobile_alternates.json'+no_cache_force_str,function(json) {
+			this.page_mobile_alternates = json;
+			callback();
+		}.bind(this));
+	},
+	/**
+	 * Returns the mobile alternate page for the given page_name if it is defined, otherwise the given page_name is
+	 * returned
+	 * @param page_name
+	 * @return {*}
+	 */
+	getMobilePageAlternate(page_name) {
+		if (!isScreenWidthMobile()) {return page_name;}
+		if (typeof this.page_mobile_alternates[page_name] !== "undefined") {
+			return this.page_mobile_alternates[page_name];
+		}
+		return page_name;
 	}
 };
 let dom_component_index_map = {};
@@ -1946,14 +1988,14 @@ function loadPageComponent(component_name,load_arguments,callback) {
             parameters_str += '&'+key+"="+load_arguments[key];
         });
     }
-	
+	let final_component_name = dx_page_manager.getMobilePageAlternate(component_name);
 	if (!isSpa()) {
-		redirectToInternalPath('?view='+component_name+parameters_str);
+		redirectToInternalPath('?view='+final_component_name+parameters_str);
 		return;
 	}
 	if ((typeof cb_active !== "undefined") && (cb_active)) {
 		// JGL: In this case we should inform the user that we are opening a new page in a new component builder window
-		if (confirm("This will open a new component builder window for the page: "+component_name)) {
+		if (confirm("This will open a new component builder window for the page: "+final_component_name)) {
 			let load_arguments_str = '';
 			if (typeof load_arguments === "object") {
 				let load_argument_keys = Object.keys(load_arguments);
@@ -1961,7 +2003,7 @@ function loadPageComponent(component_name,load_arguments,callback) {
 					load_arguments_str += '&'+key+'='+load_arguments[key];
 				});
 			}
-			redirectToExternalPath(getRootPath()+'component_builder.php?component=pages/'+component_name+load_arguments_str);
+			redirectToExternalPath(getRootPath()+'component_builder.php?component=pages/'+final_component_name+load_arguments_str);
 			return;
 		}
 		return;
@@ -1972,13 +2014,13 @@ function loadPageComponent(component_name,load_arguments,callback) {
 	$('body').off();
 	force_logout_occurred = false;
 	if (!root_history_processing) {
-		addPageToRootHistory(component_name);
+		addPageToRootHistory(final_component_name);
 	} else {
 		root_history_processing = false;
 	}
-	setUrlInputParameter("view",component_name);
-	updateAppState("CurrentPage",component_name);
-	loadComponent("pages/"+component_name,null,'body',final_load_arguments,true,undefined,callback);
+	setUrlInputParameter("view",final_component_name);
+	updateAppState("CurrentPage",final_component_name);
+	loadComponent("pages/"+final_component_name,null,'body',final_load_arguments,true,undefined,callback);
 	if (debug_mode) {
 		setTimeout(function() {
 			dxPostExternal(getServerRootPath()+"divblox/config/framework/check_divblox_admin_logged_in.php",{},
@@ -2162,8 +2204,12 @@ function loadComponentHtmlAsDOMObject(component_path,callback) {
 	dxGetScript(component_path+"/component.html"+getRandomFilePostFix(), function(html) {
 		let doctype = document.implementation.createDocumentType('html', '', '');
 		let component_dom = document.implementation.createDocument('', 'html', doctype);
-		let jq_dom = jQuery(component_dom);
-		jq_dom.find('html').append(html);
+		let jq_dom = $(component_dom);
+		try {
+			jq_dom.find('html').html(html);
+		} catch (e) {
+			alert("A parse error occurred. Please ensure that you are using Google Chrome. Error: "+e);
+		}
 		callback(jq_dom);
 	}, function() {
 	
@@ -2252,12 +2298,13 @@ function processPageInputs() {
 		loadUserRoleLandingPage("anonymous");
 		return;
 	}
-	let view = "pages/"+url_input_parameters.get("view");
+	let page_component = dx_page_manager.getMobilePageAlternate(url_input_parameters.get("view"));
+	let view = "pages/"+page_component;
 	updateAppState("CurrentPage",view);
 	if ((typeof url_input_parameters.get("view") === "undefined") || (url_input_parameters.get("view") == null)) {
 		throw new Error("Invalid component name provided. Click here to visit the setup page: "+getServerRootPath()+"divblox/config/framework/divblox_admin/setup.php");
 	} else {
-		addPageToRootHistory(url_input_parameters.get("view"));
+		addPageToRootHistory(page_component);
 		loadComponent(view,null,'body',{"uid":page_uid},false);
 	}
 	if (debug_mode) {
@@ -2787,9 +2834,10 @@ function dxPostExternal(url,parameters,on_success,on_fail) {
 			}
 			on_success(data)
 		})
-		.fail(function(data) {
+		// Removing this since it is causing issues on firefox
+		/*.fail(function(data) {
 			on_fail(data)
-		});
+		})*/;
 }
 /**
  * Determines whether a string is a valid JSON string
@@ -2844,7 +2892,8 @@ function loadJsonFromFile(file_path,callback) {
 		'success': function(data) {
 			callback(data);
 		},
-		'error': function() {
+		'error': function(e) {
+			dxLog("Error loading json from file: "+e);
 			callback({});
 		}
 	});
@@ -3221,7 +3270,6 @@ function getCurrentUserRole(callback) {
 			callback(undefined);
 		},false,false,'');
 }
-
 /**
  * Gets the current user's user role from the local app state. Useful when no need for a server call
  * @return {String|Null} The current user role
@@ -3237,7 +3285,6 @@ function registerUserRole(user_role) {
 	updateAppState("dx_role",user_role);
 	doAfterAuthenticationActions();
 }
-
 /**
  * Checks whether the current client's OS is mobile
  * @return {boolean} true if mobile, false if not
@@ -3247,6 +3294,13 @@ function isMobile() {
 		return true;
 	}
 	return false;
+}
+/**
+ * Checks whether the current client's screen width is a typical mobile width
+ * @return {boolean} true if mobile, false if not
+ */
+function isScreenWidthMobile() {
+	return screen.width < 769;
 }
 /**
  * Checks whether the current OS is iOS

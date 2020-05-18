@@ -28,6 +28,9 @@ if (typeof component_classes['ungrouped_imageviewer'] === "undefined") {
 				$("#"+this.uid+"_image").attr("src",this.getImagePath());
 			}
 		}
-	}
+	    initCustomFunctions() {
+            //Custom javascript here
+        }
+   	}
 	component_classes['ungrouped_imageviewer'] = ungrouped_imageviewer;
 }

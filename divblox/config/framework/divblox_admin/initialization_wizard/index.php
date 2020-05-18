@@ -108,7 +108,7 @@ if (!ALLOW_WIZARD_ACCESS) {
         </div>
     </div>
 </div>
-<script type="text/javascript" src="../../../../assets/js/jquery/3.4.1/jquery.min.js"></script>
+<script type="text/javascript" src="../../../../assets/js/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript" src="../../../../assets/js/bootstrap/4.3.1/bootstrap.min.js"></script>
 <script>
     let config_ok = true;
