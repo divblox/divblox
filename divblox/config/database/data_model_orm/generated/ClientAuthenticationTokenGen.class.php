@@ -24,9 +24,9 @@
  * @property string $DevicePlatform the value for strDevicePlatform 
  * @property string $DeviceOs the value for strDeviceOs 
  * @property dxDateTime $DeviceRegistrationDateTime the value for dttDeviceRegistrationDateTime 
+ * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
  * @property integer $ClientConnection the value for intClientConnection 
  * @property string $SearchMetaInfo the value for strSearchMetaInfo 
- * @property-read string $LastUpdated the value for strLastUpdated (Read-Only Timestamp)
  * @property integer $ObjectOwner the value for intObjectOwner 
  * @property ClientConnection $ClientConnectionObject the value for the ClientConnection object referenced by intClientConnection 
  * @property-read PushRegistration $_PushRegistration the value for the private _objPushRegistration (Read-Only) if set due to an expansion on the PushRegistration.ClientAuthenticationToken reverse relationship
@@ -117,6 +117,14 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
 
 
     /**
+     * Protected member variable that maps to the database column ClientAuthenticationToken.LastUpdated
+     * @var string strLastUpdated
+     */
+    protected $strLastUpdated;
+    const LastUpdatedDefault = null;
+
+
+    /**
      * Protected member variable that maps to the database column ClientAuthenticationToken.ClientConnection
      * @var integer intClientConnection
      */
@@ -130,14 +138,6 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
      */
     protected $strSearchMetaInfo;
     const SearchMetaInfoDefault = null;
-
-
-    /**
-     * Protected member variable that maps to the database column ClientAuthenticationToken.LastUpdated
-     * @var string strLastUpdated
-     */
-    protected $strLastUpdated;
-    const LastUpdatedDefault = null;
 
 
     /**
@@ -207,9 +207,9 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
         $this->strDevicePlatform = ClientAuthenticationToken::DevicePlatformDefault;
         $this->strDeviceOs = ClientAuthenticationToken::DeviceOsDefault;
         $this->dttDeviceRegistrationDateTime = (ClientAuthenticationToken::DeviceRegistrationDateTimeDefault === null)?null:new dxDateTime(ClientAuthenticationToken::DeviceRegistrationDateTimeDefault);
+        $this->strLastUpdated = ClientAuthenticationToken::LastUpdatedDefault;
         $this->intClientConnection = ClientAuthenticationToken::ClientConnectionDefault;
         $this->strSearchMetaInfo = ClientAuthenticationToken::SearchMetaInfoDefault;
-        $this->strLastUpdated = ClientAuthenticationToken::LastUpdatedDefault;
         $this->intObjectOwner = ClientAuthenticationToken::ObjectOwnerDefault;
     }
 
@@ -556,9 +556,9 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
             $objBuilder->AddSelectItem($strTableName, 'DevicePlatform', $strAliasPrefix . 'DevicePlatform');
             $objBuilder->AddSelectItem($strTableName, 'DeviceOs', $strAliasPrefix . 'DeviceOs');
             $objBuilder->AddSelectItem($strTableName, 'DeviceRegistrationDateTime', $strAliasPrefix . 'DeviceRegistrationDateTime');
+            $objBuilder->AddSelectItem($strTableName, 'LastUpdated', $strAliasPrefix . 'LastUpdated');
             $objBuilder->AddSelectItem($strTableName, 'ClientConnection', $strAliasPrefix . 'ClientConnection');
             $objBuilder->AddSelectItem($strTableName, 'SearchMetaInfo', $strAliasPrefix . 'SearchMetaInfo');
-            $objBuilder->AddSelectItem($strTableName, 'LastUpdated', $strAliasPrefix . 'LastUpdated');
             $objBuilder->AddSelectItem($strTableName, 'ObjectOwner', $strAliasPrefix . 'ObjectOwner');
         }
     }
@@ -708,15 +708,15 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
         $strAlias = $strAliasPrefix . 'DeviceRegistrationDateTime';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->dttDeviceRegistrationDateTime = $objDbRow->GetColumn($strAliasName, 'DateTime');
+        $strAlias = $strAliasPrefix . 'LastUpdated';
+        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
+        $objToReturn->strLastUpdated = $objDbRow->GetColumn($strAliasName, 'VarChar');
         $strAlias = $strAliasPrefix . 'ClientConnection';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intClientConnection = $objDbRow->GetColumn($strAliasName, 'Integer');
         $strAlias = $strAliasPrefix . 'SearchMetaInfo';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->strSearchMetaInfo = $objDbRow->GetColumn($strAliasName, 'Blob');
-        $strAlias = $strAliasPrefix . 'LastUpdated';
-        $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
-        $objToReturn->strLastUpdated = $objDbRow->GetColumn($strAliasName, 'VarChar');
         $strAlias = $strAliasPrefix . 'ObjectOwner';
         $strAliasName = !empty($strColumnAliasArray[$strAlias]) ? $strColumnAliasArray[$strAlias] : $strAlias;
         $objToReturn->intObjectOwner = $objDbRow->GetColumn($strAliasName, 'Integer');
@@ -968,9 +968,9 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
             $ChangedArray = array_merge($ChangedArray,array("DevicePlatform" => $this->strDevicePlatform));
             $ChangedArray = array_merge($ChangedArray,array("DeviceOs" => $this->strDeviceOs));
             $ChangedArray = array_merge($ChangedArray,array("DeviceRegistrationDateTime" => $this->dttDeviceRegistrationDateTime));
+            $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
             $ChangedArray = array_merge($ChangedArray,array("ClientConnection" => $this->intClientConnection));
             $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
-            $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
             $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
             $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         } else {
@@ -1048,6 +1048,14 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
                 //$ChangedArray = array_merge($ChangedArray,array("DeviceRegistrationDateTime" => "From: ".$ExistingValueStr." to: ".$this->dttDeviceRegistrationDateTime));
             }
             $ExistingValueStr = "NULL";
+            if (!is_null($ExistingObj->LastUpdated)) {
+                $ExistingValueStr = $ExistingObj->LastUpdated;
+            }
+            if ($ExistingObj->LastUpdated != $this->strLastUpdated) {
+                $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => array("Before" => $ExistingValueStr,"After" => $this->strLastUpdated)));
+                //$ChangedArray = array_merge($ChangedArray,array("LastUpdated" => "From: ".$ExistingValueStr." to: ".$this->strLastUpdated));
+            }
+            $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->ClientConnection)) {
                 $ExistingValueStr = $ExistingObj->ClientConnection;
             }
@@ -1062,14 +1070,6 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
             if ($ExistingObj->SearchMetaInfo != $this->strSearchMetaInfo) {
                 $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => array("Before" => $ExistingValueStr,"After" => $this->strSearchMetaInfo)));
                 //$ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => "From: ".$ExistingValueStr." to: ".$this->strSearchMetaInfo));
-            }
-            $ExistingValueStr = "NULL";
-            if (!is_null($ExistingObj->LastUpdated)) {
-                $ExistingValueStr = $ExistingObj->LastUpdated;
-            }
-            if ($ExistingObj->LastUpdated != $this->strLastUpdated) {
-                $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => array("Before" => $ExistingValueStr,"After" => $this->strLastUpdated)));
-                //$ChangedArray = array_merge($ChangedArray,array("LastUpdated" => "From: ".$ExistingValueStr." to: ".$this->strLastUpdated));
             }
             $ExistingValueStr = "NULL";
             if (!is_null($ExistingObj->ObjectOwner)) {
@@ -1211,9 +1211,9 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
         $ChangedArray = array_merge($ChangedArray,array("DevicePlatform" => $this->strDevicePlatform));
         $ChangedArray = array_merge($ChangedArray,array("DeviceOs" => $this->strDeviceOs));
         $ChangedArray = array_merge($ChangedArray,array("DeviceRegistrationDateTime" => $this->dttDeviceRegistrationDateTime));
+        $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
         $ChangedArray = array_merge($ChangedArray,array("ClientConnection" => $this->intClientConnection));
         $ChangedArray = array_merge($ChangedArray,array("SearchMetaInfo" => $this->strSearchMetaInfo));
-        $ChangedArray = array_merge($ChangedArray,array("LastUpdated" => $this->strLastUpdated));
         $ChangedArray = array_merge($ChangedArray,array("ObjectOwner" => $this->intObjectOwner));
         $newAuditLogEntry->AuditLogEntryDetail = json_encode($ChangedArray);
         try {
@@ -1300,9 +1300,9 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
         $this->strDevicePlatform = $objReloaded->strDevicePlatform;
         $this->strDeviceOs = $objReloaded->strDeviceOs;
         $this->dttDeviceRegistrationDateTime = $objReloaded->dttDeviceRegistrationDateTime;
+        $this->strLastUpdated = $objReloaded->strLastUpdated;
         $this->ClientConnection = $objReloaded->ClientConnection;
         $this->strSearchMetaInfo = $objReloaded->strSearchMetaInfo;
-        $this->strLastUpdated = $objReloaded->strLastUpdated;
         $this->intObjectOwner = $objReloaded->intObjectOwner;
     }
     ////////////////////
@@ -1384,6 +1384,13 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
                  */
                 return $this->dttDeviceRegistrationDateTime;
 
+            case 'LastUpdated':
+                /**
+                 * Gets the value for strLastUpdated (Read-Only Timestamp)
+                 * @return string
+                 */
+                return $this->strLastUpdated;
+
             case 'ClientConnection':
                 /**
                  * Gets the value for intClientConnection 
@@ -1397,13 +1404,6 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
                  * @return string
                  */
                 return $this->strSearchMetaInfo;
-
-            case 'LastUpdated':
-                /**
-                 * Gets the value for strLastUpdated (Read-Only Timestamp)
-                 * @return string
-                 */
-                return $this->strLastUpdated;
 
             case 'ObjectOwner':
                 /**
@@ -1880,9 +1880,9 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
         $strToReturn .= '<element name="DevicePlatform" type="xsd:string"/>';
         $strToReturn .= '<element name="DeviceOs" type="xsd:string"/>';
         $strToReturn .= '<element name="DeviceRegistrationDateTime" type="xsd:dateTime"/>';
+        $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
         $strToReturn .= '<element name="ClientConnectionObject" type="xsd1:ClientConnection"/>';
         $strToReturn .= '<element name="SearchMetaInfo" type="xsd:string"/>';
-        $strToReturn .= '<element name="LastUpdated" type="xsd:string"/>';
         $strToReturn .= '<element name="ObjectOwner" type="xsd:int"/>';
         $strToReturn .= '<element name="__blnRestored" type="xsd:boolean"/>';
         $strToReturn .= '</sequence></complexType>';
@@ -1925,13 +1925,13 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
             $objToReturn->strDeviceOs = $objSoapObject->DeviceOs;
         if (property_exists($objSoapObject, 'DeviceRegistrationDateTime'))
             $objToReturn->dttDeviceRegistrationDateTime = new dxDateTime($objSoapObject->DeviceRegistrationDateTime);
+        if (property_exists($objSoapObject, 'LastUpdated'))
+            $objToReturn->strLastUpdated = $objSoapObject->LastUpdated;
         if ((property_exists($objSoapObject, 'ClientConnectionObject')) &&
             ($objSoapObject->ClientConnectionObject))
             $objToReturn->ClientConnectionObject = ClientConnection::GetObjectFromSoapObject($objSoapObject->ClientConnectionObject);
         if (property_exists($objSoapObject, 'SearchMetaInfo'))
             $objToReturn->strSearchMetaInfo = $objSoapObject->SearchMetaInfo;
-        if (property_exists($objSoapObject, 'LastUpdated'))
-            $objToReturn->strLastUpdated = $objSoapObject->LastUpdated;
         if (property_exists($objSoapObject, 'ObjectOwner'))
             $objToReturn->intObjectOwner = $objSoapObject->ObjectOwner;
         if (property_exists($objSoapObject, '__blnRestored'))
@@ -1983,9 +1983,9 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
         $iArray['DevicePlatform'] = $this->strDevicePlatform;
         $iArray['DeviceOs'] = $this->strDeviceOs;
         $iArray['DeviceRegistrationDateTime'] = $this->dttDeviceRegistrationDateTime;
+        $iArray['LastUpdated'] = $this->strLastUpdated;
         $iArray['ClientConnection'] = $this->intClientConnection;
         $iArray['SearchMetaInfo'] = $this->strSearchMetaInfo;
-        $iArray['LastUpdated'] = $this->strLastUpdated;
         $iArray['ObjectOwner'] = $this->intObjectOwner;
         return new ArrayIterator($iArray);
     }
@@ -2030,10 +2030,10 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
      * @property-read dxQueryNode $DevicePlatform
      * @property-read dxQueryNode $DeviceOs
      * @property-read dxQueryNode $DeviceRegistrationDateTime
+     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ClientConnection
      * @property-read dxQueryNodeClientConnection $ClientConnectionObject
      * @property-read dxQueryNode $SearchMetaInfo
-     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ObjectOwner
      *
      *
@@ -2065,14 +2065,14 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
 					return new dxQueryNode('DeviceOs', 'DeviceOs', 'VarChar', $this);
 				case 'DeviceRegistrationDateTime':
 					return new dxQueryNode('DeviceRegistrationDateTime', 'DeviceRegistrationDateTime', 'DateTime', $this);
+				case 'LastUpdated':
+					return new dxQueryNode('LastUpdated', 'LastUpdated', 'VarChar', $this);
 				case 'ClientConnection':
 					return new dxQueryNode('ClientConnection', 'ClientConnection', 'Integer', $this);
 				case 'ClientConnectionObject':
 					return new dxQueryNodeClientConnection('ClientConnection', 'ClientConnectionObject', 'Integer', $this);
 				case 'SearchMetaInfo':
 					return new dxQueryNode('SearchMetaInfo', 'SearchMetaInfo', 'Blob', $this);
-				case 'LastUpdated':
-					return new dxQueryNode('LastUpdated', 'LastUpdated', 'VarChar', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'Integer', $this);
 				case 'PushRegistration':
@@ -2101,10 +2101,10 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
      * @property-read dxQueryNode $DevicePlatform
      * @property-read dxQueryNode $DeviceOs
      * @property-read dxQueryNode $DeviceRegistrationDateTime
+     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ClientConnection
      * @property-read dxQueryNodeClientConnection $ClientConnectionObject
      * @property-read dxQueryNode $SearchMetaInfo
-     * @property-read dxQueryNode $LastUpdated
      * @property-read dxQueryNode $ObjectOwner
      *
      *
@@ -2136,14 +2136,14 @@ class ClientAuthenticationTokenGen extends dxBaseClass implements IteratorAggreg
 					return new dxQueryNode('DeviceOs', 'DeviceOs', 'string', $this);
 				case 'DeviceRegistrationDateTime':
 					return new dxQueryNode('DeviceRegistrationDateTime', 'DeviceRegistrationDateTime', 'dxDateTime', $this);
+				case 'LastUpdated':
+					return new dxQueryNode('LastUpdated', 'LastUpdated', 'string', $this);
 				case 'ClientConnection':
 					return new dxQueryNode('ClientConnection', 'ClientConnection', 'integer', $this);
 				case 'ClientConnectionObject':
 					return new dxQueryNodeClientConnection('ClientConnection', 'ClientConnectionObject', 'integer', $this);
 				case 'SearchMetaInfo':
 					return new dxQueryNode('SearchMetaInfo', 'SearchMetaInfo', 'string', $this);
-				case 'LastUpdated':
-					return new dxQueryNode('LastUpdated', 'LastUpdated', 'string', $this);
 				case 'ObjectOwner':
 					return new dxQueryNode('ObjectOwner', 'ObjectOwner', 'integer', $this);
 				case 'PushRegistration':
