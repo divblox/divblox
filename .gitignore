@@ -7,10 +7,7 @@
 .idea/workspace.xml
 .idea/divblox-public-repo.iml
 divblox/config/framework/environments.php
-divblox/config/framework/environments.php
 divblox/config/framework/internal_config.php
-divblox/config/database/data_modeller/editor/assets/json/entities.json
-divblox/config/framework/environments.php
 divblox/config/database/data_modeller/editor/assets/json/entities.json
 divblox/config/framework/environments.php
 .idea/shelf/Uncommitted_changes_before_Checkout_at_2020_05_18,_10_39_[Default_Changelist]/1000passes.png
@@ -191,6 +188,3 @@ divblox/config/framework/environments.php
 .idea/shelf/Uncommitted_changes_before_Checkout_at_2020_05_18,_10_49_[Default_Changelist]/USER-GUIDE.pdf
 .idea/shelf/Uncommitted_changes_before_Checkout_at_2020_05_18,_10_49_[Default_Changelist]/yinyang.png
 divblox/config/database/data_modeller/data_model/DataModel_Config.inc.php
-divblox/config/database/data_modeller/editor/assets/json/entities.json
-divblox/config/framework/environments.php
-divblox/config/framework/internal_config.php
