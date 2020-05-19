@@ -20,13 +20,12 @@ if (typeof component_classes['data_model_subcategory_list'] === "undefined") {
 			loadPageComponent("category_update");
 		}
 	    initCustomFunctions() {
-            
             // IfZRa_modal Related functionality
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             getComponentElementById(this,"IfZRa_btn-close").on("click", function() {
                 // Your custom code here
             }.bind(this));
-            
+
             // Modal functions
             // Show the modal using javascript
             //getComponentElementById(this,"IfZRa_modal").modal("show");
