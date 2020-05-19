@@ -1,4 +1,39 @@
 {
+    "advanced-training-exercise-menu": [
+        {
+            "index": 1,
+            "item_label": "<i class=\"fa fa-home\" aria-hidden=\"true\"><\/i><br>Admin",
+            "item_active_class": "admin",
+            "item_click_class": "menu-advanced-training-exercise-menu-1",
+            "sub_menu": null,
+            "page_to_load": "admin",
+            "show_divider": false,
+            "allowed_user_roles": null,
+            "function_to_execute": null
+        },
+        {
+            "index": 2,
+            "item_label": "<i class=\"fa fa-plus\" aria-hidden=\"true\"><\/i><br>New Ticket",
+            "item_active_class": "new_ticket",
+            "item_click_class": "menu-advanced-training-exercise-menu-2",
+            "sub_menu": null,
+            "page_to_load": "new_ticket",
+            "show_divider": false,
+            "allowed_user_roles": null,
+            "function_to_execute": null
+        },
+        {
+            "index": 3,
+            "item_label": "<i class=\"fa fa-tachometer\" aria-hidden=\"true\"><\/i><br>Dashboard",
+            "item_active_class": "dashboard",
+            "item_click_class": "menu-advanced-training-exercise-menu-3",
+            "sub_menu": null,
+            "page_to_load": "dashboard",
+            "show_divider": false,
+            "allowed_user_roles": null,
+            "function_to_execute": null
+        }
+    ],
     "default": [
         {
             "index": 1,
