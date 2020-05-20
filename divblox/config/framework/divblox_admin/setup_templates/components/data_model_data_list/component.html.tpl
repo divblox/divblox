@@ -7,7 +7,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="input-group mb-3">
-                        <input type="text" id="DataListSearchInput" class="form-control data_table_search_icon" placeholder="Search..." aria-label="Search" aria-describedby="btnResetSearch">
+                        <input type="text" id="DataListSearchInput" class="form-control data_table_search_icon" placeholder="Search..." aria-label="Search" aria-describedby="btnResetSearch"/>
                         <div class="input-group-append">
                             <button class="btn btn-outline-secondary" type="button" id="btnResetSearch"><i class="fa fa-times" aria-hidden="true"></i></button>
                         </div>
