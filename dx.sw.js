@@ -1,4 +1,4 @@
-const PRECACHE = 'precache-v1589901699';
+const PRECACHE = 'precache-v1589956848';
 const RUNTIME = 'runtime';
 // A list of local resources we always want to be cached.
 const PRECACHE_URLS = [
