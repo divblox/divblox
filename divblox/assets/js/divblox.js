@@ -12,9 +12,9 @@
  * divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "3.1.2";
-let bootstrap_version = "4.4.1";
-let jquery_version = "3.4.1";
+let dx_version = "3.1.4";
+let bootstrap_version = "4.5.0";
+let jquery_version = "3.5.1";
 let minimum_required_php_version = "7.3.8";
 let spa_mode = false;
 let debug_mode = true;
@@ -49,6 +49,12 @@ let no_cache_force_str = '';
 if(window.jQuery === undefined) {
 	// JGL: We assume that we have jquery available here...
 	throw new Error("jQuery has not been loaded. Please ensure that jQuery is loaded before divblox");
+} else {
+	//JGL : This is a temporary fix for jquery to work with the component builder for jquery v3.5+
+	let rxhtmlTag = /<(?!area|br|col|embed|hr|img|input|link|meta|param)(([a-z][^\/\0>\x20\t\r\n\f]*)[^>]*)\/>/gi;
+	jQuery.htmlPrefilter = function( html ) {
+		return html.replace( rxhtmlTag, "<$1></$2>" );
+	};
 }
 let component_classes = {};
 let dx_admin_roles = ["dxadmin","administrator"];
@@ -58,7 +64,7 @@ let dx_admin_roles = ["dxadmin","administrator"];
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 let dependency_array = [
-	"divblox/assets/js/bootstrap/4.4.1/bootstrap.bundle.min.js",
+	"divblox/assets/js/bootstrap/4.5.0/bootstrap.bundle.min.js",
 	"divblox/assets/js/sweetalert/sweetalert.min.js",
 	"project/assets/js/project.js",
 	"project/assets/js/momentjs/moment.js",
@@ -2195,22 +2201,14 @@ function getComponentControllerPath(component) {
  * @param {Function} callback The function to execute once the DOM object has been created
  */
 function loadComponentHtmlAsDOMObject(component_path,callback) {
-	let isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
-	if (!isChrome) {
-		alert("The Divblox Component Builder is currently only supported in Google Chrome. To use this" +
-			" functionality, please load this page in Chrome.")
-		return;
-	}
 	dxGetScript(component_path+"/component.html"+getRandomFilePostFix(), function(html) {
 		let doctype = document.implementation.createDocumentType('html', '', '');
 		let component_dom = document.implementation.createDocument('', 'html', doctype);
-		let jq_dom = jQuery(component_dom);
+		let jq_dom = $(component_dom);
 		try {
-			let jq_html = $.parseHTML(html);
-			jq_dom.find('html').append(jq_html);
+			jq_dom.find('html').html(html);
 		} catch (e) {
-			alert("A parse error occurred. Please ensure that you are using Google Chrome.");
-			return;
+			alert("A parse error occurred. Please ensure that you are using Google Chrome. Error: "+e);
 		}
 		callback(jq_dom);
 	}, function() {
@@ -2836,9 +2834,10 @@ function dxPostExternal(url,parameters,on_success,on_fail) {
 			}
 			on_success(data)
 		})
-		.fail(function(data) {
+		// Removing this since it is causing issues on firefox
+		/*.fail(function(data) {
 			on_fail(data)
-		});
+		})*/;
 }
 /**
  * Determines whether a string is a valid JSON string

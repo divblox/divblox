@@ -3,8 +3,8 @@ if (typeof component_classes['system_account_registration_this_too'] === "undefi
 		constructor(inputs,supports_native,requires_native) {
 			super(inputs,supports_native,requires_native);
 			// Sub component config start
-			this.sub_component_definitions = [];
-			// Sub component config end
+            this.sub_component_definitions = [];
+            // Sub component config end
 			this.data_validation_array = [];
 			this.custom_validation_array = ['EmailAddress'];
 			this.required_validation_array = ['FirstName','LastName','Password'].concat(this.data_validation_array).concat(this.custom_validation_array);
@@ -123,6 +123,6 @@ if (typeof component_classes['system_account_registration_this_too'] === "undefi
 				toggleValidationState(this,item,"",true,true);
 			}.bind(this));
 		}
-	}
+   	}
 	component_classes['system_account_registration'] = system_account_registration;
 }
