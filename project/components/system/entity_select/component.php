@@ -21,23 +21,23 @@ class EntitySelectController extends ProjectComponentController {
     public function updateDatalist() {
         $EntityTypeStr = $this->getInputValue('entity');
         if (is_null($EntityTypeStr)) {
-            $this->setReturnValue("Result","Failed");
+            $this->setResult(false);
             $this->setReturnValue("Message","Entity not provided");
             $this->presentOutput();
         }
         if (in_array($EntityTypeStr, $this->RestrictedEntityArray)) {
-            $this->setReturnValue("Result","Failed");
+            $this->setResult(false);
             $this->setReturnValue("Message","Access denied");
             $this->presentOutput();
         }
         $EntityDisplayAttrStr = $this->getInputValue('display_attr');
         if (is_null($EntityDisplayAttrStr)) {
-            $this->setReturnValue("Result","Failed");
+            $this->setResult(false);
             $this->setReturnValue("Message","Entity display attribute not provided");
             $this->presentOutput();
         }
         if (in_array($EntityDisplayAttrStr, $this->RestrictedAttributeArray)) {
-            $this->setReturnValue("Result","Failed");
+            $this->setResult(false);
             $this->setReturnValue("Message","Access denied");
             $this->presentOutput();
         }
@@ -57,7 +57,7 @@ class EntitySelectController extends ProjectComponentController {
                 $ReturnArray[$item->Id] = $item->$EntityDisplayAttrStr;
             }
         }
-        $this->setReturnValue("Result","Success");
+        $this->setResult(true);
         $this->setReturnValue("ResultArray",$ReturnArray);
         $this->presentOutput();
     }

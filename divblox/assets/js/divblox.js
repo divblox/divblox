@@ -12,7 +12,7 @@
  * divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "3.1.5";
+let dx_version = "3.1.6";
 let bootstrap_version = "4.5.0";
 let jquery_version = "3.5.1";
 let minimum_required_php_version = "7.3.8";
@@ -1624,6 +1624,7 @@ class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
 				getComponentElementById(this,"PaginationCurrentItem").html('<span class="page-link">'+this.current_page+'</span>');
 				getComponentElementById(this,"PaginationNextItem").html('<span class="page-link">'+next_page+'</span>');
 				getComponentElementById(this,"PaginationNextNextItem").html('<span class="page-link">'+next_next_page+'</span>');
+				getComponentElementById(this,"ResultCountWrapper").html('<span class="badge float-right">Total: '+this.total_items+'</span>');
 				this.onAfterLoadPage(data_obj);
 			}.bind(this),
 			function(data_obj) {
@@ -2208,7 +2209,10 @@ function loadComponentHtmlAsDOMObject(component_path,callback) {
 		try {
 			jq_dom.find('html').html(html);
 		} catch (e) {
-			alert("A parse error occurred. Please ensure that you are using Google Chrome. Error: "+e);
+			alert("A parse error occurred.\nThis happens when the html in your component is not properly formed.\n" +
+				"- Please ensure all html tags have proper closing tags.\n" +
+				"- Please ensure that you do not use strange html print characters in your content." +
+				"\n\nError Detail: \n"+e);
 		}
 		callback(jq_dom);
 	}, function() {

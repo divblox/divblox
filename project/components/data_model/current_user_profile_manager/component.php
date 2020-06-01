@@ -12,7 +12,7 @@ class AccountController extends ProjectComponentController {
     }
     public function getObjectData() {
         if (is_null($this->getInputValue("Id"))) {
-            $this->setReturnValue("Result","Failed");
+            $this->setResult(false);
             $this->setReturnValue("Message","No Account Id provided");
             $this->presentOutput();
         }
@@ -22,7 +22,7 @@ class AccountController extends ProjectComponentController {
             $ProfilePicturePath = $AccountObj->ProfilePicturePath;
         }
         if (is_null($AccountObj)) {
-            $this->setReturnValue("Result","Failed");
+            $this->setResult(false);
             $this->setReturnValue("Message","Account not found");
             $this->presentOutput();
         } else {
@@ -35,14 +35,14 @@ class AccountController extends ProjectComponentController {
 
     public function saveObjectData() {
         if (is_null($this->getInputValue("ObjectData"))) {
-            $this->setReturnValue("Result","Failed");
+            $this->setResult(false);
             $this->setReturnValue("Message","No Account object provided");
             $this->presentOutput();
         }
         $AccountObj = json_decode($this->getInputValue("ObjectData"),true);
         $AccountToUpdateObj = Account::Load($this->getInputValue("Id"));
         if (is_null($AccountToUpdateObj)) {
-            $this->setReturnValue("Result","Failed");
+            $this->setResult(false);
             $this->setReturnValue("Message","Account not found");
             $this->presentOutput();
         }
@@ -53,14 +53,14 @@ class AccountController extends ProjectComponentController {
             if (isset($AccountObj[$Attribute])) {
                 if (in_array($Attribute, $this->RequiredAttributeArray)) {
                     if (strlen($AccountObj[$Attribute]) == 0) {
-                        $this->setReturnValue("Result","Failed");
+                        $this->setResult(false);
                         $this->setReturnValue("Message","$Attribute not provided");
                         $this->presentOutput();
                     }
                 }
                 if (in_array($Attribute, $this->NumberValidationAttributeArray)) {
                     if (!is_numeric($AccountObj[$Attribute])) {
-                        $this->setReturnValue("Result","Failed");
+                        $this->setResult(false);
                         $this->setReturnValue("Message","$Attribute must be numeric");
                         $this->presentOutput();
                     }
@@ -78,7 +78,7 @@ class AccountController extends ProjectComponentController {
                     $AccountToUpdateObj->$Attribute = $AccountObj[$Attribute];
                 }
             } elseif (in_array($Attribute, $this->RequiredAttributeArray)) {
-                $this->setReturnValue("Result","Failed");
+                $this->setResult(false);
                 $this->setReturnValue("Message","$Attribute not provided");
                 $this->presentOutput();
             }
@@ -88,7 +88,7 @@ class AccountController extends ProjectComponentController {
             $AccountToUpdateObj->FullName = "N/A";
         }
         $AccountToUpdateObj->Save();
-        $this->setReturnValue("Result","Success");
+        $this->setResult(true);
         $this->setReturnValue("Message","Object updated");
         $this->setReturnValue("Id",$AccountToUpdateObj->Id);
         $this->presentOutput();

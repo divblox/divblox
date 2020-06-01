@@ -6,7 +6,7 @@ class ProfilePictureUploaderController extends ProjectComponentController {
     public function __construct($ComponentNameStr = 'Component') {
         if (!file_exists($this->UploadPath)) {
             if (!mkdir($this->UploadPath,0755,true)) {
-                $this->setReturnValue("Result","Failed");
+                $this->setResult(false);
                 $this->setReturnValue("Message","Cannot create file upload folder");
                 $this->setReturnValue("ComponentFriendlyMessage","Cannot create file upload folder");
                 $this->presentOutput();
@@ -15,10 +15,10 @@ class ProfilePictureUploaderController extends ProjectComponentController {
         parent::__construct($ComponentNameStr);
     }
     public function checkComponentAccess() {
-        $this->setReturnValue("Result","Success");
+        $this->setResult(true);
         $this->setReturnValue("Message","Component ready");
         if (!ProjectAccessManager::getComponentAccess(ProjectFunctions::getCurrentAccountId(),$this->ComponentNameStr)) {
-            $this->setReturnValue("Result","Failed");
+            $this->setResult(false);
             $this->setReturnValue("Message","ACCESS DENIED");
             $this->setReturnValue("ComponentFriendlyMessage","Access is denied for component '".$this->ComponentNameStr."'");
             $this->presentOutput();
@@ -31,7 +31,7 @@ class ProfilePictureUploaderController extends ProjectComponentController {
             'title' => 'auto'
         ));
 
-        $this->setReturnValue("Result","Success");
+        $this->setResult(true);
         // call to upload the files
         $data = $FileUploader->upload();
         $this->setReturnValue("Message",$data);

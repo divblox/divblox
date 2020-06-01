@@ -165,7 +165,7 @@ class EntityInstanceComponentController extends ProjectComponentController {
             $RelationshipList = $this->getRelationshipList($EntityObj,$Relationship);
             $this->setReturnValue($Relationship."List",$RelationshipList);
         }
-        $this->setReturnValue("Result","Success");
+        $this->setResult(true);
         $this->setReturnValue("Message","");
         $this->presentOutput();
         
@@ -206,7 +206,7 @@ class EntityInstanceComponentController extends ProjectComponentController {
     }
     public function saveObjectData() {
         if (is_null($this->getInputValue("ObjectData"))) {
-            $this->setReturnValue("Result","Failed");
+            $this->setResult(false);
             $this->setReturnValue("Message","No ".$this->EntityNameStr." object provided");
             $this->presentOutput();
         }
@@ -224,14 +224,14 @@ class EntityInstanceComponentController extends ProjectComponentController {
             if (isset($InputEntityObj[$Attribute])) {
                 if (in_array($Attribute, $this->RequiredAttributeArray)) {
                     if (strlen($InputEntityObj[$Attribute]) == 0) {
-                        $this->setReturnValue("Result","Failed");
+                        $this->setResult(false);
                         $this->setReturnValue("Message","$Attribute not provided");
                         $this->presentOutput();
                     }
                 }
                 if (in_array($Attribute, $this->NumberValidationAttributeArray)) {
                     if (!is_numeric($InputEntityObj[$Attribute])) {
-                        $this->setReturnValue("Result","Failed");
+                        $this->setResult(false);
                         $this->setReturnValue("Message","$Attribute must be numeric");
                         $this->presentOutput();
                     }
@@ -255,7 +255,7 @@ class EntityInstanceComponentController extends ProjectComponentController {
                     }
                 }
             } elseif (in_array($Attribute, $this->RequiredAttributeArray)) {
-                $this->setReturnValue("Result","Failed");
+                $this->setResult(false);
                 $this->setReturnValue("Message","$Attribute not provided");
                 $this->presentOutput();
             }
@@ -269,28 +269,28 @@ class EntityInstanceComponentController extends ProjectComponentController {
         $this->doBeforeSaveActions($EntityToUpdateObj);
         $EntityToUpdateObj->Save();
         $this->doAfterSaveActions($EntityToUpdateObj);
-        $this->setReturnValue("Result","Success");
+        $this->setResult(true);
         $this->setReturnValue("Message","Object updated");
         $this->setReturnValue("Id",$EntityToUpdateObj->Id);
         $this->presentOutput();
     }
     public function deleteObjectData() {
         if (is_null($this->getInputValue("Id"))) {
-            $this->setReturnValue("Result","Failed");
+            $this->setResult(false);
             $this->setReturnValue("Message","No ".$this->EntityNameStr." Id provided");
             $this->presentOutput();
         }
         $EntityNodeNameStr = $this->EntityNameStr;
         $EntityObj = $EntityNodeNameStr::Load($this->getInputValue("Id",true));
         if (is_null($EntityObj)) {
-            $this->setReturnValue("Result","Failed");
+            $this->setResult(false);
             $this->setReturnValue("Message",$this->EntityNameStr." not found");
             $this->presentOutput();
         } else {
             $this->doBeforeDeleteActions($EntityObj);
             $EntityObj->Delete();
             $this->doAfterDeleteActions();
-            $this->setReturnValue("Result","Success");
+            $this->setResult(true);
             $this->setReturnValue("Message",$this->EntityNameStr." deleted");
             $this->presentOutput();
         }
@@ -337,13 +337,13 @@ class EntityDataSeriesComponentController extends ProjectComponentController {
         $DefaultSortAttribute = $this->IncludedAttributeArray[0];
         
         if (is_null($this->getInputValue("ItemsPerPage"))) {
-            $this->setReturnValue("Result","Failed");
+            $this->setResult(false);
             $this->setReturnValue("Message","No items per page provided");
             $this->presentOutput();
         }
         $AccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),$this->EntityNameStr);
         if (!in_array(AccessOperation::READ_STR, $AccessArray)) {
-            $this->setReturnValue("Result","Failed");
+            $this->setResult(false);
             $this->setReturnValue("Message","Read access denied");
             $this->presentOutput();
         }
@@ -442,7 +442,7 @@ class EntityDataSeriesComponentController extends ProjectComponentController {
             }
             array_push($EntityReturnArray,$CompleteReturnArray);
         }
-        $this->setReturnValue("Result","Success");
+        $this->setResult(true);
         $this->setReturnValue("Message","");
         $this->setReturnValue("Page",$EntityReturnArray);
         $this->setReturnValue("TotalCount",$EntityNodeNameStr::QueryCount($QueryCondition));
@@ -451,13 +451,13 @@ class EntityDataSeriesComponentController extends ProjectComponentController {
     public function deleteSelection() {
         $EntityNodeNameStr = $this->EntityNameStr;
         if (is_null($this->getInputValue("SelectedItemArray"))) {
-            $this->setReturnValue("Result","Failed");
+            $this->setResult(false);
             $this->setReturnValue("Message","No items provided");
             $this->presentOutput();
         }
         $AccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),$this->EntityNameStr);
         if (!in_array(AccessOperation::DELETE_STR, $AccessArray)) {
-            $this->setReturnValue("Result","Failed");
+            $this->setResult(false);
             $this->setReturnValue("Message","Delete permission denied");
             $this->presentOutput();
         }
@@ -471,7 +471,7 @@ class EntityDataSeriesComponentController extends ProjectComponentController {
             $EntityToDeleteObj->Delete();
             $DeleteCount++;
         }
-        $this->setReturnValue("Result","Success");
+        $this->setResult(true);
         $this->setReturnValue("Message","$DeleteCount items deleted");
         $this->presentOutput();
     }

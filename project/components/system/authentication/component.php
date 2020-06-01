@@ -7,23 +7,23 @@ class AuthenticationController extends ProjectComponentController {
     public function doAuthentication() {
         if (is_null($this->getInputValue("Username")) ||
             is_null($this->getInputValue("Password"))) {
-            $this->setReturnValue("Result","Failed");
+            $this->setResult(false);
             $this->setReturnValue("Message","Invalid input provided");
             $this->presentOutput();
         }
         $AccountObj = Account::LoadByUsername($this->getInputValue("Username"));
         if (is_null($AccountObj)) {
-            $this->setReturnValue("Result","Failed");
+            $this->setResult(false);
             $this->setReturnValue("Message","Invalid input provided");
             $this->presentOutput();
         }
         if ($AccountObj->AccessBlocked == 1) {
-            $this->setReturnValue("Result","Failed");
+            $this->setResult(false);
             $this->setReturnValue("Message","Account access blocked");
             $this->presentOutput();
         }
         if (!password_verify($this->getInputValue("Password"), $AccountObj->Password)) {
-            $this->setReturnValue("Result","Failed");
+            $this->setResult(false);
             $this->setReturnValue("Message","Invalid input provided");
             $this->presentOutput();
         }
@@ -33,7 +33,7 @@ class AuthenticationController extends ProjectComponentController {
             if ($this->initializeNewAuthenticationToken()) {
                 $ClientAuthenticationTokenObj = ClientAuthenticationToken::LoadByToken($this->CurrentClientAuthenticationToken);
                 if (is_null($ClientAuthenticationTokenObj)) {
-                    $this->setReturnValue("Result","Failed");
+                    $this->setResult(false);
                     $this->setReturnValue("Message","Could not initialize authentication token");
                     $this->presentOutput();
                 }
@@ -41,7 +41,7 @@ class AuthenticationController extends ProjectComponentController {
         }
         $ClientConnectionObj = $ClientAuthenticationTokenObj->ClientConnectionObject;
         if (is_null($ClientConnectionObj)) {
-            $this->setReturnValue("Result","Failed");
+            $this->setResult(false);
             $this->setReturnValue("Message","Could not initialize authentication token");
             $this->presentOutput();
         }
@@ -49,7 +49,7 @@ class AuthenticationController extends ProjectComponentController {
         ProjectFunctions::linkPushRegistrationsToAccount($ClientAuthenticationTokenObj,$AccountObj);
         try {
             $ClientConnectionObj->Save();
-            $this->setReturnValue("Result","Success");
+            $this->setResult(true);
             $UserRole = "";
             if (!is_null($AccountObj->UserRoleObject)) {
                 $UserRole = $AccountObj->UserRoleObject->Role;
@@ -60,7 +60,7 @@ class AuthenticationController extends ProjectComponentController {
         } catch (dxCallerException $e) {
 
         }
-        $this->setReturnValue("Result","Failed");
+        $this->setResult(false);
         $this->setReturnValue("Message","Unknown error occurred");
         $this->presentOutput();
     }

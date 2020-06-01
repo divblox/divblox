@@ -25,7 +25,7 @@ getComponentElementById(this,"[element_id]_btn-group-left").on("click", function
     // Example code that executes when the button is clicked
 	// Add the trigger element to the loading element array. This shows a loading animation on the trigger
     // element while it waits for a response or function return
-    let element_id = addTriggerElementToLoadingElementArray(getComponentElementById(this,"[element_id]_btn"),"Nice Loading text");
+    let element_id = addTriggerElementToLoadingElementArray(getComponentElementById(this,"[element_id]_btn-group-left"),"Nice Loading text");
     // Example: once your function has executed, call removeTriggerElementFromLoadingElementArray to remove
     // loading animation
     setTimeout(function() {
@@ -36,7 +36,7 @@ getComponentElementById(this,"[element_id]_btn-group-middle").on("click", functi
     // Example code that executes when the button is clicked
 	// Add the trigger element to the loading element array. This shows a loading animation on the trigger
     // element while it waits for a response or function return
-    let element_id = addTriggerElementToLoadingElementArray(getComponentElementById(this,"[element_id]_btn"),"Nice Loading text");
+    let element_id = addTriggerElementToLoadingElementArray(getComponentElementById(this,"[element_id]_btn-group-middle"),"Nice Loading text");
     // Example: once your function has executed, call removeTriggerElementFromLoadingElementArray to remove
     // loading animation
     setTimeout(function() {
@@ -47,7 +47,7 @@ getComponentElementById(this,"[element_id]_btn-group-right").on("click", functio
     // Example code that executes when the button is clicked
 	// Add the trigger element to the loading element array. This shows a loading animation on the trigger
     // element while it waits for a response or function return
-    let element_id = addTriggerElementToLoadingElementArray(getComponentElementById(this,"[element_id]_btn"),"Nice Loading text");
+    let element_id = addTriggerElementToLoadingElementArray(getComponentElementById(this,"[element_id]_btn-group-right"),"Nice Loading text");
     // Example: once your function has executed, call removeTriggerElementFromLoadingElementArray to remove
     // loading animation
     setTimeout(function() {

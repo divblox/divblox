@@ -12,7 +12,7 @@ class AccountController extends ProjectComponentController {
         parent::__construct($ComponentNameStr);
     }
     public function getObjectData() {
-        $this->setReturnValue("Result","Success");
+        $this->setResult(true);
         $this->setReturnValue("Message","");
 
         $this->presentOutput();
@@ -20,7 +20,7 @@ class AccountController extends ProjectComponentController {
 
     public function saveObjectData() {
         if (is_null($this->getInputValue("ObjectData"))) {
-            $this->setReturnValue("Result","Failed");
+            $this->setResult(false);
             $this->setReturnValue("Message","No Account object provided");
             $this->presentOutput();
         }
@@ -33,14 +33,14 @@ class AccountController extends ProjectComponentController {
             if (isset($AccountObj[$Attribute])) {
                 if (in_array($Attribute, $this->RequiredAttributeArray)) {
                     if (strlen($AccountObj[$Attribute]) == 0) {
-                        $this->setReturnValue("Result","Failed");
+                        $this->setResult(false);
                         $this->setReturnValue("Message","$Attribute not provided");
                         $this->presentOutput();
                     }
                 }
                 if (in_array($Attribute, $this->NumberValidationAttributeArray)) {
                     if (!is_numeric($AccountObj[$Attribute])) {
-                        $this->setReturnValue("Result","Failed");
+                        $this->setResult(false);
                         $this->setReturnValue("Message","$Attribute must be numeric");
                         $this->presentOutput();
                     }
@@ -54,7 +54,7 @@ class AccountController extends ProjectComponentController {
                     $AccountToCreateObj->$Attribute = $AccountObj[$Attribute];
                     $ExistingAccountCount = Account::QueryCount(dxQ::Equal(dxQN::Account()->Username, $AccountObj[$Attribute]));
                     if ($ExistingAccountCount > 0) {
-                        $this->setReturnValue("Result","Failed");
+                        $this->setResult(false);
                         $this->setReturnValue("Message","$Attribute already exists");
                         $this->presentOutput();
                     }
@@ -63,14 +63,14 @@ class AccountController extends ProjectComponentController {
                     $AccountToCreateObj->$Attribute = $AccountObj[$Attribute];
                 }
             } elseif (in_array($Attribute, $this->RequiredAttributeArray)) {
-                $this->setReturnValue("Result","Failed");
+                $this->setResult(false);
                 $this->setReturnValue("Message","$Attribute not provided");
                 $this->presentOutput();
             }
         }
         $AccountToCreateObj->UserRoleObject = UserRole::LoadByRole($this->UserRoleToRegister);
         if (is_null($AccountToCreateObj->UserRoleObject)) {
-            $this->setReturnValue("Result","Failed");
+            $this->setResult(false);
             $this->setReturnValue("Message","User role configuration incorrect");
             $this->presentOutput();
         }
@@ -79,7 +79,7 @@ class AccountController extends ProjectComponentController {
             $AccountToCreateObj->FullName = "N/A";
         }
         $AccountToCreateObj->Save();
-        $this->setReturnValue("Result","Success");
+        $this->setResult(true);
         $this->setReturnValue("Message","Object created");
         $this->setReturnValue("Id",$AccountToCreateObj->Id);
         $this->presentOutput();

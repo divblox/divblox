@@ -7604,7 +7604,7 @@ class ComponentController_base {
     public function __construct($ComponentNameStr = 'Component', $RequireCleanInputBool = true) {
         $this->ComponentNameStr = $ComponentNameStr;
         $this->ResultArray = array();
-        $this->setReturnValue("Result","Failed");
+        $this->setResult(false);
         $this->setReturnValue("Message","Unknown error");
         $HttpUserAgent = 'None';
         if (isset($_SERVER["HTTP_USER_AGENT"])) {
@@ -7633,6 +7633,13 @@ class ComponentController_base {
         }
         $this->ResultArray[$Key] = $Value;
         return true;
+    }
+    
+    /**
+     * @param bool $IsSuccessBool: Set true to force the return to be "Success"
+     */
+    protected function setResult($IsSuccessBool = true) {
+        $this->setReturnValue("Result",$IsSuccessBool ? "Success":"Failed");
     }
 
     /**
@@ -7794,10 +7801,10 @@ class ComponentController_base {
      *
      */
     public function checkComponentAccess() {
-        $this->setReturnValue("Result","Success");
+        $this->setResult(true);
         $this->setReturnValue("Message","Component ready");
         if (!ProjectAccessManager::getComponentAccess(FrameworkFunctions::getCurrentAccountId(),$this->ComponentNameStr)) {
-            $this->setReturnValue("Result","Failed");
+            $this->setResult(false);
             $this->setReturnValue("ForceLogout",true);
             $this->setReturnValue("Message","Access is denied for component '".$this->ComponentNameStr."'");
             $this->presentOutput();
@@ -7846,19 +7853,19 @@ class ComponentController_base {
     public function executeComponentFunction() {
         $FunctionName = $this->getInputValue("f");
         if (is_null($FunctionName)) {
-            $this->setReturnValue("Result","Failed");
+            $this->setResult(false);
             $this->setReturnValue("Message","Invalid function");
             $this->presentOutput();
         }
         if (method_exists($this,$FunctionName)) {
             call_user_func(array($this, $FunctionName));
         } else {
-            $this->setReturnValue("Result","Failed");
+            $this->setResult(false);
             $this->setReturnValue("Message","Invalid function");
             $this->presentOutput();
         }
     }
-
+    
     /**
      *
      */
