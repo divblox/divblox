@@ -9,7 +9,7 @@
                     <div class="modal-header">
                         <h5 class="modal-title" id="ProfilePictureModalLabel">Upload Profile Picture</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
+                            <span aria-hidden="true"><i class="fa fa-times" aria-hidden="true"> </i></span>
                         </button>
                     </div>
                     <div class="modal-body">
@@ -22,168 +22,165 @@
             </div>
         </div>
         <div class="container-fluid container-no-gutters">
-
-            <form class="needs-validation" novalidate="">
-                <div xmlns="" class="row grey-area" style="padding: 40px 0px;margin-bottom: 15px; margin-top: -15px;">
-                    <div class="col-12" style="margin-top: -30px;">
-                        <h3>Profile</h3>
-                    </div>
-                    <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3" style="text-align: center;">
-                        <figure class="img-caption">
-                            <img id="ProfilePictureRender" src="project/assets/images/divblox_profile_picture_placeholder.svg" class="img rounded-circle profile-page-profile-picture"/>
-                            <figcaption class="img-caption-text" data-toggle="modal" data-target="#ProfilePictureModal">Click to upload profile picture</figcaption>
-                        </figure>
-                        <button id="btnLogout" type="button" class="btn btn-link fullwidth mt-1"><i class="fa fa-power-off" aria-hidden="true"></i> Sign Out</button>
-                    </div>
-                    <div class="col-12 col-sm-12 col-md-9 col-lg-9 col-xl-9">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <label>First Name:</label>
-                                <input name="FirstName" id="FirstName" type="text" class="form-control" />
-                            </div>
-                            <div class="col-md-4">
-                                <label>Last Name:</label>
-                                <input name="LastName" id="LastName" type="text" class="form-control" />
-                            </div>
-                            <div class="col-md-4">
-                                <label>Nickname:</label>
-                                <input name="Nickname" id="Nickname" type="text" class="form-control" />
-                            </div>
-                            <div class="col-md-4">
-                                <label>Email Address:</label>
-                                <input name="EmailAddress" id="EmailAddress" type="text" class="form-control" required="" />
-                                <div id="EmailAddressInvalidFeedback" class="invalid-feedback">
-                                    Please provide an email address
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <label>Status:</label>
-                                <textarea name="Status" id="Status" class="form-control"></textarea>
+            <div xmlns="" class="row grey-area" style="padding: 40px 0px;margin-bottom: 15px; margin-top: -15px;">
+                <div class="col-12" style="margin-top: -30px;">
+                    <h3>Profile</h3>
+                </div>
+                <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3" style="text-align: center;">
+                    <figure class="img-caption">
+                        <img id="ProfilePictureRender" src="project/assets/images/divblox_profile_picture_placeholder.svg" class="img rounded-circle profile-page-profile-picture"/>
+                        <figcaption class="img-caption-text" data-toggle="modal" data-target="#ProfilePictureModal">Click to upload profile picture</figcaption>
+                    </figure>
+                    <button id="btnLogout" type="button" class="btn btn-link fullwidth mt-1"><i class="fa fa-power-off" aria-hidden="true"></i> Sign Out</button>
+                </div>
+                <div class="col-12 col-sm-12 col-md-9 col-lg-9 col-xl-9">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>First Name:</label>
+                            <input name="FirstName" id="FirstName" type="text" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label>Last Name:</label>
+                            <input name="LastName" id="LastName" type="text" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label>Nickname:</label>
+                            <input name="Nickname" id="Nickname" type="text" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label>Email Address:</label>
+                            <input name="EmailAddress" id="EmailAddress" type="text" class="form-control" required="" />
+                            <div id="EmailAddressInvalidFeedback" class="invalid-feedback">
+                                Please provide an email address
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-8"></div>
-                            <div class="col-md-4">
-                                <button id="btnSave" type="button" class="btn btn-outline-primary fullwidth mt-1">Save Changes</button>
+                        <div class="col-md-8">
+                            <label>Status:</label>
+                            <textarea name="Status" id="Status" class="form-control"></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8"></div>
+                        <div class="col-md-4">
+                            <button id="btnSave" type="button" class="btn btn-outline-primary fullwidth mt-1">Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <ul class="nav nav-tabs" id="ProfileTabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="about-tab" data-toggle="tab" href="#about" role="tab" aria-controls="home" aria-selected="true">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="settings-tab" data-toggle="tab" href="#settings" role="tab" aria-controls="home" aria-selected="true">Settings</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="additional-info-tab" data-toggle="tab" href="#additional-info" role="tab" aria-controls="home" aria-selected="true">Additional Info</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="ProfileTabsContent">
+                <div class="tab-pane fade show active" id="about" role="tabpanel" aria-labelledby="about-tab">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Title:</label>
+                            <input name="Title" id="Title" type="text" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label>Middle Names:</label>
+                            <input name="MiddleNames" id="MiddleNames" type="text" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label>Maiden Name:</label>
+                            <input name="MaidenName" id="MaidenName" type="text" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label>Main Contact Number:</label>
+                            <input name="MainContactNumber" id="MainContactNumber" type="text" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label>Gender:</label>
+                            <select name="Gender" id="Gender" class="custom-select">
+                                <option value="">-Please Select-</option>
+                                <option value="Not Specified">Not Specified</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Date Of Birth:</label>
+                            <input name="DateOfBirth" id="DateOfBirth" type="date" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label>Identification Number:</label>
+                            <input name="IdentificationNumber" id="IdentificationNumber" type="text" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-12">
+                                    <label>Physical Address Line One:</label>
+                                    <input name="PhysicalAddressLineOne" id="PhysicalAddressLineOne" type="text" class="form-control" />
+                                </div>
+                                <div class="col-12">
+                                    <label>Physical Address Line Two:</label>
+                                    <input name="PhysicalAddressLineTwo" id="PhysicalAddressLineTwo" type="text" class="form-control" />
+                                </div>
+                                <div class="col-12">
+                                    <label>Physical Address Postal Code:</label>
+                                    <input name="PhysicalAddressPostalCode" id="PhysicalAddressPostalCode" type="text" class="form-control" />
+                                </div>
+                                <div class="col-12">
+                                    <label>Physical Address Country:</label>
+                                    <input name="PhysicalAddressCountry" id="PhysicalAddressCountry" type="text" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-12">
+                                    <label>Postal Address Line One:</label>
+                                    <input name="PostalAddressLineOne" id="PostalAddressLineOne" type="text" class="form-control" />
+                                </div>
+                                <div class="col-12">
+                                    <label>Postal Address Line Two:</label>
+                                    <input name="PostalAddressLineTwo" id="PostalAddressLineTwo" type="text" class="form-control" />
+                                </div>
+                                <div class="col-12">
+                                    <label>Postal Address Postal Code:</label>
+                                    <input name="PostalAddressPostalCode" id="PostalAddressPostalCode" type="text" class="form-control" />
+                                </div>
+                                <div class="col-12">
+                                    <label>Postal Address Country:</label>
+                                    <input name="PostalAddressCountry" id="PostalAddressCountry" type="text" class="form-control" />
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <ul class="nav nav-tabs" id="ProfileTabs" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active" id="about-tab" data-toggle="tab" href="#about" role="tab" aria-controls="home" aria-selected="true">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="settings-tab" data-toggle="tab" href="#settings" role="tab" aria-controls="home" aria-selected="true">Settings</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="additional-info-tab" data-toggle="tab" href="#additional-info" role="tab" aria-controls="home" aria-selected="true">Additional Info</a>
-                    </li>
-                </ul>
-                <div class="tab-content" id="ProfileTabsContent">
-                    <div class="tab-pane fade show active" id="about" role="tabpanel" aria-labelledby="about-tab">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <label>Title:</label>
-                                <input name="Title" id="Title" type="text" class="form-control" />
-                            </div>
-                            <div class="col-md-4">
-                                <label>Middle Names:</label>
-                                <input name="MiddleNames" id="MiddleNames" type="text" class="form-control" />
-                            </div>
-                            <div class="col-md-4">
-                                <label>Maiden Name:</label>
-                                <input name="MaidenName" id="MaidenName" type="text" class="form-control" />
-                            </div>
-                            <div class="col-md-4">
-                                <label>Main Contact Number:</label>
-                                <input name="MainContactNumber" id="MainContactNumber" type="text" class="form-control" />
-                            </div>
-                            <div class="col-md-4">
-                                <label>Gender:</label>
-                                <select name="Gender" id="Gender" class="custom-select">
-                                    <option value="">-Please Select-</option>
-                                    <option value="Not Specified">Not Specified</option>
-                                    <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label>Date Of Birth:</label>
-                                <input name="DateOfBirth" id="DateOfBirth" type="date" class="form-control" />
-                            </div>
-                            <div class="col-md-4">
-                                <label>Identification Number:</label>
-                                <input name="IdentificationNumber" id="IdentificationNumber" type="text" class="form-control" />
+                <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Username:</label>
+                            <input name="Username" id="Username" type="text" class="form-control" required="" />
+                            <div id="UsernameInvalidFeedback" class="invalid-feedback">
+                                Please provide an username
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <label>Physical Address Line One:</label>
-                                        <input name="PhysicalAddressLineOne" id="PhysicalAddressLineOne" type="text" class="form-control" />
-                                    </div>
-                                    <div class="col-12">
-                                        <label>Physical Address Line Two:</label>
-                                        <input name="PhysicalAddressLineTwo" id="PhysicalAddressLineTwo" type="text" class="form-control" />
-                                    </div>
-                                    <div class="col-12">
-                                        <label>Physical Address Postal Code:</label>
-                                        <input name="PhysicalAddressPostalCode" id="PhysicalAddressPostalCode" type="text" class="form-control" />
-                                    </div>
-                                    <div class="col-12">
-                                        <label>Physical Address Country:</label>
-                                        <input name="PhysicalAddressCountry" id="PhysicalAddressCountry" type="text" class="form-control" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <label>Postal Address Line One:</label>
-                                        <input name="PostalAddressLineOne" id="PostalAddressLineOne" type="text" class="form-control" />
-                                    </div>
-                                    <div class="col-12">
-                                        <label>Postal Address Line Two:</label>
-                                        <input name="PostalAddressLineTwo" id="PostalAddressLineTwo" type="text" class="form-control" />
-                                    </div>
-                                    <div class="col-12">
-                                        <label>Postal Address Postal Code:</label>
-                                        <input name="PostalAddressPostalCode" id="PostalAddressPostalCode" type="text" class="form-control" />
-                                    </div>
-                                    <div class="col-12">
-                                        <label>Postal Address Country:</label>
-                                        <input name="PostalAddressCountry" id="PostalAddressCountry" type="text" class="form-control" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <label>Username:</label>
-                                <input name="Username" id="Username" type="text" class="form-control" required="" />
-                                <div id="UsernameInvalidFeedback" class="invalid-feedback">
-                                    Please provide an username
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label>Password:</label>
-                                <input name="Password" id="Password" type="password" class="form-control" />
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tab-pane fade" id="additional-info" role="tabpanel" aria-labelledby="additional-info-tab">
-                        <div xmlns="" class="row">
-                            <div class="col-12">
-                                <div id="DOCwu"/>
-                            </div>
+                        <div class="col-md-4">
+                            <label>Password:</label>
+                            <input name="Password" id="Password" type="password" class="form-control" />
                         </div>
                     </div>
                 </div>
-            </form>
+                <div class="tab-pane fade" id="additional-info" role="tabpanel" aria-labelledby="additional-info-tab">
+                    <div xmlns="" class="row">
+                        <div class="col-12">
+                            <div id="DOCwu"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
