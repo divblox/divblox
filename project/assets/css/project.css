@@ -641,7 +641,7 @@ label {
 /* -------------------------------------------------------------------------------------------------------------------*/
 /* ---------------------------------------------Styles for bottom navbars---------------------------------------------*/
 .dx-bottom-nav {
-    height:65px !important;
+    height:calc(65px + (2 * env(safe-area-inset-bottom))) !important;
     padding: .1rem 1rem !important;
 }
 .dx-bottom-nav >.navbar-nav {
@@ -660,9 +660,6 @@ label {
     }
 }
 @media screen and (max-width: 375px) {
-    .dx-bottom-nav {
-        height:55px !important;
-    }
     .dx-bottom-nav >.navbar-nav {
         font-size:0.6em;
     }

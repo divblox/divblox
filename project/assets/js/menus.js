@@ -26,13 +26,13 @@ let menu_manager = {
     getMenuHtml(menu_name,item_html_template,sub_menu_wrapper_template) {
         let menu_html = '';
         let default_item_html_template =
-            '<li class="nav-item">\n' +
+            '<li class="nav-item {user-role-visibility}">\n' +
             '   <a class="nav-link navigation-activate-on-{item_active_class}' +
-            ' navigation-item-trigger-{item_click_class} {user-role-visibility}"' +
+            ' navigation-item-trigger-{item_click_class}"' +
             ' href="#">{item_label}</a>\n' +
             '</li>\n';
         let default_sub_menu_wrapper_template =
-            '<li class="nav-item dropdown">\n' +
+            '<li class="nav-item dropdown {user-role-visibility}">\n' +
             '   <a class="nav-link navigation-activate-on-{item_active_class} dropdown-toggle"' +
             ' href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
             '{item_label}</a>\n' +
@@ -60,6 +60,15 @@ let menu_manager = {
                 prepared_html_template = sub_menu_wrapper_template;
                 prepared_html_template = prepared_html_template.replace('{item_label}',menu_obj["item_label"]);
                 prepared_html_template = prepared_html_template.replace('{item_active_class}',menu_obj["item_active_class"]);
+                if (menu_obj['allowed_user_roles'] !== null) {
+                    let user_role_visibility_str = 'user-role-visible';
+                    menu_obj['allowed_user_roles'].forEach(function(role) {
+                        user_role_visibility_str += ' '+role.toLowerCase()+'-visible';
+                    });
+                    prepared_html_template = prepared_html_template.replace('{user-role-visibility}',user_role_visibility_str);
+                } else {
+                    prepared_html_template = prepared_html_template.replace(' {user-role-visibility}','');
+                }
                 let sub_menu_html = this.getMenuHtml(menu_obj["sub_menu"], default_item_html_template.replace('nav-link','dropdown-item'));
                 prepared_html_template = prepared_html_template.replace('{sub_menu}',sub_menu_html);
             } else {

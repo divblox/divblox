@@ -16,7 +16,7 @@ if (typeof component_classes['navigation_side_navbar'] === "undefined") {
 			}
 			super.reset(inputs,propagate);
 			let default_sub_menu_wrapper_template =
-				'<li class="nav-item dropright">\n' +
+				'<li class="nav-item dropright {user-role-visibility}">\n' +
 				'   <a class="nav-link navigation-activate-on-{item_active_class} dropdown-toggle"' +
 				' href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
 				'{item_label}</a>\n' +
