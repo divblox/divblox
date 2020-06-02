@@ -1,5 +1,5 @@
 .idea/
 .vscode/
 .DS_Store
-divblox/config/database/Backups/DBSyncBackup_Main.sql
+divblox/config/database/Backups/
 divblox/config/framework/internal_config.php
