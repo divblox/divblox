@@ -62,6 +62,7 @@ if (typeof component_classes['system_account_registration_this_too'] === "undefi
 				return;
 			}
 			dxRequestInternal(getComponentControllerPath(this),{f:"saveObjectData",ObjectData:JSON.stringify(current_component_obj)}, function(data_obj) {
+				registerUserRole(data_obj.UserRole);
 				pageEventTriggered("account_registered",{"account_id":data_obj.Id});
 				this.loadAccount();
 				this.resetValidation();
@@ -123,6 +124,16 @@ if (typeof component_classes['system_account_registration_this_too'] === "undefi
 				toggleValidationState(this,item,"",true,true);
 			}.bind(this));
 		}
+   	    initCustomFunctions() {
+            
+            // FS7vu_button Related functionality
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            getComponentElementById(this,"btnBackToLogin").on("click", function() {
+                loadPageComponent('login');
+            }.bind(this));
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            
+        }
    	}
 	component_classes['system_account_registration'] = system_account_registration;
 }

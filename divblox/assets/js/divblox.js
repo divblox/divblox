@@ -1,18 +1,18 @@
 /*
  * Copyright (c) 2019. Stratusolve (Pty) Ltd, South Africa
  * This file is the property of Stratusolve (Pty) Ltd.
- * This file may not be used or included in any project prior to the signing of the divblox software license agreement.
- * By using this file or including it in your project you agree to the terms and conditions stipulated by the divblox software license agreement.
+ * This file may not be used or included in any project prior to the signing of the Divblox software license agreement.
+ * By using this file or including it in your project you agree to the terms and conditions stipulated by the Divblox software license agreement.
  * This file may not be copied or modified in any way without prior written permission from Stratusolve (Pty) Ltd
- * THIS FILE SHOULD NOT BE EDITED. divblox assumes the integrity of this file. If you edit this file, it could be overridden by a future divblox update
+ * THIS FILE SHOULD NOT BE EDITED. Divblox assumes the integrity of this file. If you edit this file, it could be overridden by a future Divblox update
  * For queries please send an email to support@divblox.com
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
- * divblox initialization
+ * Divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "3.1.8";
+let dx_version = "3.1.9";
 let bootstrap_version = "4.5.0";
 let jquery_version = "3.5.1";
 let minimum_required_php_version = "7.3.8";
@@ -58,11 +58,10 @@ if(window.jQuery === undefined) {
 }
 let component_classes = {};
 let dx_admin_roles = ["dxadmin","administrator"];
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/**
- * divblox initialization related functions
- */
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+let current_user_profile_picture_path = getRootPath()+"project/assets/images/divblox_profile_picture_placeholder.svg";
+let dom_component_index_map = {};
+// JGL: Let's initialize the object that will contain relevant DOM info for our components that are rendered on the page
+let registered_component_array = {};
 let dependency_array = [
 	"divblox/assets/js/bootstrap/4.5.0/bootstrap.bundle.min.js",
 	"divblox/assets/js/sweetalert/sweetalert.min.js",
@@ -71,363 +70,6 @@ let dependency_array = [
 	"project/assets/js/data_model.js",
 	"project/assets/js/menus.js",
 ];
-/**
- * Loads the divblox chat widget for the setup page
- */
-function loadDxChatWidget() {
-	var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-	(function(){
-		var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-		s1.async=true;
-		s1.src='https://embed.tawk.to/5e2aa42bdaaca76c6fcfa354/default';
-		s1.charset='UTF-8';
-		s1.setAttribute('crossorigin','*');
-		s0.parentNode.insertBefore(s1,s0);
-	})();
-}
-/**
- * Must be called at load to ensure that divblox loads correctly for the current environment. This function will set all
- * required paths and load divblox dependencies
- * @param {Boolean} as_native Tells divblox whether to initiate for a native environment or web
- */
-function initDx(as_native) {
-	if (typeof as_native === "undefined") {
-		as_native = false;
-	}
-	setPaths(as_native);
-	let stored_global_vars = getValueFromAppState("global_vars");
-	if (stored_global_vars !== null) {
-		global_vars = stored_global_vars;
-	}
-	// It is important to call this before other loading functions, since we might need to load a page before all
-	// dependencies are ready
-	dx_page_manager.loadMobilePageAlternatives(function () {
-		loadDependencies();
-	});
-}
-/**
- * Loads the divblox dependencies, recursively. When all dependencies are loaded, checkFrameworkReady() is called.
- * @param {Number} count The index in the variable dependency_array
- */
-function loadDependencies(count) {
-	if (typeof count === "undefined") {
-		count = 0;
-	}
-	if (count < dependency_array.length) {
-		let url = getRootPath()+dependency_array[count];
-		if (typeof admin_mode !== "undefined") {
-			if (admin_mode) {
-				url = url+getRandomFilePostFix();
-			}
-		}
-		dxGetScript(url, function( data, textStatus, jqxhr ) {
-			loadDependencies(count+1);
-		});
-	} else {
-		checkFrameworkReady();
-	}
-}
-/**
- * Sets the divblox root paths
- * @param {Boolean} as_native Tells divblox whether to initiate for a native environment or web
- */
-function setPaths(as_native) {
-	if (typeof as_native === "undefined") {
-		as_native = false;
-	}
-	if (!as_native) {
-		// JGL: All app content needs to reside in one of the following folders
-		let path_array = window.location.pathname.split('/');
-		let path_array_cleaned = path_array.filter(function(el) {
-			return el !== "";
-		});
-		allowable_divblox_paths.forEach(function(allowable_path) {
-			for(i=0;i<path_array_cleaned.length;i++) {
-				if (path_array_cleaned[i] === allowable_path) {
-					if (typeof path_array_cleaned[i+1] !== "undefined") {
-						if (allowable_divblox_sub_paths.indexOf(path_array_cleaned[i+1]) > -1) {
-							// JGL: Everything before this item is the doc root
-							if (document_root.length === 0) {
-								for(j=0;j<i;j++) {
-									document_root += path_array_cleaned[j]+"/";
-								}
-								document_root = document_root.substring(0,document_root.length-1);
-							}
-						}
-					}
-				}
-			}
-		});
-		
-		if (document_root.length === 0) {
-			for(i=0;i<path_array_cleaned.length;i++) {
-				if (path_array_cleaned[i].indexOf(".") < 0) {
-					// JGL: This is not a file
-					document_root += path_array_cleaned[i]+"/";
-				}
-			}
-			document_root = document_root.substring(0,document_root.length-1);
-			if (document_root.length === 0) {
-				//JGL: Doing a final check here to ensure it works on servers with sub directories
-				let path_name = window.location.pathname;
-				if (path_name.indexOf("index.html") > -1) {
-					document_root = path_name.substr(0,path_name.indexOf("/index.html"));
-				}
-				if (path_name.indexOf("component_builder.php") > -1) {
-					document_root = path_name.substr(0,path_name.indexOf("/component_builder.php"));
-				}
-			}
-		}
-		if (document_root.indexOf("divblox/config") > -1) {
-			document_root = "";
-		}
-	} else {
-		document_root = "";
-		setIsNative();
-	}
-}
-/**
- * Placeholder function that handles the event to call the Install prompt for progressive web apps
- */
-function callInstallPrompt() {
-	// We can't fire the dialog before preventing default browser dialog
-	//TODO: Complete this for custom prompts
-	if (installPromptEvent !== undefined) {
-		installPromptEvent.prompt();
-	}
-}
-/**
- * Checks if the framework is installed and configured. If so, sets up the offline event handlers. After
- * that we call a generic "on_divblox_ready()" function that the developer can implement
- */
-function checkFrameworkReady() {
-	if (isNative()) {
-		allow_feedback = local_config.allow_feedback;
-		doAfterInitActions();
-		on_divblox_ready();
-		return;
-	}
-	window.addEventListener('beforeinstallprompt', function(event) {
-		event.preventDefault();
-		installPromptEvent = event;
-	});
-	spa_mode = local_config.spa_mode;
-	debug_mode = local_config.debug_mode;
-	allow_feedback = local_config.allow_feedback;
-	let config_cookie = getValueFromAppState('divblox_config');
-	if (config_cookie === null) {
-		dxGetScript(getRootPath()+"divblox/config/framework/check_config.php", function( data ) {
-			if (!isJsonString(data)) {
-				window.open(getRootPath()+'divblox/config/framework/divblox_admin/initialization_wizard/');
-				return;
-			}
-			let config_data_obj = JSON.parse(data);
-			if (config_data_obj.Success) {
-				updateAppState('divblox_config','success');
-				$(document).ready(function() {
-					if (typeof on_divblox_ready !== "undefined") {
-						on_divblox_ready();
-					}
-				});
-			} else {
-				dxRequestSystem(getRootPath()+'divblox/config/framework/divblox_admin/initialization_wizard/installation_helper.php?check=1',{},
-					function() {
-						window.open(getRootPath()+'divblox/config/framework/divblox_admin/initialization_wizard/');
-					},
-					function() {
-						throw new Error("divblox is not ready! Please visit the setup page at: "+getServerRootPath()+"divblox/config/framework/divblox_admin/setup.php");
-					});
-			}
-		}, function(data) {
-			dxRequestSystem(getRootPath()+'divblox/config/framework/divblox_admin/initialization_wizard/installation_helper.php?check=1',{},
-				function() {
-					window.open(getRootPath()+'divblox/config/framework/divblox_admin/initialization_wizard/');
-				},
-				function() {
-					throw new Error("divblox is not ready! Please visit the setup page at: "+getServerRootPath()+"divblox/config/framework/divblox_admin/setup.php");
-				});
-		});
-	} else {
-		$(document).ready(function() {
-			window.addEventListener('offline', networkStatus);
-			window.addEventListener('online', networkStatus);
-			function networkStatus(e) {
-				if (e.type == 'offline')
-					setOffline();
-				else
-					setOnline();
-			}
-			if (debug_mode) {
-				dxLog("divblox setup page: "+getServerRootPath()+"divblox/config/framework/divblox_admin/setup.php",false);
-			}
-			if (!isInStandaloneMode()) {
-				//TODO: Complete this. We need to add a prompt to add to homescreen here that is configurable by the
-				// developer
-			}
-			if (typeof on_divblox_ready !== "undefined") {
-				doAfterInitActions();
-				on_divblox_ready();
-			}
-			if ((typeof cb_active === "undefined") || (cb_active === false)) {
-				if (local_config.service_worker_enabled) {
-					registerServiceWorker();
-				} else {
-					dxLog("Service worker disabled");
-					removeServiceWorker();
-				}
-			} else {
-				removeServiceWorker();
-			}
-			$("#AppReloadButton").on("click", function() {
-				service_worker_update.postMessage({ action: 'skipWaiting' });
-				window.location.reload(true);
-			});
-			$("#AppReloadDismissButton").on("click", function() {
-				$("#AppUpdateWrapper").removeClass("show");
-			});
-			window.addEventListener('beforeunload', function(e) {
-				if((dx_queue.length > 0) && !force_logout_occurred) {
-					e.preventDefault(); //per the standard
-					e.returnValue = "You have attempted to leave this page. There are currently items waiting to be processed on the" +
-						" server. If you close this page now, those changes will be lost." +
-						"  Are you sure you want to exit this page?"; //required for Chrome
-				} else if (dx_has_uploads_waiting) {
-					e.preventDefault(); //per the standard
-					e.returnValue = "You have attempted to leave this page. There are currently items waiting to" +
-						" upload. If you close this page now, those uploads will be lost." +
-						"  Are you sure you want to exit this page?"; //required for Chrome
-				}
-			});
-			if (typeof admin_mode !== "undefined") {
-				if (admin_mode) {
-					loadDxChatWidget();
-				}
-			}
-		});
-	}
-	if (isSpa()) {
-		$(window).on("popstate", function (e) {
-			let position = Number(window.history.state); // Absolute position in stack
-			let direction = Math.sign(position - root_history_index);
-			// One for backward (-1), reload (0) or forward (1)
-			loadPageFromRootHistory(direction);
-		});
-	}
-}
-/**
- * Shows a notification that indicates an update to the app is available. Only used when the service worker is installed
- */
-function showAppUpdateBar() {
-	$("#AppUpdateWrapper").addClass("show").css("z-index",getHighestZIndex()+1);
-}
-/**
- * Removes the current service worker
- */
-function removeServiceWorker() {
-	if (!navigator.serviceWorker) {
-		return;
-	}
-	navigator.serviceWorker.getRegistrations().then(registrations => {
-		for(let registration of registrations) {
-			registration.unregister()
-		}
-	});
-}
-/**
- * Returns the current root path of the server.
- * @return {String} The root path which is a valid url, e.g https://divblox.com/
- */
-function getServerRootPath() {
-	let port_number_str = window.location.port;
-	if (port_number_str.length > 0) {
-		port_number_str = ":"+port_number_str;
-	}
-	let root_path = window.location.protocol+"//"+window.location.hostname+port_number_str;
-	if (document_root.length > 0) {
-		root_path += "/"+document_root+"/";
-	}
-	if (root_path[root_path.length - 1] !== '/') {
-		root_path += "/";
-	}
-	return root_path;
-}
-/**
- * Returns the current root path from index.html
- * @return {String} The root path which is a relative path
- */
-function getRootPath() {
-	if (typeof force_server_root !== "undefined") {
-		return getServerRootPath();
-	}
-	return "";
-}
-/**
- * Sets the value of a url parameter in the app state. Useful when in SPA mode.
- * @param {String} name The name of the parameter
- * @param {String} value The value to set it to
- */
-function setUrlInputParameter(name,value) {
-	if (url_input_parameters === null) {
-		url_input_parameters = new URLSearchParams();
-	}
-	url_input_parameters.set(name,value);
-	updateAppState('page_inputs',"?"+url_input_parameters.toString());
-}
-/**
- * Returns the value for a url parameter in the app state
- * @param {String} name The name of the parameter
- * @return {String|Null} The value stored in the app state
- */
-function getUrlInputParameter(name) {
-	if (url_input_parameters === null) {
-		return null;
-	}
-	return url_input_parameters.get(name);
-}
-/**
- * Updates a value in the app state and calls the function to store the app state
- * @param {String} item_key The name of the item
- * @param {String} item_value The value of the item
- */
-function updateAppState(item_key,item_value) {
-	app_state[item_key] = item_value;
-	storeAppState();
-}
-/**
- * Stores the current app state in local storage
- */
-function storeAppState() {
-	app_state['global_vars'] = global_vars;
-	setItemInLocalStorage("dx_app_state",btoa(JSON.stringify(app_state)));
-}
-/**
- * Returns the current app state from local storage
- * @return {Object} The current app state
- */
-function getAppState() {
-	let app_state_encoded = getItemInLocalStorage("dx_app_state");
-	if (app_state_encoded !== null) {
-		app_state = JSON.parse(atob(app_state_encoded));
-	}
-	return app_state;
-}
-/**
- * Returns a specific value stored in the app state
- * @param {String} item_key The name of the item
- * @return {String|Null} The value of the item
- */
-function getValueFromAppState(item_key) {
-	app_state = getAppState();
-	if (typeof app_state[item_key] !== "undefined") {
-		return app_state[item_key];
-	}
-	return null;
-}
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/**
- * divblox component and DOM related functions
- */
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * Responsible for rendering input fields consistently throughout the applications
  * @type {{renderInputField: dx_renderer.renderInputField}}
@@ -473,7 +115,17 @@ let dx_renderer = {
 		}
 		if (typeof config_obj.DefaultValue !== "undefined") {
 			default_value_str = config_obj.DefaultValue;
-		}
+			if (config_obj.DisplayType === 'checkbox') {
+				default_value_str = ' checked="';
+				if ((config_obj.DefaultValue === 'checked')
+					|| (config_obj.DefaultValue === true)
+					|| (config_obj.DefaultValue === 'true')) {
+					default_value_str += 'true"';
+				} else {
+					default_value_str += 'false"';
+				}
+			}
+ 		}
 		if (typeof config_obj.ValidationMessage !== "undefined") {
 			validation_message_str = config_obj.ValidationMessage;
 		}
@@ -506,7 +158,8 @@ let dx_renderer = {
 				if (typeof config_obj.Rows !== "undefined") {
 					rows = config_obj.Rows;
 				}
-				input_field_html = '<textarea class="form-control" id="'+config_obj.FieldId+'" rows="'+rows+'" value="'+default_value_str+'"></textarea>';
+				input_field_html = '<textarea class="form-control" id="'+config_obj.FieldId+'" rows="'
+					+rows+'" value="'+default_value_str+'"'+placeholder_str+'></textarea>';
 				if (typeof config_obj.MustValidate !== "undefined") {
 					if (config_obj.MustValidate) {
 						input_field_html += '<div id="'+config_obj.FieldId+'InvalidFeedback" class="invalid-feedback">\n' +
@@ -536,7 +189,8 @@ let dx_renderer = {
 				complete_html = label_html+input_field_html;
 				break;
 			case 'checkbox':
-				input_field_html = '<input class="form-check-input" type="checkbox" name="'+config_obj.FieldId+'" id="'+config_obj.FieldId+'">';
+				input_field_html = '<input class="form-check-input" type="checkbox" name="'+config_obj.FieldId+'" ' +
+					'id="'+config_obj.FieldId+'"'+default_value_str+'>';
 				if (typeof config_obj.MustValidate !== "undefined") {
 					if (config_obj.MustValidate) {
 						input_field_html += '<div id="'+config_obj.FieldId+'InvalidFeedback" class="invalid-feedback">\n' +
@@ -556,7 +210,7 @@ let dx_renderer = {
 				}
 				complete_html = label_html+input_field_html;
 		}
-		
+
 		wrapper_node.html(complete_html);
 	}
 };
@@ -593,15 +247,18 @@ let dx_page_manager = {
 		return page_name;
 	}
 };
-let dom_component_index_map = {};
-// JGL: Let's initialize the object that will contain relevant DOM info for our components that are rendered on the page
-let registered_component_array = {};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Divblox component and DOM related classes
+ */
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * DivbloxDomBaseComponent is the base class that manages the component javascript for every component
  */
 class DivbloxDomBaseComponent {
 	/**
-	 * Initializes all the base variables for a divblox dom component
+	 * Initializes all the base variables for a Divblox dom component
 	 * @param {Object} inputs The arguments to pass to the component
 	 * @param {Boolean} supports_native Indicate whether this component works on native projects
 	 * @param {Boolean} requires_native Indicate whether this component works ONLY on native projects
@@ -633,6 +290,7 @@ class DivbloxDomBaseComponent {
 		this.is_showing_loading_overlay = false;
 		this.prerequisite_array = []; // See DivbloxDomEntityDataTableComponent for example of how to use
 		this.prerequisite_loaded_index = 0;
+		this.do_connection_check = false;
 	}
 	/**
 	 * Gets the current component's parent component obj
@@ -645,6 +303,9 @@ class DivbloxDomBaseComponent {
 		}
 		return getRegisteredComponent(parent_component_uid);
 	}
+	/**
+	 * Shows a loading overlay (only for page components)
+	 */
 	showLoadingOverlay() {
 		if (this.getParentComponent() != null) {return;/*We cannot show a loading overlay for a sub component*/}
 		this.is_showing_loading_overlay = true;
@@ -654,6 +315,9 @@ class DivbloxDomBaseComponent {
 		getComponentElementById(this,'ComponentWrapper').append(overlay_html);
 		getComponentElementById(this,'LoadingOverlay').css('z-index',getHighestZIndex()+100);
 	}
+	/**
+	 * Removes loading overlay (only for page components)
+	 */
 	removeLoadingOverlay() {
 		if (this.is_showing_loading_overlay) {
 			getComponentElementById(this,'LoadingOverlay').fadeOut();
@@ -774,7 +438,8 @@ class DivbloxDomBaseComponent {
 		}.bind(this));
 	}
 	/**
-	 * A useful function to call to reset the component state
+	 * A useful function to call to reset the component state. Also the last function that is called once all sub
+	 * components are loaded
 	 * @param {Object} inputs The arguments to pass to the component
 	 * @param {boolean} propagate If true, will also reset all sub components
 	 */
@@ -786,6 +451,9 @@ class DivbloxDomBaseComponent {
 		propagate = propagate || false;
 		if (propagate) {
 			this.resetSubComponents(inputs,true);
+		}
+		if (this.do_connection_check) {
+			checkConnectionPerformance();
 		}
 	}
 	/**
@@ -1009,6 +677,12 @@ class DivbloxDomBaseComponent {
  * instance (CREATE/UPDATE) component
  */
 class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
+	/**
+	 * Initializes all the further variables needed for a Divblox DOM entity instance component
+	 * @param {Object} inputs The arguments to pass to the component
+	 * @param {Boolean} supports_native Indicate whether this component works on native projects
+	 * @param {Boolean} requires_native Indicate whether this component works ONLY on native projects
+	 */
 	constructor(inputs,supports_native,requires_native) {
 		super(inputs,supports_native,requires_native);
 		this.component_obj = {};
@@ -1024,12 +698,19 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
 		this.lowercase_entity_name = undefined;
 		// Call this.initCrudVariables("YourEntityName") in the implementing class
 	}
+	/**
+	 * Initializes the necessary CRUD variables, setting validation requirements as well as rendering input fields
+	 * @param {String} entity_name The entity in question
+	 */
 	initCrudVariables(entity_name) {
 		this.required_validation_array = this.required_validation_array.concat(this.data_validation_array).concat(this.custom_validation_array);
 		this.entity_name = entity_name;
 		this.lowercase_entity_name =  entity_name.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toLowerCase();
 		this.renderInputFields();
 	}
+	/**
+	 * Renders the input fields in the DOM for specified entity
+	 */
 	renderInputFields() {
 		getComponentElementById(this,'AdditionalInputFieldsWrapper').html("");
 		this.included_attribute_array.forEach(function(attribute) {
@@ -1069,6 +750,10 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
 			dx_renderer.renderInputField(render_config_obj);
 		}.bind(this));
 	}
+	/**
+	 * Includes input fields for attributes added dynamically after creation of the component
+	 * @param {String} field_name Attribute for which input field is being created
+	 */
 	addDynamicIncludedField(field_name) {
 		let wrapper_id = field_name+"Wrapper";
 		let cb_class = '';
@@ -1080,17 +765,33 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
 			' col-md-4 col-xl-3 entity-instance-input-field'+cb_class+'"> {'+field_name+'}</div>');
 		return getComponentElementById(this,wrapper_id);
 	}
+	/**
+	 * Overriding default Divblox functionality to also set loading state and load the entity
+	 * @param {Object} inputs The arguments to pass to the component
+	 * @param {boolean} propagate If true, will also reset all sub components
+	 */
 	reset(inputs,propagate) {
 		this.setLoadingState();
 		this.loadEntity();
 		super.reset(inputs,propagate);
 	}
+	/**
+	 * Sets the local entity Id
+	 * @param {String} id The Id of entity instance to set
+	 */
 	setEntityId(id) {
 		this.arguments["entity_id"] = id;
 	}
+	/**
+	 * Gets the local entity Id
+	 * @return {int} The Entity Id
+	 */
 	getEntityId() {
 		return this.getLoadArgument("entity_id");
 	}
+	/**
+	 * When registering DOM events it is useful to keep track of them per component if we want to offload them later.
+	 */
 	registerDomEvents() {
 		getComponentElementById(this,"btnSave").on("click", function() {
 			this.saveEntity();
@@ -1101,6 +802,9 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
 		}.bind(this));
 		
 	}
+	/**
+	 * Loads the entity into the DOM. Handles communication with the backend as well as display on the front end.
+	 */
 	loadEntity() {
 		dxRequestInternal(
 			getComponentControllerPath(this),
@@ -1132,12 +836,21 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
 			this.setValues();
 			this.onAfterLoadEntity(data_obj);
 		}.bind(this), function(data_obj) {
+			this.removeLoadingState();
 			this.handleComponentError(data_obj.Message);
 		}.bind(this));
 	}
+	/**
+	 * Called last in the success callback of the loadEntity() function, giving room for functionality that should be
+	 * executed immediately after load
+	 * @param data_obj Input data object
+	 */
 	onAfterLoadEntity(data_obj) {
 		//TODO: Override this as needed;
 	}
+	/**
+	 * Called in the loadEntity() function, sets the values of each attribute
+	 */
 	setValues() {
 		this.included_attribute_array.forEach(function(attribute) {
 			let entity_attribute_properties = data_model.getEntityAttributeProperties(this.entity_name,attribute);
@@ -1173,6 +886,10 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
 			}
 		}.bind(this));
 	}
+	/**
+	 * Called in the saveEntity() function, updates the values of each attribute
+	 * @return {object} component_obj All the updated values of current entity
+	 */
 	updateValues() {
 		let keys = Object.keys(this.element_mapping);
 		keys.forEach(function(item) {
@@ -1184,6 +901,9 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
 		}.bind(this));
 		return this.component_obj;
 	}
+	/**
+	 * Sends updated entity object data to the backend to be saved
+	 */
 	saveEntity() {
 		let current_component_obj = this.updateValues();
 		this.resetValidation();
@@ -1217,9 +937,17 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
 				showAlert("Error saving "+this.lowercase_entity_name+": "+data_obj.Message,"error","OK",false);
 			}.bind(this));
 	}
+	/**
+	 * Called last in the success callback of the saveEntity() function, giving room for functionality that should be
+	 * executed immediately after save
+	 * @param data_obj Input data object
+	 */
 	onAfterSaveEntity(data_obj) {
 		//TODO: Override this as needed;
 	}
+	/**
+	 * Sends request to the backend to delete entity instance
+	 */
 	deleteEntity() {
 		dxRequestInternal(
 			getComponentControllerPath(this),
@@ -1234,9 +962,18 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
 				showAlert("Error deleting "+this.lowercase_entity_name+": "+data_obj.Message,"error","OK",false);
 			}.bind(this));
 	}
+	/**
+	 * Called last in the success callback of the deleteEntity() function, giving room for functionality that should be
+	 * executed immediately after delete
+	 * @param data_obj Input data object
+	 */
 	onAfterDeleteEntity(data_obj) {
 		//TODO: Override this as needed;
 	}
+	/**
+	 * Performs validation upon request submission, taking into account default and custom validation rules.
+	 * Implemented with CSS class toggle
+	 */
 	validateEntity() {
 		let validation_succeeded = true;
 		this.required_validation_array.forEach(function(item) {
@@ -1268,12 +1005,19 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
 		}.bind(this));
 		return validation_succeeded;
 	}
+	/**
+	 * Set up custom validation rules
+	 * @param attribute Attribute/s to do custom validation on
+	 */
 	doCustomValidation(attribute) {
 		switch (attribute) {
 			default: return true;
 				break;
 		}
 	}
+	/**
+	 * Resets validation state
+	 */
 	resetValidation() {
 		this.required_validation_array.forEach(function(item) {
 			toggleValidationState(this,item,"",true,true);
@@ -1285,6 +1029,12 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
  * data table component
  */
 class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
+	/**
+	 * Initializes all the further variables needed for a Divblox DOM entity data table component
+	 * @param {Object} inputs The arguments to pass to the component
+	 * @param {Boolean} supports_native Indicate whether this component works on native projects
+	 * @param {Boolean} requires_native Indicate whether this component works ONLY on native projects
+	 */
 	constructor(inputs,supports_native,requires_native) {
 		super(inputs,supports_native,requires_native);
 		this.table_exporter = undefined;
@@ -1328,6 +1078,9 @@ class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
 			'project/assets/js/tableexport/tableexport.min.js'];
 		// Call this.initDataTableVariables("YourEntityName") in the implementing class
 	}
+	/**
+	 * Initializes the necessary Data Table variables and creates the table header
+	 */
 	initDataTableVariables(entity_name) {
 		this.entity_name = entity_name;
 		this.lowercase_entity_name =  entity_name.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toLowerCase();
@@ -1354,10 +1107,19 @@ class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
 		this.current_sort_column = [this.column_name_array[0],true]; // Sort on first column, desc
 		//DataTableHeaderHtml
 	}
+	/**
+	 * A useful function to call to reset the component state
+	 * @param {Object} inputs The arguments to pass to the component
+	 * @param {boolean} propagate If true, will also reset all sub components
+	 */
 	reset(inputs,propagate) {
 		this.loadPage();
 		super.reset(inputs,propagate);
 	}
+	/**
+	 * When registering DOM events it is useful to keep track of them per component if we want to offload them
+	 * later. This method is a wrapper for that functionality
+	 */
 	registerDomEvents() {
 		getComponentElementById(this,"BulkActionExportXlsx").on("click", function() {
 			let uid = this.getUid();
@@ -1537,6 +1299,10 @@ class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
 			}.bind(this));
 		}.bind(this));
 	}
+	/**
+	 * Sets the class variable table_exporter with relevant data.
+	 * @param table_exporter_data
+	 */
 	exportData(table_exporter_data) {
 		this.table_exporter.export2file(
 			table_exporter_data.data,
@@ -1544,6 +1310,9 @@ class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
 			table_exporter_data.filename,
 			table_exporter_data.fileExtension);
 	}
+	/**
+	 * Backend request to delete selected entires from database.
+	 */
 	deleteSelected() {
 		dxRequestInternal(
 			getComponentControllerPath(this),
@@ -1561,9 +1330,16 @@ class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
 				showAlert("Error deleting items: "+data_obj.Message,"error","OK",false);
 			}.bind(this));
 	}
+	/** Called last in the success callback of the deleteSelected() function, gives room for functionality to be executed
+	 * immediately after deletion
+	 * @param data_obj Full data object from loadPage() function
+	 */
 	onAfterDeleteSelected(data_obj) {
 		//TODO: Override this as needed;
 	}
+	/**
+	 * Load the data table up row by row, including pagination and search functionality
+	 */
 	loadPage() {
 		let uid = this.getUid();
 		let search_text = getComponentElementById(this,"DataTableSearchInput").val();
@@ -1631,9 +1407,17 @@ class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
 				this.handleComponentError('Could not retrieve data: '+data_obj.Message);
 			}.bind(this),false,false);
 	}
+	/** called last in the success callback of the loadPage() function, gives room for functionality to be executed
+	 * immediately after loading the data table
+	 * @param data_obj Full data object from loadPage() function
+	 */
 	onAfterLoadPage(data_obj) {
 		//TODO: Override this as needed;
 	}
+	/**
+	 * Adds row into the data table
+	 * @param row_data_obj Data object containing necessary row data
+	 */
 	addRow(row_data_obj) {
 		this.current_page_array.push(row_data_obj);
 		let uid = this.getUid();
@@ -1665,10 +1449,17 @@ class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
 		html += '</tr>';
 		getComponentElementById(this,"DataTableBody").append(html);
 	}
+	/**
+	 * Event handler for clicks on data rows
+	 * @param id The Id of the row clicked
+	 */
 	on_item_clicked(id) {
 		setGlobalConstrainById(this.entity_name,id);
 		pageEventTriggered(this.lowercase_entity_name+"_clicked",{id:id});
 	}
+	/**
+	 * Toggles the "No results" view. Called in the loadPage() function if no data available
+	 */
 	toggleNoResults() {
 		let max_columns = this.column_name_array.length+1;
 		if (this.total_items == 0) {
@@ -1684,6 +1475,12 @@ class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
  * data list component
  */
 class DivbloxDomEntityDataListComponent extends DivbloxDomBaseComponent {
+	/**
+	 * Initializes all the further variables needed for a Divblox DOM data list component
+	 * @param {Object} inputs The arguments to pass to the component
+	 * @param {Boolean} supports_native Indicate whether this component works on native projects
+	 * @param {Boolean} requires_native Indicate whether this component works ONLY on native projects
+	 */
 	constructor(inputs,supports_native,requires_native) {
 		super(inputs,supports_native,requires_native);
 		this.current_list_offset = 0;
@@ -1696,6 +1493,9 @@ class DivbloxDomEntityDataListComponent extends DivbloxDomBaseComponent {
 		this.included_all_object = {};
 		this.current_sort_column = [];
 	}
+	/**
+	 * Initializes the necessary Data List variables
+	 */
 	initDataListVariables(entity_name) {
 		this.entity_name = entity_name;
 		this.lowercase_entity_name =  entity_name.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toLowerCase();
@@ -1703,12 +1503,21 @@ class DivbloxDomEntityDataListComponent extends DivbloxDomBaseComponent {
 		let included_keys = Object.keys(this.included_all_object);
 		this.current_sort_column = [included_keys[0],true]; // Sort on first column, desc
 	}
+	/**
+	 * A useful function to call to reset the component state
+	 * @param {Object} inputs The arguments to pass to the component
+	 * @param {boolean} propagate If true, will also reset all sub components
+	 */
 	reset(inputs,propagate) {
 		this.current_page_array = [];
 		getComponentElementById(this,"DataList").html("");
 		this.loadPage();
 		super.reset(inputs,propagate);
 	}
+	/**
+	 * When registering DOM events it is useful to keep track of them per component if we want to offload them
+	 * later. This method is a wrapper for that functionality
+	 */
 	registerDomEvents() {
 		getComponentElementById(this,"DataListSearchInput").on("keyup", function() {
 			let search_text = getComponentElementById(this,"DataListSearchInput").val();
@@ -1742,6 +1551,9 @@ class DivbloxDomEntityDataListComponent extends DivbloxDomBaseComponent {
 		});
 		registerEventHandler(document,"click",undefined,".data_list_item_"+this.uid);
 	}
+	/**
+	 * Load the data list up row by row, including pagination and search functionality
+	 */
 	loadPage() {
 		let search_text = getComponentElementById(this,"DataListSearchInput").val();
 		getComponentElementById(this,"DataListLoading").html('<div class="dx-loading"></div>').show();
@@ -1763,7 +1575,7 @@ class DivbloxDomEntityDataListComponent extends DivbloxDomBaseComponent {
 				}.bind(this));
 				this.total_items = data_obj.TotalCount;
 				getComponentElementById(this,"DataListMoreButton").show();
-				if (this.total_items <= this.current_list_offset) {
+				if (this.total_items <= (this.current_list_offset+this.list_offset_increment)) {
 					getComponentElementById(this,"DataListMoreButton").hide();
 				}
 				if (this.current_page_array.length > 0) {
@@ -1779,9 +1591,17 @@ class DivbloxDomEntityDataListComponent extends DivbloxDomBaseComponent {
 				this.handleComponentError('Could not retrieve data: '+data_obj.Message);
 			}.bind(this),false,false);
 	}
+	/** Called last in the success callback of the loadPage() function, gives room for functionality to be executed
+	 * immediately after loading the data list
+	 * @param data_obj Full data object from loadPage() function
+	 */
 	onAfterLoadPage(data_obj) {
 		//TODO: Override this as needed;
 	}
+	/**
+	 * Adds a row into the data table
+	 * @param row_data_obj Data object containing necessary row data
+	 */
 	addRow(row_data_obj) {
 		let current_item_keys = Object.keys(this.current_page_array);
 		let must_add_row = true;
@@ -1822,11 +1642,379 @@ class DivbloxDomEntityDataListComponent extends DivbloxDomBaseComponent {
 		wrapping_html += '</a>';
 		getComponentElementById(this,"DataList").append(wrapping_html);
 	}
+	/**
+	 * Event handler for clicks on data rows
+	 * @param id The Id of the row clicked
+	 */
 	on_item_clicked(id) {
 		setGlobalConstrainById(this.entity_name,id);
 		pageEventTriggered(this.lowercase_entity_name+"_clicked",{id:id});
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Divblox initialization related functions
+ */
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Loads the Divblox chat widget for the setup page
+ */
+function loadDxChatWidget() {
+	var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+	(function(){
+		var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+		s1.async=true;
+		s1.src='https://embed.tawk.to/5e2aa42bdaaca76c6fcfa354/default';
+		s1.charset='UTF-8';
+		s1.setAttribute('crossorigin','*');
+		s0.parentNode.insertBefore(s1,s0);
+	})();
+}
+/**
+ * Must be called at load to ensure that Divblox loads correctly for the current environment. This function will set all
+ * required paths and load Divblox dependencies
+ * @param {Boolean} as_native Tells Divblox whether to initiate for a native environment or web
+ */
+function initDx(as_native) {
+	if (typeof as_native === "undefined") {
+		as_native = false;
+	}
+	setPaths(as_native);
+	let stored_global_vars = getValueFromAppState("global_vars");
+	if (stored_global_vars !== null) {
+		global_vars = stored_global_vars;
+	}
+	// It is important to call this before other loading functions, since we might need to load a page before all
+	// dependencies are ready
+	dx_page_manager.loadMobilePageAlternatives(function () {
+		loadDependencies();
+	});
+}
+/**
+ * Loads the Divblox dependencies, recursively. When all dependencies are loaded, checkFrameworkReady() is called.
+ * @param {Number} count The index in the variable dependency_array
+ */
+function loadDependencies(count) {
+	if (typeof count === "undefined") {
+		count = 0;
+	}
+	if (count < dependency_array.length) {
+		let url = getRootPath()+dependency_array[count];
+		if (typeof admin_mode !== "undefined") {
+			if (admin_mode) {
+				url = url+getRandomFilePostFix();
+			}
+		}
+		dxGetScript(url, function( data, textStatus, jqxhr ) {
+			loadDependencies(count+1);
+		});
+	} else {
+		checkFrameworkReady();
+	}
+}
+/**
+ * Sets the Divblox root paths
+ * @param {Boolean} as_native Tells Divblox whether to initiate for a native environment or web
+ */
+function setPaths(as_native) {
+	if (typeof as_native === "undefined") {
+		as_native = false;
+	}
+	if (!as_native) {
+		// JGL: All app content needs to reside in one of the following folders
+		let path_array = window.location.pathname.split('/');
+		let path_array_cleaned = path_array.filter(function(el) {
+			return el !== "";
+		});
+		allowable_divblox_paths.forEach(function(allowable_path) {
+			for(i=0;i<path_array_cleaned.length;i++) {
+				if (path_array_cleaned[i] === allowable_path) {
+					if (typeof path_array_cleaned[i+1] !== "undefined") {
+						if (allowable_divblox_sub_paths.indexOf(path_array_cleaned[i+1]) > -1) {
+							// JGL: Everything before this item is the doc root
+							if (document_root.length === 0) {
+								for(j=0;j<i;j++) {
+									document_root += path_array_cleaned[j]+"/";
+								}
+								document_root = document_root.substring(0,document_root.length-1);
+							}
+						}
+					}
+				}
+			}
+		});
+
+		if (document_root.length === 0) {
+			for(i=0;i<path_array_cleaned.length;i++) {
+				if (path_array_cleaned[i].indexOf(".") < 0) {
+					// JGL: This is not a file
+					document_root += path_array_cleaned[i]+"/";
+				}
+			}
+			document_root = document_root.substring(0,document_root.length-1);
+			if (document_root.length === 0) {
+				//JGL: Doing a final check here to ensure it works on servers with sub directories
+				let path_name = window.location.pathname;
+				if (path_name.indexOf("index.html") > -1) {
+					document_root = path_name.substr(0,path_name.indexOf("/index.html"));
+				}
+				if (path_name.indexOf("component_builder.php") > -1) {
+					document_root = path_name.substr(0,path_name.indexOf("/component_builder.php"));
+				}
+			}
+		}
+		if (document_root.indexOf("divblox/config") > -1) {
+			document_root = "";
+		}
+	} else {
+		document_root = "";
+		setIsNative();
+	}
+}
+/**
+ * Placeholder function that handles the event to call the Install prompt for progressive web apps
+ */
+function callInstallPrompt() {
+	// We can't fire the dialog before preventing default browser dialog
+	//TODO: Complete this for custom prompts
+	if (installPromptEvent !== undefined) {
+		installPromptEvent.prompt();
+	}
+}
+/**
+ * Checks if the framework is installed and configured. If so, sets up the offline event handlers. After
+ * that we call a generic "on_divblox_ready()" function that the developer can implement
+ */
+function checkFrameworkReady() {
+	if (isNative()) {
+		allow_feedback = local_config.allow_feedback;
+		doAfterInitActions();
+		on_divblox_ready();
+		return;
+	}
+	window.addEventListener('beforeinstallprompt', function(event) {
+		event.preventDefault();
+		installPromptEvent = event;
+	});
+	spa_mode = local_config.spa_mode;
+	debug_mode = local_config.debug_mode;
+	allow_feedback = local_config.allow_feedback;
+	let config_cookie = getValueFromAppState('divblox_config');
+	if (config_cookie === null) {
+		dxGetScript(getRootPath()+"divblox/config/framework/check_config.php", function( data ) {
+			if (!isJsonString(data)) {
+				window.open(getRootPath()+'divblox/config/framework/divblox_admin/initialization_wizard/');
+				return;
+			}
+			let config_data_obj = JSON.parse(data);
+			if (config_data_obj.Success) {
+				updateAppState('divblox_config','success');
+				$(document).ready(function() {
+					if (typeof on_divblox_ready !== "undefined") {
+						on_divblox_ready();
+					}
+				});
+			} else {
+				dxRequestSystem(getRootPath()+'divblox/config/framework/divblox_admin/initialization_wizard/installation_helper.php?check=1',{},
+					function() {
+						window.open(getRootPath()+'divblox/config/framework/divblox_admin/initialization_wizard/');
+					},
+					function() {
+						throw new Error("Divblox is not ready! Please visit the setup page at: "+getServerRootPath()+"divblox/config/framework/divblox_admin/setup.php");
+					});
+			}
+		}, function(data) {
+			dxRequestSystem(getRootPath()+'divblox/config/framework/divblox_admin/initialization_wizard/installation_helper.php?check=1',{},
+				function() {
+					window.open(getRootPath()+'divblox/config/framework/divblox_admin/initialization_wizard/');
+				},
+				function() {
+					throw new Error("Divblox is not ready! Please visit the setup page at: "+getServerRootPath()+"divblox/config/framework/divblox_admin/setup.php");
+				});
+		});
+	} else {
+		$(document).ready(function() {
+			window.addEventListener('offline', networkStatus);
+			window.addEventListener('online', networkStatus);
+			function networkStatus(e) {
+				if (e.type == 'offline')
+					setOffline();
+				else
+					setOnline();
+			}
+			if (debug_mode) {
+				dxLog("Divblox setup page: "+getServerRootPath()+"divblox/config/framework/divblox_admin/setup.php",false);
+			}
+			if (!isInStandaloneMode()) {
+				//TODO: Complete this. We need to add a prompt to add to homescreen here that is configurable by the
+				// developer
+			}
+			if (typeof on_divblox_ready !== "undefined") {
+				doAfterInitActions();
+				on_divblox_ready();
+			}
+			if ((typeof cb_active === "undefined") || (cb_active === false)) {
+				if (local_config.service_worker_enabled) {
+					registerServiceWorker();
+				} else {
+					dxLog("Service worker disabled");
+					removeServiceWorker();
+				}
+			} else {
+				removeServiceWorker();
+			}
+			$("#AppReloadButton").on("click", function() {
+				service_worker_update.postMessage({ action: 'skipWaiting' });
+				window.location.reload(true);
+			});
+			$("#AppReloadDismissButton").on("click", function() {
+				$("#AppUpdateWrapper").removeClass("show");
+			});
+			window.addEventListener('beforeunload', function(e) {
+				if((dx_queue.length > 0) && !force_logout_occurred) {
+					e.preventDefault(); //per the standard
+					e.returnValue = "You have attempted to leave this page. There are currently items waiting to be processed on the" +
+						" server. If you close this page now, those changes will be lost." +
+						"  Are you sure you want to exit this page?"; //required for Chrome
+				} else if (dx_has_uploads_waiting) {
+					e.preventDefault(); //per the standard
+					e.returnValue = "You have attempted to leave this page. There are currently items waiting to" +
+						" upload. If you close this page now, those uploads will be lost." +
+						"  Are you sure you want to exit this page?"; //required for Chrome
+				}
+			});
+			if (typeof admin_mode !== "undefined") {
+				if (admin_mode) {
+					loadDxChatWidget();
+				}
+			}
+		});
+	}
+	if (isSpa()) {
+		$(window).on("popstate", function (e) {
+			let position = Number(window.history.state); // Absolute position in stack
+			let direction = Math.sign(position - root_history_index);
+			// One for backward (-1), reload (0) or forward (1)
+			loadPageFromRootHistory(direction);
+		});
+	}
+}
+/**
+ * Shows a notification that indicates an update to the app is available. Only used when the service worker is installed
+ */
+function showAppUpdateBar() {
+	$("#AppUpdateWrapper").addClass("show").css("z-index",getHighestZIndex()+1);
+}
+/**
+ * Removes the current service worker
+ */
+function removeServiceWorker() {
+	if (!navigator.serviceWorker) {
+		return;
+	}
+	navigator.serviceWorker.getRegistrations().then(registrations => {
+		for(let registration of registrations) {
+			registration.unregister()
+		}
+	});
+}
+/**
+ * Returns the current root path of the server.
+ * @return {String} The root path which is a valid url, e.g https://divblox.com/
+ */
+function getServerRootPath() {
+	let port_number_str = window.location.port;
+	if (port_number_str.length > 0) {
+		port_number_str = ":"+port_number_str;
+	}
+	let root_path = window.location.protocol+"//"+window.location.hostname+port_number_str;
+	if (document_root.length > 0) {
+		root_path += "/"+document_root+"/";
+	}
+	if (root_path[root_path.length - 1] !== '/') {
+		root_path += "/";
+	}
+	return root_path;
+}
+/**
+ * Returns the current root path from index.html
+ * @return {String} The root path which is a relative path
+ */
+function getRootPath() {
+	if (typeof force_server_root !== "undefined") {
+		return getServerRootPath();
+	}
+	return "";
+}
+/**
+ * Sets the value of a url parameter in the app state. Useful when in SPA mode.
+ * @param {String} name The name of the parameter
+ * @param {String} value The value to set it to
+ */
+function setUrlInputParameter(name,value) {
+	if (url_input_parameters === null) {
+		url_input_parameters = new URLSearchParams();
+	}
+	url_input_parameters.set(name,value);
+	updateAppState('page_inputs',"?"+url_input_parameters.toString());
+}
+/**
+ * Returns the value for a url parameter in the app state
+ * @param {String} name The name of the parameter
+ * @return {String|Null} The value stored in the app state
+ */
+function getUrlInputParameter(name) {
+	if (url_input_parameters === null) {
+		return null;
+	}
+	return url_input_parameters.get(name);
+}
+/**
+ * Updates a value in the app state and calls the function to store the app state
+ * @param {String} item_key The name of the item
+ * @param {String} item_value The value of the item
+ */
+function updateAppState(item_key,item_value) {
+	app_state[item_key] = item_value;
+	storeAppState();
+}
+/**
+ * Stores the current app state in local storage
+ */
+function storeAppState() {
+	app_state['global_vars'] = global_vars;
+	setItemInLocalStorage("dx_app_state",btoa(JSON.stringify(app_state)));
+}
+/**
+ * Returns the current app state from local storage
+ * @return {Object} The current app state
+ */
+function getAppState() {
+	let app_state_encoded = getItemInLocalStorage("dx_app_state");
+	if (app_state_encoded !== null) {
+		app_state = JSON.parse(atob(app_state_encoded));
+	}
+	return app_state;
+}
+/**
+ * Returns a specific value stored in the app state
+ * @param {String} item_key The name of the item
+ * @return {String|Null} The value of the item
+ */
+function getValueFromAppState(item_key) {
+	app_state = getAppState();
+	if (typeof app_state[item_key] !== "undefined") {
+		return app_state[item_key];
+	}
+	return null;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Divblox component and DOM related helper functions
+ */
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * Checks whether we are in the component builder
  * @return {boolean} true if in component builder, false if not
@@ -2372,9 +2560,10 @@ function unRegisterEventHandlers() {
 	});
 	registered_event_handlers = [];
 }
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
- * divblox issue tracking related functions
+ * Divblox issue tracking related functions
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
@@ -2498,9 +2687,10 @@ function initFeedbackCapture() {
 		$("#dxGlobalFeedbackComponent").append('<option value="'+sub_component_name+'">'+sub_component_name+'</option>');
 	})
 }
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
- * divblox general helper functions
+ * Divblox general helper functions
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
@@ -2531,19 +2721,10 @@ function dxLog(Message,show_stack_trace) {
  */
 function addTriggerElementToLoadingElementArray(element,loading_text) {
 	let trigger_element_id = -1;
-	let focused = $(':focus');
-	if (element === false) {
+	if ((element === false) || (typeof element === "undefined")) {
 		// This means the developer intentionally does not want an element to be disabled
-		element = undefined;
+		return trigger_element_id;
 	} else {
-		if (typeof element === "undefined") {
-			if (focused !== "undefined") {
-				element = focused;
-			}
-		}
-	}
-	
-	if (typeof element !== "undefined") {
 		if (typeof loading_text === "undefined") {
 			loading_text = "Loading...";
 		} else {
@@ -2582,7 +2763,7 @@ function removeTriggerElementFromLoadingElementArray(trigger_element_id) {
 	}
 }
 /**
- * This function is the default function to send a request to the server from the divblox frontend. This function
+ * This function is the default function to send a request to the server from the Divblox frontend. This function
  * does some heavy lifting with regards to sending a request to the server:
  * - Determines the current state of the connection to the server in order to either queue, deny or process the request
  * - Adds the element that triggered the request to the loading element array to be disabled during the request
@@ -2683,6 +2864,10 @@ function setAuthenticationToken(authentication_token_to_set) {
 	authentication_token = authentication_token_to_set;
 	updateAppState('dxAuthenticationToken',authentication_token);
 }
+/**
+ * Retrieves the current authentication token in the app state
+ * @return {String|Null}
+ */
 function getAuthenticationToken() {
 	return getValueFromAppState('dxAuthenticationToken');
 }
@@ -3151,7 +3336,7 @@ function getHighestZIndex() {
  * @return {string} The path to the logo file
  */
 function getAppLogoUrl() {
-	return getRootPath()+'divblox/assets/images/divblox_logo.svg';
+	return getRootPath()+'project/assets/images/app_logo.png';
 }
 /**
  * 	Renders the app's logo within any div with class "app_logo"
@@ -3655,5 +3840,200 @@ function onNativePause() {
  */
 function onNativeResume() {
 	getRegisteredComponent(page_uid).onNativeResume();
+}
+/**
+ * The function that registers the Divblox service worker in the browser
+ */
+function registerServiceWorker() {
+	if ('serviceWorker' in navigator) {
+		navigator.serviceWorker.register(getRootPath()+'dx.sw.js').then(reg => {
+			reg.addEventListener('updatefound', () => {
+				// A wild service worker has appeared in reg.installing!
+				service_worker_update = reg.installing;
+				service_worker_update.addEventListener('statechange', () => {
+					// Has network.state changed?
+					switch (service_worker_update.state) {
+						case 'installed':
+							if (navigator.serviceWorker.controller) {
+								// new update available
+								showAppUpdateBar();
+							}
+							// No update available
+							break;
+					}
+				});
+			});
+		});
+	} else {
+		dxLog("Service worker not available");
+	}
+}
+/**
+ * Provides the message that the system presents when a request is kicked off while offline and the request is to be
+ * queued
+ * @return {string} The message to be presented
+ */
+function presentOfflineRequestQueuedMessage() {
+	return "You are offline. Your request has been queued and will be processed as soon as you are connected again.";
+}
+/**
+ * Provides the message that the system presents when a request is kicked off while offline and the request is NOT to be
+ * queued
+ * @return {string} The message to be presented
+ */
+function presentOfflineRequestBlockedMessage() {
+	return "This request cannot be processed at this time because you are offline.";
+}
+/**
+ * Logs out the current user by calling api/global_functions/logoutCurrentAccount to clear the current session and
+ * authentication token credentials
+ */
+function logout() {
+	current_user_profile_picture_path = "";
+	registerUserRole("anonymous");
+	dxRequestInternal(getServerRootPath()+"api/global_functions/logoutCurrentAccount",
+		{AuthenticationToken:getAuthenticationToken()},
+		function(data_obj) {
+			if (data_obj.LogoutResult === true) {
+				if (!isNative()) {
+					loadUserRoleLandingPage("anonymous");
+				} else {
+					loadUserRoleLandingPage("native_landing");
+				}
+			} else {
+				throw new Error("Could not logout user: "+JSON.stringify(data_obj));
+			}
+		},
+		function(data_obj) {
+			throw new Error("Could not logout user: "+JSON.stringify(data_obj));
+		})
+}
+/**
+ * Loads the page that is defined in user_role_landing_pages for the provided role
+ * @param {String} user_role The role to load a page for
+ */
+function loadUserRoleLandingPage(user_role) {
+	if (typeof user_role === "undefined") {
+		loadPageComponent('my_profile');
+		return;
+	}
+	let user_role_prepared = user_role.toLowerCase();
+	if (typeof user_role_landing_pages[user_role_prepared] === "undefined") {
+		loadPageComponent('my_profile');
+		return;
+	}
+	if (user_role_prepared === 'anonymous') {
+		if (!isNative()) {
+			loadPageComponent(user_role_landing_pages[user_role_prepared]);
+		} else {
+			loadPageComponent('native_landing');
+		}
+		return;
+	}
+	loadPageComponent(user_role_landing_pages[user_role_prepared]);
+}
+/**
+ * Updates the system-wide profile picture class "navigation-activate-on-profile" with the current user's profile
+ * picture by calling the server to get the picture file path
+ * @param {Function} callback A function that is called with the file path when done
+ */
+function loadCurrentUserProfilePicture(callback) {
+	getCurrentUserAttribute('ProfilePicturePath',function(profile_picture_path) {
+		if (typeof profile_picture_path === "undefined") {
+			$(".navigation-activate-on-profile").html('<img src="'+current_user_profile_picture_path+'" class="img rounded-circle nav-profile-picture"/>');
+			return;
+		}
+		if (typeof profile_picture_path === null) {
+			$(".navigation-activate-on-profile").html('<img src="'+current_user_profile_picture_path+'" class="img rounded-circle nav-profile-picture"/>');
+			return;
+		}
+		current_user_profile_picture_path = profile_picture_path;
+		$(".navigation-activate-on-profile").html('<img src="'+profile_picture_path+'" class="img rounded-circle nav-profile-picture"/>');
+		if (typeof callback === "function") {
+			callback(profile_picture_path);
+		}
+	});
+}
+/**
+ * Queries the server for an attribute that describes the current logged in user
+ * @param {String} attribute The attribute to find
+ * @param {Function} callback The function that is populated with the value for the given attribute once returned
+ * from the server
+ */
+function getCurrentUserAttribute(attribute,callback) {
+	let attribute_to_return = undefined;
+	if (attribute === "ProfilePicturePath") {
+		attribute_to_return = getRootPath()+"project/assets/images/divblox_profile_picture_placeholder.svg";
+	}
+	dxRequestInternal(getServerRootPath()+'api/global_functions/getCurrentAccountAttribute',
+		{attribute:attribute,AuthenticationToken:getAuthenticationToken()},
+		function(data_obj) {
+			if (typeof data_obj.Result === "undefined") {
+				callback(attribute_to_return);
+				return;
+			}
+			if (data_obj.Result !== 'Success') {
+				callback(attribute_to_return);
+				return;
+			}
+			if (attribute === "ProfilePicturePath") {
+				if (data_obj.Attribute === null) {
+					callback(attribute_to_return);
+					return;
+				}
+				callback(getServerRootPath()+data_obj.Attribute);
+			} else {
+				callback(data_obj.Attribute);
+			}
+		},
+		function(data) {
+			callback(attribute_to_return);
+		},true);
+}
+/**
+ * @todo Any actions that should happen once the document is ready and all dx dependencies have been loaded can be placed
+ * here.
+ */
+function doAfterInitActions() {
+	//TODO: Override this as needed
+}
+/**
+ * @todo Any actions that should happen after authentication should be placed here
+ */
+function doAfterAuthenticationActions() {
+	//TODO: Override this as needed
+}
+/**
+ * Checks the current user's connection speed/performance and shows a toast with a message if the connection quality
+ * is poor
+ */
+function checkConnectionPerformance(poor_connection_title,poor_connection_message) {
+	if (typeof poor_connection_title === "undefined") {
+		poor_connection_title = 'Connection Problem';
+	}
+	if (typeof poor_connection_message === "undefined") {
+		poor_connection_message = 'Your connection seems to be poor. Please reload the app and try again.';
+	}
+	let start_time = new Date();
+	let performance = 1;
+	let performance_threshold = 0.4;
+	//JGL: this is tested to start notifying the user when the connection drops to around the "Slow 3G" mark
+	dxRequestInternal(getServerRootPath()+"api/global_functions/getConnectionPerformanceResult",
+		{},
+		function(data_obj) {
+			let end_time = new Date();
+			let duration = end_time.getTime() - start_time.getTime();
+			if (typeof data_obj.ConnectionPerformanceResult !== "undefined") {
+				performance = parseInt(data_obj.ConnectionPerformanceResult) / duration;
+			}
+			if (performance < performance_threshold) {
+				showToast(poor_connection_title,poor_connection_message,{y:"top",x:"right"});
+			}
+		},
+		function(data_obj) {
+			//JGL: We won't do anything here... Let this fail silently
+			dxLog("Function checkConnectionPerformance() failed with result: "+JSON.stringify(data_obj));
+		},false,false);
+	
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

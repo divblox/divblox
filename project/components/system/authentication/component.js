@@ -30,6 +30,16 @@ if (typeof component_classes['system_authentication'] === "undefined") {
 					pageEventTriggered("authentication_failed",data_obj);
 				}.bind(this),false,getComponentElementById(this,"btnProcessAuthentication"),"Authenticating");
 		}
-	}
+	    initCustomFunctions() {
+            
+            // tLWyB_button Related functionality
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            getComponentElementById(this,"btnGoToRegister").on("click", function() {
+                loadPageComponent('register');
+            }.bind(this));
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            
+        }
+   	}
 	component_classes['system_authentication'] = system_authentication;
 }

@@ -26,7 +26,7 @@ if (typeof component_classes['pages_register'] === "undefined") {
 			// Handle specific events here. This is useful if the component needs to update because one of its
 			// sub-components did something
 			switch(event_name) {
-				case 'account_registered': loadPageComponent('login');
+				case 'account_registered': loadUserRoleLandingPage(getCurrentUserRoleFromAppState());
 					break;
 				default:
 					dxLog("Event triggered: "+event_name+": "+JSON.stringify(parameters_obj));

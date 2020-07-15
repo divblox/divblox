@@ -79,6 +79,39 @@ class AccountController extends ProjectComponentController {
             $AccountToCreateObj->FullName = "N/A";
         }
         $AccountToCreateObj->Save();
+    
+        // JGL: We are authenticated. Let's link the current authentication token/client connection to the account obj
+        $ClientAuthenticationTokenObj = ClientAuthenticationToken::LoadByToken($this->CurrentClientAuthenticationToken);
+        if (is_null($ClientAuthenticationTokenObj)) {
+            if ($this->initializeNewAuthenticationToken()) {
+                $ClientAuthenticationTokenObj = ClientAuthenticationToken::LoadByToken($this->CurrentClientAuthenticationToken);
+                if (is_null($ClientAuthenticationTokenObj)) {
+                    $this->setResult(false);
+                    $this->setReturnValue("Message","Could not initialize authentication token");
+                    $this->presentOutput();
+                }
+            }
+        }
+        $ClientConnectionObj = $ClientAuthenticationTokenObj->ClientConnectionObject;
+        if (is_null($ClientConnectionObj)) {
+            $this->setResult(false);
+            $this->setReturnValue("Message","Could not initialize authentication token");
+            $this->presentOutput();
+        }
+        $ClientConnectionObj->AccountObject = $AccountToCreateObj;
+        ProjectFunctions::linkPushRegistrationsToAccount($ClientAuthenticationTokenObj,$AccountToCreateObj);
+        try {
+            $ClientConnectionObj->Save();
+            $this->setResult(true);
+            $UserRole = "";
+            if (!is_null($AccountToCreateObj->UserRoleObject)) {
+                $UserRole = $AccountToCreateObj->UserRoleObject->Role;
+                $this->setReturnValue("UserRole",$UserRole);
+            }
+        } catch (dxCallerException $e) {
+        
+        }
+        
         $this->setResult(true);
         $this->setReturnValue("Message","Object created");
         $this->setReturnValue("Id",$AccountToCreateObj->Id);

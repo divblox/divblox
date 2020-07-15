@@ -27,6 +27,12 @@ PublicApi::addApiOperation("updatePushRegistration",
     ["InternalId" => "[The internal ID for the push notification]"],
     "Update Push Registration",
     "Creates or modifies a push registration on the server. If something goes wrong, a message will be populated in the output.");
+PublicApi::addApiOperation("getConnectionPerformanceResult",
+    [],
+    ["ConnectionPerformanceResult" => "[INT]"],
+    "Get Connection Performance Result",
+    "Returns the amount of milliseconds this request should've taken.
+    This value can then be used by the calling party to determine its connection performance.");
 PublicApi::initApi("API endpoint for Divblox project global functions","Global Functions");
 
 // Operations
@@ -100,5 +106,14 @@ function updatePushRegistration() {
     }
     PublicApi::setApiResult(true); // You need to set this to true to indicate that the API executed successfully
     PublicApi::addApiOutput("InternalId",$ErrorInfo[0]);
+    PublicApi::printApiResult();
+}
+function getConnectionPerformanceResult() {
+    $BenchmarkMicroseconds = 200000;
+    $OverheadMilliseconds = 120;
+    usleep($BenchmarkMicroseconds);
+    $ExpectedRequestDuration = round(($BenchmarkMicroseconds/1000)+$OverheadMilliseconds);
+    PublicApi::addApiOutput("ConnectionPerformanceResult",$ExpectedRequestDuration);
+    PublicApi::setApiResult(true); // You need to set this to true to indicate that the API executed successfully
     PublicApi::printApiResult();
 }

@@ -1,14 +1,14 @@
 <div id="ComponentWrapper" class="component-wrapper">
     <div id="ComponentPlaceholder" class="component_placeholder component_placeholder_data_view">
-        <div id="ComponentFeedback"></div>
+        <div id="ComponentFeedback"/>
     </div>
     <div id="ComponentContent" class="component-content" style="display:none">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
                     <div class="form-group">
-                        <label for="InputUsername">User name</label>
-                        <input type="text" class="form-control" id="InputUsername" aria-describedby="emailHelp" placeholder="Enter user name" name="username" autofocus="autofocus"/>
+                        <label for="InputUsername">User name (Email)</label>
+                        <input type="email" class="form-control" id="InputUsername" aria-describedby="emailHelp" placeholder="Enter user name" name="username" autofocus="autofocus"/>
                     </div>
                     <div class="form-group">
                         <label for="InputPassword">Password</label>
@@ -16,7 +16,8 @@
                     </div>
                 </div>
                 <div class="col-12">
-                    <button id="btnProcessAuthentication" type="button" class="btn btn-primary">Login</button>
+                    <button type="button" id="btnGoToRegister" class="btn btn-link float-left">Register</button>
+                    <button id="btnProcessAuthentication" type="button" class="btn btn-primary float-right">Login</button>
                 </div>
             </div>
         </div>

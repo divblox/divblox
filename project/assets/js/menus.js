@@ -106,17 +106,26 @@ let menu_manager = {
         if (menu.length < 1) {return;}
         
         menu.forEach(function(menu_obj) {
-            if (menu_obj["item_click_class"] !== null) {
+            if ((typeof menu_obj["item_click_class"] !== "undefined") &&
+                (menu_obj["item_click_class"] !== null)) {
                 $('.navigation-item-trigger-'+menu_obj["item_click_class"]).on("click", function() {
-                    if (menu_obj["page_to_load"] !== null) {
-                        loadPageComponent(menu_obj["page_to_load"]);
-                    } else if (menu_obj["function_to_execute"] !== null) {
+                    let input_parameters_obj = {};
+                    if ((typeof menu_obj["javascript_inputs"] !== "undefined") &&
+                        (menu_obj["javascript_inputs"] !== null)) {
+                        input_parameters_obj = menu_obj["javascript_inputs"];
+                    }
+                    if ((typeof menu_obj["page_to_load"] !== "undefined") &&
+                        (menu_obj["page_to_load"] !== null)) {
+                        loadPageComponent(menu_obj["page_to_load"],input_parameters_obj);
+                    } else if ((typeof menu_obj["function_to_execute"] !== "undefined") &&
+                                (menu_obj["function_to_execute"] !== null)) {
                         let functionToExecute = window[menu_obj["function_to_execute"]];
-                        if (typeof functionToExecute === "function") functionToExecute();
+                        if (typeof functionToExecute === "function") functionToExecute(input_parameters_obj);
                     }
                 });
             }
-            if (menu_obj["sub_menu"] !== null) {
+            if ((typeof menu_obj["sub_menu"] !== "undefined") &&
+                (menu_obj["sub_menu"] !== null)) {
                 this.initMenuActions(menu_obj["sub_menu"]);
             }
         }.bind(this));

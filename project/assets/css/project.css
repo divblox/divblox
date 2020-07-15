@@ -641,30 +641,34 @@ label {
 /* -------------------------------------------------------------------------------------------------------------------*/
 /* ---------------------------------------------Styles for bottom navbars---------------------------------------------*/
 .dx-bottom-nav {
-    height:calc(65px + (2 * env(safe-area-inset-bottom))) !important;
+    height: calc(65px + (env(safe-area-inset-bottom) / 2)) !important;
     padding: .1rem 1rem !important;
 }
 .dx-bottom-nav >.navbar-nav {
-    font-size:1em;
+    font-size:1rem;
     display: contents;
 }
+.dx-bottom-nav >.navbar-nav >.nav-item {
+    padding-bottom: calc(env(safe-area-inset-bottom) / 2) !important;
+}
+
 .dx-bottom-nav >.navbar-nav >.nav-item >.nav-link >.fa {
-    font-size: 1.2em;
+    font-size: 1.2rem;
 }
 @media screen and (max-width: 415px) {
     .dx-bottom-nav >.navbar-nav {
-        font-size:0.7em;
+        font-size:0.8rem;
     }
     .dx-bottom-nav >.navbar-nav >.nav-item >.nav-link >.fa {
-        font-size: 1.5em;
+        font-size: 1.5rem;
     }
 }
 @media screen and (max-width: 375px) {
     .dx-bottom-nav >.navbar-nav {
-        font-size:0.6em;
+        font-size:0.6rem;
     }
     .dx-bottom-nav >.navbar-nav >.nav-item >.nav-link >.fa {
-        font-size: 1.5em;
+        font-size: 1.5rem;
     }
 }
 /* -------------------------------------------------------------------------------------------------------------------*/
