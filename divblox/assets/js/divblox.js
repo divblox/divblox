@@ -12,7 +12,7 @@
  * Divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "3.1.9";
+let dx_version = "4.0.0";
 let bootstrap_version = "4.5.0";
 let jquery_version = "3.5.1";
 let minimum_required_php_version = "7.3.8";
@@ -51,9 +51,10 @@ if(window.jQuery === undefined) {
 	throw new Error("jQuery has not been loaded. Please ensure that jQuery is loaded before divblox");
 } else {
 	//JGL : This is a temporary fix for jquery to work with the component builder for jquery v3.5+
-	let rxhtmlTag = /<(?!area|br|col|embed|hr|img|input|link|meta|param)(([a-z][^\/\0>\x20\t\r\n\f]*)[^>]*)\/>/gi;
+	let rxhtmlTag = /<(?!area|br|hr|img|input|col|embed|link|meta|param)(([a-z][^\/\0>\x20\t\r\n\f]*)[^>]*)\/>/gi;
 	jQuery.htmlPrefilter = function( html ) {
-		return html.replace( rxhtmlTag, "<$1></$2>" );
+		html = html.replace( rxhtmlTag, "<$1></$2>" );
+		return html;
 	};
 }
 let component_classes = {};
@@ -2147,6 +2148,9 @@ function loadComponentJs(component_path,load_arguments,callback) {
 		}
 		dxGetScript(full_component_path, function(data) {
 			// JGL: Execute the on_[component_name]_ready function
+			if (checkComponentBuilderActive()) {
+				$('img').attr('draggable','false');
+			}
 			let component = new component_classes[class_name](load_arguments);
 			registerComponent(component,component.uid);
 			if (typeof(component.on_component_loaded) !== "undefined") {
@@ -2220,7 +2224,11 @@ function loadPageComponent(component_name,load_arguments,callback) {
 							'style="position: fixed;bottom: 10px;right: 10px;">' +
 							'<img src="'+getRootPath()+'divblox/assets/images/divblox_logo.svg" style="max-height:30px;"/></a>' +
 							'<a target="_blank" href="'+getRootPath()+'component_builder.php?component=pages/'+component_name+'" ' +
-							'class="btn btn-outline-primary btn-sm" style="position: fixed;bottom: 10px;right: 105px;"><i class="fa fa-wrench" aria-hidden="true"></i> Component Builder</a>';
+							'class="btn btn-outline-primary btn-sm" style="position: fixed;bottom: 10px;right: 105px;font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\',' +
+							' Roboto, \'Helvetica Neue\', Arial, \'Noto Sans\', sans-serif, \'Apple Color Emoji\', \'Segoe UI Emoji\',' +
+							' \'Segoe UI Symbol\', \'Noto Color Emoji\';    font-size:14px;"><i class="fa' +
+							' fa-wrench"' +
+							' aria-hidden="true"></i> Component Builder</a>';
 						$('body').append(admin_links_html);
 					}
 				},
@@ -2508,7 +2516,10 @@ function processPageInputs() {
 						'style="position: fixed;bottom: 10px;right: 10px;">' +
 						'<img src="'+getRootPath()+'divblox/assets/images/divblox_logo.svg" style="max-height:30px;"/></a>' +
 						'<a target="_blank" href="'+getRootPath()+'component_builder.php?component='+view+'" ' +
-						'class="btn btn-outline-primary btn-sm" style="position: fixed;bottom: 10px;right: 105px;"><i class="fa fa-wrench" aria-hidden="true"></i> Component Builder</a>';
+						'class="btn btn-outline-primary btn-sm" style="position: fixed;bottom: 10px;right: 105px;font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\',' +
+						' Roboto, \'Helvetica Neue\', Arial, \'Noto Sans\', sans-serif, \'Apple Color Emoji\', \'Segoe UI Emoji\',' +
+						' \'Segoe UI Symbol\', \'Noto Color Emoji\';    font-size:14px;"><i class="fa fa-wrench"' +
+						' aria-hidden="true"></i> Component Builder</a>';
 					$('body').append(admin_links_html);
 				}
 			},
@@ -2613,7 +2624,10 @@ function initFeedbackCapture() {
 	let modal_html = '<div class="modal fade" id="dxGlobalFeedbackModal" tabindex="-1" role="dialog"' +
 		' aria-labelledby="FeedbackModal" aria-hidden="true">\n' +
 		'    <div class="modal-dialog" role="document">\n' +
-		'        <div class="modal-content">\n' +
+		'        <div class="modal-content" style="font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\',' +
+		' Roboto, \'Helvetica Neue\', Arial, \'Noto Sans\', sans-serif, \'Apple Color Emoji\', \'Segoe UI Emoji\',' +
+		' \'Segoe' +
+		' UI Symbol\', \'Noto Color Emoji\';    font-size:1rem;">\n' +
 		'            <div class="modal-header">\n' +
 		'                <h5 class="modal-title">Provide feedback for this page</h5>\n' +
 		'                <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n' +
@@ -2621,7 +2635,7 @@ function initFeedbackCapture() {
 		'                </button>\n' +
 		'            </div>\n' +
 		'            <div class="modal-body">\n' +
-		'                <div class="row mt-n4">\n' +
+		'                <div class="row">\n' +
 		'                    <div class="col-12">\n' +
 		'<label class="small">Feedback Type</label>' +
 		'                        <select id="dxGlobalFeedbackType" class="form-control">' +

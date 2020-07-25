@@ -14,7 +14,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-require(FRAMEWORK_ROOT_STR.'/assets/php/third_party/vendor/autoload.php');
+require(PROJECT_ROOT_STR.'/assets/php/third_party/vendor/autoload.php');
 
 //region Core framework classes
 abstract class dxBaseClass {
@@ -8252,7 +8252,6 @@ abstract class EmailSettings_Base {
      * @var bool
      */
     public static $SMTPAutoTLS = false;
-
 }
 //endregion
 ?>

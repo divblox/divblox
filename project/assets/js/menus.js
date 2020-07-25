@@ -8,7 +8,7 @@ let menu_manager = {
         if (debug_mode) {
             no_cache_force_str = getRandomFilePostFix();
         }
-        loadJsonFromFile(getRootPath()+'project/assets/menus/generated/menus.json'+no_cache_force_str,function(json) {
+        loadJsonFromFile(getRootPath()+'project/assets/configurations/menus/generated/menus.json'+no_cache_force_str,function(json) {
             this.menus = json;
             if (this.menus === {}) {
                 failed_callback();

@@ -1,0 +1,37 @@
+{
+  "Account": {
+    "Attributes": {
+      "EmailAddress": {
+        "DisplayType": "email",
+        "Placeholder": "Please provide an email address"
+      },
+      "Password": {
+        "DisplayType": "password"
+      }
+    }
+  },
+  "AdditionalAccountInformation": {
+    "Attributes": {
+      "Type": {
+        "DisplayType": "list",
+        "InputLabel": "Type:",
+        "DefaultValue": "-Please Select-",
+        "Placeholder": "Type",
+        "Data": "AdditionalAccountInformationTypes",
+        "ValidationMessage": "Please provide a valid Type"
+      }
+    }
+  },
+  "ApiKey": {
+    "Attributes": {
+      "ApiKey": {
+        "DisplayType": "text",
+        "InputLabel": "Api Key:",
+        "DefaultValue": "",
+        "Placeholder": "Generated on save",
+        "Data": null,
+        "ValidationMessage": "Please provide a valid Api Key"
+      }
+    }
+  }
+}

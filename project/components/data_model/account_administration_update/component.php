@@ -11,6 +11,23 @@ class AccountController extends EntityInstanceComponentController {
     public function __construct($ComponentNameStr = 'Component') {
         parent::__construct($ComponentNameStr);
     }
+    public function getObjectData() {
+        $EntityObj = $this->EntityNameStr::Load($this->getInputValue("Id",true));
+        $EntityJsonDecoded = array();
+        if (!is_null($EntityObj)) {
+            $EntityObj->Password = '';
+            $EntityJsonDecoded = json_decode($EntityObj->getJson());
+        }
+        $this->setReturnValue("Object",$EntityJsonDecoded);
+        foreach ($this->IncludedRelationshipArray as $Relationship => $DisplayValue) {
+            $RelationshipList = $this->getRelationshipList($EntityObj,$Relationship);
+            $this->setReturnValue($Relationship."List",$RelationshipList);
+        }
+        $this->setResult(true);
+        $this->setReturnValue("Message","");
+        $this->presentOutput();
+        
+    }
     public function doBeforeSaveActions($EntityToUpdateObj = null)  {
         $EntityToUpdateObj->FullName = trim($EntityToUpdateObj->FirstName).' '.trim($EntityToUpdateObj->MiddleNames).' '.trim($EntityToUpdateObj->LastName);
     }

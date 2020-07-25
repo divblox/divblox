@@ -35,10 +35,20 @@ if (isset($_GET["checkCurl"])) {
 }
 if (isset($_GET['checkWritePermissions'])) {
     set_error_handler('installation_helper_error_handler');
-    $DataModelOrm = isWritable('../../../database/data_model_orm/');
+    $DataModelOrm = isWritable('../../../../../project/assets/php/data_model_orm/');
     $Project = isWritable('../../../../../project/');
     restore_error_handler();
     if ($DataModelOrm && $Project) {
+        if (strpos(strtolower(PHP_OS),"linux") !== false) {
+            $ApacheUsername = posix_getpwuid(posix_geteuid())['name'];
+            $DataModelOrmOwnership = fileowner('../../../../../project/assets/php/data_model_orm') == $ApacheUsername;
+            $ProjectOwnership = fileowner('../../../../../project/') == $ApacheUsername;
+            if ($DataModelOrmOwnership && $ProjectOwnership) {
+                die(json_encode(array("Success" => "")));
+            } else {
+                die(json_encode(array("Failed" => "Required paths not writeable. Please ensure that the user $ApacheUsername owns the divblox project folder.","Datamodel" => $DataModelOrm,"Project" => $Project)));
+            }
+        }
         die(json_encode(array("Success" => "")));
     }
 
@@ -104,12 +114,14 @@ function isWritable($path) {
 
     if (strpos(strtolower(PHP_OS),"linux") !== false) {
         if(!$rm) {
-            if (!chmod($path, 0666)) {
+            if (!chmod($path, 0770)) {
                 unlink($path);
                 return false;
             }
             unlink($path);
         }
+    } else {
+        unlink($path);
     }
 
     return true;

@@ -10,11 +10,11 @@ let data_model = {
     entity_definitions_base: {},
     entity_definitions: {},
     loadEntityDefinitions(success_callback,failed_callback) {
-        loadJsonFromFile(getRootPath()+'project/assets/data_model/generated/data_lists.json'+no_cache_force_str,function(json) {
+        loadJsonFromFile(getRootPath()+'project/assets/configurations/data_model/generated/data_lists.json'+no_cache_force_str,function(json) {
             this.data_lists = json;
-            loadJsonFromFile(getRootPath()+'project/assets/data_model/generated/entity_definitions_base.json'+no_cache_force_str,function(json) {
+            loadJsonFromFile(getRootPath()+'project/assets/configurations/data_model/generated/entity_definitions_base.json'+no_cache_force_str,function(json) {
                 this.entity_definitions_base = json;
-                loadJsonFromFile(getRootPath()+'project/assets/data_model/entity_definitions.json'+no_cache_force_str,function(json) {
+                loadJsonFromFile(getRootPath()+'project/assets/configurations/data_model/entity_definitions.json'+no_cache_force_str,function(json) {
                     this.entity_definitions = json;
                     if ((this.entity_definitions === {}) || (this.entity_definitions_base === {})) {
                         failed_callback();

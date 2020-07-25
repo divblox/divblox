@@ -8,6 +8,7 @@ include(FRAMEWORK_ROOT_STR."/assets/php/framework_classes.php");
 include(PROJECT_ROOT_STR.'/assets/php/component_role_based_access.class.php');
 include(PROJECT_ROOT_STR.'/assets/php/data_model_role_based_access.class.php');
 include(PROJECT_ROOT_STR.'/assets/php/user_role_hierarchy.class.php');
+
 //region Project Access related
 
 /**

@@ -74,7 +74,16 @@ class AccountController extends ProjectComponentController {
             $this->setReturnValue("Message","User role configuration incorrect");
             $this->presentOutput();
         }
-        $AccountToCreateObj->FullName = $AccountToCreateObj->FirstName.' '.$AccountToCreateObj->MiddleNames.' '.$AccountToCreateObj->LastName;
+        $AccountToCreateObj->FullName = '';
+        if (strlen(trim($AccountToCreateObj->FirstName)) > 0) {
+            $AccountToCreateObj->FullName .= $AccountToCreateObj->FirstName;
+        }
+        if (strlen(trim($AccountToCreateObj->MiddleNames)) > 0) {
+            $AccountToCreateObj->FullName .= ' '.$AccountToCreateObj->MiddleNames;
+        }
+        if (strlen(trim($AccountToCreateObj->LastName)) > 0) {
+            $AccountToCreateObj->FullName .= ' '.$AccountToCreateObj->LastName;
+        }
         if (strlen(trim($AccountToCreateObj->FullName)) == 0) {
             $AccountToCreateObj->FullName = "N/A";
         }
