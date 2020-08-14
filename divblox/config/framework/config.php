@@ -102,7 +102,7 @@ define("SANDBOX_ACTIVE_BOOL",false); // If true, will disable certain setup page
 define("DISABLE_COMPONENT_SECURITY_CHECKS_BOOL",false); // If true, will disable checking if a user should have access to a component. NB! THIS GIVES ACCESS TO ALL COMPONENTS TO ANY USER!!!
 define("SIMPLIFY_GENERATED_FILE_PERMISSIONS",false); // If true, this will set the file permissions on linux to 770 when generating code. Useful for development environments
 define("LOG_DB_SYNC_TO_ERROR_LOG",false); // If true, while synchronizing the database and generating the ORM, Divblox will log ALL output to the php error log as well.
-
+define("BASE_CAMP_ROOT_STR","https://basecamp.divblox.com");
 //Firebase configuration for push notifications
 //api_key in Firebase Console -> Project Settings -> CLOUD MESSAGING -> Server key
 define("FIREBASE_SERVER_KEY_STR",'xxxxxxxxxxxxxxxxx');

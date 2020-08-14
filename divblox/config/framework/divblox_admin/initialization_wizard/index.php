@@ -22,14 +22,31 @@ if (!ALLOW_WIZARD_ACCESS) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="../../../../assets/css/bootstrap/4.3.1/bootstrap.min.css">
+    <link rel="stylesheet" href="../../../../assets/css/bootstrap/4.5.0/bootstrap.min.css">
     <link rel="stylesheet" href="../../../../assets/css/font-awesome.min.css">
-    <link rel="stylesheet" href="../../../../../project/assets/css/project.css">
     <link rel="icon" href="../../../../../divblox/assets/images/divblox_favicon.ico" />
     <title>dx Setup Wizard</title>
 </head>
 <body>
 <div class="container-fluid">
+    <div class="modal fade" id="RedirectNoticeModal" tabindex="-1" aria-labelledby="RedirectNoticeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="RedirectNoticeModalLabel">Redirect Notice</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>You've been redirected to this page because something is not right with your Divblox server configuration. Please follow the instructions on this page to resolve the relevant issues.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-12 text-center">
             <img src="../../../../assets/images/divblox_logo.svg" class="img-fluid" style="max-height:50px;"/>
@@ -119,6 +136,12 @@ if (!ALLOW_WIZARD_ACCESS) {
 <script type="text/javascript" src="../../../../assets/js/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript" src="../../../../assets/js/bootstrap/4.3.1/bootstrap.min.js"></script>
 <script>
+    <?php
+        if (isset($_GET['redirect'])) { ?>
+            $('#RedirectNoticeModal').modal('show');
+            $('#CheckDbVersionsWrapper').hide();
+        <?php }
+    ?>
     let config_ok = true;
 	$( document ).ready(function() {
 		checkConfiguration();

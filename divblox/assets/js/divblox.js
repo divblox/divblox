@@ -12,7 +12,7 @@
  * Divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "4.0.2";
+let dx_version = "4.1.0";
 let bootstrap_version = "4.5.0";
 let jquery_version = "3.5.1";
 let minimum_required_php_version = "7.3.8";
@@ -1805,7 +1805,7 @@ function checkFrameworkReady() {
 	if (config_cookie === null) {
 		dxGetScript(getRootPath()+"divblox/config/framework/check_config.php", function( data ) {
 			if (!isJsonString(data)) {
-				window.open(getRootPath()+'divblox/config/framework/divblox_admin/initialization_wizard/');
+				window.open(getRootPath()+'divblox/initialization_wizard/');
 				return;
 			}
 			let config_data_obj = JSON.parse(data);
@@ -1817,21 +1817,21 @@ function checkFrameworkReady() {
 					}
 				});
 			} else {
-				dxRequestSystem(getRootPath()+'divblox/config/framework/divblox_admin/initialization_wizard/installation_helper.php?check=1',{},
+				dxRequestSystem(getRootPath()+'divblox/initialization_wizard/installation_helper.php?check=1',{},
 					function() {
-						window.open(getRootPath()+'divblox/config/framework/divblox_admin/initialization_wizard/');
+						window.open(getRootPath()+'divblox/initialization_wizard/');
 					},
 					function() {
-						throw new Error("Divblox is not ready! Please visit the setup page at: "+getServerRootPath()+"divblox/config/framework/divblox_admin/setup.php");
+						throw new Error("Divblox is not ready! Please visit the setup page at: "+getServerRootPath()+"divblox/");
 					});
 			}
 		}, function(data) {
-			dxRequestSystem(getRootPath()+'divblox/config/framework/divblox_admin/initialization_wizard/installation_helper.php?check=1',{},
+			dxRequestSystem(getRootPath()+'divblox/initialization_wizard/installation_helper.php?check=1',{},
 				function() {
-					window.open(getRootPath()+'divblox/config/framework/divblox_admin/initialization_wizard/');
+					window.open(getRootPath()+'divblox/initialization_wizard/');
 				},
 				function() {
-					throw new Error("Divblox is not ready! Please visit the setup page at: "+getServerRootPath()+"divblox/config/framework/divblox_admin/setup.php");
+					throw new Error("Divblox is not ready! Please visit the setup page at: "+getServerRootPath()+"divblox/");
 				});
 		});
 	} else {
@@ -1845,7 +1845,7 @@ function checkFrameworkReady() {
 					setOnline();
 			}
 			if (debug_mode) {
-				dxLog("Divblox setup page: "+getServerRootPath()+"divblox/config/framework/divblox_admin/setup.php",false);
+				dxLog("Divblox setup page: "+getServerRootPath()+"divblox/",false);
 			}
 			if (!isInStandaloneMode()) {
 				//TODO: Complete this. We need to add a prompt to add to homescreen here that is configurable by the
@@ -2220,7 +2220,7 @@ function loadPageComponent(component_name,load_arguments,callback) {
 				function(data) {
 					let data_obj = JSON.parse(data);
 					if (data_obj.Result == "Success") {
-						let admin_links_html = '<a target="_blank" href="'+getServerRootPath()+'divblox/config/framework/divblox_admin/setup.php" ' +
+						let admin_links_html = '<a target="_blank" href="'+getServerRootPath()+'divblox/" ' +
 							'style="position: fixed;bottom: 10px;right: 10px;">' +
 							'<img src="'+getRootPath()+'divblox/assets/images/divblox_logo.svg" style="max-height:30px;"/></a>' +
 							'<a target="_blank" href="'+getRootPath()+'component_builder.php?component=pages/'+component_name+'" ' +
@@ -2292,7 +2292,7 @@ function handleLoadComponentError() {
 		loadPageComponent('login');
 	},2000);
 	throw new Error("Invalid component: Components must be grouped in folders with all relevant scripts." +
-		" Click here to visit the setup page: "+getServerRootPath()+"divblox/config/framework/divblox_admin/setup.php" +
+		" Click here to visit the setup page: "+getServerRootPath()+"divblox/" +
 		"Will redirect to login page in 2s");
 }
 /**
@@ -2502,7 +2502,7 @@ function processPageInputs() {
 	let view = "pages/"+page_component;
 	updateAppState("CurrentPage",view);
 	if ((typeof url_input_parameters.get("view") === "undefined") || (url_input_parameters.get("view") == null)) {
-		throw new Error("Invalid component name provided. Click here to visit the setup page: "+getServerRootPath()+"divblox/config/framework/divblox_admin/setup.php");
+		throw new Error("Invalid component name provided. Click here to visit the setup page: "+getServerRootPath()+"divblox/");
 	} else {
 		addPageToRootHistory(page_component);
 		loadComponent(view,null,'body',{"uid":page_uid},false);
@@ -2512,7 +2512,7 @@ function processPageInputs() {
 			function(data) {
 				let data_obj = JSON.parse(data);
 				if (data_obj.Result == "Success") {
-					let admin_links_html = '<a target="_blank" href="'+getServerRootPath()+'divblox/config/framework/divblox_admin/setup.php" ' +
+					let admin_links_html = '<a target="_blank" href="'+getServerRootPath()+'divblox/" ' +
 						'style="position: fixed;bottom: 10px;right: 10px;">' +
 						'<img src="'+getRootPath()+'divblox/assets/images/divblox_logo.svg" style="max-height:30px;"/></a>' +
 						'<a target="_blank" href="'+getRootPath()+'component_builder.php?component='+view+'" ' +
