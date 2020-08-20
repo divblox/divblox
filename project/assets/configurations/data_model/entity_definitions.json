@@ -33,5 +33,14 @@
         "ValidationMessage": "Please provide a valid Api Key"
       }
     }
+  },
+  "Ticket": {
+    "Attributes": {
+      "TicketStatus": {
+        "DisplayType": "list",
+        "DefaultValue": "-Please Select-",
+        "Data": "TicketStatuses"
+      }
+    }
   }
 }
