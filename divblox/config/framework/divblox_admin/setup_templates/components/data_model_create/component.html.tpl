@@ -12,14 +12,9 @@
                 <!-- Fields that are included by the component, but not provided for by wrappers will be rendered here... -->
             </div>
             <div class="row">
-                <div class="col-md-6"></div>
+                <div class="col-md-6 d-none d-md-block"></div>
                 <div class="col-md-6">
-                    <div class="row">
-                        <div class="col-md-6"></div>
-                        <div class="col-md-6">
-                            <button id="btnSave" type="button" class="btn btn-primary fullwidth mt-1">Create</button>
-                        </div>
-                    </div>
+                    <button id="btnSave" type="button" class="btn btn-primary fullwidth mt-1">Create</button>
                 </div>
             </div>
         </div>

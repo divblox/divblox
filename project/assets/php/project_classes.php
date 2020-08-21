@@ -151,12 +151,14 @@ class EntityInstanceComponentController extends ProjectComponentController {
     protected $RequiredAttributeArray = [];
     protected $NumberValidationAttributeArray = [];
     protected $IsCreatingBool = false;
+
     public function __construct($ComponentNameStr = 'Component') {
         $this->DataModelObj = new DataModel();
         parent::__construct($ComponentNameStr);
     }
     public function getObjectData() {
-        $EntityObj = $this->EntityNameStr::Load($this->getInputValue("Id",true));
+        $EntityNodeNameStr = $this->EntityNameStr;
+        $EntityObj = $EntityNodeNameStr::Load($this->getInputValue("Id",true));
         $EntityJsonDecoded = array();
         if (!is_null($EntityObj)) {
             $EntityJsonDecoded = json_decode($EntityObj->getJson());
@@ -166,10 +168,14 @@ class EntityInstanceComponentController extends ProjectComponentController {
             $RelationshipList = $this->getRelationshipList($EntityObj,$Relationship);
             $this->setReturnValue($Relationship."List",$RelationshipList);
         }
+        $this->getAdditionalReturnData($EntityObj);
         $this->setResult(true);
         $this->setReturnValue("Message","");
         $this->presentOutput();
-        
+    }
+    protected function getAdditionalReturnData($EntityObj) {
+        //Useful function to override when the object is loaded
+        //$this->setReturnValue("YourParameterHere","Your value here");
     }
     public function getRelationshipList($EntityObj = null,$RelationshipNameStr = null) {
         $ReturnArray = [];
@@ -335,8 +341,6 @@ class EntityDataSeriesComponentController extends ProjectComponentController {
     }
     public function getPage() {
         $EntityNodeNameStr = $this->EntityNameStr;
-        $DefaultSortAttribute = $this->IncludedAttributeArray[0];
-        
         if (is_null($this->getInputValue("ItemsPerPage"))) {
             $this->setResult(false);
             $this->setReturnValue("Message","No items per page provided");
@@ -348,15 +352,59 @@ class EntityDataSeriesComponentController extends ProjectComponentController {
             $this->setReturnValue("Message","Read access denied");
             $this->presentOutput();
         }
-        $Offset = $this->getInputValue("CurrentOffset",true);
-        if ($Offset < 0) {
-            $Offset = ($this->getInputValue("CurrentPage",true) - 1) * $this->getInputValue("ItemsPerPage",true);
+
+        $QueryCondition = $this->buildQueryConditions();
+        $OrderByClause = $this->buildOrderByClause();
+
+        $EntityArray = $this->getPageQueryResult($QueryCondition,$OrderByClause);
+        $EntityReturnArray = $this->getFinalReturnArray($EntityArray);
+
+        $this->setResult(true);
+        $this->setReturnValue("Message","");
+        $this->setReturnValue("Page",$EntityReturnArray);
+        $this->setReturnValue("TotalCount",$EntityNodeNameStr::QueryCount($QueryCondition));
+        $this->presentOutput();
+    }
+    public function deleteSelection() {
+        $EntityNodeNameStr = $this->EntityNameStr;
+        if (is_null($this->getInputValue("SelectedItemArray"))) {
+            $this->setResult(false);
+            $this->setReturnValue("Message","No items provided");
+            $this->presentOutput();
         }
-        if ($Offset < 0) {
-            $Offset = 0;
+        $AccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),$this->EntityNameStr);
+        if (!in_array(AccessOperation::DELETE_STR, $AccessArray)) {
+            $this->setResult(false);
+            $this->setReturnValue("Message","Delete permission denied");
+            $this->presentOutput();
         }
+        $DeleteItemsArray = json_decode($this->getInputValue("SelectedItemArray"));
+        $DeleteCount = 0;
+        $this->doBeforeDeleteActions();
+        foreach($DeleteItemsArray as $item) {
+            $EntityToDeleteObj = $EntityNodeNameStr::Load($item);
+            if (is_null($EntityToDeleteObj)) {
+                continue;
+            }
+            $EntityToDeleteObj->Delete();
+            $DeleteCount++;
+        }
+        $this->doAfterDeleteActions();
+        $this->setResult(true);
+        $this->setReturnValue("Message","$DeleteCount items deleted");
+        $this->presentOutput();
+    }
+    public function doBeforeDeleteActions($DeleteItemsArray = []) {
+        // JGL: This function is intended to be overridden in the child class for additional functionality
+    }
+    public function doAfterDeleteActions() {
+        // JGL: This function is intended to be overridden in the child class for additional functionality
+    }
+
+    protected function buildQueryConditions() {
+        $EntityNodeNameStr = $this->EntityNameStr;
         $QueryCondition = dxQ::All();
-    
+
         foreach ($this->ConstrainByArray as $Relationship) {
             $RelationshipNodeStr = $Relationship.'Object';
             $QueryCondition = dxQ::AndCondition(
@@ -392,6 +440,11 @@ class EntityDataSeriesComponentController extends ProjectComponentController {
         if (!is_null($QueryOrConditions)) {
             $QueryCondition = dxQ::AndCondition($QueryCondition,$QueryOrConditions);
         }
+        return $QueryCondition;
+    }
+    protected function buildOrderByClause() {
+        $EntityNodeNameStr = $this->EntityNameStr;
+        $DefaultSortAttribute = $this->IncludedAttributeArray[0];
         $OrderByClause = dxQ::OrderBy(dxQueryN::$EntityNodeNameStr()->$DefaultSortAttribute);
         if (!is_null($this->getInputValue("SortOptions"))) {
             if (ProjectFunctions::isJson($this->getInputValue("SortOptions"))) {
@@ -404,12 +457,27 @@ class EntityDataSeriesComponentController extends ProjectComponentController {
                 }
             }
         }
-        $EntityArray = $EntityNodeNameStr::QueryArray(
+        return $OrderByClause;
+    }
+    protected function getPageQueryResult($QueryCondition,$OrderByClause) {
+        $EntityNodeNameStr = $this->EntityNameStr;
+        $Offset = $this->getInputValue("CurrentOffset",true);
+        if ($Offset < 0) {
+            $Offset = ($this->getInputValue("CurrentPage",true) - 1) * $this->getInputValue("ItemsPerPage",true);
+        }
+        if ($Offset < 0) {
+            $Offset = 0;
+        }
+        return $EntityNodeNameStr::QueryArray(
             $QueryCondition,
             dxQ::Clause(
                 $OrderByClause,
-                dxQ::LimitInfo($this->getInputValue("ItemsPerPage",true),$Offset)
+                dxQ::LimitInfo(
+                    $this->getInputValue("ItemsPerPage",true),$Offset
+                )
             ));
+    }
+    protected function getFinalReturnArray($EntityArray) {
         $EntityReturnArray = [];
         foreach($EntityArray as $EntityObj) {
             $CompleteReturnArray = ["Id" => $EntityObj->Id];
@@ -422,7 +490,7 @@ class EntityDataSeriesComponentController extends ProjectComponentController {
                     $CompleteReturnArray[$Attribute] = is_null($EntityObj->$Attribute)? 'N/A':$EntityObj->$Attribute;
                 }
             }
-            
+
             foreach ($this->IncludedRelationshipArray as $Relationship => $DisplayAttribute) {
                 $RelationshipReturnStr = "N/A";
                 $RelationshipNodeStr = $this->DataModelObj->getEntityRelationshipPathAsNode($EntityObj,$this->EntityNameStr,$Relationship,[]);
@@ -443,38 +511,7 @@ class EntityDataSeriesComponentController extends ProjectComponentController {
             }
             array_push($EntityReturnArray,$CompleteReturnArray);
         }
-        $this->setResult(true);
-        $this->setReturnValue("Message","");
-        $this->setReturnValue("Page",$EntityReturnArray);
-        $this->setReturnValue("TotalCount",$EntityNodeNameStr::QueryCount($QueryCondition));
-        $this->presentOutput();
-    }
-    public function deleteSelection() {
-        $EntityNodeNameStr = $this->EntityNameStr;
-        if (is_null($this->getInputValue("SelectedItemArray"))) {
-            $this->setResult(false);
-            $this->setReturnValue("Message","No items provided");
-            $this->presentOutput();
-        }
-        $AccessArray = ProjectAccessManager::getObjectAccess(ProjectFunctions::getCurrentAccountId(),$this->EntityNameStr);
-        if (!in_array(AccessOperation::DELETE_STR, $AccessArray)) {
-            $this->setResult(false);
-            $this->setReturnValue("Message","Delete permission denied");
-            $this->presentOutput();
-        }
-        $DeleteItemsArray = json_decode($this->getInputValue("SelectedItemArray"));
-        $DeleteCount = 0;
-        foreach($DeleteItemsArray as $item) {
-            $EntityToDeleteObj = $EntityNodeNameStr::Load($item);
-            if (is_null($EntityToDeleteObj)) {
-                continue;
-            }
-            $EntityToDeleteObj->Delete();
-            $DeleteCount++;
-        }
-        $this->setResult(true);
-        $this->setReturnValue("Message","$DeleteCount items deleted");
-        $this->presentOutput();
+        return $EntityReturnArray;
     }
 }
 //endregion

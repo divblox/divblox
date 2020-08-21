@@ -41,8 +41,10 @@ if (isset($_GET['checkWritePermissions'])) {
     if ($DataModelOrm && $Project) {
         if (strpos(strtolower(PHP_OS),"linux") !== false) {
             $ApacheUsername = posix_getpwuid(posix_geteuid())['name'];
-            $DataModelOrmOwnership = fileowner('../../../../../project/assets/php/data_model_orm') == $ApacheUsername;
-            $ProjectOwnership = fileowner('../../../../../project/') == $ApacheUsername;
+            $DataModelOrmUsername = posix_getpwuid(fileowner('../../../../../project/assets/php/data_model_orm'))['name'];
+            $ProjectUsername = posix_getpwuid(fileowner('../../../../../project/'))['name'];
+            $DataModelOrmOwnership = $DataModelOrmUsername == $ApacheUsername;
+            $ProjectOwnership = $ProjectUsername == $ApacheUsername;
             if ($DataModelOrmOwnership && $ProjectOwnership) {
                 die(json_encode(array("Success" => "")));
             } else {

@@ -6,7 +6,7 @@
         <div class="container-fluid container-no-gutters">
             <div class="row">
                 <div class="col-md-6">
-                    <div class="input-group mb-3">
+                    <div class="input-group">
                         <input type="text" id="DataTableSearchInput" class="form-control data_table_search_icon" placeholder="Search..." aria-label="Search" aria-describedby="btnResetSearch"/>
                         <div class="input-group-append">
                             <button class="btn btn-outline-secondary" type="button" id="btnResetSearch"><i class="fa fa-times" aria-hidden="true"></i></button>

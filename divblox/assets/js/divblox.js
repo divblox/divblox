@@ -12,7 +12,7 @@
  * Divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "4.1.0a";
+let dx_version = "4.1.1";
 let bootstrap_version = "4.5.0";
 let jquery_version = "3.5.1";
 let minimum_required_php_version = "7.3.8";
@@ -804,42 +804,58 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
 		
 	}
 	/**
+	 * Returns the input parameters object for the dxRequestInternal function call that loads the entity
+	 * @returns {Object} The object to pass to dxRequestInternal
+	 */
+	getLoadFunctionParameters() {
+		return {f:"getObjectData", Id:this.getEntityId()};
+	}
+	/**
+	 * Called before the server request fires in the loadEntity() function, giving room for functionality that should be
+	 * executed immediately before load. Can be used to stop the loadEntity() function by returning false
+	 */
+	onBeforeLoadEntity() {
+		//TODO: Override this as needed;
+		return true;
+	}
+	/**
 	 * Loads the entity into the DOM. Handles communication with the backend as well as display on the front end.
 	 */
 	loadEntity() {
+		if (!this.onBeforeLoadEntity()) {return;}
 		dxRequestInternal(
 			getComponentControllerPath(this),
-			{f:"getObjectData", Id:this.getEntityId()},
+			this.getLoadFunctionParameters(),
 			function(data_obj) {
-			this.removeLoadingState();
-			let entity_obj = {};
-			if (typeof data_obj.Object !== "undefined") {
-				entity_obj = data_obj.Object;
-			}
-			this.component_obj = {};
-			this.element_mapping = {};
-				if (Object.keys(entity_obj).length > 0) {
-					this.component_obj = entity_obj;
+				this.removeLoadingState();
+				let entity_obj = {};
+				if (typeof data_obj.Object !== "undefined") {
+					entity_obj = data_obj.Object;
 				}
-			this.included_attribute_array.forEach(function(attribute) {
-				if (Object.keys(entity_obj).length === 0) {
-					this.component_obj[attribute] = "";
-				}
-				this.element_mapping[attribute] = "#"+this.getUid()+"_"+attribute;
+				this.component_obj = {};
+				this.element_mapping = {};
+					if (Object.keys(entity_obj).length > 0) {
+						this.component_obj = entity_obj;
+					}
+				this.included_attribute_array.forEach(function(attribute) {
+					if (Object.keys(entity_obj).length === 0) {
+						this.component_obj[attribute] = "";
+					}
+					this.element_mapping[attribute] = "#"+this.getUid()+"_"+attribute;
+				}.bind(this));
+				this.included_relationship_array.forEach(function(relationship) {
+					if (Object.keys(entity_obj).length === 0) {
+						this.component_obj[relationship] = "";
+					}
+					this.element_mapping[relationship] = "#"+this.getUid()+"_"+relationship;
+					this.relationship_list_array[relationship] = data_obj[relationship+"List"];
+				}.bind(this));
+				this.setValues();
+				this.onAfterLoadEntity(data_obj);
+			}.bind(this), function(data_obj) {
+				this.removeLoadingState();
+				this.handleComponentError(data_obj.Message);
 			}.bind(this));
-			this.included_relationship_array.forEach(function(relationship) {
-				if (Object.keys(entity_obj).length === 0) {
-					this.component_obj[relationship] = "";
-				}
-				this.element_mapping[relationship] = "#"+this.getUid()+"_"+relationship;
-				this.relationship_list_array[relationship] = data_obj[relationship+"List"];
-			}.bind(this));
-			this.setValues();
-			this.onAfterLoadEntity(data_obj);
-		}.bind(this), function(data_obj) {
-			this.removeLoadingState();
-			this.handleComponentError(data_obj.Message);
-		}.bind(this));
 	}
 	/**
 	 * Called last in the success callback of the loadEntity() function, giving room for functionality that should be
@@ -903,14 +919,11 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
 		return this.component_obj;
 	}
 	/**
-	 * Sends updated entity object data to the backend to be saved
+	 * Returns the input parameters object for the dxRequestInternal function call that saves the entity
+	 * @returns {Object} The object to pass to dxRequestInternal
 	 */
-	saveEntity() {
+	getSaveFunctionParameters() {
 		let current_component_obj = this.updateValues();
-		this.resetValidation();
-		if (!this.validateEntity()) {
-			return;
-		}
 		let parameters_obj = {f:"saveObjectData",
 			ObjectData:JSON.stringify(current_component_obj),
 			Id:this.getEntityId()};
@@ -919,9 +932,24 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
 				parameters_obj['Constraining'+relationship+'Id'] = getGlobalConstrainById(relationship);
 			})
 		}
+		return parameters_obj;
+	}
+	/**
+	 * Called before the server request fires in the saveEntity() function, giving room for functionality that should be
+	 * executed immediately before save. Can be used to stop the saveEntity() function by returning false
+	 */
+	onBeforeSaveEntity() {
+		this.resetValidation();
+		return this.validateEntity();
+	}
+	/**
+	 * Sends updated entity object data to the backend to be saved
+	 */
+	saveEntity() {
+		if (!this.onBeforeSaveEntity()) {return;}
 		dxRequestInternal(
 			getComponentControllerPath(this),
-			parameters_obj,
+			this.getSaveFunctionParameters(),
 			function(data_obj) {
 			    if (this.getLoadArgument("entity_id") != null) {
                     setGlobalConstrainById(this.entity_name,data_obj.Id);
@@ -947,13 +975,29 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
 		//TODO: Override this as needed;
 	}
 	/**
+	 * Returns the input parameters object for the dxRequestInternal function call that deletes the entity
+	 * @returns {Object} The object to pass to dxRequestInternal
+	 */
+	getDeleteFunctionParameters() {
+		return {f:"deleteObjectData",
+			Id:this.getLoadArgument("entity_id")};
+	}
+	/**
+	 * Called before the server request fires in the deleteEntity() function, giving room for functionality that should be
+	 * executed immediately before delete. Can be used to stop the deleteEntity() function by returning false
+	 */
+	onBeforeDeleteEntity() {
+		//TODO: Override this as needed;
+		return true;
+	}
+	/**
 	 * Sends request to the backend to delete entity instance
 	 */
 	deleteEntity() {
+		if (!this.onBeforeDeleteEntity()) {return;}
 		dxRequestInternal(
 			getComponentControllerPath(this),
-			{f:"deleteObjectData",
-				Id:this.getLoadArgument("entity_id")},
+			this.getDeleteFunctionParameters(),
 			function(data_obj) {
 				this.loadEntity();
 				pageEventTriggered(this.lowercase_entity_name+"_deleted");
@@ -1077,20 +1121,31 @@ class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
 			'project/assets/js/tableexport/xlsx.core.min.js',
 			'project/assets/js/tableexport/FileSaver.min.js',
 			'project/assets/js/tableexport/tableexport.min.js'];
+		this.click_event_column_index = 1;
 		// Call this.initDataTableVariables("YourEntityName") in the implementing class
 	}
 	/**
-	 * Initializes the necessary Data Table variables and creates the table header
+	 * Initializes the necessary Data Table variables
 	 */
 	initDataTableVariables(entity_name) {
 		this.entity_name = entity_name;
 		this.lowercase_entity_name =  entity_name.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toLowerCase();
+
+		this.buildDataTableHeaderHtml();
 		
+		this.column_name_array = Object.keys(this.column_name_obj);
+		this.current_sort_column = [this.column_name_array[0],true]; // Sort on first column, desc
+		//DataTableHeaderHtml
+	}
+	/**
+	 * Creates the table header
+	 */
+	buildDataTableHeaderHtml() {
 		getComponentElementById(this,'DataTableHeaderHtml').html(
 			'<th id="'+this.getUid()+'_MultiSelectColumn" class="data_table_header" scope="col">\n' +
 			'<input id="'+this.getUid()+'_MultiSelectAll" type="checkbox" name="all" value="all">\n' +
 			'</th>');
-		
+
 		this.included_attribute_array.forEach(function(attribute) {
 			this.column_name_obj[attribute] = attribute.replace(/([a-z0-9])([A-Z])/g, '$1 $2');
 			getComponentElementById(this,'DataTableHeaderHtml').append(
@@ -1103,10 +1158,44 @@ class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
 				'<th id="'+this.getUid()+'_SortBy'+relationship+'" class="data_table_header" scope="col">'+this.column_name_obj[relationship]+'</th>'
 			)
 		}.bind(this));
-		
-		this.column_name_array = Object.keys(this.column_name_obj);
-		this.current_sort_column = [this.column_name_array[0],true]; // Sort on first column, desc
-		//DataTableHeaderHtml
+	}
+	/**
+	 * Displays the loading indicator for the table
+	 */
+	showPageLoadingIndicator() {
+		let max_columns = this.column_name_array.length+1;
+		getComponentElementById(this,"DataTableBody").html('<tr id="'+this.getUid()+'_DataTableLoading"><td' +
+			' colspan="'+max_columns+'"' +
+			'><div class="dx-loading"></div></td></tr>');
+	}
+	/**
+	 * Toggles the "No results" view. Called in the loadPage() function if no data available
+	 */
+	toggleNoResults() {
+		let max_columns = this.column_name_array.length+1;
+		if (this.total_items === 0) {
+			getComponentElementById(this,"DataTableBody").html('<tr id="#'+this.getUid()+'_DataTableLoading"><td' +
+				' colspan="'+max_columns+'"' +
+				' style="text-align: center;">No results</td></tr>');
+			getComponentElementById(this,"DataTableLoading").show();
+		}
+	}
+	/**
+	 * Updates the pagination button content
+	 */
+	updatePagination() {
+		let next_page = this.current_page+1;
+		let next_next_page = next_page+1;
+		getComponentElementById(this,"PaginationCurrentItem").html('<span class="page-link">'+this.current_page+'</span>');
+		getComponentElementById(this,"PaginationNextItem").html('<span class="page-link">'+next_page+'</span>');
+		getComponentElementById(this,"PaginationNextNextItem").html('<span class="page-link">'+next_next_page+'</span>');
+		getComponentElementById(this,"ResultCountWrapper").html('<span class="badge float-right">Total: '+this.total_items+'</span>');
+	}
+	/**
+	 * Clears the contents of the table
+	 */
+	clearDataTableBody() {
+		getComponentElementById(this,"DataTableBody").html("");
 	}
 	/**
 	 * A useful function to call to reset the component state
@@ -1312,13 +1401,29 @@ class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
 			table_exporter_data.fileExtension);
 	}
 	/**
+	 * Returns the input parameters object for the dxRequestInternal function call that deletes the selection
+	 * @returns {Object} The object to pass to dxRequestInternal
+	 */
+	getDeleteFunctionParameters() {
+		return {f:"deleteSelection",
+			SelectedItemArray:JSON.stringify(this.selected_items_array)};
+	}
+	/**
+	 * Called before the server request fires in the deleteSelected() function, giving room for functionality that should be
+	 * executed immediately before delete. Can be used to stop the deleteSelected() function by returning false
+	 */
+	onBeforeDeleteSelected() {
+		//TODO: Override this as needed;
+		return true;
+	}
+	/**
 	 * Backend request to delete selected entires from database.
 	 */
 	deleteSelected() {
+		if (!this.onBeforeDeleteSelected()) {return;}
 		dxRequestInternal(
 			getComponentControllerPath(this),
-			{f:"deleteSelection",
-				SelectedItemArray:JSON.stringify(this.selected_items_array)},
+			this.getDeleteFunctionParameters(),
 			function(data_obj) {
 				getComponentElementById(this,"MultiSelectAll").prop("checked",false);
 				this.selected_items_array = [];
@@ -1331,7 +1436,8 @@ class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
 				showAlert("Error deleting items: "+data_obj.Message,"error","OK",false);
 			}.bind(this));
 	}
-	/** Called last in the success callback of the deleteSelected() function, gives room for functionality to be executed
+	/**
+	 * Called last in the success callback of the deleteSelected() function, gives room for functionality to be executed
 	 * immediately after deletion
 	 * @param data_obj Full data object from loadPage() function
 	 */
@@ -1339,29 +1445,41 @@ class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
 		//TODO: Override this as needed;
 	}
 	/**
-	 * Load the data table up row by row, including pagination and search functionality
+	 * Returns the input parameters object for the dxRequestInternal function call that loads the page
+	 * @returns {Object} The object to pass to dxRequestInternal
 	 */
-	loadPage() {
-		let uid = this.getUid();
-		let search_text = getComponentElementById(this,"DataTableSearchInput").val();
-		let max_columns = this.column_name_array.length+1;
-		getComponentElementById(this,"DataTableBody").html('<tr id="'+this.getUid()+'_DataTableLoading"><td' +
-			' colspan="'+max_columns+'"' +
-			'><div class="dx-loading"></div></td></tr>');
+	getLoadFunctionParameters() {
 		let parameters_obj = {f:"getPage",
 			CurrentPage:this.current_page,
 			ItemsPerPage:this.current_items_per_page,
-			SearchText:search_text,
+			SearchText:getComponentElementById(this,"DataTableSearchInput").val(),
 			SortOptions:JSON.stringify(this.current_sort_column)};
 		if (this.constrain_by_array.length > 0) {
 			this.constrain_by_array.forEach(function(relationship) {
 				parameters_obj['Constraining'+relationship+'Id'] = getGlobalConstrainById(relationship);
 			})
 		}
-		dxRequestInternal(getComponentControllerPath(this),
-			parameters_obj,
+		return parameters_obj;
+	}
+	/**
+	 * Called before the server request fires in the loadPage() function, giving room for functionality that should be
+	 * executed immediately before load. Can be used to stop the loadPage() function by returning false
+	 */
+	onBeforeLoadPage() {
+		//TODO: Override this as needed;
+		return true;
+	}
+	/**
+	 * Load the data table up row by row, including pagination and search functionality
+	 */
+	loadPage() {
+		if (!this.onBeforeLoadPage()) {return;}
+		this.showPageLoadingIndicator();
+		dxRequestInternal(
+			getComponentControllerPath(this),
+			this.getLoadFunctionParameters(),
 			function(data_obj) {
-				getComponentElementById(this,"DataTableBody").html("");
+				this.clearDataTableBody();
 				data_obj.Page.forEach(function(item) {
 					this.addRow(item);
 				}.bind(this));
@@ -1372,14 +1490,14 @@ class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
 					getComponentElementById(this,"DataTableLoading").hide();
 				}
 				this.toggleNoResults();
-				if (this.current_page == 1) {
+				if (this.current_page === 1) {
 					getComponentElementById(this,"PaginationResetButton").addClass("disabled");
 					getComponentElementById(this,"PaginationJumpBack").addClass("disabled");
 				} else {
 					getComponentElementById(this,"PaginationResetButton").removeClass("disabled");
 					getComponentElementById(this,"PaginationJumpBack").removeClass("disabled");
 				}
-				if (this.current_page == this.total_pages) {
+				if (this.current_page === this.total_pages) {
 					getComponentElementById(this,"PaginationFinalPageButton").addClass("disabled");
 					getComponentElementById(this,"PaginationJumpForward").addClass("disabled");
 				} else {
@@ -1396,19 +1514,15 @@ class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
 				} else {
 					getComponentElementById(this,"PaginationNextNextItem").hide();
 				}
-				let next_page = this.current_page+1;
-				let next_next_page = next_page+1;
-				getComponentElementById(this,"PaginationCurrentItem").html('<span class="page-link">'+this.current_page+'</span>');
-				getComponentElementById(this,"PaginationNextItem").html('<span class="page-link">'+next_page+'</span>');
-				getComponentElementById(this,"PaginationNextNextItem").html('<span class="page-link">'+next_next_page+'</span>');
-				getComponentElementById(this,"ResultCountWrapper").html('<span class="badge float-right">Total: '+this.total_items+'</span>');
+				this.updatePagination();
 				this.onAfterLoadPage(data_obj);
 			}.bind(this),
 			function(data_obj) {
 				this.handleComponentError('Could not retrieve data: '+data_obj.Message);
 			}.bind(this),false,false);
 	}
-	/** called last in the success callback of the loadPage() function, gives room for functionality to be executed
+	/**
+	 * Called last in the success callback of the loadPage() function, gives room for functionality to be executed
 	 * immediately after loading the data table
 	 * @param data_obj Full data object from loadPage() function
 	 */
@@ -1421,34 +1535,60 @@ class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
 	 */
 	addRow(row_data_obj) {
 		this.current_page_array.push(row_data_obj);
-		let uid = this.getUid();
-		let row_id = row_data_obj["Id"];
-		let checked_html = '';
-		// Doing it this way since indexOf and includes does not identify the items as being in the array...
-		this.selected_items_array.forEach(function(item) {if (item == row_id) {checked_html = ' checked';}});
 		if (this.selected_items_array.length > 0) {
 			getComponentElementById(this,"MultiSelectOptionsButton").show().addClass("d-inline-flex");
 		} else {
 			getComponentElementById(this,"MultiSelectOptionsButton").hide().removeClass("d-inline-flex");
 		}
-		let html = '<tr class="'+uid+'_row_item_'+row_id+' dx-data-table-row">';
+		getComponentElementById(this,"DataTableBody").append(this.getRowHtml(row_data_obj));
+	}
+	/**
+	 * Returns the value to be displayed for a specific column for the row
+	 * @param row_data_obj
+	 * @param key
+	 * @returns {string|*}
+	 */
+	getRowColumnHtml(row_data_obj = {},key = "") {
+		if (typeof row_data_obj[key] === "undefined") {
+			return key;
+		}
+		switch(key) {
+			//case '[Key]': return 'Your own value';
+			//break;
+			default: return row_data_obj[key];
+		}
+	}
+	/**
+	 * Returns the complete html for the row to be added to the table
+	 * @param row_data_obj
+	 * @returns {string}
+	 */
+	getRowHtml(row_data_obj) {
+		let html = '<tr class="'+this.getUid()+'_row_item_'+row_data_obj["Id"]+' dx-data-table-row">';
 		let row_keys = Object.keys(row_data_obj);
-		let is_first = true;
+		let checked_html = '';
+		// Doing it this way since indexOf and includes does not identify the items as being in the array...
+		this.selected_items_array.forEach(function(item) {if (item === row_data_obj["Id"]) {checked_html = ' checked';}});
+		let column_index = 0;
 		row_keys.forEach(function(key) {
-			if (key != "Id") {
-				if (is_first) {
-					html += '<th scope="row"><a href="#" id="'+uid+'_row_item_'+row_id+'" class="data-table-first-column first-column_'+uid+'">'+row_data_obj[key]+'</a></th>';
-				} else {
-					html += '<td>'+row_data_obj[key]+'</td>';
-				}
-				is_first = false;
+			if (key === "Id") {
+				html += '<td>' +
+					'<input id="'+this.getUid()+'_select_item_'+row_data_obj["Id"]+'" type="checkbox"' +
+					' class="select_item_'+this.getUid()+'" name="'+this.getUid()+'_select_item_'+row_data_obj["Id"]+'" value="'+this.getUid()+'_select_item_'+row_data_obj["Id"]+'"'+checked_html+'>' +
+					'</td>';
 			} else {
-				html += '<td><input id="'+uid+'_select_item_'+row_id+'" type="checkbox"' +
-					' class="select_item_'+uid+'" name="'+uid+'_select_item_'+row_id+'" value="'+uid+'_select_item_'+row_id+'"'+checked_html+'></td>';
+				if (column_index === this.click_event_column_index) {
+					html += '<th scope="row">' +
+						'<a href="#" id="'+this.getUid()+'_row_item_'+row_data_obj["Id"]+'" class="data-table-first-column first-column_'+this.getUid()+'">'+this.getRowColumnHtml(row_data_obj,key)+'</a>' +
+						'</th>';
+				} else {
+					html += '<td>'+this.getRowColumnHtml(row_data_obj,key)+'</td>';
+				}
 			}
-		});
+			column_index++;
+		}.bind(this));
 		html += '</tr>';
-		getComponentElementById(this,"DataTableBody").append(html);
+		return html;
 	}
 	/**
 	 * Event handler for clicks on data rows
@@ -1457,18 +1597,6 @@ class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
 	on_item_clicked(id) {
 		setGlobalConstrainById(this.entity_name,id);
 		pageEventTriggered(this.lowercase_entity_name+"_clicked",{id:id});
-	}
-	/**
-	 * Toggles the "No results" view. Called in the loadPage() function if no data available
-	 */
-	toggleNoResults() {
-		let max_columns = this.column_name_array.length+1;
-		if (this.total_items == 0) {
-			getComponentElementById(this,"DataTableBody").html('<tr id="#'+this.getUid()+'_DataTableLoading"><td' +
-				' colspan="'+max_columns+'"' +
-				' style="text-align: center;">No results</td></tr>');
-			getComponentElementById(this,"DataTableLoading").show();
-		}
 	}
 }
 /**
@@ -1493,6 +1621,7 @@ class DivbloxDomEntityDataListComponent extends DivbloxDomBaseComponent {
 		this.constrain_by_array = [];
 		this.included_all_object = {};
 		this.current_sort_column = [];
+		this.item_divider_text = " ";
 	}
 	/**
 	 * Initializes the necessary Data List variables
@@ -1503,6 +1632,12 @@ class DivbloxDomEntityDataListComponent extends DivbloxDomBaseComponent {
 		this.included_all_object = {...this.included_attributes_object,...this.included_relationships_object};
 		let included_keys = Object.keys(this.included_all_object);
 		this.current_sort_column = [included_keys[0],true]; // Sort on first column, desc
+	}
+	/**
+	 * Displays the loading indicator for the list
+	 */
+	showPageLoadingIndicator() {
+		getComponentElementById(this,"DataListLoading").html('<div class="dx-loading"></div>').show();
 	}
 	/**
 	 * A useful function to call to reset the component state
@@ -1553,23 +1688,39 @@ class DivbloxDomEntityDataListComponent extends DivbloxDomBaseComponent {
 		registerEventHandler(document,"click",undefined,".data_list_item_"+this.uid);
 	}
 	/**
-	 * Load the data list up row by row, including pagination and search functionality
+	 * Returns the input parameters object for the dxRequestInternal function call that loads the page
+	 * @returns {Object} The object to pass to dxRequestInternal
 	 */
-	loadPage() {
-		let search_text = getComponentElementById(this,"DataListSearchInput").val();
-		getComponentElementById(this,"DataListLoading").html('<div class="dx-loading"></div>').show();
+	getLoadFunctionParameters() {
 		let parameters_obj = {f:"getPage",
 			CurrentOffset:this.current_list_offset,
 			ItemsPerPage:this.list_offset_increment,
-			SearchText:search_text,
+			SearchText:getComponentElementById(this,"DataListSearchInput").val(),
 			SortOptions:JSON.stringify(this.current_sort_column)};
 		if (this.constrain_by_array.length > 0) {
 			this.constrain_by_array.forEach(function(relationship) {
 				parameters_obj['Constraining'+relationship+'Id'] = getGlobalConstrainById(relationship);
 			})
 		}
-		dxRequestInternal(getComponentControllerPath(this),
-			parameters_obj,
+		return parameters_obj;
+	}
+	/**
+	 * Called before the server request fires in the loadPage() function, giving room for functionality that should be
+	 * executed immediately before load. Can be used to stop the loadPage() function by returning false
+	 */
+	onBeforeLoadPage() {
+		//TODO: Override this as needed;
+		return true;
+	}
+	/**
+	 * Load the data list up row by row, including pagination and search functionality
+	 */
+	loadPage() {
+		if (!this.onBeforeLoadPage()) {return;}
+		this.showPageLoadingIndicator();
+		dxRequestInternal(
+			getComponentControllerPath(this),
+			this.getLoadFunctionParameters(),
 			function(data_obj) {
 				data_obj.Page.forEach(function(item) {
 					this.addRow(item);
@@ -1592,12 +1743,94 @@ class DivbloxDomEntityDataListComponent extends DivbloxDomBaseComponent {
 				this.handleComponentError('Could not retrieve data: '+data_obj.Message);
 			}.bind(this),false,false);
 	}
-	/** Called last in the success callback of the loadPage() function, gives room for functionality to be executed
+	/**
+	 * Called last in the success callback of the loadPage() function, gives room for functionality to be executed
 	 * immediately after loading the data list
 	 * @param data_obj Full data object from loadPage() function
 	 */
 	onAfterLoadPage(data_obj) {
 		//TODO: Override this as needed;
+	}
+	/**
+	 * Returns the value to be displayed for a specific attribute for the row
+	 * @param row_data_obj
+	 * @param key
+	 * @returns {string|*}
+	 */
+	getAttributeHtml(row_data_obj = {},key = "") {
+		if (typeof row_data_obj[key] === "undefined") {
+			return "";
+		}
+		let formatted_content = '';
+
+		switch(key) {
+			//case '[Key]': formatted_content = 'Your own value';
+			//	break;
+			default: formatted_content = row_data_obj[key];
+		}
+		if (formatted_content === null) {
+			return "";
+		}
+		if (formatted_content.trim().length === 0) {
+			return "";
+		}
+		return formatted_content;
+	}
+	/**
+	 * Returns the html for a specific wrapper type for the row
+	 * @param content
+	 * @param wrapper_type
+	 * @returns {string}
+	 */
+	getAttributeWrapperHtml(content = '',wrapper_type = 'normal') {
+		if (content.trim().length === 0) {
+			return "";
+		}
+		switch(wrapper_type.toLowerCase()) {
+			case 'header': return '<h5 class="mb-1">'+content+'</h5>';
+			case 'subtle': return '<small>'+content+'</small>';
+			case 'normal': return '<p>'+content+'</p>';
+			case 'footer': return '<small>'+content+'</small>';
+			default: return '<p>'+content+'</p>';
+		}
+	}
+	/**
+	 * Returns an object containing the various row html components
+	 * @param row_data_obj
+	 * @returns {{subtle_components_html: string, footer_components_html: string, header_components_html: string, normal_components_html: string}}
+	 */
+	getRowHtmlObject(row_data_obj) {
+		let return_object = {"header_components_html":"","subtle_components_html":"","normal_components_html":"","footer_components_html":""};
+
+		let included_keys = Object.keys(this.included_all_object);
+		included_keys.forEach(function(key) {
+			let wrapper_type = this.included_all_object[key].toLowerCase();
+			let item_divider_final_text = "";
+			if (return_object[wrapper_type+"_components_html"].trim().length > 0) {
+				item_divider_final_text = this.item_divider_text;
+			}
+			return_object[wrapper_type+"_components_html"] += item_divider_final_text+this.getAttributeWrapperHtml(this.getAttributeHtml(row_data_obj,key),wrapper_type);
+		}.bind(this));
+		return return_object;
+	}
+	/**
+	 * Returns the complete html for the row to be added
+	 * @param row_data_obj
+	 * @returns {string}
+	 */
+	getRowHtml(row_data_obj) {
+		let row_html = '<a href="#" id="'+this.getUid()+'_row_item_'+row_data_obj["Id"]+'" class="list-group-item' +
+			' list-group-item-action flex-column align-items-start data_list_item data_list_item_'+this.getUid()+' dx-data-list-row">';
+
+		let header_wrapping_html = '<div class="d-flex w-100 justify-content-between">';
+		let row_obj = this.getRowHtmlObject(row_data_obj);
+
+		header_wrapping_html += row_obj["header_components_html"]+row_obj["subtle_components_html"];
+		header_wrapping_html += '</div>';
+
+		row_html += header_wrapping_html+row_obj["normal_components_html"]+row_obj["footer_components_html"];
+		row_html += '</a>';
+		return row_html;
 	}
 	/**
 	 * Adds a row into the data table
@@ -1607,41 +1840,12 @@ class DivbloxDomEntityDataListComponent extends DivbloxDomBaseComponent {
 		let current_item_keys = Object.keys(this.current_page_array);
 		let must_add_row = true;
 		current_item_keys.forEach(function(key) {
-			if (this.current_page_array[key]["Id"] == row_data_obj["Id"]) {must_add_row = false;}
+			if (this.current_page_array[key]["Id"] === row_data_obj["Id"]) {must_add_row = false;}
 		}.bind(this));
 		if (!must_add_row) {return;}
 		this.current_page_array.push(row_data_obj);
-		let row_id = row_data_obj["Id"];
-		let included_keys = Object.keys(this.included_all_object);
-		let wrapping_html = '<a href="#" id="'+this.getUid()+'_row_item_'+row_id+'" class="list-group-item' +
-			' list-group-item-action flex-column align-items-start data_list_item data_list_item_'+this.getUid()+' dx-data-list-row">';
-		let header_wrapping_html = '<div class="d-flex w-100 justify-content-between">';
-		
-		let header_components_html = '';
-		let subtle_components_html = '';
-		let normal_components_html = '';
-		let footer_components_html = '';
-		
-		included_keys.forEach(function(key) {
-			switch(this.included_all_object[key].toLowerCase()) {
-				case 'header': header_components_html += '<h5 class="mb-1">'+row_data_obj[key]+'</h5>';
-					break;
-				case 'subtle': subtle_components_html += '<small>'+row_data_obj[key]+'</small>';
-					break;
-				case 'normal': normal_components_html += '<p>'+row_data_obj[key]+'</p>';
-					break;
-				case 'footer': footer_components_html += '<small>'+row_data_obj[key]+'</small>';
-					break;
-				default: normal_components_html += '<p>'+row_data_obj[key]+'</p>';
-			}
-		}.bind(this));
-		
-		header_wrapping_html += header_components_html+subtle_components_html;
-		header_wrapping_html += '</div>';
-		
-		wrapping_html += header_wrapping_html+normal_components_html+footer_components_html;
-		wrapping_html += '</a>';
-		getComponentElementById(this,"DataList").append(wrapping_html);
+
+		getComponentElementById(this,"DataList").append(this.getRowHtml(row_data_obj));
 	}
 	/**
 	 * Event handler for clicks on data rows

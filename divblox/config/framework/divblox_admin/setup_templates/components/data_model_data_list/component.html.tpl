@@ -6,14 +6,14 @@
         <div class="container-fluid container-no-gutters">
             <div class="row">
                 <div class="col-md-6">
-                    <div class="input-group mb-3">
+                    <div class="input-group">
                         <input type="text" id="DataListSearchInput" class="form-control data_table_search_icon" placeholder="Search..." aria-label="Search" aria-describedby="btnResetSearch"/>
                         <div class="input-group-append">
                             <button class="btn btn-outline-secondary" type="button" id="btnResetSearch"><i class="fa fa-times" aria-hidden="true"></i></button>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6"></div>
+                <div class="col-md-6 d-none d-md-block"></div>
             </div>
             <div class="row">
                 <div class="col-12">
@@ -24,11 +24,11 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-4"></div>
+                <div class="col-md-4 d-none d-md-block"></div>
                 <div class="col-md-4">
                     <button type="button" id="DataListMoreButton" class="btn btn-link fullwidth"><i class="fa fa-repeat" aria-hidden="true"></i> Load More</button>
                 </div>
-                <div class="col-md-4"></div>
+                <div class="col-md-4 d-none d-md-block"></div>
             </div>
         </div>
     </div>

@@ -7701,11 +7701,13 @@ class ComponentController_base {
             return;
         }
         if (!$ClientAuthenticationTokenObj->IsNative) {
-            if ($ClientConnectionObj->ClientUserAgent != $this->CurrentUserAgentStr) {
-                // JGL: This token could have been stolen since it is being used on another device. Let's create a new token
-                $ClientAuthenticationTokenObj->Delete();
-                $this->initializeNewAuthenticationToken();
-                return;
+            if (AUTHENTICATION_CHECKS_USER_AGENT_BOOL) {
+                if ($ClientConnectionObj->ClientUserAgent != $this->CurrentUserAgentStr) {
+                    // JGL: This token could have been stolen since it is being used on another device. Let's create a new token
+                    $ClientAuthenticationTokenObj->Delete();
+                    $this->initializeNewAuthenticationToken();
+                    return;
+                }
             }
             if ($ClientAuthenticationTokenObj->UpdateDateTime < dxDateTime::Now()->AddMinutes(-AUTHENTICATION_REGENERATION_INT)) {
                 // JGL: The authentication should be regenerated
