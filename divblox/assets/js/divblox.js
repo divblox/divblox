@@ -12,7 +12,7 @@
  * Divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "4.1.1";
+let dx_version = "4.1.2";
 let bootstrap_version = "4.5.0";
 let jquery_version = "3.5.1";
 let minimum_required_php_version = "7.3.8";
@@ -655,6 +655,7 @@ class DivbloxDomBaseComponent {
 		} else {
 			$('.'+current_user_role.toLowerCase()+'-visible').removeClass("user-role-visible");
 		}
+		doAfterPageLoadActions();
 	}
 	/**
 	 * Fires when the native app is paused
@@ -706,7 +707,7 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
 	initCrudVariables(entity_name) {
 		this.required_validation_array = this.required_validation_array.concat(this.data_validation_array).concat(this.custom_validation_array);
 		this.entity_name = entity_name;
-		this.lowercase_entity_name =  entity_name.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toLowerCase();
+		this.lowercase_entity_name = entity_name.replace(/([a-z0-9])([A-Z0-9])/g, '$1_$2').toLowerCase();
 		this.renderInputFields();
 	}
 	/**
@@ -2375,7 +2376,7 @@ function loadComponentJs(component_path,load_arguments,callback) {
  * @param {Object} load_arguments The arguments to pass to the component's constructor
  * @param {Function} callback The function to call once the component has loaded
  */
-function loadPageComponent(component_name,load_arguments,callback) {
+function loadPageComponent(component_name = 'component',load_arguments = {},callback = undefined) {
     let final_load_arguments = {"uid":page_uid};
     let parameters_str = '';
     if (typeof load_arguments === "object") {
@@ -2775,6 +2776,12 @@ function unRegisterEventHandlers() {
 	});
 	registered_event_handlers = [];
 }
+/**
+ * This function can be used to execute system-wide actions after the DivbloxDomBaseComponent class has loaded a page
+ */
+function doAfterPageLoadActions() {
+	//TODO: Override this
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
@@ -2916,10 +2923,7 @@ function initFeedbackCapture() {
  * @param {String} Message The message to log to console
  * @param {Boolean} show_stack_trace If true, includes the current stack trace
  */
-function dxLog(Message,show_stack_trace) {
-	if (typeof show_stack_trace === "undefined") {
-		show_stack_trace = true;
-	}
+function dxLog(Message = "No message provded",show_stack_trace = true) {
 	if (debug_mode || checkComponentBuilderActive()) {
 		if (show_stack_trace) {
 			let stack = new Error().stack;
@@ -2996,7 +3000,7 @@ function removeTriggerElementFromLoadingElementArray(trigger_element_id) {
  * @param {jQuery|HTMLElement} element The element to add to the loading array
  * @param {String} loading_text The text to display while loading (Optional)
  */
-function dxRequestInternal(url,parameters,on_success,on_fail,queue_on_offline,element,loading_text) {
+function dxRequestInternal(url = '',parameters = {},on_success = undefined,on_fail = undefined,queue_on_offline = false,element = undefined,loading_text = 'Loading') {
 	if (typeof queue_on_offline === "undefined") {
 		queue_on_offline = false;
 	}
@@ -3375,19 +3379,7 @@ function getAllUrlParams(url) {
  * @param {Function} cancel_function  Optional to pass a cancel function that is executed when the cancel button
  * is clicked
  */
-function showAlert(alert_str,icon,button_array,auto_hide,milliseconds_until_auto_hide,confirm_function,cancel_function) {
-	if (typeof icon === "undefined") {
-		icon = 'info'; // Force the user to pass icon = "success, error or warning" if they want other icons
-	}
-	if (typeof button_array === "undefined") {
-		button_array = []; // Force the user to pass ButtonText in order to show a button
-	}
-	if (typeof auto_hide === "undefined") {
-		auto_hide = true; // Force the user to pass auto_hide = false to not auto hide
-	}
-	if (typeof milliseconds_until_auto_hide === "undefined") {
-		milliseconds_until_auto_hide = 1500;
-	}
+function showAlert(alert_str = 'Alert',icon = 'info',button_array = [],auto_hide = true,milliseconds_until_auto_hide = 1500,confirm_function = undefined,cancel_function = undefined) {
 	if (typeof swal !== "undefined") {
 		if ((typeof confirm_function !== "undefined") &&
 			(typeof cancel_function !== "undefined")) {
