@@ -12,7 +12,7 @@
  * Divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "4.1.3";
+let dx_version = "4.1.4";
 let bootstrap_version = "4.5.0";
 let jquery_version = "3.5.1";
 let minimum_required_php_version = "7.3.8";
@@ -126,7 +126,7 @@ let dx_renderer = {
 					default_value_str += 'false"';
 				}
 			}
- 		}
+		}
 		if (typeof config_obj.ValidationMessage !== "undefined") {
 			validation_message_str = config_obj.ValidationMessage;
 		}
@@ -673,6 +673,34 @@ class DivbloxDomBaseComponent {
 	 * Just a helper function to reference on cancel of confirmation
 	 */
 	doNothing() {};
+	/**
+	 * Registers an event handler for the provided event on the specified class and executes a specified function within
+	 * this component while passing the trigger element's filtered id
+	 * @param event The event to listen for, e.g "click", "hover", etc
+	 * @param event_trigger_class The class to listen on
+	 * @param id_match_str A string that is contained within the html element's id that should be stripped in order to
+	 * find the id to pass to the relevant function. This string is expected to be right before the id that we want to use
+	 * @param event_function_str The name of the function inside this component to execute
+	 */
+	handleOnClassEvent(event = "click",event_trigger_class = null,id_match_str = null,event_function_str = null) {
+		if (event_trigger_class === null) {
+			return;
+		}
+		if (id_match_str === null) {
+			return;
+		}
+		if (event_function_str === null) {
+			return;
+		}
+		let this_component = getRegisteredComponent(this.getUid());
+		$(document).on(event,"."+event_trigger_class, function() {
+			let id_start = $(this).attr("id").indexOf(id_match_str);
+			let clicked_id = $(this).attr("id").substring(id_start+(id_match_str.length));
+			this_component[event_function_str](clicked_id);
+			return false;
+		});
+		registerEventHandler(document,event,undefined,"."+event_trigger_class);
+	}
 }
 /**
  * DivbloxDomEntityInstanceComponent is the base class that manages the component javascript for every entity
@@ -728,12 +756,12 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
 					WrapperId: this.getUid()+"_"+wrapper_id,
 					FieldId: this.getUid()+"_"+attribute,
 					MustValidate: (this.required_validation_array.indexOf(attribute) > -1)
-					},
+				},
 				...entity_attribute_properties};
 			dx_renderer.renderInputField(render_config_obj);
-			
+
 		}.bind(this));
-		
+
 		this.included_relationship_array.forEach(function(relationship) {
 			let wrapper_id = relationship+"Wrapper";
 			let wrapper_node = getComponentElementById(this,wrapper_id);
@@ -798,11 +826,11 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
 		getComponentElementById(this,"btnSave").on("click", function() {
 			this.saveEntity();
 		}.bind(this));
-		
+
 		getComponentElementById(this,"btnDelete").on("click", function() {
 			showAlert("Are you sure?","warning",["Cancel","Delete"],false,0,this.deleteEntity.bind(this),this.doNothing);
 		}.bind(this));
-		
+
 	}
 	/**
 	 * Returns the input parameters object for the dxRequestInternal function call that loads the entity
@@ -835,9 +863,9 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
 				}
 				this.component_obj = {};
 				this.element_mapping = {};
-					if (Object.keys(entity_obj).length > 0) {
-						this.component_obj = entity_obj;
-					}
+				if (Object.keys(entity_obj).length > 0) {
+					this.component_obj = entity_obj;
+				}
 				this.included_attribute_array.forEach(function(attribute) {
 					if (Object.keys(entity_obj).length === 0) {
 						this.component_obj[attribute] = "";
@@ -884,7 +912,7 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
 				}
 			}
 		}.bind(this));
-		
+
 		this.included_relationship_array.forEach(function(relationship) {
 			getComponentElementById(this,relationship).html('<option value="">-Please Select-</option>');
 			if (typeof this.relationship_list_array[relationship] === "object") {
@@ -952,13 +980,13 @@ class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
 			getComponentControllerPath(this),
 			this.getSaveFunctionParameters(),
 			function(data_obj) {
-			    if (this.getLoadArgument("entity_id") != null) {
-                    setGlobalConstrainById(this.entity_name,data_obj.Id);
-                    pageEventTriggered(this.lowercase_entity_name+"_updated",{"id":data_obj.Id});
-                } else {
-                    setGlobalConstrainById(this.entity_name,data_obj.Id);
-                    pageEventTriggered(this.lowercase_entity_name+"_created",{"id":data_obj.Id});
-                }
+				if (this.getLoadArgument("entity_id") != null) {
+					setGlobalConstrainById(this.entity_name,data_obj.Id);
+					pageEventTriggered(this.lowercase_entity_name+"_updated",{"id":data_obj.Id});
+				} else {
+					setGlobalConstrainById(this.entity_name,data_obj.Id);
+					pageEventTriggered(this.lowercase_entity_name+"_created",{"id":data_obj.Id});
+				}
 				this.loadEntity();
 				this.resetValidation();
 				this.onAfterSaveEntity(data_obj);
@@ -1133,7 +1161,7 @@ class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
 		this.lowercase_entity_name =  entity_name.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toLowerCase();
 
 		this.buildDataTableHeaderHtml();
-		
+
 		this.column_name_array = Object.keys(this.column_name_obj);
 		this.current_sort_column = [this.column_name_array[0],true]; // Sort on first column, desc
 		//DataTableHeaderHtml
@@ -1337,15 +1365,7 @@ class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
 		getComponentElementById(this,"BulkActionDelete").on("click", function() {
 			showAlert("Are you sure?","warning",["Cancel","Delete"],false,0,this.deleteSelected.bind(this),this.doNothing);
 		}.bind(this));
-		$(document).on("click",".first-column_"+this.getUid(), function() {
-			let id_start = $(this).attr("id").indexOf("_row_item_");
-			let clicked_id = $(this).attr("id").substring(id_start+10);
-			let uid = $(this).attr("id").substring(0,id_start);
-			let this_component = getRegisteredComponent(uid);
-			this_component.on_item_clicked(clicked_id);
-			return false;
-		});
-		registerEventHandler(document,"click",undefined,".first-column_"+this.getUid());
+		this.handleOnClassEvent("click","first-column_"+this.getUid(),"_row_item_","on_item_clicked");
 		$(document).on("click",".select_item_"+this.getUid(), function() {
 			let id_start = $(this).attr("id").indexOf("_select_item_");
 			let clicked_id = $(this).attr("id").substring(id_start+13);
@@ -1678,15 +1698,7 @@ class DivbloxDomEntityDataListComponent extends DivbloxDomBaseComponent {
 			this.current_list_offset += this.list_offset_increment;
 			this.loadPage();
 		}.bind(this));
-		$(document).on("click",".data_list_item_"+this.uid, function() {
-			let id_start = $(this).attr("id").indexOf("_row_item_");
-			let clicked_id = $(this).attr("id").substring(id_start+10);
-			let uid = $(this).attr("id").substring(0,id_start);
-			let this_component = getRegisteredComponent(uid);
-			this_component.on_item_clicked(clicked_id);
-			return false;
-		});
-		registerEventHandler(document,"click",undefined,".data_list_item_"+this.uid);
+		this.handleOnClassEvent("click","data_list_item_"+this.getUid(),"_row_item_","on_item_clicked");
 	}
 	/**
 	 * Returns the input parameters object for the dxRequestInternal function call that loads the page
@@ -1772,7 +1784,7 @@ class DivbloxDomEntityDataListComponent extends DivbloxDomBaseComponent {
 		if (formatted_content === null) {
 			return "";
 		}
-		if (formatted_content.trim().length === 0) {
+		if (String(formatted_content).trim().length === 0) {
 			return "";
 		}
 		return formatted_content;
@@ -1784,7 +1796,7 @@ class DivbloxDomEntityDataListComponent extends DivbloxDomBaseComponent {
 	 * @returns {string}
 	 */
 	getAttributeWrapperHtml(content = '',wrapper_type = 'normal') {
-		if (content.trim().length === 0) {
+		if (String(content).trim().length === 0) {
 			return "";
 		}
 		switch(wrapper_type.toLowerCase()) {
@@ -1807,7 +1819,7 @@ class DivbloxDomEntityDataListComponent extends DivbloxDomBaseComponent {
 		included_keys.forEach(function(key) {
 			let wrapper_type = this.included_all_object[key].toLowerCase();
 			let item_divider_final_text = "";
-			if (return_object[wrapper_type+"_components_html"].trim().length > 0) {
+			if (String(return_object[wrapper_type+"_components_html"]).trim().length > 0) {
 				item_divider_final_text = this.item_divider_text;
 			}
 			return_object[wrapper_type+"_components_html"] += item_divider_final_text+this.getAttributeWrapperHtml(this.getAttributeHtml(row_data_obj,key),wrapper_type);
@@ -2277,7 +2289,7 @@ function loadComponent(component_name,parent_uid,parent_element_id,load_argument
 		} else {
 			load_arguments["dom_index"] = dom_component_index_map[load_arguments["component_name"]][dom_component_index_map[load_arguments["component_name"]].length-1];
 			load_arguments["uid"] = load_arguments["component_name"]+"_" + load_arguments["dom_index"];
-			
+
 		}
 		// JGL: Load the component html
 		let component_html_load_path = load_arguments["component_path"]+"/component.html";
@@ -2377,15 +2389,15 @@ function loadComponentJs(component_path,load_arguments,callback) {
  * @param {Function} callback The function to call once the component has loaded
  */
 function loadPageComponent(component_name = 'component',load_arguments = {},callback = undefined) {
-    let final_load_arguments = {"uid":page_uid};
-    let parameters_str = '';
-    if (typeof load_arguments === "object") {
-        let load_argument_keys = Object.keys(load_arguments);
-        load_argument_keys.forEach(function(key) {
-            final_load_arguments[key] = load_arguments[key];
-            parameters_str += '&'+key+"="+load_arguments[key];
-        });
-    }
+	let final_load_arguments = {"uid":page_uid};
+	let parameters_str = '';
+	if (typeof load_arguments === "object") {
+		let load_argument_keys = Object.keys(load_arguments);
+		load_argument_keys.forEach(function(key) {
+			final_load_arguments[key] = load_arguments[key];
+			parameters_str += '&'+key+"="+load_arguments[key];
+		});
+	}
 	let final_component_name = dx_page_manager.getMobilePageAlternate(component_name);
 	if (!isSpa()) {
 		redirectToInternalPath('?view='+final_component_name+parameters_str);
@@ -2438,7 +2450,7 @@ function loadPageComponent(component_name = 'component',load_arguments = {},call
 					}
 				},
 				function(data) {
-				dxLog("Error: "+data);
+					dxLog("Error: "+data);
 				});
 		},1000)
 	}
@@ -2617,7 +2629,7 @@ function loadComponentHtmlAsDOMObject(component_path,callback) {
 		}
 		callback(jq_dom);
 	}, function() {
-	
+
 	},false/*We need to return the html from the request here*/);
 }
 /**
@@ -2635,7 +2647,7 @@ function getComponentByWrapperId(wrapper_div_id,parent_uid) {
 	if (wrapper_element.length < 1) {
 		return null;
 	}
-	
+
 	let uids = Object.keys(registered_component_array);
 	let component_to_return = null;
 	uids.forEach(function(uid) {
@@ -3147,17 +3159,17 @@ function dxGetScript(url,on_success,on_fail,force_cache) {
 		}
 	}
 	$.get(url, function(data, status) {
-			if (status != "success") {
-				on_fail();
-			} else {
-				if (force_cache) {
-					cache_scripts_loaded.push(url);
-				}
-				on_success(data);
-			}
-		}).done(function() {}).fail(function() {
+		if (status != "success") {
 			on_fail();
-		});
+		} else {
+			if (force_cache) {
+				cache_scripts_loaded.push(url);
+			}
+			on_success(data);
+		}
+	}).done(function() {}).fail(function() {
+		on_fail();
+	});
 }
 /**
  * Used by the component builder and setup scripts to do server requests
@@ -3196,12 +3208,12 @@ function dxRequestSystem(url,parameters,on_success,on_fail) {
 function dxRequestAdmin(url,parameters,on_success,on_fail) {
 	if (typeof on_success !== "function") {
 		on_success = function() {
-		
+
 		}
 	}
 	if (typeof on_fail !== "function") {
 		on_fail = function() {
-		
+
 		}
 	}
 	$.post(url,parameters)
@@ -3224,12 +3236,12 @@ function dxRequestAdmin(url,parameters,on_success,on_fail) {
 function dxPostExternal(url,parameters,on_success,on_fail) {
 	if (typeof on_success !== "function") {
 		on_success = function() {
-		
+
 		}
 	}
 	if (typeof on_fail !== "function") {
 		on_fail = function() {
-		
+
 		}
 	}
 	$.post(url,parameters)
@@ -3245,8 +3257,8 @@ function dxPostExternal(url,parameters,on_success,on_fail) {
 			}
 			on_success(data)
 		})
-		// Removing this since it is causing issues on firefox
-		/*.fail(function(data) {
+	// Removing this since it is causing issues on firefox
+	/*.fail(function(data) {
 			on_fail(data)
 		})*/;
 }
@@ -3514,7 +3526,7 @@ function getDataModelAttributeValue(attribute,display_type) {
 			let js_date_str = attribute["date"];
 			let js_date = js_date_str.slice(0,10);
 			let js_time = js_date_str.slice(11,16);
-			
+
 			if (display_type === "datetime-local") {
 				if (js_time !== "00:00") {
 					return js_date+"T"+js_time;
@@ -3862,7 +3874,7 @@ function showToast(title,toast_message,position,icon_path,toast_time_stamp,auto_
 		'   '+toast_message+
 		'</div>' +
 		'</div>';
-	
+
 	if (position.x === 'right') {
 		if (position.y === 'top') {
 			if ($('body').find("#top_right_toast_wrapper").length < 1) {
@@ -4244,6 +4256,6 @@ function checkConnectionPerformance(poor_connection_title,poor_connection_messag
 			//JGL: We won't do anything here... Let this fail silently
 			dxLog("Function checkConnectionPerformance() failed with result: "+JSON.stringify(data_obj));
 		},false,false);
-	
+
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
