@@ -51,7 +51,7 @@ if (is_null($ModuleArray)) {
     die(json_encode(array("Error" => 'Modules are not configured in environments.php. For a quick fix, delete the file environments.php')));
 }
 define("PHP_MIN_VERSION_REQUIRED","7.2");
-define("PHP_MAX_VERSION_REQUIRED","7.3.21");
+define("PHP_MAX_VERSION_REQUIRED","7.4.18");
 define("MARIADB_MIN_VERSION_REQUIRED","10.2");
 define("MARIADB_MAX_VERSION_REQUIRED","10.5.4");
 define("MYSQL_MIN_VERSION_REQUIRED","5.7");
@@ -109,6 +109,10 @@ define("BASE_CAMP_ROOT_STR","https://basecamp.divblox.com");
 define("FIREBASE_SERVER_KEY_STR",'xxxxxxxxxxxxxxxxx');
 //FCM API end-point
 define("FIREBASE_FCM_ENDPOINT_STR",'https://fcm.googleapis.com/fcm/send');
+
+// Maintenance mode related
+define("IS_MAINTENANCE_MODE_ACTIVE_BOOL",false);
+define("MAINTENANCE_MODE_WHITELIST_ARRAY",[]);
 
 require_once(DATA_MODELLER_PATH_STR.'/data_model/DataModel_Config.inc.php');
 require_once(DATA_MODELLER_PATH_STR.'/data_model/DataModel.class.php');

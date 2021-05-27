@@ -7805,6 +7805,12 @@ class ComponentController_base {
     public function checkComponentAccess() {
         $this->setResult(true);
         $this->setReturnValue("Message","Component ready");
+        if (!ProjectAccessManager::checkMaintenanceModeAccess()) {
+            $this->setResult(false);
+            $this->setReturnValue("isMaintenanceModeActive",true);
+            $this->setReturnValue("Message","Access is denied for component '".$this->ComponentNameStr."'");
+            $this->presentOutput();
+        }
         if (!ProjectAccessManager::getComponentAccess(FrameworkFunctions::getCurrentAccountId(),$this->ComponentNameStr)) {
             $this->setResult(false);
             $this->setReturnValue("ForceLogout",true);
@@ -7955,6 +7961,14 @@ abstract class AccessManager_Base {
         // JGL: By default, let's say that any other user role cannot access any component
         // JGL: This must be overridden in class ProjectAccessManager
         return false;
+    }
+
+    public static function checkMaintenanceModeAccess() {
+        if (!IS_MAINTENANCE_MODE_ACTIVE_BOOL) {
+            return true;
+        }
+        error_log("Current IP: ".FrameworkFunctions::getClientIPAddress());
+        return in_array(FrameworkFunctions::getClientIPAddress(),MAINTENANCE_MODE_WHITELIST_ARRAY);
     }
 }
 abstract class AccessOperation {

@@ -803,7 +803,8 @@ class HTMLPurifier_Config
         if ($index !== false) {
             $array = (isset($array[$index]) && is_array($array[$index])) ? $array[$index] : array();
         }
-        $mq = $mq_fix && function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc();
+        //TODO: Remove this code once tested thoroughly. Date of comment: 25 May 2021
+        //$mq = $mq_fix && function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc();
 
         $allowed = HTMLPurifier_Config::getAllowedDirectivesForForm($allowed, $schema);
         $ret = array();
@@ -817,7 +818,7 @@ class HTMLPurifier_Config
             if (!isset($array[$skey])) {
                 continue;
             }
-            $value = $mq ? stripslashes($array[$skey]) : $array[$skey];
+            $value = /*$mq ? stripslashes($array[$skey]) :*/ $array[$skey];
             $ret[$ns][$directive] = $value;
         }
         return $ret;

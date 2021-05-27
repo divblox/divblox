@@ -12,10 +12,10 @@
  * Divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "4.1.4";
+let dx_version = "4.2.0";
 let bootstrap_version = "4.5.0";
 let jquery_version = "3.5.1";
-let minimum_required_php_version = "7.3.8";
+let minimum_required_php_version = "7.2.0";
 let spa_mode = false;
 let debug_mode = true;
 let allow_feedback = false;
@@ -45,6 +45,7 @@ let url_input_parameters = null;
 let is_native = false;
 let registered_event_handlers = [];
 let force_logout_occurred = false;
+let maintenanceModeTriggered = false;
 let no_cache_force_str = '';
 if(window.jQuery === undefined) {
 	// JGL: We assume that we have jquery available here...
@@ -59,6 +60,7 @@ if(window.jQuery === undefined) {
 }
 let component_classes = {};
 let dx_admin_roles = ["dxadmin","administrator"];
+let currentUserRole = null;
 let current_user_profile_picture_path = getRootPath()+"project/assets/images/divblox_profile_picture_placeholder.svg";
 let dom_component_index_map = {};
 // JGL: Let's initialize the object that will contain relevant DOM info for our components that are rendered on the page
@@ -335,6 +337,9 @@ class DivbloxDomBaseComponent {
 			if (parent_component_obj != null) {
 				parent_component_obj.reportSubComponentReady(this.getUid());
 			} else {
+				if (this.getUid() === page_uid) {
+					this.postPageLoadActions();
+				}
 				this.removeLoadingOverlay();
 			}
 		} else {
@@ -350,6 +355,9 @@ class DivbloxDomBaseComponent {
 				if (parent_component_obj != null) {
 					parent_component_obj.reportSubComponentReady(this.getUid());
 				} else {
+					if (this.getUid() === page_uid) {
+						this.postPageLoadActions();
+					}
 					this.removeLoadingOverlay();
 				}
 			}
@@ -456,6 +464,8 @@ class DivbloxDomBaseComponent {
 		if (this.do_connection_check) {
 			checkConnectionPerformance();
 		}
+
+		toggleUserRoleVisibility();
 	}
 	/**
 	 * Toggles the variable is_loading to true and displays the component loading state
@@ -565,10 +575,7 @@ class DivbloxDomBaseComponent {
 			let sub_component_definition = this.sub_component_definitions[this.sub_component_loaded_count];
 			loadComponent(sub_component_definition.component_load_path,this.uid,sub_component_definition.parent_element,sub_component_definition.arguments,false,false,this.subComponentLoadedCallBack.bind(this));
 		} else {
-			this.reset();
-			if (this.getUid() === page_uid) {
-				this.postPageLoadActions();
-			}
+			this.reset({}, false);
 		}
 	}
 	/**
@@ -648,13 +655,7 @@ class DivbloxDomBaseComponent {
 		initFeedbackCapture();
 		loadCurrentUserProfilePicture();
 		renderAppLogo();
-		let current_user_role = getCurrentUserRoleFromAppState();
-		if (current_user_role == null) {return;}
-		if (dx_admin_roles.indexOf(current_user_role.toLowerCase()) != -1) {
-			$('.administrator-visible').removeClass("user-role-visible");
-		} else {
-			$('.'+current_user_role.toLowerCase()+'-visible').removeClass("user-role-visible");
-		}
+		toggleUserRoleVisibility();
 		doAfterPageLoadActions();
 	}
 	/**
@@ -1879,6 +1880,7 @@ class DivbloxDomEntityDataListComponent extends DivbloxDomBaseComponent {
  * Loads the Divblox chat widget for the setup page
  */
 function loadDxChatWidget() {
+	return; //JGL: Disabling this for now as it is available on the Divblox documentation page
 	var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
 	(function(){
 		var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
@@ -2022,7 +2024,7 @@ function checkFrameworkReady() {
 	if (config_cookie === null) {
 		dxGetScript(getRootPath()+"divblox/config/framework/check_config.php", function( data ) {
 			if (!isJsonString(data)) {
-				window.open(getRootPath()+'divblox/initialization_wizard/');
+				window.open(getRootPath()+'divblox/config/framework/divblox_admin/initialization_wizard/');
 				return;
 			}
 			let config_data_obj = JSON.parse(data);
@@ -2034,18 +2036,18 @@ function checkFrameworkReady() {
 					}
 				});
 			} else {
-				dxRequestSystem(getRootPath()+'divblox/initialization_wizard/installation_helper.php?check=1',{},
+				dxRequestSystem(getRootPath()+'divblox/config/framework/divblox_admin/initialization_wizard/installation_helper.php?check=1',{},
 					function() {
-						window.open(getRootPath()+'divblox/initialization_wizard/');
+						window.open(getRootPath()+'divblox/config/framework/divblox_admin/initialization_wizard/');
 					},
 					function() {
 						throw new Error("Divblox is not ready! Please visit the setup page at: "+getServerRootPath()+"divblox/");
 					});
 			}
 		}, function(data) {
-			dxRequestSystem(getRootPath()+'divblox/initialization_wizard/installation_helper.php?check=1',{},
+			dxRequestSystem(getRootPath()+'divblox/config/framework/divblox_admin/initialization_wizard/installation_helper.php?check=1',{},
 				function() {
-					window.open(getRootPath()+'divblox/initialization_wizard/');
+					window.open(getRootPath()+'divblox/config/framework/divblox_admin/initialization_wizard/');
 				},
 				function() {
 					throw new Error("Divblox is not ready! Please visit the setup page at: "+getServerRootPath()+"divblox/");
@@ -2068,6 +2070,7 @@ function checkFrameworkReady() {
 				//TODO: Complete this. We need to add a prompt to add to homescreen here that is configurable by the
 				// developer
 			}
+			currentUserRole = getCurrentUserRoleFromAppState();
 			if (typeof on_divblox_ready !== "undefined") {
 				doAfterInitActions();
 				on_divblox_ready();
@@ -2196,6 +2199,24 @@ function getUrlInputParameter(name) {
 function updateAppState(item_key,item_value) {
 	app_state[item_key] = item_value;
 	storeAppState();
+}
+
+/**
+ * Removes a value from dx_app_state for a given key
+ * @param item_key - key to search for in dx_app_state
+ */
+function removeFromAppState(item_key) {
+	let app_state_encoded = getItemInLocalStorage("dx_app_state");
+	if (app_state_encoded !== null) {
+		app_state = JSON.parse(atob(app_state_encoded));
+		if (app_state.hasOwnProperty(item_key)) {
+			delete app_state[item_key];
+			storeAppState();
+		} else {
+			dxLog("Trying to remove property '"+item_key+"' from dx_app_state but this property is not defined.");
+		}
+	}
+
 }
 /**
  * Stores the current app state in local storage
@@ -2795,6 +2816,20 @@ function doAfterPageLoadActions() {
 	//TODO: Override this
 }
 
+/**
+ * Iterates over the DOM and removes the 'user-role-visible' class for elements that are visible
+ * for a specific subset of user roles only. This function is used by Divblox to hide and show elements based on
+ * the current user's user role.
+ */
+function toggleUserRoleVisibility() {
+	if (currentUserRole == null) {return;}
+	if (dx_admin_roles.includes(currentUserRole.toLowerCase())) {
+		$('.administrator-visible').removeClass("user-role-visible");
+	} else {
+		$('.'+currentUserRole.toLowerCase()+'-visible').removeClass("user-role-visible");
+	}
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * Divblox issue tracking related functions
@@ -3063,6 +3098,16 @@ function dxRequestInternalQueued(url,parameters,on_success,on_fail,trigger_eleme
 			let data_obj = getJsonObject(data);
 			if (typeof data_obj.AuthenticationToken !== "undefined") {
 				updateAppState('dxAuthenticationToken',data_obj.AuthenticationToken);
+			}
+			if (typeof data_obj.isMaintenanceModeActive !== "undefined") {
+				if (data_obj.isMaintenanceModeActive) {
+					if (!maintenanceModeTriggered) {
+						dxLog("A maintenance mode trigger was received. Full return: "+data);
+						maintenanceModeTriggered = true;
+						loadPageComponent("maintenance");
+					}
+					return;
+				}
 			}
 			if (typeof data_obj.ForceLogout !== "undefined") {
 				if (data_obj.ForceLogout) {
@@ -3686,7 +3731,8 @@ function getCurrentUserRole(callback) {
  * @return {String|Null} The current user role
  */
 function getCurrentUserRoleFromAppState() {
-	return getValueFromAppState("dx_role");
+	currentUserRole = getValueFromAppState("dx_role");
+	return currentUserRole;
 }
 /**
  * Registers the the current user role in the app state
@@ -3694,6 +3740,7 @@ function getCurrentUserRoleFromAppState() {
  */
 function registerUserRole(user_role) {
 	updateAppState("dx_role",user_role);
+	currentUserRole = user_role;
 	doAfterAuthenticationActions();
 }
 /**
@@ -4037,6 +4084,21 @@ function setItemInLocalStorage(item_key,item_value) {
 	localStorage.setItem(item_key, item_value);
 }
 /**
+ * Removes a value from local storage by key
+ * @param {String} item_key The key to find
+ */
+function removeItemFromLocalStorage(item_key) {
+	if (typeof(Storage) === "undefined") {
+		// JGL: This is a fallback for when local storage is not available.
+		eraseCookie(item_key);
+		return;
+	}
+	if (typeof localStorage[item_key] !== "undefined") {
+		localStorage.removeItem(item_key);
+	}
+}
+
+/**
  * Retrieves a value from local storage by key
  * @param {String} item_key The key to find
  * @return {String|Null} The value returned from local storage
@@ -4135,8 +4197,8 @@ function logout() {
  * @param {String} user_role The role to load a page for
  */
 function loadUserRoleLandingPage(user_role) {
-	if (typeof user_role === "undefined") {
-		loadPageComponent('my_profile');
+	if ((typeof user_role === "undefined") || (user_role === null)) {
+		loadPageComponent('anonymous_landing_page');
 		return;
 	}
 	let user_role_prepared = user_role.toLowerCase();

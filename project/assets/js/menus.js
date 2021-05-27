@@ -4,6 +4,7 @@
  */
 let menu_manager = {
     menus: {},
+    renderedMenus: [],
     loadMenuDefinitions(success_callback,failed_callback) {
         if (debug_mode) {
             no_cache_force_str = getRandomFilePostFix();
@@ -131,10 +132,14 @@ let menu_manager = {
         }.bind(this));
     },
     renderMenu(placeholder_class,menu_name,item_html_template,sub_menu_wrapper_template) {
+        if(this.renderedMenus.includes(menu_name)) {
+            return;
+        }
         if ($("."+placeholder_class)[0]){
             let menu_html = this.getMenuHtml(menu_name,item_html_template,sub_menu_wrapper_template);
             $('.'+placeholder_class).replaceWith(menu_html);
             this.initMenuActions(menu_name);
+            this.renderedMenus.push(menu_name);
         }
     },
     getAvailableMenus() {

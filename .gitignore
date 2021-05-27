@@ -5,3 +5,4 @@ divblox/config/database/Backups/
 divblox/config/framework/component_builder_history/
 divblox/config/framework/internal_config.php
 divblox/config/framework/environments.php
+/project/assets/php/data_model_orm/generated/

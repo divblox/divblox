@@ -14,6 +14,16 @@ if (typeof component_classes['pages_anonymous_landing_page'] === "undefined") {
 		reset(inputs,propagate) {
 			setActivePage("","dx Home");
 			super.reset(inputs,propagate);
+
+			dxRequestInternal(getComponentControllerPath(this),
+				{
+					f: "loadAnonymous",
+				}, function (data) {
+
+				}, function (data) {
+					dxLog("Error occurred: " + data.Message);
+				}
+			);
 		}
 		subComponentLoadedCallBack(component) {
             super.subComponentLoadedCallBack(component);

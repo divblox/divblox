@@ -102,6 +102,7 @@ abstract class FrameworkFunctions_base {
         json_decode($String);
         return (json_last_error() == JSON_ERROR_NONE);
     }
+
     /**
      * @param null $DataSet: This should be an array
      * @return int: Will return 0 if not a valid data set and 1 if data set is scalar. Otherwise it will return FrameworkFunctions::getDataSetSize(DataSet);
@@ -115,6 +116,7 @@ abstract class FrameworkFunctions_base {
         }
         return count($DataSet);
     }
+
     /**
      * Checks for https protocol
      * @return bool
@@ -124,6 +126,7 @@ abstract class FrameworkFunctions_base {
             (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
             || $_SERVER['SERVER_PORT'] == 443;
     }
+
     /**
      * Checks for www in url protocol
      * @return bool
@@ -133,6 +136,7 @@ abstract class FrameworkFunctions_base {
             return true;
         return false;
     }
+
     /**
      * Returns the current app base url down to SUBDIRECTORY_STR
      * @return string
@@ -150,6 +154,7 @@ abstract class FrameworkFunctions_base {
         $url = $protocol.$www.$server.$port.SUBDIRECTORY_STR;
         return $url;
     }
+
     /**
      * Checks if a url is valid
      * @param $url
@@ -164,6 +169,7 @@ abstract class FrameworkFunctions_base {
         }
         return false;
     }
+
     /**
      * This function posts to a url using curl and returns the content of the url
      * @param $url
@@ -194,6 +200,7 @@ abstract class FrameworkFunctions_base {
         curl_close($ch);
         return $content;
     }
+
     /**
      * This function posts to a url using curl and returns the content of the url
      * @param $url: The url to post to
@@ -217,6 +224,22 @@ abstract class FrameworkFunctions_base {
         $ErrorInfo = curl_error($ch);
         curl_close($ch);
         return $content;
+    }
+
+    /**
+     * @return ?string The current client's IP address
+     */
+    public static function getClientIPAddress() {
+        if (isset($_SERVER["HTTP_CLIENT_IP"])) {
+            return $_SERVER["HTTP_CLIENT_IP"];
+        }
+        if (isset($_SERVER["HTTP_X_FORWARDED_FOR"])) {
+            return $_SERVER["HTTP_X_FORWARDED_FOR"];
+        }
+        if (isset($_SERVER["REMOTE_ADDR"])) {
+            return $_SERVER["REMOTE_ADDR"];
+        }
+        return null;
     }
 
     //region File and folder related functionality

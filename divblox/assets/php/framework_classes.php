@@ -66,6 +66,11 @@ abstract class PublicApi_Base {
     public static $UserAgent;
     public static function initApi($ApiDescriptionStr = "API Description",$EndPointNameStr = "API Endpoint") {
         self::setDefaultContentType();
+        if (!AccessManager::checkMaintenanceModeAccess()) {
+            self::setApiResult(false);
+            self::addApiOutput("Message","API is currently offline. Please try again later.");
+            self::printApiResult();
+        }
         $_SESSION["API_CALL_ACTIVE"] = 1;
         $_SESSION["API_CALL_KEY"] = self::getInputParameter("api_key");
         self::$ApiResultArray["Result"] = "Failed";

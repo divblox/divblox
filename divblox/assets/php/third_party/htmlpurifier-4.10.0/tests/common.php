@@ -130,9 +130,9 @@ function htmlpurifier_parse_args(&$AC, $aliases)
         }
     } else {
         foreach ($_GET as $o => $v) {
-            if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) {
+            /*if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) {
                 $v = stripslashes($v);
-            }
+            }*/
             htmlpurifier_args($AC, $aliases, $o, $v);
         }
     }
