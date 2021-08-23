@@ -24,10 +24,14 @@ if (typeof component_classes['pages_native_landing'] === "undefined") {
 			getComponentElementById(this,"RURmz_btn").on("click", function() {
 				loadPageComponent("login");
 			});
+			getComponentElementById(this,"ExternalDemoButton").on("click", function() {
+				redirectToExternalPath("https://divblox.com");
+			});
 		}
 		reset(inputs,propagate) {
 			setActivePage("","dx Home");
 			super.reset(inputs,propagate);
+			alert("URL: "+window.location.href);
 		}
 		subComponentLoadedCallBack(component) {
             super.subComponentLoadedCallBack(component);

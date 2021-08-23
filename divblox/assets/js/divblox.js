@@ -12,7 +12,7 @@
  * Divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "4.2.0";
+let dx_version = "4.2.1";
 let bootstrap_version = "4.5.0";
 let jquery_version = "3.5.1";
 let minimum_required_php_version = "7.2.0";
@@ -561,10 +561,18 @@ class DivbloxDomBaseComponent {
 	 * @param {Object} component The component that was loaded
 	 */
 	subComponentLoadedCallBack(component) {
+		this.registerComponentAsSubComponent(component);
+		this.loadSubComponent();
+		// JGL: Override as needed
+	}
+	/**
+	 * Registers the given component as a sub component for the current component
+	 * @param {Object} component The component that was loaded
+	 */
+	registerComponentAsSubComponent(component) {
 		this.sub_component_objects.push(component);
 		this.sub_component_loaded_count++;
 		this.sub_component_ready[component.getUid()] = false;
-		this.loadSubComponent();
 		// JGL: Override as needed
 	}
 	/**
@@ -2570,6 +2578,15 @@ function registerComponent(component_dom_object,uid) {
 	registered_component_array[uid] = component_dom_object;
 }
 /**
+ * Deregisters a component in the  registered_component_array
+ * @param {String} uid The UID of the component to deregister
+ */
+function deregisterComponent(uid) {
+	if (typeof(registered_component_array[uid]) !== "undefined") {
+		delete registered_component_array[uid];
+	}
+}
+/**
  * Retrieves a component, based on its UID from registered_component_array
  * @param {String} uid The UID of the component to retrieve
  * @return {Object} The component object
@@ -3849,7 +3866,7 @@ function redirectToExternalPath(url) {
 		throw new Error("Path url not provided");
 	}
 	if (isNative()) {
-		window.ReactNativeWebView.postMessage(JSON.stringify({function_to_execute:"redirectToExternalPath",redirect_url:url}),"*");
+		window.ReactNativeWebView.postMessage(JSON.stringify({function_to_execute:"redirectToExternalPath",redirect_url:url}));
 	} else {
 		window.open(url,"_blank");
 	}

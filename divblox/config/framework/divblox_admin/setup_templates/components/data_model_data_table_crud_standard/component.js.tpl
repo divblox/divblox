@@ -1,12 +1,12 @@
 if (typeof component_classes['[component_full_name]'] === "undefined") {
-	class [component_full_name] extends DivbloxDomBaseComponent {
+	class [component_class_name] extends DivbloxDomBaseComponent {
 		constructor(inputs,supports_native,requires_native) {
 			super(inputs,supports_native,requires_native);
 			// Sub component config start
 			this.sub_component_definitions = [
-				{"component_load_path":"data_model/[component_name]_data_series","parent_element":"data_series","arguments":{"uid":this.getUid()+"_[component_name]_data_series_component"}},
-				{"component_load_path":"data_model/[component_name]_update","parent_element":"data_update","arguments":{"uid":this.getUid()+"_[component_name]_update_component"}},
-				{"component_load_path":"data_model/[component_name]_create","parent_element":"data_create","arguments":{"uid":this.getUid()+"_[component_name]_create_component"}}];
+				{"component_load_path":"data_model/[EntityName-Lowercase]/[component_name]_data_series","parent_element":"data_series","arguments":{"uid":this.getUid()+"_[component_name]_data_series_component"}},
+				{"component_load_path":"data_model/[EntityName-Lowercase]/[component_name]_update","parent_element":"data_update","arguments":{"uid":this.getUid()+"_[component_name]_update_component"}},
+				{"component_load_path":"data_model/[EntityName-Lowercase]/[component_name]_create","parent_element":"data_create","arguments":{"uid":this.getUid()+"_[component_name]_create_component"}}];
 			// Sub component config end
 		}
 		reset(inputs,propagate) {
@@ -56,5 +56,5 @@ if (typeof component_classes['[component_full_name]'] === "undefined") {
 			}.bind(this));
 		}
 	}
-	component_classes['[component_full_name]'] = [component_full_name];
+	component_classes['[component_full_name]'] = [component_class_name];
 }

@@ -4,7 +4,8 @@ abstract class ComponentRoleBasedAccess {
     public static $AccessArray = array(
         "Anonymous" => [
             "authentication",
-            "account_registration"],
+            "account_registration",
+            "anonymous_landing_page"],
         "User" => [
             "my_profile",
             "current_user_profile_manager",
