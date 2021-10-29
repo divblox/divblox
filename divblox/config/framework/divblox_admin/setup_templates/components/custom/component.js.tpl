@@ -1,11 +1,12 @@
-if (typeof component_classes['[component_full_name]'] === "undefined") {
+if (typeof componentClasses['[component_full_name]'] === "undefined") {
 	class [component_class_name] extends DivbloxDomBaseComponent {
-		constructor(inputs,supports_native,requires_native) {
-			super(inputs,supports_native,requires_native);
+		constructor(inputs, supportsNative, requiresNative) {
+			super(inputs, supportsNative, requiresNative);
 			// Sub component config start
-			this.sub_component_definitions = [];
+			this.subComponentDefinitions = [];
 			// Sub component config end
 		}
 	}
-	component_classes['[component_full_name]'] = [component_class_name];
+
+	componentClasses['[component_full_name]'] = [component_class_name];
 }

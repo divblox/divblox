@@ -1,9 +1,9 @@
-if (typeof component_classes['pages_maintenance'] === "undefined") {
-    class pages_maintenance extends DivbloxDomBaseComponent {
-        constructor(inputs, supports_native, requires_native) {
-            super(inputs, supports_native, requires_native);
+if (typeof componentClasses['pages_maintenance'] === "undefined") {
+    class Maintenance extends DivbloxDomBaseComponent {
+        constructor(inputs, supportsNative, requiresNative) {
+            super(inputs, supportsNative, requiresNative);
             // Sub component config start
-            this.sub_component_definitions =
+            this.subComponentDefinitions =
                 [{
                     "component_load_path": "ungrouped/imageviewer",
                     "parent_element": "imageViewerContainer",
@@ -22,11 +22,11 @@ if (typeof component_classes['pages_maintenance'] === "undefined") {
         }
 
         registerDomEvents() {
-            getComponentElementById(this, "btnRefresh").on("click", function() {
+            getComponentElementById(this, "btnRefresh").on("click", function () {
                 loadUserRoleLandingPage(getCurrentUserRoleFromAppState());
             });
         }
     }
 
-    component_classes['pages_maintenance'] = pages_maintenance;
+    componentClasses['pages_maintenance'] = Maintenance;
 }

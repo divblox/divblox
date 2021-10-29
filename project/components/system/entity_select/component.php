@@ -1,12 +1,13 @@
 <?php
 require("../../../../divblox/divblox.php");
+
 class EntitySelectController extends ProjectComponentController {
     protected $RestrictedEntityArray = [//Anything in this list will require its own dedicated select component
         "AuditLogEntry",
         "BackgroundProcess",
         "BackgroundProcessUpdate",
         "ClientAuthenticationToken",
-        "ClientConnection","EmailMessage",
+        "ClientConnection", "EmailMessage",
         "FileDocument",
         "PageView",
         "PasswordReset",
@@ -15,30 +16,32 @@ class EntitySelectController extends ProjectComponentController {
         "EmailAddress",
         "Username",
         "Password"];
+
     public function __construct($ComponentNameStr = 'Component') {
         parent::__construct($ComponentNameStr);
     }
+
     public function updateDatalist() {
         $EntityTypeStr = $this->getInputValue('entity');
         if (is_null($EntityTypeStr)) {
             $this->setResult(false);
-            $this->setReturnValue("Message","Entity not provided");
+            $this->setReturnValue("Message", "Entity not provided");
             $this->presentOutput();
         }
         if (in_array($EntityTypeStr, $this->RestrictedEntityArray)) {
             $this->setResult(false);
-            $this->setReturnValue("Message","Access denied");
+            $this->setReturnValue("Message", "Access denied");
             $this->presentOutput();
         }
         $EntityDisplayAttrStr = $this->getInputValue('display_attr');
         if (is_null($EntityDisplayAttrStr)) {
             $this->setResult(false);
-            $this->setReturnValue("Message","Entity display attribute not provided");
+            $this->setReturnValue("Message", "Entity display attribute not provided");
             $this->presentOutput();
         }
         if (in_array($EntityDisplayAttrStr, $this->RestrictedAttributeArray)) {
             $this->setResult(false);
-            $this->setReturnValue("Message","Access denied");
+            $this->setReturnValue("Message", "Access denied");
             $this->presentOutput();
         }
         $SearchTextStr = $this->getInputValue('input');
@@ -58,9 +61,10 @@ class EntitySelectController extends ProjectComponentController {
             }
         }
         $this->setResult(true);
-        $this->setReturnValue("ResultArray",$ReturnArray);
+        $this->setReturnValue("ResultArray", $ReturnArray);
         $this->presentOutput();
     }
 }
+
 $ComponentObj = new EntitySelectController("entity_select");
 ?>

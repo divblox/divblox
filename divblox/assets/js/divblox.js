@@ -12,78 +12,78 @@
  * Divblox initialization
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let dx_version = "4.2.1";
-let bootstrap_version = "4.5.0";
-let jquery_version = "3.5.1";
-let minimum_required_php_version = "7.2.0";
-let spa_mode = false;
-let debug_mode = true;
-let allow_feedback = false;
-let allowable_divblox_paths = ["divblox","project"];
-let allowable_divblox_sub_paths = ["assets","config","components"];
-let document_root = "";
-let page_uid = "main_page";
-let authentication_token = "";
-let dx_queue = [];
-let dx_processing_queue = false;
-let dx_has_uploads_waiting = false;
-let dx_offline = false;
-let service_worker_update;
+let dxVersion = "4.4.0";
+let bootstrapVersion = "4.5.0";
+let jqueryVersion = "3.5.1";
+let minimumRequiredPhpVersion = "7.2.0";
+let isSpaMode = false;
+let isDebugMode = true;
+let isFeedbackAllowed = false;
+let allowableDivbloxPaths = ["divblox", "project"];
+let allowableDivbloxSubPaths = ["assets", "config", "components"];
+let documentRoot = "";
+let pageUid = "main_page";
+let authenticationToken = "";
+let dxQueue = [];
+let dxProcessingQueue = false;
+let dxHasUploadsWaiting = false;
+let isDxOffline = false;
+let serviceWorker;
 let installPromptEvent;
-let element_loading_obj = {};
-let element_loading_state_obj = {};
-let registered_toasts = [];
-let updating_toasts = false;
-let global_vars = {};
-let app_state = {};
-let root_history = [];
-let root_history_index = -1;
-let root_history_processing = false;
-let cache_scripts_requested = [];
-let cache_scripts_loaded = [];
-let url_input_parameters = null;
+let elementLoadingTexts = {};
+let elementLoadingStates = {};
+let registeredToasts = [];
+let isUpdatingToasts = false;
+let globalVars = {};
+let appState = {};
+let rootHistories = [];
+let rootHistoryIndex = -1;
+let isRootHistoryProcessed = false;
+let requestedCacheScripts = [];
+let loadedCacheScripts = [];
+let urlInputParameters = null;
 let is_native = false;
-let registered_event_handlers = [];
-let force_logout_occurred = false;
+let registeredEventHandlers = [];
+let forceLogoutOccurred = false;
 let maintenanceModeTriggered = false;
-let no_cache_force_str = '';
-if(window.jQuery === undefined) {
-	// JGL: We assume that we have jquery available here...
-	throw new Error("jQuery has not been loaded. Please ensure that jQuery is loaded before divblox");
+let noCacheForceText = '';
+if (window.jQuery === undefined) {
+    // JGL: We assume that we have jquery available here...
+    throw new Error("jQuery has not been loaded. Please ensure that jQuery is loaded before divblox");
 } else {
-	//JGL : This is a temporary fix for jquery to work with the component builder for jquery v3.5+
-	let rxhtmlTag = /<(?!area|br|hr|img|input|col|embed|link|meta|param)(([a-z][^\/\0>\x20\t\r\n\f]*)[^>]*)\/>/gi;
-	jQuery.htmlPrefilter = function( html ) {
-		html = html.replace( rxhtmlTag, "<$1></$2>" );
-		return html;
-	};
+    //JGL : This is a temporary fix for jquery to work with the component builder for jquery v3.5+
+    let rxhtmlTag = /<(?!area|br|hr|img|input|col|embed|link|meta|param)(([a-z][^\/\0>\x20\t\r\n\f]*)[^>]*)\/>/gi;
+    jQuery.htmlPrefilter = function (html) {
+        html = html.replace(rxhtmlTag, "<$1></$2>");
+        return html;
+    };
 }
-let component_classes = {};
-let dx_admin_roles = ["dxadmin","administrator"];
+let componentClasses = {};
+let dxAdminRoles = ["dxadmin", "administrator"];
 let currentUserRole = null;
-let current_user_profile_picture_path = getRootPath()+"project/assets/images/divblox_profile_picture_placeholder.svg";
-let dom_component_index_map = {};
+let currentUserProfilePicturePath = getRootPath() + "project/assets/images/divblox_profile_picture_placeholder.svg";
+let domComponentIndexMap = {};
 // JGL: Let's initialize the object that will contain relevant DOM info for our components that are rendered on the page
-let registered_component_array = {};
-let dependency_array = [
-	"divblox/assets/js/bootstrap/4.5.0/bootstrap.bundle.min.js",
-	"divblox/assets/js/sweetalert/sweetalert.min.js",
-	"project/assets/js/project.js",
-	"project/assets/js/momentjs/moment.js",
-	"project/assets/js/data_model.js",
-	"project/assets/js/menus.js",
+let registeredComponents = {};
+let divbloxDependencies = [
+    "divblox/assets/js/bootstrap/4.5.0/bootstrap.bundle.min.js",
+    "divblox/assets/js/sweetalert/sweetalert.min.js",
+    "project/assets/js/project.js",
+    "project/assets/js/momentjs/moment.js",
+    "project/assets/js/data_model.js",
+    "project/assets/js/menus.js",
 ];
 /**
  * Responsible for rendering input fields consistently throughout the applications
- * @type {{renderInputField: dx_renderer.renderInputField}}
+ * @type {{renderInputField: dxRenderer.renderInputField}}
  */
-let dx_renderer = {
-	/**
-	 * Renders an input field as the content of a div specified in config_obj
-	 * @param config_obj {
-	 *          "WrapperId": "The dom id of the div that will wrap this field",
-	 *          "FieldId": "The dom id of the field that will be rendered",
-	 *          "MustValidate": [true|false],
+let dxRenderer = {
+    /**
+     * Renders an input field as the content of a div specified in config_obj
+     * @param config {
+     *          "WrapperId": "The dom id of the div that will wrap this field",
+     *          "FieldId": "The dom id of the field that will be rendered",
+     *          "MustValidate": [true|false],
                 "DisplayType": "[text|textarea|date|datetime-local|number|checkbox]",
                 "InputLabel": "The label to display with the input field",
                 "DefaultValue": "",
@@ -92,1039 +92,1129 @@ let dx_renderer = {
                 "ValidationMessage": "Message to be displayed if the input field is validated",
                 "Rows": "Optional for when rendering a textarea: Defaults to 3",
             }
-	 */
-	renderInputField: function(config_obj) {
-		let wrapper_node = $("#"+config_obj.WrapperId);
-		if (!wrapper_node.length) {
-			return;
-		}
-		if (typeof config_obj.DisplayType === "undefined") {
-			throw new Error("Invalid display type provided for dx_renderer.renderInputField");
-		}
-		if (typeof config_obj.FieldId === "undefined") {
-			throw new Error("Invalid FieldId provided for dx_renderer.renderInputField");
-		}
-		let complete_html = '';
-		let input_field_html = '';
-		let placeholder_str = '';
-		let default_value_str = '';
-		let validation_message_str = '';
-		let label_html = '';
-		if (typeof config_obj.InputLabel !== "undefined") {
-			label_html = '<label>'+config_obj.InputLabel+'</label>';
-		}
-		if (typeof config_obj.Placeholder !== "undefined") {
-			placeholder_str = ' placeholder="'+config_obj.Placeholder+'"';
-		}
-		if (typeof config_obj.DefaultValue !== "undefined") {
-			default_value_str = config_obj.DefaultValue;
-			if (config_obj.DisplayType === 'checkbox') {
-				default_value_str = ' checked="';
-				if ((config_obj.DefaultValue === 'checked')
-					|| (config_obj.DefaultValue === true)
-					|| (config_obj.DefaultValue === 'true')) {
-					default_value_str += 'true"';
-				} else {
-					default_value_str += 'false"';
-				}
-			}
-		}
-		if (typeof config_obj.ValidationMessage !== "undefined") {
-			validation_message_str = config_obj.ValidationMessage;
-		}
-		//ValidationMessage
-		switch(config_obj.DisplayType) {
-			case 'text':
-			case 'email':
-			case 'number':
-			case 'password':
-			case 'date':
-			case 'datetime-local':
-			case 'month':
-			case 'week':
-			case 'tel':
-			case 'url':
-			case 'time':
-			case 'color':
-				input_field_html = '<input id="'+config_obj.FieldId+'" type="'+config_obj.DisplayType+'" class="form-control"' +
-					''+placeholder_str+' value="'+default_value_str+'"/>';
-				if (typeof config_obj.MustValidate !== "undefined") {
-					if (config_obj.MustValidate) {
-						input_field_html += '<div id="'+config_obj.FieldId+'InvalidFeedback" class="invalid-feedback">\n' +
-							'' +validation_message_str+'</div>'
-					}
-				}
-				complete_html = label_html+input_field_html;
-				break;
-			case 'textarea':
-				let rows = 3;
-				if (typeof config_obj.Rows !== "undefined") {
-					rows = config_obj.Rows;
-				}
-				input_field_html = '<textarea class="form-control" id="'+config_obj.FieldId+'" rows="'
-					+rows+'" value="'+default_value_str+'"'+placeholder_str+'></textarea>';
-				if (typeof config_obj.MustValidate !== "undefined") {
-					if (config_obj.MustValidate) {
-						input_field_html += '<div id="'+config_obj.FieldId+'InvalidFeedback" class="invalid-feedback">\n' +
-							'' +validation_message_str+'</div>'
-					}
-				}
-				complete_html = label_html+input_field_html;
-				break;
-			case 'list':
-				input_field_html = ' <select name="'+config_obj.FieldId+'" id="'+config_obj.FieldId+'" class="custom-select">\n' +
-					'                        <option value="">'+default_value_str+'</option>';
-				if (typeof config_obj.Data !== "undefined") {
-					let list_values = data_model.getDataList(config_obj.Data);
-					if (list_values.length > 0) {
-						list_values.forEach(function(item) {
-							input_field_html += '<option value="'+item+'">'+item+'</option>';
-						})
-					}
-				}
-				input_field_html += '</select>';
-				if (typeof config_obj.MustValidate !== "undefined") {
-					if (config_obj.MustValidate) {
-						input_field_html += '<div id="'+config_obj.FieldId+'InvalidFeedback" class="invalid-feedback">\n' +
-							'' +validation_message_str+'</div>'
-					}
-				}
-				complete_html = label_html+input_field_html;
-				break;
-			case 'checkbox':
-				input_field_html = '<input class="form-check-input" type="checkbox" name="'+config_obj.FieldId+'" ' +
-					'id="'+config_obj.FieldId+'"'+default_value_str+'>';
-				if (typeof config_obj.MustValidate !== "undefined") {
-					if (config_obj.MustValidate) {
-						input_field_html += '<div id="'+config_obj.FieldId+'InvalidFeedback" class="invalid-feedback">\n' +
-							'' +validation_message_str+'</div>'
-					}
-				}
-				complete_html = '<div class="form-check mt-3">'+input_field_html+label_html+'</div>';
-				break;
-			default:
-				input_field_html = '<input id="'+config_obj.FieldId+'" type="'+config_obj.DisplayType+'" class="form-control"' +
-					''+placeholder_str+' value="'+default_value_str+'"/>';
-				if (typeof config_obj.MustValidate !== "undefined") {
-					if (config_obj.MustValidate) {
-						input_field_html += '<div id="'+config_obj.FieldId+'InvalidFeedback" class="invalid-feedback">\n' +
-							'' +validation_message_str+'</div>'
-					}
-				}
-				complete_html = label_html+input_field_html;
-		}
+     */
+    renderInputField: function (config) {
+        let wrapperNode = $("#" + config.WrapperId);
+        if (!wrapperNode.length) {
+            return;
+        }
+        if (typeof config.DisplayType === "undefined") {
+            throw new Error("Invalid display type provided for dx_renderer.renderInputField");
+        }
+        if (typeof config.FieldId === "undefined") {
+            throw new Error("Invalid FieldId provided for dx_renderer.renderInputField");
+        }
+        let completeHtml = '';
+        let inputFieldHtml = '';
+        let placeholderText = '';
+        let defaultValueText = '';
+        let validationMessageText = '';
+        let labelText = '';
+        if (typeof config.InputLabel !== "undefined") {
+            labelText = '<label>' + config.InputLabel + '</label>';
+        }
+        if (typeof config.Placeholder !== "undefined") {
+            placeholderText = ' placeholder="' + config.Placeholder + '"';
+        }
+        if (typeof config.DefaultValue !== "undefined") {
+            defaultValueText = config.DefaultValue;
+            if (config.DisplayType === 'checkbox') {
+                defaultValueText = ' checked="';
+                if ((config.DefaultValue === 'checked')
+                    || (config.DefaultValue === true)
+                    || (config.DefaultValue === 'true')) {
+                    defaultValueText += 'true"';
+                } else {
+                    defaultValueText += 'false"';
+                }
+            }
+        }
+        if (typeof config.ValidationMessage !== "undefined") {
+            validationMessageText = config.ValidationMessage;
+        }
+        //ValidationMessage
+        switch (config.DisplayType) {
+            case 'text':
+            case 'email':
+            case 'number':
+            case 'password':
+            case 'date':
+            case 'datetime-local':
+            case 'month':
+            case 'week':
+            case 'tel':
+            case 'url':
+            case 'time':
+            case 'color':
+                inputFieldHtml = '<input id="' + config.FieldId + '" type="' + config.DisplayType + '" class="form-control"' +
+                    '' + placeholderText + ' value="' + defaultValueText + '"/>';
+                if (typeof config.MustValidate !== "undefined") {
+                    if (config.MustValidate) {
+                        inputFieldHtml += '<div id="' + config.FieldId + 'InvalidFeedback" class="invalid-feedback">\n' +
+                            '' + validationMessageText + '</div>';
+                    }
+                }
+                completeHtml = labelText + inputFieldHtml;
+                break;
+            case 'textarea':
+                let rows = 3;
+                if (typeof config.Rows !== "undefined") {
+                    rows = config.Rows;
+                }
+                inputFieldHtml = '<textarea class="form-control" id="' + config.FieldId + '" rows="'
+                    + rows + '" value="' + defaultValueText + '"' + placeholderText + '></textarea>';
+                if (typeof config.MustValidate !== "undefined") {
+                    if (config.MustValidate) {
+                        inputFieldHtml += '<div id="' + config.FieldId + 'InvalidFeedback" class="invalid-feedback">\n' +
+                            '' + validationMessageText + '</div>';
+                    }
+                }
+                completeHtml = labelText + inputFieldHtml;
+                break;
+            case 'list':
+                inputFieldHtml = ' <select name="' + config.FieldId + '" id="' + config.FieldId + '" class="custom-select">\n' +
+                    '                        <option value="">' + defaultValueText + '</option>';
+                if (typeof config.Data !== "undefined") {
+                    let listValues = dataModel.getDataList(config.Data);
+                    if (listValues.length > 0) {
+                        listValues.forEach(function (item) {
+                            inputFieldHtml += '<option value="' + item + '">' + item + '</option>';
+                        });
+                    }
+                }
+                inputFieldHtml += '</select>';
+                if (typeof config.MustValidate !== "undefined") {
+                    if (config.MustValidate) {
+                        inputFieldHtml += '<div id="' + config.FieldId + 'InvalidFeedback" class="invalid-feedback">\n' +
+                            '' + validationMessageText + '</div>';
+                    }
+                }
+                completeHtml = labelText + inputFieldHtml;
+                break;
+            case 'checkbox':
+                inputFieldHtml = '<input class="form-check-input" type="checkbox" name="' + config.FieldId + '" ' +
+                    'id="' + config.FieldId + '"' + defaultValueText + '>';
+                if (typeof config.MustValidate !== "undefined") {
+                    if (config.MustValidate) {
+                        inputFieldHtml += '<div id="' + config.FieldId + 'InvalidFeedback" class="invalid-feedback">\n' +
+                            '' + validationMessageText + '</div>';
+                    }
+                }
+                completeHtml = '<div class="form-check mt-3">' + inputFieldHtml + labelText + '</div>';
+                break;
+            default:
+                inputFieldHtml = '<input id="' + config.FieldId + '" type="' + config.DisplayType + '" class="form-control"' +
+                    '' + placeholderText + ' value="' + defaultValueText + '"/>';
+                if (typeof config.MustValidate !== "undefined") {
+                    if (config.MustValidate) {
+                        inputFieldHtml += '<div id="' + config.FieldId + 'InvalidFeedback" class="invalid-feedback">\n' +
+                            '' + validationMessageText + '</div>';
+                    }
+                }
+                completeHtml = labelText + inputFieldHtml;
+        }
 
-		wrapper_node.html(complete_html);
-	}
+        wrapperNode.html(completeHtml);
+    }
 };
 /**
  * Responsible for determining whether the current page to be loaded has a mobile alternative
- * @type {{loadMobilePageAlternatives(*): void, page_mobile_alternates: {}, getMobilePageAlternate(*): (*)}}
+ * @type {{loadMobilePageAlternatives(*): void, mobilePageAlternates: {}, getMobilePageAlternate(*): (*)}}
  */
-let dx_page_manager = {
-	page_mobile_alternates: {},
-	/**
-	 * Loads the page alternate definitions from json
-	 * @param callback
-	 */
-	loadMobilePageAlternatives(callback) {
-		if (debug_mode) {
-			no_cache_force_str = getRandomFilePostFix();
-		}
-		loadJsonFromFile(getRootPath()+'project/assets/configurations/page_mobile_alternates.json'+no_cache_force_str,function(json) {
-			this.page_mobile_alternates = json;
-			callback();
-		}.bind(this));
-	},
-	/**
-	 * Returns the mobile alternate page for the given page_name if it is defined, otherwise the given page_name is
-	 * returned
-	 * @param page_name
-	 * @return {*}
-	 */
-	getMobilePageAlternate(page_name) {
-		if (!isScreenWidthMobile()) {return page_name;}
-		if (typeof this.page_mobile_alternates[page_name] !== "undefined") {
-			return this.page_mobile_alternates[page_name];
-		}
-		return page_name;
-	}
+let dxPageManager = {
+    mobilePageAlternates: {},
+    /**
+     * Loads the page alternate definitions from json
+     * @param callback
+     */
+    loadMobilePageAlternatives(callback) {
+        if (isDebugMode) {
+            noCacheForceText = getRandomFilePostFix();
+        }
+        loadJsonFromFile(getRootPath() + 'project/assets/configurations/page_mobile_alternates.json' + noCacheForceText, function (json) {
+            this.mobilePageAlternates = json;
+            callback();
+        }.bind(this));
+    },
+    /**
+     * Returns the mobile alternate page for the given page_name if it is defined, otherwise the given page_name is
+     * returned
+     * @param pageName
+     * @return {*}
+     */
+    getMobilePageAlternate(pageName) {
+        if (!isScreenWidthMobile()) {
+            return pageName;
+        }
+        if (typeof this.mobilePageAlternates[pageName] !== "undefined") {
+            return this.mobilePageAlternates[pageName];
+        }
+        return pageName;
+    }
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * Divblox component and DOM related classes
  */
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * DivbloxDomBaseComponent is the base class that manages the component javascript for every component
  */
 class DivbloxDomBaseComponent {
-	/**
-	 * Initializes all the base variables for a Divblox dom component
-	 * @param {Object} inputs The arguments to pass to the component
-	 * @param {Boolean} supports_native Indicate whether this component works on native projects
-	 * @param {Boolean} requires_native Indicate whether this component works ONLY on native projects
-	 */
-	constructor(inputs,supports_native,requires_native) {
-		this.arguments = inputs;
-		if (typeof supports_native === "undefined") {
-			supports_native = true;
-		}
-		if (typeof requires_native === "undefined") {
-			requires_native = false;
-		}
-		this.supports_native = supports_native;
-		this.requires_native = requires_native;
-		if (typeof(this.arguments["uid"]) !== "undefined") {
-			this.uid = this.arguments["uid"];
-		} else {
-			this.uid = this.arguments["component_name"] + "_" + this.arguments["dom_index"];
-		}
-		this.component_success = false;
-		this.sub_component_definitions = {};
-		this.sub_component_objects = [];
-		this.sub_component_ready = {};
-		this.sub_component_loaded_count = 0;
-		this.allowed_access_array = [];
-		this.uses_loading_state = false;
-		this.is_loading = false;
-		this.show_loading_overlay = false;
-		this.is_showing_loading_overlay = false;
-		this.prerequisite_array = []; // See DivbloxDomEntityDataTableComponent for example of how to use
-		this.prerequisite_loaded_index = 0;
-		this.do_connection_check = false;
-	}
-	/**
-	 * Gets the current component's parent component obj
-	 * @return {null} | The parent component
-	 */
-	getParentComponent() {
-		let parent_component_uid = this.getLoadArgument('parent_uid');
-		if ((parent_component_uid == null) || (parent_component_uid === '')) {
-			return null;
-		}
-		return getRegisteredComponent(parent_component_uid);
-	}
-	/**
-	 * Shows a loading overlay (only for page components)
-	 */
-	showLoadingOverlay() {
-		if (this.getParentComponent() != null) {return;/*We cannot show a loading overlay for a sub component*/}
-		this.is_showing_loading_overlay = true;
-		let overlay_html = '<div id="'+this.getUid()+'_LoadingOverlay" class="loading-overlay"><div' +
-			' class="loading-overlay-animation"><div class="spinner-border text-dark" role="status">' +
-			'<span class="sr-only">Loading...</span></div></div></div>';
-		getComponentElementById(this,'ComponentWrapper').append(overlay_html);
-		getComponentElementById(this,'LoadingOverlay').css('z-index',getHighestZIndex()+100);
-	}
-	/**
-	 * Removes loading overlay (only for page components)
-	 */
-	removeLoadingOverlay() {
-		if (this.is_showing_loading_overlay) {
-			getComponentElementById(this,'LoadingOverlay').fadeOut();
-			this.is_showing_loading_overlay = false;
-		}
-	}
-	/**
-	 * Reports the current component's ready state to the parent once all sub components are ready
-	 */
-	reportComponentReadiness() {
-		if (this.is_loading) {return;}
-		let parent_component_obj = this.getParentComponent();
-		if (this.sub_component_definitions.length === 0) {
-			if (parent_component_obj != null) {
-				parent_component_obj.reportSubComponentReady(this.getUid());
-			} else {
-				if (this.getUid() === page_uid) {
-					this.postPageLoadActions();
-				}
-				this.removeLoadingOverlay();
-			}
-		} else {
-			let sub_component_ready_uids = Object.keys(this.sub_component_ready);
-			let all_ready = true;
-			if (sub_component_ready_uids.length < this.sub_component_definitions.length) {
-				all_ready = false;
-			}
-			sub_component_ready_uids.forEach(function(uid) {
-				all_ready &= this.sub_component_ready[uid];
-			}.bind(this));
-			if (all_ready) {
-				if (parent_component_obj != null) {
-					parent_component_obj.reportSubComponentReady(this.getUid());
-				} else {
-					if (this.getUid() === page_uid) {
-						this.postPageLoadActions();
-					}
-					this.removeLoadingOverlay();
-				}
-			}
-		}
-	}
-	/**
-	 * Allows a sub component to inform this component that it is ready
-	 * @param sub_component_uid: The uid of the calling sub component
-	 */
-	reportSubComponentReady(sub_component_uid) {
-		this.sub_component_ready[sub_component_uid] = true;
-		this.reportComponentReadiness();
-	}
-	/**
-	 * Used to load any prerequisites that a component may require before continuing to load the component
-	 * @param {Function} success_callback The function to call when prerequisites were loaded successfully
-	 * @param {Function} fail_callback The function to call when something went wrong during load
-	 */
-	loadPrerequisites(success_callback,fail_callback) {
-		if (typeof success_callback !== "function") {
-			success_callback = function(){};
-		}
-		if (typeof fail_callback !== "function") {
-			fail_callback = function(){};
-		}
-		if (this.prerequisite_loaded_index < this.prerequisite_array.length) {
-			dxGetScript(getRootPath()+this.prerequisite_array[this.prerequisite_loaded_index], function() {
-				this.prerequisite_loaded_index++;
-				this.loadPrerequisites(success_callback,fail_callback);
-			}.bind(this));
-		} else {
-			success_callback();
-		}
-	}
-	/**
-	 * This is the very first method that is called when a component is loaded. This triggers additional default
-	 * behaviour for the component
-	 * @param {Boolean} confirm_success Indicate whether the component should confirm a successful load or not
-	 * @param {Function} callback The function to call once the component is fully loaded and ready to go
-	 */
-	on_component_loaded(confirm_success,callback) {
-		if (isNative()) {
-			if (!this.supports_native) {
-				this.handleComponentError("Component "+this.uid+" does not support native.");
-				return;
-			}
-		} else {
-			if (this.requires_native) {
-				this.handleComponentError("Component "+this.uid+" requires a native implementation.");
-				return;
-			}
-		}
-		if (typeof confirm_success === "undefined") {
-			confirm_success = true;
-		}
-		if (typeof callback !== "function") {
-			callback = function(){};
-		}
-		if (this.show_loading_overlay) {
-			this.showLoadingOverlay();
-		}
-		this.loadPrerequisites(function() {
-			callback();
-			dxCheckCurrentUserRole(this.allowed_access_array,function() {
-				this.handleComponentAccessError("Access denied");
-			}.bind(this), function() {
-				if (confirm_success) {
-					this.handleComponentSuccess();
-				}
-				this.registerDomEvents();
-				this.initCustomFunctions();
-				// Load additional components here
-				this.loadSubComponent();
-				if (checkComponentBuilderActive()) {
-					setTimeout(function() {
-						//JGL: Some components might not remove their loading state if they do not receive
-						// initialization inputs. When we are in the component builder, we want to override this
-						if (this.is_loading) {
-							dxLog("Removing loading state if "+this.getComponentName()+" for component builder");
-							this.removeLoadingState();
-						}
-					}.bind(this),1000);
-				}
-			}.bind(this));
-		}.bind(this),function () {
-			this.handleComponentError("Error loading component dependencies");
-		}.bind(this));
-	}
-	/**
-	 * A useful function to call to reset the component state. Also the last function that is called once all sub
-	 * components are loaded
-	 * @param {Object} inputs The arguments to pass to the component
-	 * @param {boolean} propagate If true, will also reset all sub components
-	 */
-	reset(inputs,propagate) {
-		if (!this.uses_loading_state) {
-			this.is_loading = false;
-			this.reportComponentReadiness();
-		}
-		propagate = propagate || false;
-		if (propagate) {
-			this.resetSubComponents(inputs,true);
-		}
-		if (this.do_connection_check) {
-			checkConnectionPerformance();
-		}
+    /**
+     * Initializes all the base variables for a Divblox dom component
+     * @param {Object} inputs The arguments to pass to the component
+     * @param {Boolean} supportsNative Indicate whether this component works on native projects
+     * @param {Boolean} requiresNative Indicate whether this component works ONLY on native projects
+     */
+    constructor(inputs, supportsNative, requiresNative) {
+        this.arguments = inputs;
+        if (typeof supportsNative === "undefined") {
+            supportsNative = true;
+        }
+        if (typeof requiresNative === "undefined") {
+            requiresNative = false;
+        }
+        this.supportsNative = supportsNative;
+        this.requiresNative = requiresNative;
+        if (typeof (this.arguments["uid"]) !== "undefined") {
+            this.uid = this.arguments["uid"];
+        } else {
+            this.uid = this.arguments["component_name"] + "_" + this.arguments["dom_index"];
+        }
+        this.componentSuccess = false;
+        this.subComponentDefinitions = {};
+        this.subComponentObjects = [];
+        this.readySubComponents = {};
+        this.subComponentLoadedCount = 0;
+        this.allowedUserroles = [];
+        this.usesLoadingState = false;
+        this.isLoading = false;
+        this.showingLoadingOverlay = false;
+        this.isShowingLoadingOverlay = false;
+        this.prerequisites = []; // See DivbloxDomEntityDataTableComponent for example of how to use
+        this.prerequisiteLoadedIndex = 0;
+        this.doConnectionCheck = false;
+    }
 
-		toggleUserRoleVisibility();
-	}
-	/**
-	 * Toggles the variable is_loading to true and displays the component loading state
-	 */
-	setLoadingState() {
-		this.uses_loading_state = true;
-		this.is_loading = true;
-		$("#"+this.uid+"_ComponentContent").hide();
-		$("#"+this.uid+"_ComponentPlaceholder").show();
-		$("#"+this.uid+"_ComponentFeedback").html('');
-	}
-	/**
-	 * Toggles the variable is_loading to false and removes the component loading state
-	 */
-	removeLoadingState() {
-		if (this.is_loading) {
-			this.is_loading = false;
-			this.reportComponentReadiness();
-		}
-		$("#"+this.uid+"_ComponentContent").show();
-		$("#"+this.uid+"_ComponentPlaceholder").hide();
-	}
-	/**
-	 * Calls the reset function for all of this component's sub components
-	 * @param inputs
-	 * @param propagate
-	 */
-	resetSubComponents(inputs,propagate) {
-		this.sub_component_objects.forEach(function(component) {
-			component.reset(inputs,propagate);
-		}.bind(this));
-	}
-	/**
-	 * Checks whether this component is ready
-	 * @return {boolean} true if ready, false if not
-	 */
-	getReadyState() {
-		return this.component_success && !this.is_loading;
-	}
-	/**
-	 * Used to remove the loading or error state when a component loads successfully
-	 * @param additional_input Unused
-	 */
-	handleComponentSuccess(additional_input) {
-		if (this.component_success === true) {
-			return;
-		}
-		this.component_success = true;
-		$("#"+this.uid+"_ComponentContent").show();
-		$("#"+this.uid+"_ComponentPlaceholder").hide();
-		if (typeof cb_active !== "undefined") {
-			if (cb_active) {
-				addComponentOverlay(this);
-			}
-		}
-	}
-	/**
-	 * Used to display the error state with a relevant message for this component
-	 * @param {String} ErrorMessage The error message to display
-	 */
-	handleComponentError(ErrorMessage) {
-		this.component_success = false;
-		this.removeLoadingOverlay();
-		$("#"+this.uid+"_ComponentContent").hide();
-		$("#"+this.uid+"_ComponentPlaceholder").show();
-		$("#"+this.uid+"_ComponentFeedback").html('<div class="alert alert-danger alert-danger-component"><strong><i' +
-			' class="fa fa-exclamation-triangle ComponentErrorExclamation" aria-hidden="true"></i>' +
-			' </strong><br>'+ErrorMessage+'</div>');
-		if (typeof cb_active !== "undefined") {
-			if (cb_active) {
-				addComponentOverlay(this);
-			}
-		}
-	}
-	/**
-	 * Used to display an access error for the current component
-	 * @param {String} ErrorMessage The error message to display
-	 */
-	handleComponentAccessError(ErrorMessage) {
-		this.handleComponentError(ErrorMessage);
-	}
-	/**
-	 * When registering DOM events it is useful to keep track of them per component if we want to offload them
-	 * later. This method is a wrapper for that functionality
-	 */
-	registerDomEvents() {/*To be overridden in sub class as needed*/}
-	/**
-	 * Called by on_component_loaded to allow us to initiate additional local functions for this component
-	 */
-	initCustomFunctions() {/*To be overridden in sub class as needed*/}
-	/**
-	 * A default callback method that is called whenever a sub component is successfully loaded
-	 * @param {Object} component The component that was loaded
-	 */
-	subComponentLoadedCallBack(component) {
-		this.registerComponentAsSubComponent(component);
-		this.loadSubComponent();
-		// JGL: Override as needed
-	}
-	/**
-	 * Registers the given component as a sub component for the current component
-	 * @param {Object} component The component that was loaded
-	 */
-	registerComponentAsSubComponent(component) {
-		this.sub_component_objects.push(component);
-		this.sub_component_loaded_count++;
-		this.sub_component_ready[component.getUid()] = false;
-		// JGL: Override as needed
-	}
-	/**
-	 * Loads the next sub component as defined in sub_component_definitions
-	 */
-	loadSubComponent() {
-		if (typeof this.sub_component_definitions[this.sub_component_loaded_count] !== "undefined") {
-			let sub_component_definition = this.sub_component_definitions[this.sub_component_loaded_count];
-			loadComponent(sub_component_definition.component_load_path,this.uid,sub_component_definition.parent_element,sub_component_definition.arguments,false,false,this.subComponentLoadedCallBack.bind(this));
-		} else {
-			this.reset({}, false);
-		}
-	}
-	/**
-	 * Gets all the sub components for the current component
-	 * @return {Array} The array of sub component objects
-	 */
-	getSubComponents() {
-		return this.sub_component_objects;
-	}
-	/**
-	 * Gets all the sub component definitions for the current component
-	 * @return {Array} The array of sub component definitions
-	 */
-	getSubComponentDefinitions() {
-		return this.sub_component_definitions;
-	}
-	/**
-	 * Gets the current component's UID
-	 * @return {String} The current component's UID
-	 */
-	getUid() {
-		return this.uid;
-	}
-	/**
-	 * Gets the current component's name
-	 * @return {String} The current component's name
-	 */
-	getComponentName() {
-		return this.arguments['component_name'];
-	}
-	/**
-	 * Gets an argument defined for the current component
-	 * @param {String} argument The argument to return
-	 * @return {*|Null} The value of the argument if it exists, null if not
-	 */
-	getLoadArgument(argument) {
-		if (typeof this.arguments[argument] !== "undefined") {
-			return this.arguments[argument];
-		}
-		if (typeof this.arguments["url_parameters"] !== "undefined") {
-			if (typeof this.arguments["url_parameters"][argument] !== "undefined") {
-				return this.arguments["url_parameters"][argument];
-			}
-		}
-		return null;
-	}
-	/**
-	 * Handles a propagated event on the current component and continues the propagation to this component's sub
-	 * components
-	 * @param {String} event_name The name of the event that was received
-	 * @param {Object} parameters_obj An object with inputs passed with the event
-	 */
-	eventTriggered(event_name,parameters_obj) {
-		switch(event_name) {
-			case '[event_name]':
-			default:
-				dxLog("Event triggered: "+event_name+": "+JSON.stringify(parameters_obj));
-		}
-		// Let's pass the event to all sub components
-		this.propagateEventTriggered(event_name,parameters_obj);
-	}
-	/**
-	 * Propagates an event to this component's sub components
-	 * @param {String} event_name The name of the event that was received
-	 * @param {Object} parameters_obj An object with inputs passed with the event
-	 */
-	propagateEventTriggered(event_name,parameters_obj) {
-		this.sub_component_objects.forEach(function(component) {
-			component.eventTriggered(event_name,parameters_obj);
-		});
-	}
-	/**
-	 * Processes the post page load actions if this component is the main page component
-	 */
-	postPageLoadActions() {
-		menu_manager.renderAllMenus();
-		initFeedbackCapture();
-		loadCurrentUserProfilePicture();
-		renderAppLogo();
-		toggleUserRoleVisibility();
-		doAfterPageLoadActions();
-	}
-	/**
-	 * Fires when the native app is paused
-	 */
-	onNativePause() {
-		//TODO: Implement this if required
-	}
-	/**
-	 * Fires when the native app is resumed
-	 */
-	onNativeResume() {
-		//TODO: Implement this if required
-	}
-	/**
-	 * Just a helper function to reference on cancel of confirmation
-	 */
-	doNothing() {};
-	/**
-	 * Registers an event handler for the provided event on the specified class and executes a specified function within
-	 * this component while passing the trigger element's filtered id
-	 * @param event The event to listen for, e.g "click", "hover", etc
-	 * @param event_trigger_class The class to listen on
-	 * @param id_match_str A string that is contained within the html element's id that should be stripped in order to
-	 * find the id to pass to the relevant function. This string is expected to be right before the id that we want to use
-	 * @param event_function_str The name of the function inside this component to execute
-	 */
-	handleOnClassEvent(event = "click",event_trigger_class = null,id_match_str = null,event_function_str = null) {
-		if (event_trigger_class === null) {
-			return;
-		}
-		if (id_match_str === null) {
-			return;
-		}
-		if (event_function_str === null) {
-			return;
-		}
-		let this_component = getRegisteredComponent(this.getUid());
-		$(document).on(event,"."+event_trigger_class, function() {
-			let id_start = $(this).attr("id").indexOf(id_match_str);
-			let clicked_id = $(this).attr("id").substring(id_start+(id_match_str.length));
-			this_component[event_function_str](clicked_id);
-			return false;
-		});
-		registerEventHandler(document,event,undefined,"."+event_trigger_class);
-	}
+    /**
+     * Gets the current component's parent component obj
+     * @return {null} | The parent component
+     */
+    getParentComponent() {
+        let parentComponentUid = this.getLoadArgument('parent_uid');
+        if ((parentComponentUid == null) || (parentComponentUid === '')) {
+            return null;
+        }
+        return getRegisteredComponent(parentComponentUid);
+    }
+
+    /**
+     * Shows a loading overlay (only for page components)
+     */
+    showLoadingOverlay() {
+        if (this.getParentComponent() != null) {
+            return;/*We cannot show a loading overlay for a sub component*/
+        }
+        this.isShowingLoadingOverlay = true;
+        let overlayHtml = '<div id="' + this.getUid() + '_LoadingOverlay" class="loading-overlay"><div' +
+            ' class="loading-overlay-animation"><div class="spinner-border text-dark" role="status">' +
+            '<span class="sr-only">Loading...</span></div></div></div>';
+        if (!getComponentElementById(this, 'LoadingOverlay').length) { // Only if not already appended before
+            getComponentElementById(this, 'ComponentWrapper').append(overlayHtml);
+        } else {
+            getComponentElementById(this, 'LoadingOverlay').fadeIn();
+        }
+        getComponentElementById(this, 'LoadingOverlay').css('z-index', getHighestZIndex() + 100);
+    }
+
+    /**
+     * Removes loading overlay (only for page components)
+     */
+    removeLoadingOverlay() {
+        if (this.isShowingLoadingOverlay) {
+            getComponentElementById(this, 'LoadingOverlay').fadeOut();
+            this.isShowingLoadingOverlay = false;
+        }
+    }
+
+    /**
+     * Reports the current component's ready state to the parent once all sub components are ready
+     */
+    reportComponentReadiness() {
+        if (this.isLoading) {
+            return;
+        }
+        let parentComponent = this.getParentComponent();
+        if (this.subComponentDefinitions.length === 0) {
+            if (parentComponent != null) {
+                parentComponent.reportSubComponentReady(this.getUid());
+            } else {
+                if (this.getUid() === pageUid) {
+                    this.postPageLoadActions();
+                }
+                this.removeLoadingOverlay();
+            }
+        } else {
+            let subComponentReadyUids = Object.keys(this.readySubComponents);
+            let allComponentsReady = true;
+            if (subComponentReadyUids.length < this.subComponentDefinitions.length) {
+                allComponentsReady = false;
+            }
+            subComponentReadyUids.forEach(function (uid) {
+                allComponentsReady &= this.readySubComponents[uid];
+            }.bind(this));
+            if (allComponentsReady) {
+                if (parentComponent != null) {
+                    parentComponent.reportSubComponentReady(this.getUid());
+                } else {
+                    if (this.getUid() === pageUid) {
+                        this.postPageLoadActions();
+                    }
+                    this.removeLoadingOverlay();
+                }
+            }
+        }
+    }
+
+    /**
+     * Allows a sub component to inform this component that it is ready
+     * @param subComponentUid: The uid of the calling sub component
+     */
+    reportSubComponentReady(subComponentUid) {
+        this.readySubComponents[subComponentUid] = true;
+        this.reportComponentReadiness();
+    }
+
+    /**
+     * Used to load any prerequisites that a component may require before continuing to load the component
+     * @param {Function} successCallback The function to call when prerequisites were loaded successfully
+     * @param {Function} failCallback The function to call when something went wrong during load
+     */
+    loadPrerequisites(successCallback, failCallback) {
+        if (typeof successCallback !== "function") {
+            successCallback = function () {
+            };
+        }
+        if (typeof failCallback !== "function") {
+            failCallback = function () {
+            };
+        }
+        if (this.prerequisiteLoadedIndex < this.prerequisites.length) {
+            dxGetScript(getRootPath() + this.prerequisites[this.prerequisiteLoadedIndex], function () {
+                this.prerequisiteLoadedIndex++;
+                this.loadPrerequisites(successCallback, failCallback);
+            }.bind(this));
+        } else {
+            successCallback();
+        }
+    }
+
+    /**
+     * This is the very first method that is called when a component is loaded. This triggers additional default
+     * behaviour for the component
+     * @param {Boolean} confirmSuccess Indicate whether the component should confirm a successful load or not
+     * @param {Function} callback The function to call once the component is fully loaded and ready to go
+     */
+    onComponentLoaded(confirmSuccess, callback) {
+        if (isNative()) {
+            if (!this.supportsNative) {
+                this.handleComponentError("Component " + this.uid + " does not support native.");
+                return;
+            }
+        } else {
+            if (this.requiresNative) {
+                this.handleComponentError("Component " + this.uid + " requires a native implementation.");
+                return;
+            }
+        }
+        if (typeof confirmSuccess === "undefined") {
+            confirmSuccess = true;
+        }
+        if (typeof callback !== "function") {
+            callback = function () {
+            };
+        }
+        if (this.showingLoadingOverlay) {
+            this.showLoadingOverlay();
+        }
+        this.loadPrerequisites(function () {
+            callback();
+            dxCheckCurrentUserRole(this.allowedUserroles, function () {
+                this.handleComponentAccessError("Access denied");
+            }.bind(this), function () {
+                if (confirmSuccess) {
+                    this.handleComponentSuccess();
+                }
+                this.registerDomEvents();
+                this.initCustomFunctions();
+                // Load additional components here
+                this.loadSubComponent();
+                if (checkComponentBuilderActive()) {
+                    setTimeout(function () {
+                        //JGL: Some components might not remove their loading state if they do not receive
+                        // initialization inputs. When we are in the component builder, we want to override this
+                        if (this.isLoading) {
+                            dxLog("Removing loading state if " + this.getComponentName() + " for component builder");
+                            this.removeLoadingState();
+                        }
+                    }.bind(this), 1000);
+                }
+            }.bind(this));
+        }.bind(this), function () {
+            this.handleComponentError("Error loading component dependencies");
+        }.bind(this));
+    }
+
+    /**
+     * A useful function to call to reset the component state. Also the last function that is called once all sub
+     * components are loaded
+     * @param {Object} inputs The arguments to pass to the component
+     * @param {boolean} propagate If true, will also reset all sub components
+     */
+    reset(inputs, propagate = false) {
+        if (!this.usesLoadingState) {
+            this.isLoading = false;
+            this.reportComponentReadiness();
+        }
+
+        if (propagate) {
+            this.resetSubComponents(inputs, true);
+        }
+        if (this.doConnectionCheck) {
+            checkConnectionPerformance();
+        }
+
+        toggleUserRoleVisibility();
+    }
+
+    /**
+     * Toggles the variable isLoading to true and displays the component loading state
+     */
+    setLoadingState() {
+        this.usesLoadingState = true;
+        this.isLoading = true;
+        $("#" + this.uid + "_ComponentContent").hide();
+        $("#" + this.uid + "_ComponentPlaceholder").show();
+        $("#" + this.uid + "_ComponentFeedback").html('');
+    }
+
+    /**
+     * Toggles the variable isLoading to false and removes the component loading state
+     */
+    removeLoadingState() {
+        if (this.isLoading) {
+            this.isLoading = false;
+            this.reportComponentReadiness();
+        }
+        $("#" + this.uid + "_ComponentContent").show();
+        $("#" + this.uid + "_ComponentPlaceholder").hide();
+    }
+
+    /**
+     * Calls the reset function for all of this component's sub components
+     * @param inputs
+     * @param propagate
+     */
+    resetSubComponents(inputs, propagate) {
+        this.subComponentObjects.forEach(function (component) {
+            component.reset(inputs, propagate);
+        }.bind(this));
+    }
+
+    /**
+     * Checks whether this component is ready
+     * @return {boolean} true if ready, false if not
+     */
+    getReadyState() {
+        return this.componentSuccess && !this.isLoading;
+    }
+
+    /**
+     * Used to remove the loading or error state when a component loads successfully
+     * @param additionalInput Unused
+     */
+    handleComponentSuccess(additionalInput) {
+        if (this.componentSuccess === true) {
+            return;
+        }
+        this.componentSuccess = true;
+        $("#" + this.uid + "_ComponentContent").show();
+        $("#" + this.uid + "_ComponentPlaceholder").hide();
+        if (typeof isComponentBuilderActive !== "undefined") {
+            if (isComponentBuilderActive) {
+                addComponentOverlay(this);
+            }
+        }
+    }
+
+    /**
+     * Used to display the error state with a relevant message for this component
+     * @param {String} errorMessage The error message to display
+     */
+    handleComponentError(errorMessage) {
+        this.componentSuccess = false;
+        this.removeLoadingOverlay();
+        $("#" + this.uid + "_ComponentContent").hide();
+        $("#" + this.uid + "_ComponentPlaceholder").show();
+        $("#" + this.uid + "_ComponentFeedback").html('<div class="alert alert-danger alert-danger-component"><strong><i' +
+            ' class="fa fa-exclamation-triangle ComponentErrorExclamation" aria-hidden="true"></i>' +
+            ' </strong><br>' + errorMessage + '</div>');
+        if (typeof isComponentBuilderActive !== "undefined") {
+            if (isComponentBuilderActive) {
+                addComponentOverlay(this);
+            }
+        }
+    }
+
+    /**
+     * Used to display an access error for the current component
+     * @param {String} errorMessage The error message to display
+     */
+    handleComponentAccessError(errorMessage) {
+        this.handleComponentError(errorMessage);
+    }
+
+    /**
+     * When registering DOM events it is useful to keep track of them per component if we want to offload them
+     * later. This method is a wrapper for that functionality
+     */
+    registerDomEvents() {/*To be overridden in sub class as needed*/
+    }
+
+    /**
+     * Called by onComponentLoaded to allow us to initiate additional local functions for this component
+     */
+    initCustomFunctions() {/*To be overridden in sub class as needed*/
+    }
+
+    /**
+     * A default callback method that is called whenever a sub component is successfully loaded
+     * @param {Object} component The component that was loaded
+     */
+    subComponentLoadedCallBack(component) {
+        this.registerComponentAsSubComponent(component);
+        this.loadSubComponent();
+        // JGL: Override as needed
+    }
+
+    /**
+     * Registers the given component as a sub component for the current component
+     * @param {Object} component The component that was loaded
+     */
+    registerComponentAsSubComponent(component) {
+        if (!this.subComponentObjects.includes(component)) {
+            this.subComponentObjects.push(component);
+            this.subComponentLoadedCount++;
+            this.readySubComponents[component.getUid()] = false;
+        }
+        // JGL: Override as needed
+    }
+
+    /**
+     * Loads the next sub component as defined in subComponentDefinitions
+     */
+    loadSubComponent() {
+        if (typeof this.subComponentDefinitions[this.subComponentLoadedCount] !== "undefined") {
+            let subComponentDefinition = this.subComponentDefinitions[this.subComponentLoadedCount];
+            loadComponent(subComponentDefinition.component_load_path, this.uid, subComponentDefinition.parent_element, subComponentDefinition.arguments, false, false, this.subComponentLoadedCallBack.bind(this));
+        } else {
+            this.reset({}, false);
+        }
+    }
+
+    /**
+     * Gets all the sub components for the current component
+     * @return {Array} The array of sub component objects
+     */
+    getSubComponents() {
+        return this.subComponentObjects;
+    }
+
+    /**
+     * Gets all the sub component definitions for the current component
+     * @return {Array} The array of sub component definitions
+     */
+    getSubComponentDefinitions() {
+        return this.subComponentDefinitions;
+    }
+
+    /**
+     * Gets the current component's UID
+     * @return {String} The current component's UID
+     */
+    getUid() {
+        return this.uid;
+    }
+
+    /**
+     * Gets the current component's name
+     * @return {String} The current component's name
+     */
+    getComponentName() {
+        return this.arguments['component_name'];
+    }
+
+    /**
+     * Gets an argument defined for the current component
+     * @param {String} argument The argument to return
+     * @return {*|Null} The value of the argument if it exists, null if not
+     */
+    getLoadArgument(argument) {
+        if (typeof this.arguments[argument] !== "undefined") {
+            return this.arguments[argument];
+        }
+        if (typeof this.arguments["url_parameters"] !== "undefined") {
+            if (typeof this.arguments["url_parameters"][argument] !== "undefined") {
+                return this.arguments["url_parameters"][argument];
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Handles a propagated event on the current component and continues the propagation to this component's sub
+     * components
+     * @param {String} eventName The name of the event that was received
+     * @param {Object} parameters An object with inputs passed with the event
+     */
+    eventTriggered(eventName, parameters) {
+        switch (eventName) {
+            case '[event_name]':
+            default:
+                dxLog("Event triggered: " + eventName + ": " + JSON.stringify(parameters));
+        }
+        // Let's pass the event to all sub components
+        this.propagateEventTriggered(eventName, parameters);
+    }
+
+    /**
+     * Propagates an event to this component's sub components
+     * @param {String} eventName The name of the event that was received
+     * @param {Object} parameters An object with inputs passed with the event
+     */
+    propagateEventTriggered(eventName, parameters) {
+        this.subComponentObjects.forEach(function (component) {
+            component.eventTriggered(eventName, parameters);
+        });
+    }
+
+    /**
+     * Processes the post page load actions if this component is the main page component
+     */
+    postPageLoadActions() {
+        menuManager.renderAllMenus();
+        initFeedbackCapture();
+        loadCurrentUserProfilePicture();
+        renderAppLogo();
+        toggleUserRoleVisibility();
+        doAfterPageLoadActions();
+    }
+
+    /**
+     * Fires when the native app is paused
+     */
+    onNativePause() {
+        //TODO: Implement this if required
+    }
+
+    /**
+     * Fires when the native app is resumed
+     */
+    onNativeResume() {
+        //TODO: Implement this if required
+    }
+
+    /**
+     * Just a helper function to reference on cancel of confirmation
+     */
+    doNothing() {
+    };
+
+    /**
+     * Registers an event handler for the provided event on the specified class and executes a specified function within
+     * this component while passing the trigger element's filtered id
+     * @param event The event to listen for, e.g "click", "hover", etc
+     * @param eventTriggerClass The class to listen on
+     * @param idMatchText A string that is contained within the html element's id that should be stripped in order to
+     * find the id to pass to the relevant function. This string is expected to be right before the id that we want to use
+     * @param eventFunction The name of the function inside this component to execute
+     */
+    handleOnClassEvent(event = "click", eventTriggerClass = null, idMatchText = null, eventFunction = null) {
+        if (eventTriggerClass === null) {
+            return;
+        }
+        if (idMatchText === null) {
+            return;
+        }
+        if (eventFunction === null) {
+            return;
+        }
+        let thisComponent = getRegisteredComponent(this.getUid());
+        $(document).on(event, "." + eventTriggerClass, function (event) {
+            let idStart = $(this).attr("id").indexOf(idMatchText);
+            let clickedId = $(this).attr("id").substring(idStart + (idMatchText.length));
+            thisComponent[eventFunction](clickedId, event);
+            return false;
+        });
+        registerEventHandler(document, event, undefined, "." + eventTriggerClass);
+    }
 }
+
 /**
  * DivbloxDomEntityInstanceComponent is the base class that manages the component javascript for every entity
  * instance (CREATE/UPDATE) component
  */
 class DivbloxDomEntityInstanceComponent extends DivbloxDomBaseComponent {
-	/**
-	 * Initializes all the further variables needed for a Divblox DOM entity instance component
-	 * @param {Object} inputs The arguments to pass to the component
-	 * @param {Boolean} supports_native Indicate whether this component works on native projects
-	 * @param {Boolean} requires_native Indicate whether this component works ONLY on native projects
-	 */
-	constructor(inputs,supports_native,requires_native) {
-		super(inputs,supports_native,requires_native);
-		this.component_obj = {};
-		this.element_mapping = {};
-		this.included_attribute_array = [];
-		this.included_relationship_array = [];
-		this.data_validation_array = [];
-		this.custom_validation_array = [];
-		this.required_validation_array = [];
-		this.relationship_list_array = {};
-		this.constrain_by_array = [];
-		this.entity_name = undefined;
-		this.lowercase_entity_name = undefined;
-		// Call this.initCrudVariables("YourEntityName") in the implementing class
-	}
-	/**
-	 * Initializes the necessary CRUD variables, setting validation requirements as well as rendering input fields
-	 * @param {String} entity_name The entity in question
-	 */
-	initCrudVariables(entity_name) {
-		this.required_validation_array = this.required_validation_array.concat(this.data_validation_array).concat(this.custom_validation_array);
-		this.entity_name = entity_name;
-		this.lowercase_entity_name = entity_name.replace(/([a-z0-9])([A-Z0-9])/g, '$1_$2').toLowerCase();
-		this.renderInputFields();
-	}
-	/**
-	 * Renders the input fields in the DOM for specified entity
-	 */
-	renderInputFields() {
-		getComponentElementById(this,'AdditionalInputFieldsWrapper').html("");
-		this.included_attribute_array.forEach(function(attribute) {
-			let wrapper_id = attribute+"Wrapper";
-			let wrapper_node = getComponentElementById(this,wrapper_id);
-			if (!wrapper_node.length) {
-				wrapper_node = this.addDynamicIncludedField(attribute);
-			}
-			wrapper_node.show();
-			let entity_attribute_properties = data_model.getEntityAttributeProperties(this.entity_name,attribute);
-			let render_config_obj = {
-				...{
-					WrapperId: this.getUid()+"_"+wrapper_id,
-					FieldId: this.getUid()+"_"+attribute,
-					MustValidate: (this.required_validation_array.indexOf(attribute) > -1)
-				},
-				...entity_attribute_properties};
-			dx_renderer.renderInputField(render_config_obj);
+    /**
+     * Initializes all the further variables needed for a Divblox DOM entity instance component
+     * @param {Object} inputs The arguments to pass to the component
+     * @param {Boolean} supportsNative Indicate whether this component works on native projects
+     * @param {Boolean} requiresNative Indicate whether this component works ONLY on native projects
+     */
+    constructor(inputs, supportsNative, requiresNative) {
+        super(inputs, supportsNative, requiresNative);
+        this.componentObj = {};
+        this.elementMapping = {};
+        this.includedAttributes = [];
+        this.includedRelationships = [];
+        this.dataValidations = [];
+        this.customValidations = [];
+        this.requiredValidations = [];
+        this.relationships = {};
+        this.constrainedByEntities = [];
+        this.entityName = undefined;
+        this.lowerCaseEntityName = undefined;
+        // Call this.initCrudVariables("YourEntityName") in the implementing class
+    }
 
-		}.bind(this));
+    /**
+     * Initializes the necessary CRUD variables, setting validation requirements as well as rendering input fields
+     * @param {String} entityName The entity in question
+     */
+    initCrudVariables(entityName) {
+        this.requiredValidations = this.requiredValidations.concat(this.dataValidations).concat(this.customValidations);
+        this.entityName = entityName;
+        this.lowerCaseEntityName = entityName.replace(/([a-z0-9])([A-Z0-9])/g, '$1_$2').toLowerCase();
+        this.renderInputFields();
+    }
 
-		this.included_relationship_array.forEach(function(relationship) {
-			let wrapper_id = relationship+"Wrapper";
-			let wrapper_node = getComponentElementById(this,wrapper_id);
-			if (!wrapper_node.length) {
-				wrapper_node = this.addDynamicIncludedField(relationship);
-			}
-			wrapper_node.show();
-			let entity_relationship_properties = data_model.getEntityRelationshipProperties(this.entity_name,relationship);
-			let render_config_obj = {
-				...{
-					WrapperId: this.getUid()+"_"+wrapper_id,
-					FieldId: this.getUid()+"_"+relationship,
-					MustValidate: (this.required_validation_array.indexOf(relationship) > -1)
-				},
-				...entity_relationship_properties};
-			dx_renderer.renderInputField(render_config_obj);
-		}.bind(this));
-	}
-	/**
-	 * Includes input fields for attributes added dynamically after creation of the component
-	 * @param {String} field_name Attribute for which input field is being created
-	 */
-	addDynamicIncludedField(field_name) {
-		let wrapper_id = field_name+"Wrapper";
-		let cb_class = '';
-		if (checkComponentBuilderActive()) {
-			cb_class = ' component-builder-column';
-		}
-		getComponentElementById(this,'AdditionalInputFieldsWrapper').append(
-			'<div id="'+this.getUid()+'_'+wrapper_id+'" class="col-sm-6' +
-			' col-md-4 col-xl-3 entity-instance-input-field'+cb_class+'"> {'+field_name+'}</div>');
-		return getComponentElementById(this,wrapper_id);
-	}
-	/**
-	 * Overriding default Divblox functionality to also set loading state and load the entity
-	 * @param {Object} inputs The arguments to pass to the component
-	 * @param {boolean} propagate If true, will also reset all sub components
-	 */
-	reset(inputs,propagate) {
-		this.setLoadingState();
-		this.loadEntity();
-		super.reset(inputs,propagate);
-	}
-	/**
-	 * Sets the local entity Id
-	 * @param {String} id The Id of entity instance to set
-	 */
-	setEntityId(id) {
-		this.arguments["entity_id"] = id;
-	}
-	/**
-	 * Gets the local entity Id
-	 * @return {int} The Entity Id
-	 */
-	getEntityId() {
-		return this.getLoadArgument("entity_id");
-	}
-	/**
-	 * When registering DOM events it is useful to keep track of them per component if we want to offload them later.
-	 */
-	registerDomEvents() {
-		getComponentElementById(this,"btnSave").on("click", function() {
-			this.saveEntity();
-		}.bind(this));
+    /**
+     * Renders the input fields in the DOM for specified entity
+     */
+    renderInputFields() {
+        getComponentElementById(this, 'AdditionalInputFieldsWrapper').html("");
+        this.includedAttributes.forEach(function (attribute) {
+            let wrapperId = attribute + "Wrapper";
+            let wrapperNode = getComponentElementById(this, wrapperId);
+            if (!wrapperNode.length) {
+                wrapperNode = this.addDynamicIncludedField(attribute);
+            }
+            wrapperNode.show();
+            let entityAttributeProperties = dataModel.getEntityAttributeProperties(this.entityName, attribute);
+            let renderConfig = {
+                ...{
+                    WrapperId: this.getUid() + "_" + wrapperId,
+                    FieldId: this.getUid() + "_" + attribute,
+                    MustValidate: (this.requiredValidations.indexOf(attribute) > -1)
+                },
+                ...entityAttributeProperties
+            };
+            dxRenderer.renderInputField(renderConfig);
 
-		getComponentElementById(this,"btnDelete").on("click", function() {
-			showAlert("Are you sure?","warning",["Cancel","Delete"],false,0,this.deleteEntity.bind(this),this.doNothing);
-		}.bind(this));
+        }.bind(this));
 
-	}
-	/**
-	 * Returns the input parameters object for the dxRequestInternal function call that loads the entity
-	 * @returns {Object} The object to pass to dxRequestInternal
-	 */
-	getLoadFunctionParameters() {
-		return {f:"getObjectData", Id:this.getEntityId()};
-	}
-	/**
-	 * Called before the server request fires in the loadEntity() function, giving room for functionality that should be
-	 * executed immediately before load. Can be used to stop the loadEntity() function by returning false
-	 */
-	onBeforeLoadEntity() {
-		//TODO: Override this as needed;
-		return true;
-	}
-	/**
-	 * Loads the entity into the DOM. Handles communication with the backend as well as display on the front end.
-	 */
-	loadEntity() {
-		if (!this.onBeforeLoadEntity()) {return;}
-		dxRequestInternal(
-			getComponentControllerPath(this),
-			this.getLoadFunctionParameters(),
-			function(data_obj) {
-				this.removeLoadingState();
-				let entity_obj = {};
-				if (typeof data_obj.Object !== "undefined") {
-					entity_obj = data_obj.Object;
-				}
-				this.component_obj = {};
-				this.element_mapping = {};
-				if (Object.keys(entity_obj).length > 0) {
-					this.component_obj = entity_obj;
-				}
-				this.included_attribute_array.forEach(function(attribute) {
-					if (Object.keys(entity_obj).length === 0) {
-						this.component_obj[attribute] = "";
-					}
-					this.element_mapping[attribute] = "#"+this.getUid()+"_"+attribute;
-				}.bind(this));
-				this.included_relationship_array.forEach(function(relationship) {
-					if (Object.keys(entity_obj).length === 0) {
-						this.component_obj[relationship] = "";
-					}
-					this.element_mapping[relationship] = "#"+this.getUid()+"_"+relationship;
-					this.relationship_list_array[relationship] = data_obj[relationship+"List"];
-				}.bind(this));
-				this.setValues();
-				this.onAfterLoadEntity(data_obj);
-			}.bind(this), function(data_obj) {
-				this.removeLoadingState();
-				this.handleComponentError(data_obj.Message);
-			}.bind(this));
-	}
-	/**
-	 * Called last in the success callback of the loadEntity() function, giving room for functionality that should be
-	 * executed immediately after load
-	 * @param data_obj Input data object
-	 */
-	onAfterLoadEntity(data_obj) {
-		//TODO: Override this as needed;
-	}
-	/**
-	 * Called in the loadEntity() function, sets the values of each attribute
-	 */
-	setValues() {
-		this.included_attribute_array.forEach(function(attribute) {
-			let entity_attribute_properties = data_model.getEntityAttributeProperties(this.entity_name,attribute);
-			if (entity_attribute_properties.DisplayType === 'checkbox') {
-				getComponentElementById(this,attribute).prop("checked",entity_attribute_properties.DefaultValue);
-				if (typeof this.component_obj[attribute] !== "undefined") {
-					getComponentElementById(this,attribute).prop("checked",this.component_obj[attribute]);
-				}
-			} else {
-				getComponentElementById(this,attribute).val(getDataModelAttributeValue(entity_attribute_properties.DefaultValue,entity_attribute_properties.DisplayType));
-				if (typeof this.component_obj[attribute] !== "undefined") {
-					getComponentElementById(this,attribute).val(getDataModelAttributeValue(this.component_obj[attribute],entity_attribute_properties.DisplayType));
-				}
-			}
-		}.bind(this));
+        this.includedRelationships.forEach(function (relationship) {
+            let wrapperId = relationship + "Wrapper";
+            let wrapperNode = getComponentElementById(this, wrapperId);
+            if (!wrapperNode.length) {
+                wrapperNode = this.addDynamicIncludedField(relationship);
+            }
+            wrapperNode.show();
+            let entityRelationshipProperties = dataModel.getEntityRelationshipProperties(this.entityName, relationship);
+            let renderConfig = {
+                ...{
+                    WrapperId: this.getUid() + "_" + wrapperId,
+                    FieldId: this.getUid() + "_" + relationship,
+                    MustValidate: (this.requiredValidations.indexOf(relationship) > -1)
+                },
+                ...entityRelationshipProperties
+            };
+            dxRenderer.renderInputField(renderConfig);
+        }.bind(this));
+    }
 
-		this.included_relationship_array.forEach(function(relationship) {
-			getComponentElementById(this,relationship).html('<option value="">-Please Select-</option>');
-			if (typeof this.relationship_list_array[relationship] === "object") {
-				let object_keys_relationship_list = Object.keys(this.relationship_list_array[relationship]);
-				if (object_keys_relationship_list.length > 0) {
-					this.relationship_list_array[relationship].forEach(function (RelationshipItem) {
-						if (RelationshipItem['Id'] == "DATASET TOO LARGE") {
-							dxLog("Data set too large for "+relationship+". Consider using another option to link the object");
-						} else {
-							getComponentElementById(this,relationship).append('<option value="'+RelationshipItem['Id']+'">'+RelationshipItem['DisplayValue']+'</option>');
-						}
-					}.bind(this));
-					if (typeof this.component_obj[relationship] !== "undefined") {
-						getComponentElementById(this,relationship).val(getDataModelAttributeValue(this.component_obj[relationship]));
-					}
-				}
-			}
-		}.bind(this));
-	}
-	/**
-	 * Called in the saveEntity() function, updates the values of each attribute
-	 * @return {object} component_obj All the updated values of current entity
-	 */
-	updateValues() {
-		let keys = Object.keys(this.element_mapping);
-		keys.forEach(function(item) {
-			if ($(this.element_mapping[item]).attr("type") === "checkbox") {
-				this.component_obj[item] = $(this.element_mapping[item]).is(':checked') ? 1: 0;
-			} else {
-				this.component_obj[item] = $(this.element_mapping[item]).val();
-			}
-		}.bind(this));
-		return this.component_obj;
-	}
-	/**
-	 * Returns the input parameters object for the dxRequestInternal function call that saves the entity
-	 * @returns {Object} The object to pass to dxRequestInternal
-	 */
-	getSaveFunctionParameters() {
-		let current_component_obj = this.updateValues();
-		let parameters_obj = {f:"saveObjectData",
-			ObjectData:JSON.stringify(current_component_obj),
-			Id:this.getEntityId()};
-		if (this.constrain_by_array.length > 0) {
-			this.constrain_by_array.forEach(function(relationship) {
-				parameters_obj['Constraining'+relationship+'Id'] = getGlobalConstrainById(relationship);
-			})
-		}
-		return parameters_obj;
-	}
-	/**
-	 * Called before the server request fires in the saveEntity() function, giving room for functionality that should be
-	 * executed immediately before save. Can be used to stop the saveEntity() function by returning false
-	 */
-	onBeforeSaveEntity() {
-		this.resetValidation();
-		return this.validateEntity();
-	}
-	/**
-	 * Sends updated entity object data to the backend to be saved
-	 */
-	saveEntity() {
-		if (!this.onBeforeSaveEntity()) {return;}
-		dxRequestInternal(
-			getComponentControllerPath(this),
-			this.getSaveFunctionParameters(),
-			function(data_obj) {
-				if (this.getLoadArgument("entity_id") != null) {
-					setGlobalConstrainById(this.entity_name,data_obj.Id);
-					pageEventTriggered(this.lowercase_entity_name+"_updated",{"id":data_obj.Id});
-				} else {
-					setGlobalConstrainById(this.entity_name,data_obj.Id);
-					pageEventTriggered(this.lowercase_entity_name+"_created",{"id":data_obj.Id});
-				}
-				this.loadEntity();
-				this.resetValidation();
-				this.onAfterSaveEntity(data_obj);
-			}.bind(this),
-			function(data_obj) {
-				showAlert("Error saving "+this.lowercase_entity_name+": "+data_obj.Message,"error","OK",false);
-			}.bind(this));
-	}
-	/**
-	 * Called last in the success callback of the saveEntity() function, giving room for functionality that should be
-	 * executed immediately after save
-	 * @param data_obj Input data object
-	 */
-	onAfterSaveEntity(data_obj) {
-		//TODO: Override this as needed;
-	}
-	/**
-	 * Returns the input parameters object for the dxRequestInternal function call that deletes the entity
-	 * @returns {Object} The object to pass to dxRequestInternal
-	 */
-	getDeleteFunctionParameters() {
-		return {f:"deleteObjectData",
-			Id:this.getLoadArgument("entity_id")};
-	}
-	/**
-	 * Called before the server request fires in the deleteEntity() function, giving room for functionality that should be
-	 * executed immediately before delete. Can be used to stop the deleteEntity() function by returning false
-	 */
-	onBeforeDeleteEntity() {
-		//TODO: Override this as needed;
-		return true;
-	}
-	/**
-	 * Sends request to the backend to delete entity instance
-	 */
-	deleteEntity() {
-		if (!this.onBeforeDeleteEntity()) {return;}
-		dxRequestInternal(
-			getComponentControllerPath(this),
-			this.getDeleteFunctionParameters(),
-			function(data_obj) {
-				this.loadEntity();
-				pageEventTriggered(this.lowercase_entity_name+"_deleted");
-				this.onAfterDeleteEntity(data_obj);
-			}.bind(this),
-			function (data_obj) {
-				showAlert("Error deleting "+this.lowercase_entity_name+": "+data_obj.Message,"error","OK",false);
-			}.bind(this));
-	}
-	/**
-	 * Called last in the success callback of the deleteEntity() function, giving room for functionality that should be
-	 * executed immediately after delete
-	 * @param data_obj Input data object
-	 */
-	onAfterDeleteEntity(data_obj) {
-		//TODO: Override this as needed;
-	}
-	/**
-	 * Performs validation upon request submission, taking into account default and custom validation rules.
-	 * Implemented with CSS class toggle
-	 */
-	validateEntity() {
-		let validation_succeeded = true;
-		this.required_validation_array.forEach(function(item) {
-			if (getComponentElementById(this,item).attr("type") !== "checkbox") {
-				if (getComponentElementById(this,item).val() == "") {
-					validation_succeeded = false;
-					toggleValidationState(this,item,"",false);
-				} else {
-					toggleValidationState(this,item,"",true);
-				}
-			}
-		}.bind(this));
-		this.data_validation_array.forEach(function(item) {
-			if (!getComponentElementById(this,item).hasClass("is-invalid")) {
-				if (getComponentElementById(this,item).hasClass("validate-number")) {
-					if (isNaN(getComponentElementById(this,item).val())) {
-						validation_succeeded = false;
-						toggleValidationState(this,item,"",false);
-					} else {
-						toggleValidationState(this,item,"",true);
-					}
-				}
-			}
-		}.bind(this));
-		this.custom_validation_array.forEach(function(item) {
-			if (checkValidationState(this,item)) {
-				validation_succeeded &= this.doCustomValidation(item);
-			}
-		}.bind(this));
-		return validation_succeeded;
-	}
-	/**
-	 * Set up custom validation rules
-	 * @param attribute Attribute/s to do custom validation on
-	 */
-	doCustomValidation(attribute) {
-		switch (attribute) {
-			default: return true;
-				break;
-		}
-	}
-	/**
-	 * Resets validation state
-	 */
-	resetValidation() {
-		this.required_validation_array.forEach(function(item) {
-			toggleValidationState(this,item,"",true,true);
-		}.bind(this));
-	}
+    /**
+     * Includes input fields for attributes added dynamically after creation of the component
+     * @param {String} fieldName Attribute for which input field is being created
+     */
+    addDynamicIncludedField(fieldName) {
+        let wrapperId = fieldName + "Wrapper";
+        let cbClass = '';
+        if (checkComponentBuilderActive()) {
+            cbClass = ' component-builder-column';
+        }
+        getComponentElementById(this, 'AdditionalInputFieldsWrapper').append(
+            '<div id="' + this.getUid() + '_' + wrapperId + '" class="col-sm-6' +
+            ' col-md-4 col-xl-3 entity-instance-input-field' + cbClass + '"> {' + fieldName + '}</div>');
+        return getComponentElementById(this, wrapperId);
+    }
+
+    /**
+     * Overriding default Divblox functionality to also set loading state and load the entity
+     * @param {Object} inputs The arguments to pass to the component
+     * @param {boolean} propagate If true, will also reset all sub components
+     */
+    reset(inputs, propagate) {
+        this.setLoadingState();
+        this.loadEntity();
+        super.reset(inputs, propagate);
+    }
+
+    /**
+     * Sets the local entity Id
+     * @param {String} id The Id of entity instance to set
+     */
+    setEntityId(id) {
+        this.arguments["entity_id"] = id;
+    }
+
+    /**
+     * Gets the local entity Id
+     * @return {int} The Entity Id
+     */
+    getEntityId() {
+        return this.getLoadArgument("entity_id");
+    }
+
+    /**
+     * When registering DOM events it is useful to keep track of them per component if we want to offload them later.
+     */
+    registerDomEvents() {
+        getComponentElementById(this, "btnSave").on("click", function () {
+            this.saveEntity();
+        }.bind(this));
+
+        getComponentElementById(this, "btnDelete").on("click", function () {
+            showAlert("Are you sure?", "warning", ["Cancel", "Delete"], false, 0, this.deleteEntity.bind(this), this.doNothing);
+        }.bind(this));
+
+    }
+
+    /**
+     * Returns the input parameters object for the dxRequestInternal function call that loads the entity
+     * @returns {Object} The object to pass to dxRequestInternal
+     */
+    getLoadFunctionParameters() {
+        return {f: "getObjectData", Id: this.getEntityId()};
+    }
+
+    /**
+     * Called before the server request fires in the loadEntity() function, giving room for functionality that should be
+     * executed immediately before load. Can be used to stop the loadEntity() function by returning false
+     */
+    onBeforeLoadEntity() {
+        //TODO: Override this as needed;
+        return true;
+    }
+
+    /**
+     * Loads the entity into the DOM. Handles communication with the backend as well as display on the front end.
+     */
+    loadEntity() {
+        if (!this.onBeforeLoadEntity()) {
+            return;
+        }
+        dxRequestInternal(
+            getComponentControllerPath(this),
+            this.getLoadFunctionParameters(),
+            function (data) {
+                this.removeLoadingState();
+                let entity = {};
+                if (typeof data.Object !== "undefined") {
+                    entity = data.Object;
+                }
+                this.componentObj = {};
+                this.elementMapping = {};
+                if (Object.keys(entity).length > 0) {
+                    this.componentObj = entity;
+                }
+                this.includedAttributes.forEach(function (attribute) {
+                    if (Object.keys(entity).length === 0) {
+                        this.componentObj[attribute] = "";
+                    }
+                    this.elementMapping[attribute] = "#" + this.getUid() + "_" + attribute;
+                }.bind(this));
+                this.includedRelationships.forEach(function (relationship) {
+                    if (Object.keys(entity).length === 0) {
+                        this.componentObj[relationship] = "";
+                    }
+                    this.elementMapping[relationship] = "#" + this.getUid() + "_" + relationship;
+                    this.relationships[relationship] = data[relationship + "List"];
+                }.bind(this));
+                this.setValues();
+                this.onAfterLoadEntity(data);
+            }.bind(this), function (data) {
+                this.removeLoadingState();
+                this.handleComponentError(data.Message);
+            }.bind(this));
+    }
+
+    /**
+     * Called last in the success callback of the loadEntity() function, giving room for functionality that should be
+     * executed immediately after load
+     * @param data Input data object
+     */
+    onAfterLoadEntity(data) {
+        //TODO: Override this as needed;
+    }
+
+    /**
+     * Called in the loadEntity() function, sets the values of each attribute
+     */
+    setValues() {
+        this.includedAttributes.forEach(function (attribute) {
+            let entityAttributeProperties = dataModel.getEntityAttributeProperties(this.entityName, attribute);
+            if (entityAttributeProperties.DisplayType === 'checkbox') {
+                getComponentElementById(this, attribute).prop("checked", entityAttributeProperties.DefaultValue);
+                if (typeof this.componentObj[attribute] !== "undefined") {
+                    getComponentElementById(this, attribute).prop("checked", this.componentObj[attribute]);
+                }
+            } else {
+                getComponentElementById(this, attribute).val(getDataModelAttributeValue(entityAttributeProperties.DefaultValue, entityAttributeProperties.DisplayType));
+                if (typeof this.componentObj[attribute] !== "undefined") {
+                    getComponentElementById(this, attribute).val(getDataModelAttributeValue(this.componentObj[attribute], entityAttributeProperties.DisplayType));
+                }
+            }
+        }.bind(this));
+
+        this.includedRelationships.forEach(function (relationship) {
+            getComponentElementById(this, relationship).html('<option value="">-Please Select-</option>');
+            if (typeof this.relationships[relationship] === "object") {
+                let relationships = Object.keys(this.relationships[relationship]);
+                if (relationships.length > 0) {
+                    this.relationships[relationship].forEach(function (relationshipItem) {
+                        if (relationshipItem['Id'] == "DATASET TOO LARGE") {
+                            dxLog("Data set too large for " + relationship + ". Consider using another option to link the object");
+                        } else {
+                            getComponentElementById(this, relationship).append('<option value="' + relationshipItem['Id'] + '">' + relationshipItem['DisplayValue'] + '</option>');
+                        }
+                    }.bind(this));
+                    if (typeof this.componentObj[relationship] !== "undefined") {
+                        getComponentElementById(this, relationship).val(getDataModelAttributeValue(this.componentObj[relationship]));
+                    }
+                }
+            }
+        }.bind(this));
+    }
+
+    /**
+     * Called in the saveEntity() function, updates the values of each attribute
+     * @return {object} component_obj All the updated values of current entity
+     */
+    updateValues() {
+        let keys = Object.keys(this.elementMapping);
+        keys.forEach(function (item) {
+            if ($(this.elementMapping[item]).attr("type") === "checkbox") {
+                this.componentObj[item] = $(this.elementMapping[item]).is(':checked') ? 1 : 0;
+            } else {
+                this.componentObj[item] = $(this.elementMapping[item]).val();
+            }
+        }.bind(this));
+        return this.componentObj;
+    }
+
+    /**
+     * Returns the input parameters object for the dxRequestInternal function call that saves the entity
+     * @returns {Object} The object to pass to dxRequestInternal
+     */
+    getSaveFunctionParameters() {
+        let currentObjectData = this.updateValues();
+        let parameters = {
+            f: "saveObjectData",
+            ObjectData: JSON.stringify(currentObjectData),
+            Id: this.getEntityId()
+        };
+        if (this.constrainedByEntities.length > 0) {
+            this.constrainedByEntities.forEach(function (relationship) {
+                parameters['Constraining' + relationship + 'Id'] = getGlobalConstrainById(relationship);
+            });
+        }
+        return parameters;
+    }
+
+    /**
+     * Called before the server request fires in the saveEntity() function, giving room for functionality that should be
+     * executed immediately before save. Can be used to stop the saveEntity() function by returning false
+     */
+    onBeforeSaveEntity() {
+        this.resetValidation();
+        return this.validateEntity();
+    }
+
+    /**
+     * Sends updated entity object data to the backend to be saved
+     */
+    saveEntity() {
+        if (!this.onBeforeSaveEntity()) {
+            return;
+        }
+        dxRequestInternal(
+            getComponentControllerPath(this),
+            this.getSaveFunctionParameters(),
+            function (data) {
+                if (this.getLoadArgument("entity_id") != null) {
+                    setGlobalConstrainById(this.entityName, data.Id);
+                    pageEventTriggered(this.lowerCaseEntityName + "_updated", {"id": data.Id});
+                } else {
+                    setGlobalConstrainById(this.entityName, data.Id);
+                    pageEventTriggered(this.lowerCaseEntityName + "_created", {"id": data.Id});
+                }
+                this.loadEntity();
+                this.resetValidation();
+                this.onAfterSaveEntity(data);
+            }.bind(this),
+            function (data) {
+                showAlert("Error saving " + this.lowerCaseEntityName + ": " + data.Message, "error", "OK", false);
+            }.bind(this), false, getComponentElementById(this, "btnSave"), "Saving");
+    }
+
+    /**
+     * Called last in the success callback of the saveEntity() function, giving room for functionality that should be
+     * executed immediately after save
+     * @param data Input data object
+     */
+    onAfterSaveEntity(data) {
+        //TODO: Override this as needed;
+    }
+
+    /**
+     * Returns the input parameters object for the dxRequestInternal function call that deletes the entity
+     * @returns {Object} The object to pass to dxRequestInternal
+     */
+    getDeleteFunctionParameters() {
+        return {
+            f: "deleteObjectData",
+            Id: this.getLoadArgument("entity_id")
+        };
+    }
+
+    /**
+     * Called before the server request fires in the deleteEntity() function, giving room for functionality that should be
+     * executed immediately before delete. Can be used to stop the deleteEntity() function by returning false
+     */
+    onBeforeDeleteEntity() {
+        //TODO: Override this as needed;
+        return true;
+    }
+
+    /**
+     * Sends request to the backend to delete entity instance
+     */
+    deleteEntity() {
+        if (!this.onBeforeDeleteEntity()) {
+            return;
+        }
+        dxRequestInternal(
+            getComponentControllerPath(this),
+            this.getDeleteFunctionParameters(),
+            function (data) {
+                this.loadEntity();
+                pageEventTriggered(this.lowerCaseEntityName + "_deleted");
+                this.onAfterDeleteEntity(data);
+            }.bind(this),
+            function (data) {
+                showAlert("Error deleting " + this.lowerCaseEntityName + ": " + data.Message, "error", "OK", false);
+            }.bind(this));
+    }
+
+    /**
+     * Called last in the success callback of the deleteEntity() function, giving room for functionality that should be
+     * executed immediately after delete
+     * @param data Input data object
+     */
+    onAfterDeleteEntity(data) {
+        //TODO: Override this as needed;
+    }
+
+    /**
+     * Performs validation upon request submission, taking into account default and custom validation rules.
+     * Implemented with CSS class toggle
+     */
+    validateEntity() {
+        let isValid = true;
+        this.requiredValidations.forEach(function (item) {
+            if (getComponentElementById(this, item).attr("type") !== "checkbox") {
+                if (getComponentElementById(this, item).val() == "") {
+                    isValid = false;
+                    toggleValidationState(this, item, "", false);
+                } else {
+                    toggleValidationState(this, item, "", true);
+                }
+            }
+        }.bind(this));
+        this.dataValidations.forEach(function (item) {
+            if (!getComponentElementById(this, item).hasClass("is-invalid")) {
+                if (getComponentElementById(this, item).hasClass("validate-number")) {
+                    if (isNaN(getComponentElementById(this, item).val())) {
+                        isValid = false;
+                        toggleValidationState(this, item, "", false);
+                    } else {
+                        toggleValidationState(this, item, "", true);
+                    }
+                }
+            }
+        }.bind(this));
+        this.customValidations.forEach(function (item) {
+            if (checkValidationState(this, item)) {
+                isValid &= this.doCustomValidation(item);
+            }
+        }.bind(this));
+        return isValid;
+    }
+
+    /**
+     * Set up custom validation rules
+     * @param attribute Attribute/s to do custom validation on
+     */
+    doCustomValidation(attribute) {
+        switch (attribute) {
+            default:
+                return true;
+                break;
+        }
+    }
+
+    /**
+     * Resets validation state
+     */
+    resetValidation() {
+        this.requiredValidations.forEach(function (item) {
+            toggleValidationState(this, item, "", true, true);
+        }.bind(this));
+    }
 }
+
 /**
  * DivbloxDomEntityDataTableComponent is the base class that manages the component javascript for every entity
  * data table component
  */
 class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
-	/**
-	 * Initializes all the further variables needed for a Divblox DOM entity data table component
-	 * @param {Object} inputs The arguments to pass to the component
-	 * @param {Boolean} supports_native Indicate whether this component works on native projects
-	 * @param {Boolean} requires_native Indicate whether this component works ONLY on native projects
-	 */
-	constructor(inputs,supports_native,requires_native) {
-		super(inputs,supports_native,requires_native);
-		this.table_exporter = undefined;
-		// Data table export functionality provided by TableExport plugin.
-		// Documentation here: https://tableexport.v5.travismclarke.com/#tableexport
-		// Default properties:
-		/*
+    /**
+     * Initializes all the further variables needed for a Divblox DOM entity data table component
+     * @param {Object} inputs The arguments to pass to the component
+     * @param {Boolean} supportsNative Indicate whether this component works on native projects
+     * @param {Boolean} requiresNative Indicate whether this component works ONLY on native projects
+     */
+    constructor(inputs, supportsNative, requiresNative) {
+        super(inputs, supportsNative, requiresNative);
+        this.tableExporter = undefined;
+        // Data table export functionality provided by TableExport plugin.
+        // Documentation here: https://tableexport.v5.travismclarke.com/#tableexport
+        // Default properties:
+        /*
         TableExport(document.getElementsByTagName("table"), {
         headers: true,                      // (Boolean), display table headers (th or td elements) in the <thead>, (default: true)
         footers: true,                      // (Boolean), display table footers (th or td elements) in the <tfoot>, (default: false)
@@ -1140,1504 +1230,1631 @@ class DivbloxDomEntityDataTableComponent extends DivbloxDomBaseComponent {
         sheetname: "id"                     // (id, String), sheet name for the exported spreadsheet, (default: 'id')
         });
         */
-		this.entity_name = undefined;
-		this.lowercase_entity_name = undefined;
-		this.current_page = 1;
-		this.current_page_array = [];
-		this.current_items_per_page = $("#"+this.uid+"_PaginationItemsPerPage").val();
-		this.total_items = 0;
-		this.total_pages = 0;
-		this.remaining_pages = 0;
-		this.included_attribute_array = [];
-		this.included_relationship_array = [];
-		this.constrain_by_array = [];
-		this.column_name_obj = {};
-		this.column_name_array = [];
-		this.current_sort_column = [];
-		this.selected_items_array = [];
-		this.prerequisite_array = [
-			'project/assets/js/tableexport/xlsx.core.min.js',
-			'project/assets/js/tableexport/FileSaver.min.js',
-			'project/assets/js/tableexport/tableexport.min.js'];
-		this.click_event_column_index = 1;
-		// Call this.initDataTableVariables("YourEntityName") in the implementing class
-	}
-	/**
-	 * Initializes the necessary Data Table variables
-	 */
-	initDataTableVariables(entity_name) {
-		this.entity_name = entity_name;
-		this.lowercase_entity_name =  entity_name.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toLowerCase();
+        this.entityName = undefined;
+        this.lowerCaseEntityName = undefined;
+        this.currentPage = 1;
+        this.itemsOnCurrentPage = [];
+        this.currentItemsPerPage = $("#" + this.uid + "_PaginationItemsPerPage").val();
+        this.totalItems = 0;
+        this.totalPages = 0;
+        this.remainingPages = 0;
+        this.includedAttributes = [];
+        this.includedRelationships = [];
+        this.constrainedByEntities = [];
+        this.columnNamesInfo = {};
+        this.columnNames = [];
+        this.currentSortColumn = [];
+        this.selectedItems = [];
+        this.prerequisites = [
+            'project/assets/js/tableexport/xlsx.core.min.js',
+            'project/assets/js/tableexport/FileSaver.min.js',
+            'project/assets/js/tableexport/tableexport.min.js'];
+        this.clickEventColumnIndex = 1;
+        // Call this.initDataTableVariables("YourEntityName") in the implementing class
+    }
 
-		this.buildDataTableHeaderHtml();
+    /**
+     * Initializes the necessary Data Table variables
+     */
+    initDataTableVariables(entityName) {
+        this.entityName = entityName;
+        this.lowerCaseEntityName = entityName.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toLowerCase();
 
-		this.column_name_array = Object.keys(this.column_name_obj);
-		this.current_sort_column = [this.column_name_array[0],true]; // Sort on first column, desc
-		//DataTableHeaderHtml
-	}
-	/**
-	 * Creates the table header
-	 */
-	buildDataTableHeaderHtml() {
-		getComponentElementById(this,'DataTableHeaderHtml').html(
-			'<th id="'+this.getUid()+'_MultiSelectColumn" class="data_table_header" scope="col">\n' +
-			'<input id="'+this.getUid()+'_MultiSelectAll" type="checkbox" name="all" value="all">\n' +
-			'</th>');
+        this.buildDataTableHeaderHtml();
 
-		this.included_attribute_array.forEach(function(attribute) {
-			this.column_name_obj[attribute] = attribute.replace(/([a-z0-9])([A-Z])/g, '$1 $2');
-			getComponentElementById(this,'DataTableHeaderHtml').append(
-				'<th id="'+this.getUid()+'_SortBy'+attribute+'" class="data_table_header" scope="col">'+this.column_name_obj[attribute]+'</th>'
-			);
-		}.bind(this));
-		this.included_relationship_array.forEach(function(relationship) {
-			this.column_name_obj[relationship] = relationship.replace(/([a-z0-9])([A-Z])/g, '$1 $2');
-			getComponentElementById(this,'DataTableHeaderHtml').append(
-				'<th id="'+this.getUid()+'_SortBy'+relationship+'" class="data_table_header" scope="col">'+this.column_name_obj[relationship]+'</th>'
-			)
-		}.bind(this));
-	}
-	/**
-	 * Displays the loading indicator for the table
-	 */
-	showPageLoadingIndicator() {
-		let max_columns = this.column_name_array.length+1;
-		getComponentElementById(this,"DataTableBody").html('<tr id="'+this.getUid()+'_DataTableLoading"><td' +
-			' colspan="'+max_columns+'"' +
-			'><div class="dx-loading"></div></td></tr>');
-	}
-	/**
-	 * Toggles the "No results" view. Called in the loadPage() function if no data available
-	 */
-	toggleNoResults() {
-		let max_columns = this.column_name_array.length+1;
-		if (this.total_items === 0) {
-			getComponentElementById(this,"DataTableBody").html('<tr id="#'+this.getUid()+'_DataTableLoading"><td' +
-				' colspan="'+max_columns+'"' +
-				' style="text-align: center;">No results</td></tr>');
-			getComponentElementById(this,"DataTableLoading").show();
-		}
-	}
-	/**
-	 * Updates the pagination button content
-	 */
-	updatePagination() {
-		let next_page = this.current_page+1;
-		let next_next_page = next_page+1;
-		getComponentElementById(this,"PaginationCurrentItem").html('<span class="page-link">'+this.current_page+'</span>');
-		getComponentElementById(this,"PaginationNextItem").html('<span class="page-link">'+next_page+'</span>');
-		getComponentElementById(this,"PaginationNextNextItem").html('<span class="page-link">'+next_next_page+'</span>');
-		getComponentElementById(this,"ResultCountWrapper").html('<span class="badge float-right">Total: '+this.total_items+'</span>');
-	}
-	/**
-	 * Clears the contents of the table
-	 */
-	clearDataTableBody() {
-		getComponentElementById(this,"DataTableBody").html("");
-	}
-	/**
-	 * A useful function to call to reset the component state
-	 * @param {Object} inputs The arguments to pass to the component
-	 * @param {boolean} propagate If true, will also reset all sub components
-	 */
-	reset(inputs,propagate) {
-		this.loadPage();
-		super.reset(inputs,propagate);
-	}
-	/**
-	 * When registering DOM events it is useful to keep track of them per component if we want to offload them
-	 * later. This method is a wrapper for that functionality
-	 */
-	registerDomEvents() {
-		getComponentElementById(this,"BulkActionExportXlsx").on("click", function() {
-			let uid = this.getUid();
-			this.table_exporter = getComponentElementById(this,"DataTableTableHtml").tableExport({
-				exportButtons: false,
-				formats: ['xlsx'],
-				filename: "dx_xlsx_export_"+moment().format("YYYY-MM-DD_h_mm_ss"),
-			});
-			this.exportData(this.table_exporter.getExportData()[uid+'_DataTableTableHtml']['xlsx']);
-		}.bind(this));
-		getComponentElementById(this,"BulkActionExportCsv").on("click", function() {
-			let uid = this.getUid();
-			this.table_exporter = getComponentElementById(this,"DataTableTableHtml").tableExport({
-				exportButtons: false,
-				formats: ['csv'],
-				filename: "dx_csv_export_"+moment().format("YYYY-MM-DD_h_mm_ss"),
-			});
-			this.exportData(this.table_exporter.getExportData()[uid+'_DataTableTableHtml']['csv']);
-		}.bind(this));
-		getComponentElementById(this,"BulkActionExportTxt").on("click", function() {
-			let uid = this.getUid();
-			this.table_exporter = getComponentElementById(this,"DataTableTableHtml").tableExport({
-				exportButtons: false,
-				formats: ['txt'],
-				filename: "dx_txt_export_"+moment().format("YYYY-MM-DD_h_mm_ss"),
-			});
-			this.exportData(this.table_exporter.getExportData()[uid+'_DataTableTableHtml']['txt']);
-		}.bind(this));
-		getComponentElementById(this,"DataTableSearchInput").on("keyup", function() {
-			let search_text = getComponentElementById(this,"DataTableSearchInput").val();
-			setTimeout(function() {
-				if (search_text == getComponentElementById(this,"DataTableSearchInput").val()) {
-					this.current_page = 1;
-					this.loadPage();
-				}
-			}.bind(this),500);
-		}.bind(this));
-		getComponentElementById(this,"btnResetSearch").on("click", function() {
-			getComponentElementById(this,"DataTableSearchInput").val("");
-			this.loadPage();
-		}.bind(this));
-		getComponentElementById(this,"PaginationItemsPerPage").on("change", function() {
-			let uid = $(this).attr("id").replace("_PaginationItemsPerPage","");
-			let this_component = getRegisteredComponent(uid);
-			this_component.current_items_per_page = $(this).val();
-			this_component.loadPage();
-		});
-		getComponentElementById(this,"PaginationResetButton").on("click", function() {
-			if ($(this).hasClass("disabled")) {
-				return;
-			}
-			let uid = $(this).attr("id").replace("_PaginationResetButton","");
-			let this_component = getRegisteredComponent(uid);
-			this_component.current_page = 1;
-			this_component.loadPage();
-		});
-		getComponentElementById(this,"PaginationFinalPageButton").on("click", function() {
-			if ($(this).hasClass("disabled")) {
-				return;
-			}
-			let uid = $(this).attr("id").replace("_PaginationFinalPageButton","");
-			let this_component = getRegisteredComponent(uid);
-			this_component.current_page = this_component.total_pages;
-			this_component.loadPage();
-		});
-		getComponentElementById(this,"PaginationJumpBack").on("click", function() {
-			if ($(this).hasClass("disabled")) {
-				return;
-			}
-			let uid = $(this).attr("id").replace("_PaginationJumpBack","");
-			let this_component = getRegisteredComponent(uid);
-			this_component.current_page = this_component.current_page - 3;
-			if (this_component.current_page < 1) {
-				this_component.current_page = 1;
-			}
-			this_component.loadPage();
-		});
-		getComponentElementById(this,"PaginationJumpForward").on("click", function() {
-			if ($(this).hasClass("disabled")) {
-				return;
-			}
-			let uid = $(this).attr("id").replace("_PaginationJumpForward","");
-			let this_component = getRegisteredComponent(uid);
-			this_component.current_page = this_component.current_page + 3;
-			if (this_component.current_page > this_component.total_pages) {
-				this_component.current_page = this_component.total_pages;
-			}
-			this_component.loadPage();
-		});
-		getComponentElementById(this,"PaginationNextItem").on("click", function() {
-			this.current_page = this.current_page + 1;
-			if (this.current_page > this.total_pages) {
-				this.current_page = this.total_pages;
-			}
-			this.loadPage();
-		}.bind(this));
-		getComponentElementById(this,"PaginationNextNextItem").on("click", function() {
-			this.current_page = this.current_page + 2;
-			if (this.current_page > this.total_pages) {
-				this.current_page = this.total_pages;
-			}
-			this.loadPage();
-		}.bind(this));
-		getComponentElementById(this,"MultiSelectAll").on("click", function() {
-			let uid = $(this).attr("id").replace("_MultiSelectAll","");
-			let this_component = getRegisteredComponent(uid);
-			if ($(this).is(":checked")) {
-				this_component.selected_items_array = [];
-				$('.select_item_'+uid).each(function () {
-					let id_start = $(this).attr("id").indexOf("_select_item_");
-					let object_id = $(this).attr("id").substring(id_start+13);
-					this_component.selected_items_array.push(object_id);
-					$(this).prop("checked",true);
-				});
-				getComponentElementById(this_component,"MultiSelectOptionsButton").show().addClass("d-inline-flex");
-			} else {
-				this_component.selected_items_array = [];
-				$('.select_item_'+uid).each(function () {
-					$(this).prop("checked",false);
-				});
-				getComponentElementById(this_component,"MultiSelectOptionsButton").hide().removeClass("d-inline-flex");
-			}
-		});
-		getComponentElementById(this,"BulkActionDelete").on("click", function() {
-			showAlert("Are you sure?","warning",["Cancel","Delete"],false,0,this.deleteSelected.bind(this),this.doNothing);
-		}.bind(this));
-		this.handleOnClassEvent("click","first-column_"+this.getUid(),"_row_item_","on_item_clicked");
-		$(document).on("click",".select_item_"+this.getUid(), function() {
-			let id_start = $(this).attr("id").indexOf("_select_item_");
-			let clicked_id = $(this).attr("id").substring(id_start+13);
-			let uid = $(this).attr("id").substring(0,id_start);
-			let this_component = getRegisteredComponent(uid);
-			if (this_component.selected_items_array.indexOf(clicked_id) != -1) {
-				this_component.selected_items_array.splice(this_component.selected_items_array.indexOf(clicked_id),1);
-			} else {
-				this_component.selected_items_array.push(clicked_id);
-			}
-			if (this_component.selected_items_array.length > 0) {
-				getComponentElementById(this_component,"MultiSelectOptionsButton").show().addClass("d-inline-flex");
-			} else {
-				getComponentElementById(this_component,"MultiSelectOptionsButton").hide().removeClass("d-inline-flex");
-			}
-		});
-		registerEventHandler(document,"click",undefined,".select_item_"+this.getUid());
-		this.column_name_array.forEach(function(item) {
-			let uid = this.getUid();
-			let column_name_array = Object.keys(this.column_name_obj);
-			$("#"+uid+"_SortBy"+item).on("click", function() {
-				if (typeof this.current_sort_column[1] !== "undefined") {
-					let sort_down = !this.current_sort_column[1];
-					this.current_sort_column = [item,sort_down];
-				} else {
-					this.current_sort_column = [item,true];
-				}
-				this.column_name_array.forEach(function(item_to_update) {
-					if (item_to_update == item) {
-						if (this.current_sort_column[1]) {
-							$("#"+uid+"_SortBy"+item_to_update).html(this.column_name_obj[item_to_update]+' <small><i class="fa' +
-								' fa-sort-alpha-asc" aria-hidden="true"></i></small>');
-						} else {
-							$("#"+uid+"_SortBy"+item_to_update).html(this.column_name_obj[item_to_update]+' <small><i class="fa' +
-								' fa-sort-alpha-desc" aria-hidden="true"></i></small>');
-						}
-					} else {
-						$("#"+uid+"_SortBy"+item_to_update).html(this.column_name_obj[item_to_update]);
-					}
-				}.bind(this));
-				this.loadPage();
-			}.bind(this));
-		}.bind(this));
-	}
-	/**
-	 * Sets the class variable table_exporter with relevant data.
-	 * @param table_exporter_data
-	 */
-	exportData(table_exporter_data) {
-		this.table_exporter.export2file(
-			table_exporter_data.data,
-			table_exporter_data.mimeType,
-			table_exporter_data.filename,
-			table_exporter_data.fileExtension);
-	}
-	/**
-	 * Returns the input parameters object for the dxRequestInternal function call that deletes the selection
-	 * @returns {Object} The object to pass to dxRequestInternal
-	 */
-	getDeleteFunctionParameters() {
-		return {f:"deleteSelection",
-			SelectedItemArray:JSON.stringify(this.selected_items_array)};
-	}
-	/**
-	 * Called before the server request fires in the deleteSelected() function, giving room for functionality that should be
-	 * executed immediately before delete. Can be used to stop the deleteSelected() function by returning false
-	 */
-	onBeforeDeleteSelected() {
-		//TODO: Override this as needed;
-		return true;
-	}
-	/**
-	 * Backend request to delete selected entires from database.
-	 */
-	deleteSelected() {
-		if (!this.onBeforeDeleteSelected()) {return;}
-		dxRequestInternal(
-			getComponentControllerPath(this),
-			this.getDeleteFunctionParameters(),
-			function(data_obj) {
-				getComponentElementById(this,"MultiSelectAll").prop("checked",false);
-				this.selected_items_array = [];
-				this.current_page = 1;
-				this.loadPage();
-				pageEventTriggered(this.lowercase_entity_name+"_selection_deleted",{});
-				this.onAfterDeleteSelected(data_obj);
-			}.bind(this),
-			function(data_obj) {
-				showAlert("Error deleting items: "+data_obj.Message,"error","OK",false);
-			}.bind(this));
-	}
-	/**
-	 * Called last in the success callback of the deleteSelected() function, gives room for functionality to be executed
-	 * immediately after deletion
-	 * @param data_obj Full data object from loadPage() function
-	 */
-	onAfterDeleteSelected(data_obj) {
-		//TODO: Override this as needed;
-	}
-	/**
-	 * Returns the input parameters object for the dxRequestInternal function call that loads the page
-	 * @returns {Object} The object to pass to dxRequestInternal
-	 */
-	getLoadFunctionParameters() {
-		let parameters_obj = {f:"getPage",
-			CurrentPage:this.current_page,
-			ItemsPerPage:this.current_items_per_page,
-			SearchText:getComponentElementById(this,"DataTableSearchInput").val(),
-			SortOptions:JSON.stringify(this.current_sort_column)};
-		if (this.constrain_by_array.length > 0) {
-			this.constrain_by_array.forEach(function(relationship) {
-				parameters_obj['Constraining'+relationship+'Id'] = getGlobalConstrainById(relationship);
-			})
-		}
-		return parameters_obj;
-	}
-	/**
-	 * Called before the server request fires in the loadPage() function, giving room for functionality that should be
-	 * executed immediately before load. Can be used to stop the loadPage() function by returning false
-	 */
-	onBeforeLoadPage() {
-		//TODO: Override this as needed;
-		return true;
-	}
-	/**
-	 * Load the data table up row by row, including pagination and search functionality
-	 */
-	loadPage() {
-		if (!this.onBeforeLoadPage()) {return;}
-		this.showPageLoadingIndicator();
-		dxRequestInternal(
-			getComponentControllerPath(this),
-			this.getLoadFunctionParameters(),
-			function(data_obj) {
-				this.clearDataTableBody();
-				data_obj.Page.forEach(function(item) {
-					this.addRow(item);
-				}.bind(this));
-				this.total_items = data_obj.TotalCount;
-				this.total_pages = 1+ Math.round(this.total_items / this.current_items_per_page);
-				this.remaining_pages = this.total_pages - this.current_page;
-				if (this.current_page_array.length > 0) {
-					getComponentElementById(this,"DataTableLoading").hide();
-				}
-				this.toggleNoResults();
-				if (this.current_page === 1) {
-					getComponentElementById(this,"PaginationResetButton").addClass("disabled");
-					getComponentElementById(this,"PaginationJumpBack").addClass("disabled");
-				} else {
-					getComponentElementById(this,"PaginationResetButton").removeClass("disabled");
-					getComponentElementById(this,"PaginationJumpBack").removeClass("disabled");
-				}
-				if (this.current_page === this.total_pages) {
-					getComponentElementById(this,"PaginationFinalPageButton").addClass("disabled");
-					getComponentElementById(this,"PaginationJumpForward").addClass("disabled");
-				} else {
-					getComponentElementById(this,"PaginationFinalPageButton").removeClass("disabled");
-					getComponentElementById(this,"PaginationJumpForward").removeClass("disabled");
-				}
-				if (this.remaining_pages > 0) {
-					getComponentElementById(this,"PaginationNextItem").show();
-				} else {
-					getComponentElementById(this,"PaginationNextItem").hide();
-				}
-				if (this.remaining_pages > 1) {
-					getComponentElementById(this,"PaginationNextNextItem").show();
-				} else {
-					getComponentElementById(this,"PaginationNextNextItem").hide();
-				}
-				this.updatePagination();
-				this.onAfterLoadPage(data_obj);
-			}.bind(this),
-			function(data_obj) {
-				this.handleComponentError('Could not retrieve data: '+data_obj.Message);
-			}.bind(this),false,false);
-	}
-	/**
-	 * Called last in the success callback of the loadPage() function, gives room for functionality to be executed
-	 * immediately after loading the data table
-	 * @param data_obj Full data object from loadPage() function
-	 */
-	onAfterLoadPage(data_obj) {
-		//TODO: Override this as needed;
-	}
-	/**
-	 * Adds row into the data table
-	 * @param row_data_obj Data object containing necessary row data
-	 */
-	addRow(row_data_obj) {
-		this.current_page_array.push(row_data_obj);
-		if (this.selected_items_array.length > 0) {
-			getComponentElementById(this,"MultiSelectOptionsButton").show().addClass("d-inline-flex");
-		} else {
-			getComponentElementById(this,"MultiSelectOptionsButton").hide().removeClass("d-inline-flex");
-		}
-		getComponentElementById(this,"DataTableBody").append(this.getRowHtml(row_data_obj));
-	}
-	/**
-	 * Returns the value to be displayed for a specific column for the row
-	 * @param row_data_obj
-	 * @param key
-	 * @returns {string|*}
-	 */
-	getRowColumnHtml(row_data_obj = {},key = "") {
-		if (typeof row_data_obj[key] === "undefined") {
-			return key;
-		}
-		switch(key) {
-			//case '[Key]': return 'Your own value';
-			//break;
-			default: return row_data_obj[key];
-		}
-	}
-	/**
-	 * Returns the complete html for the row to be added to the table
-	 * @param row_data_obj
-	 * @returns {string}
-	 */
-	getRowHtml(row_data_obj) {
-		let html = '<tr class="'+this.getUid()+'_row_item_'+row_data_obj["Id"]+' dx-data-table-row">';
-		let row_keys = Object.keys(row_data_obj);
-		let checked_html = '';
-		// Doing it this way since indexOf and includes does not identify the items as being in the array...
-		this.selected_items_array.forEach(function(item) {if (item === row_data_obj["Id"]) {checked_html = ' checked';}});
-		let column_index = 0;
-		row_keys.forEach(function(key) {
-			if (key === "Id") {
-				html += '<td>' +
-					'<input id="'+this.getUid()+'_select_item_'+row_data_obj["Id"]+'" type="checkbox"' +
-					' class="select_item_'+this.getUid()+'" name="'+this.getUid()+'_select_item_'+row_data_obj["Id"]+'" value="'+this.getUid()+'_select_item_'+row_data_obj["Id"]+'"'+checked_html+'>' +
-					'</td>';
-			} else {
-				if (column_index === this.click_event_column_index) {
-					html += '<th scope="row">' +
-						'<a href="#" id="'+this.getUid()+'_row_item_'+row_data_obj["Id"]+'" class="data-table-first-column first-column_'+this.getUid()+'">'+this.getRowColumnHtml(row_data_obj,key)+'</a>' +
-						'</th>';
-				} else {
-					html += '<td>'+this.getRowColumnHtml(row_data_obj,key)+'</td>';
-				}
-			}
-			column_index++;
-		}.bind(this));
-		html += '</tr>';
-		return html;
-	}
-	/**
-	 * Event handler for clicks on data rows
-	 * @param id The Id of the row clicked
-	 */
-	on_item_clicked(id) {
-		setGlobalConstrainById(this.entity_name,id);
-		pageEventTriggered(this.lowercase_entity_name+"_clicked",{id:id});
-	}
+        this.columnNames = Object.keys(this.columnNamesInfo);
+        this.currentSortColumn = [this.columnNames[0], true]; // Sort on first column, desc
+        //DataTableHeaderHtml
+    }
+
+    /**
+     * Creates the table header
+     */
+    buildDataTableHeaderHtml() {
+        getComponentElementById(this, 'DataTableHeaderHtml').html(
+            '<th id="' + this.getUid() + '_MultiSelectColumn" class="data_table_header" scope="col">\n' +
+            '<input id="' + this.getUid() + '_MultiSelectAll" type="checkbox" name="all" value="all">\n' +
+            '</th>');
+
+        this.includedAttributes.forEach(function (attribute) {
+            this.columnNamesInfo[attribute] = attribute.replace(/([a-z0-9])([A-Z])/g, '$1 $2');
+            getComponentElementById(this, 'DataTableHeaderHtml').append(
+                '<th id="' + this.getUid() + '_SortBy' + attribute + '" class="data_table_header" scope="col">' + this.columnNamesInfo[attribute] + '</th>'
+            );
+        }.bind(this));
+        this.includedRelationships.forEach(function (relationship) {
+            this.columnNamesInfo[relationship] = relationship.replace(/([a-z0-9])([A-Z])/g, '$1 $2');
+            getComponentElementById(this, 'DataTableHeaderHtml').append(
+                '<th id="' + this.getUid() + '_SortBy' + relationship + '" class="data_table_header" scope="col">' + this.columnNamesInfo[relationship] + '</th>'
+            );
+        }.bind(this));
+    }
+
+    /**
+     * Displays the loading indicator for the table
+     */
+    showPageLoadingIndicator() {
+        let maxColumns = this.columnNames.length + 1;
+        getComponentElementById(this, "DataTableBody").html('<tr id="' + this.getUid() + '_DataTableLoading"><td' +
+            ' colspan="' + maxColumns + '"' +
+            '><div class="dx-loading"></div></td></tr>');
+    }
+
+    /**
+     * Toggles the "No results" view. Called in the loadPage() function if no data available
+     */
+    toggleNoResults() {
+        let maxColumns = this.columnNames.length + 1;
+        if (this.totalItems === 0) {
+            getComponentElementById(this, "DataTableBody").html('<tr id="#' + this.getUid() + '_DataTableLoading"><td' +
+                ' colspan="' + maxColumns + '"' +
+                ' style="text-align: center;">No results</td></tr>');
+            getComponentElementById(this, "DataTableLoading").show();
+        }
+    }
+
+    /**
+     * Updates the pagination button content
+     */
+    updatePagination() {
+        let nextPage = this.currentPage + 1;
+        let nextNextPage = nextPage + 1;
+        getComponentElementById(this, "PaginationCurrentItem").html('<span class="page-link">' + this.currentPage + '</span>');
+        getComponentElementById(this, "PaginationNextItem").html('<span class="page-link">' + nextPage + '</span>');
+        getComponentElementById(this, "PaginationNextNextItem").html('<span class="page-link">' + nextNextPage + '</span>');
+        getComponentElementById(this, "ResultCountWrapper").html('<span class="badge float-right">Total: ' + this.totalItems + '</span>');
+    }
+
+    /**
+     * Clears the contents of the table
+     */
+    clearDataTableBody() {
+        getComponentElementById(this, "DataTableBody").html("");
+    }
+
+    /**
+     * A useful function to call to reset the component state
+     * @param {Object} inputs The arguments to pass to the component
+     * @param {boolean} propagate If true, will also reset all sub components
+     */
+    reset(inputs, propagate) {
+        this.loadPage();
+        super.reset(inputs, propagate);
+    }
+
+    /**
+     * When registering DOM events it is useful to keep track of them per component if we want to offload them
+     * later. This method is a wrapper for that functionality
+     */
+    registerDomEvents() {
+        getComponentElementById(this, "BulkActionExportXlsx").on("click", function () {
+            let uid = this.getUid();
+            this.tableExporter = getComponentElementById(this, "DataTableTableHtml").tableExport({
+                exportButtons: false,
+                formats: ['xlsx'],
+                filename: "dx_xlsx_export_" + moment().format("YYYY-MM-DD_h_mm_ss"),
+            });
+            this.exportData(this.tableExporter.getExportData()[uid + '_DataTableTableHtml']['xlsx']);
+        }.bind(this));
+        getComponentElementById(this, "BulkActionExportCsv").on("click", function () {
+            let uid = this.getUid();
+            this.tableExporter = getComponentElementById(this, "DataTableTableHtml").tableExport({
+                exportButtons: false,
+                formats: ['csv'],
+                filename: "dx_csv_export_" + moment().format("YYYY-MM-DD_h_mm_ss"),
+            });
+            this.exportData(this.tableExporter.getExportData()[uid + '_DataTableTableHtml']['csv']);
+        }.bind(this));
+        getComponentElementById(this, "BulkActionExportTxt").on("click", function () {
+            let uid = this.getUid();
+            this.tableExporter = getComponentElementById(this, "DataTableTableHtml").tableExport({
+                exportButtons: false,
+                formats: ['txt'],
+                filename: "dx_txt_export_" + moment().format("YYYY-MM-DD_h_mm_ss"),
+            });
+            this.exportData(this.tableExporter.getExportData()[uid + '_DataTableTableHtml']['txt']);
+        }.bind(this));
+        getComponentElementById(this, "DataTableSearchInput").on("keyup", function () {
+            let searchText = getComponentElementById(this, "DataTableSearchInput").val();
+            setTimeout(function () {
+                if (searchText == getComponentElementById(this, "DataTableSearchInput").val()) {
+                    this.currentPage = 1;
+                    this.loadPage();
+                }
+            }.bind(this), 500);
+        }.bind(this));
+        getComponentElementById(this, "btnResetSearch").on("click", function () {
+            getComponentElementById(this, "DataTableSearchInput").val("");
+            this.loadPage();
+        }.bind(this));
+        getComponentElementById(this, "PaginationItemsPerPage").on("change", function () {
+            let uid = $(this).attr("id").replace("_PaginationItemsPerPage", "");
+            let thisComponent = getRegisteredComponent(uid);
+            thisComponent.currentItemsPerPage = $(this).val();
+            thisComponent.loadPage();
+        });
+        getComponentElementById(this, "PaginationResetButton").on("click", function () {
+            if ($(this).hasClass("disabled")) {
+                return;
+            }
+            let uid = $(this).attr("id").replace("_PaginationResetButton", "");
+            let thisComponent = getRegisteredComponent(uid);
+            thisComponent.currentPage = 1;
+            thisComponent.loadPage();
+        });
+        getComponentElementById(this, "PaginationFinalPageButton").on("click", function () {
+            if ($(this).hasClass("disabled")) {
+                return;
+            }
+            let uid = $(this).attr("id").replace("_PaginationFinalPageButton", "");
+            let thisComponent = getRegisteredComponent(uid);
+            thisComponent.currentPage = thisComponent.totalPages;
+            thisComponent.loadPage();
+        });
+        getComponentElementById(this, "PaginationJumpBack").on("click", function () {
+            if ($(this).hasClass("disabled")) {
+                return;
+            }
+            let uid = $(this).attr("id").replace("_PaginationJumpBack", "");
+            let thisComponent = getRegisteredComponent(uid);
+            thisComponent.currentPage = thisComponent.currentPage - 3;
+            if (thisComponent.currentPage < 1) {
+                thisComponent.currentPage = 1;
+            }
+            thisComponent.loadPage();
+        });
+        getComponentElementById(this, "PaginationJumpForward").on("click", function () {
+            if ($(this).hasClass("disabled")) {
+                return;
+            }
+            let uid = $(this).attr("id").replace("_PaginationJumpForward", "");
+            let thisComponent = getRegisteredComponent(uid);
+            thisComponent.currentPage = thisComponent.currentPage + 3;
+            if (thisComponent.currentPage > thisComponent.totalPages) {
+                thisComponent.currentPage = thisComponent.totalPages;
+            }
+            thisComponent.loadPage();
+        });
+        getComponentElementById(this, "PaginationNextItem").on("click", function () {
+            this.currentPage = this.currentPage + 1;
+            if (this.currentPage > this.totalPages) {
+                this.currentPage = this.totalPages;
+            }
+            this.loadPage();
+        }.bind(this));
+        getComponentElementById(this, "PaginationNextNextItem").on("click", function () {
+            this.currentPage = this.currentPage + 2;
+            if (this.currentPage > this.totalPages) {
+                this.currentPage = this.totalPages;
+            }
+            this.loadPage();
+        }.bind(this));
+        getComponentElementById(this, "MultiSelectAll").on("click", function () {
+            let uid = $(this).attr("id").replace("_MultiSelectAll", "");
+            let thisComponent = getRegisteredComponent(uid);
+            if ($(this).is(":checked")) {
+                thisComponent.selectedItems = [];
+                $('.select_item_' + uid).each(function () {
+                    let idStart = $(this).attr("id").indexOf("_select_item_");
+                    let objectId = $(this).attr("id").substring(idStart + 13);
+                    thisComponent.selectedItems.push(objectId);
+                    $(this).prop("checked", true);
+                });
+                getComponentElementById(thisComponent, "MultiSelectOptionsButton").show().addClass("d-inline-flex");
+            } else {
+                thisComponent.selectedItems = [];
+                $('.select_item_' + uid).each(function () {
+                    $(this).prop("checked", false);
+                });
+                getComponentElementById(thisComponent, "MultiSelectOptionsButton").hide().removeClass("d-inline-flex");
+            }
+        });
+        getComponentElementById(this, "BulkActionDelete").on("click", function () {
+            showAlert("Are you sure?", "warning", ["Cancel", "Delete"], false, 0, this.deleteSelected.bind(this), this.doNothing);
+        }.bind(this));
+        this.handleOnClassEvent("click", "first-column_" + this.getUid(), "_row_item_", "onItemClicked");
+        $(document).on("click", ".select_item_" + this.getUid(), function () {
+            let idStart = $(this).attr("id").indexOf("_select_item_");
+            let clickedId = $(this).attr("id").substring(idStart + 13);
+            let uid = $(this).attr("id").substring(0, idStart);
+            let thisComponent = getRegisteredComponent(uid);
+            if (thisComponent.selectedItems.indexOf(clickedId) != -1) {
+                thisComponent.selectedItems.splice(thisComponent.selectedItems.indexOf(clickedId), 1);
+            } else {
+                thisComponent.selectedItems.push(clickedId);
+            }
+            if (thisComponent.selectedItems.length > 0) {
+                getComponentElementById(thisComponent, "MultiSelectOptionsButton").show().addClass("d-inline-flex");
+            } else {
+                getComponentElementById(thisComponent, "MultiSelectOptionsButton").hide().removeClass("d-inline-flex");
+            }
+        });
+        registerEventHandler(document, "click", undefined, ".select_item_" + this.getUid());
+        this.columnNames.forEach(function (item) {
+            let uid = this.getUid();
+            $("#" + uid + "_SortBy" + item).on("click", function () {
+                if (typeof this.currentSortColumn[1] !== "undefined") {
+                    let sortDown = !this.currentSortColumn[1];
+                    this.currentSortColumn = [item, sortDown];
+                } else {
+                    this.currentSortColumn = [item, true];
+                }
+                this.columnNames.forEach(function (itemToUpdate) {
+                    if (itemToUpdate == item) {
+                        if (this.currentSortColumn[1]) {
+                            $("#" + uid + "_SortBy" + itemToUpdate).html(this.columnNamesInfo[itemToUpdate] + ' <small><i class="fa' +
+                                ' fa-sort-alpha-asc" aria-hidden="true"></i></small>');
+                        } else {
+                            $("#" + uid + "_SortBy" + itemToUpdate).html(this.columnNamesInfo[itemToUpdate] + ' <small><i class="fa' +
+                                ' fa-sort-alpha-desc" aria-hidden="true"></i></small>');
+                        }
+                    } else {
+                        $("#" + uid + "_SortBy" + itemToUpdate).html(this.columnNamesInfo[itemToUpdate]);
+                    }
+                }.bind(this));
+                this.loadPage();
+            }.bind(this));
+        }.bind(this));
+    }
+
+    /**
+     * Sets the class variable table_exporter with relevant data.
+     * @param tableExporterData
+     */
+    exportData(tableExporterData) {
+        this.tableExporter.export2file(
+            tableExporterData.data,
+            tableExporterData.mimeType,
+            tableExporterData.filename,
+            tableExporterData.fileExtension);
+    }
+
+    /**
+     * Returns the input parameters object for the dxRequestInternal function call that deletes the selection
+     * @returns {Object} The object to pass to dxRequestInternal
+     */
+    getDeleteFunctionParameters() {
+        return {
+            f: "deleteSelection",
+            SelectedItemArray: JSON.stringify(this.selectedItems)
+        };
+    }
+
+    /**
+     * Called before the server request fires in the deleteSelected() function, giving room for functionality that should be
+     * executed immediately before delete. Can be used to stop the deleteSelected() function by returning false
+     */
+    onBeforeDeleteSelected() {
+        //TODO: Override this as needed;
+        return true;
+    }
+
+    /**
+     * Backend request to delete selected entires from database.
+     */
+    deleteSelected() {
+        if (!this.onBeforeDeleteSelected()) {
+            return;
+        }
+        dxRequestInternal(
+            getComponentControllerPath(this),
+            this.getDeleteFunctionParameters(),
+            function (data) {
+                getComponentElementById(this, "MultiSelectAll").prop("checked", false);
+                this.selectedItems = [];
+                this.currentPage = 1;
+                this.loadPage();
+                pageEventTriggered(this.lowerCaseEntityName + "_selection_deleted", {});
+                this.onAfterDeleteSelected(data);
+            }.bind(this),
+            function (data) {
+                showAlert("Error deleting items: " + data.Message, "error", "OK", false);
+            }.bind(this));
+    }
+
+    /**
+     * Called last in the success callback of the deleteSelected() function, gives room for functionality to be executed
+     * immediately after deletion
+     * @param data Full data object from loadPage() function
+     */
+    onAfterDeleteSelected(data) {
+        //TODO: Override this as needed;
+    }
+
+    /**
+     * Returns the input parameters object for the dxRequestInternal function call that loads the page
+     * @returns {Object} The object to pass to dxRequestInternal
+     */
+    getLoadFunctionParameters() {
+        let parameters = {
+            f: "getPage",
+            CurrentPage: this.currentPage,
+            ItemsPerPage: this.currentItemsPerPage,
+            SearchText: getComponentElementById(this, "DataTableSearchInput").val(),
+            SortOptions: JSON.stringify(this.currentSortColumn)
+        };
+        if (this.constrainedByEntities.length > 0) {
+            this.constrainedByEntities.forEach(function (relationship) {
+                parameters['Constraining' + relationship + 'Id'] = getGlobalConstrainById(relationship);
+            });
+        }
+        return parameters;
+    }
+
+    /**
+     * Called before the server request fires in the loadPage() function, giving room for functionality that should be
+     * executed immediately before load. Can be used to stop the loadPage() function by returning false
+     */
+    onBeforeLoadPage() {
+        //TODO: Override this as needed;
+        return true;
+    }
+
+    /**
+     * Load the data table up row by row, including pagination and search functionality
+     */
+    loadPage() {
+        if (!this.onBeforeLoadPage()) {
+            return;
+        }
+        this.showPageLoadingIndicator();
+        dxRequestInternal(
+            getComponentControllerPath(this),
+            this.getLoadFunctionParameters(),
+            function (data) {
+                this.clearDataTableBody();
+                data.Page.forEach(function (item) {
+                    this.addRow(item);
+                }.bind(this));
+                this.totalItems = data.TotalCount;
+                this.totalPages = 1 + Math.round(this.totalItems / this.currentItemsPerPage);
+                this.remainingPages = this.totalPages - this.currentPage;
+                if (this.itemsOnCurrentPage.length > 0) {
+                    getComponentElementById(this, "DataTableLoading").hide();
+                }
+                this.toggleNoResults();
+                if (this.currentPage === 1) {
+                    getComponentElementById(this, "PaginationResetButton").addClass("disabled");
+                    getComponentElementById(this, "PaginationJumpBack").addClass("disabled");
+                } else {
+                    getComponentElementById(this, "PaginationResetButton").removeClass("disabled");
+                    getComponentElementById(this, "PaginationJumpBack").removeClass("disabled");
+                }
+                if (this.currentPage === this.totalPages) {
+                    getComponentElementById(this, "PaginationFinalPageButton").addClass("disabled");
+                    getComponentElementById(this, "PaginationJumpForward").addClass("disabled");
+                } else {
+                    getComponentElementById(this, "PaginationFinalPageButton").removeClass("disabled");
+                    getComponentElementById(this, "PaginationJumpForward").removeClass("disabled");
+                }
+                if (this.remainingPages > 0) {
+                    getComponentElementById(this, "PaginationNextItem").show();
+                } else {
+                    getComponentElementById(this, "PaginationNextItem").hide();
+                }
+                if (this.remainingPages > 1) {
+                    getComponentElementById(this, "PaginationNextNextItem").show();
+                } else {
+                    getComponentElementById(this, "PaginationNextNextItem").hide();
+                }
+                this.updatePagination();
+                this.onAfterLoadPage(data);
+            }.bind(this),
+            function (data) {
+                this.handleComponentError('Could not retrieve data: ' + data.Message);
+            }.bind(this), false, false);
+    }
+
+    /**
+     * Called last in the success callback of the loadPage() function, gives room for functionality to be executed
+     * immediately after loading the data table
+     * @param data Full data object from loadPage() function
+     */
+    onAfterLoadPage(data) {
+        //TODO: Override this as needed;
+    }
+
+    /**
+     * Adds row into the data table
+     * @param rowData Data object containing necessary row data
+     */
+    addRow(rowData) {
+        this.itemsOnCurrentPage.push(rowData);
+        if (this.selectedItems.length > 0) {
+            getComponentElementById(this, "MultiSelectOptionsButton").show().addClass("d-inline-flex");
+        } else {
+            getComponentElementById(this, "MultiSelectOptionsButton").hide().removeClass("d-inline-flex");
+        }
+        getComponentElementById(this, "DataTableBody").append(this.getRowHtml(rowData));
+    }
+
+    /**
+     * Returns the value to be displayed for a specific column for the row
+     * @param rowData
+     * @param key
+     * @returns {string|*}
+     */
+    getRowColumnHtml(rowData = {}, key = "") {
+        if (typeof rowData[key] === "undefined") {
+            return key;
+        }
+        switch (key) {
+            //case '[Key]': return 'Your own value';
+            //break;
+            default:
+                return rowData[key];
+        }
+    }
+
+    /**
+     * Returns the complete html for the row to be added to the table
+     * @param rowData
+     * @returns {string}
+     */
+    getRowHtml(rowData) {
+        let html = '<tr class="' + this.getUid() + '_row_item_' + rowData["Id"] + ' dx-data-table-row">';
+        let rowKeys = Object.keys(rowData);
+        let checkedHtml = '';
+        // Doing it this way since indexOf and includes does not identify the items as being in the array...
+        this.selectedItems.forEach(function (item) {
+            if (item === rowData["Id"]) {
+                checkedHtml = ' checked';
+            }
+        });
+        let columnIndex = 0;
+        rowKeys.forEach(function (key) {
+            if (key === "Id") {
+                html += '<td>' +
+                    '<input id="' + this.getUid() + '_select_item_' + rowData["Id"] + '" type="checkbox"' +
+                    ' class="select_item_' + this.getUid() + '" name="' + this.getUid() + '_select_item_' + rowData["Id"] + '" value="' + this.getUid() + '_select_item_' + rowData["Id"] + '"' + checkedHtml + '>' +
+                    '</td>';
+            } else {
+                if (columnIndex === this.clickEventColumnIndex) {
+                    html += '<th scope="row">' +
+                        '<a href="#" id="' + this.getUid() + '_row_item_' + rowData["Id"] + '" class="data-table-first-column first-column_' + this.getUid() + '">' + this.getRowColumnHtml(rowData, key) + '</a>' +
+                        '</th>';
+                } else {
+                    html += '<td>' + this.getRowColumnHtml(rowData, key) + '</td>';
+                }
+            }
+            columnIndex++;
+        }.bind(this));
+        html += '</tr>';
+        return html;
+    }
+
+    /**
+     * Event handler for clicks on data rows
+     * @param id The Id of the row clicked
+     */
+    onItemClicked(id) {
+        setGlobalConstrainById(this.entityName, id);
+        pageEventTriggered(this.lowerCaseEntityName + "_clicked", {id: id});
+    }
 }
+
 /**
  * DivbloxDomEntityDataListComponent is the base class that manages the component javascript for every entity
  * data list component
  */
 class DivbloxDomEntityDataListComponent extends DivbloxDomBaseComponent {
-	/**
-	 * Initializes all the further variables needed for a Divblox DOM data list component
-	 * @param {Object} inputs The arguments to pass to the component
-	 * @param {Boolean} supports_native Indicate whether this component works on native projects
-	 * @param {Boolean} requires_native Indicate whether this component works ONLY on native projects
-	 */
-	constructor(inputs,supports_native,requires_native) {
-		super(inputs,supports_native,requires_native);
-		this.current_list_offset = 0;
-		this.list_offset_increment = 10;
-		this.current_page_array = [];
-		this.total_items = 0;
-		this.included_attributes_object = {};
-		this.included_relationships_object = {};
-		this.constrain_by_array = [];
-		this.included_all_object = {};
-		this.current_sort_column = [];
-		this.item_divider_text = " ";
-	}
-	/**
-	 * Initializes the necessary Data List variables
-	 */
-	initDataListVariables(entity_name) {
-		this.entity_name = entity_name;
-		this.lowercase_entity_name =  entity_name.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toLowerCase();
-		this.included_all_object = {...this.included_attributes_object,...this.included_relationships_object};
-		let included_keys = Object.keys(this.included_all_object);
-		this.current_sort_column = [included_keys[0],true]; // Sort on first column, desc
-	}
-	/**
-	 * Displays the loading indicator for the list
-	 */
-	showPageLoadingIndicator() {
-		getComponentElementById(this,"DataListLoading").html('<div class="dx-loading"></div>').show();
-	}
-	/**
-	 * A useful function to call to reset the component state
-	 * @param {Object} inputs The arguments to pass to the component
-	 * @param {boolean} propagate If true, will also reset all sub components
-	 */
-	reset(inputs,propagate) {
-		this.current_page_array = [];
-		getComponentElementById(this,"DataList").html("");
-		this.loadPage();
-		super.reset(inputs,propagate);
-	}
-	/**
-	 * When registering DOM events it is useful to keep track of them per component if we want to offload them
-	 * later. This method is a wrapper for that functionality
-	 */
-	registerDomEvents() {
-		getComponentElementById(this,"DataListSearchInput").on("keyup", function() {
-			let search_text = getComponentElementById(this,"DataListSearchInput").val();
-			setTimeout(function() {
-				if (search_text == getComponentElementById(this,"DataListSearchInput").val()) {
-					getComponentElementById(this,"DataList").html("");
-					this.current_page_array = [];
-					this.current_list_offset = 0;
-					this.loadPage();
-				}
-			}.bind(this),500);
-		}.bind(this));
-		getComponentElementById(this,"btnResetSearch").on("click", function() {
-			getComponentElementById(this,"DataListSearchInput").val("");
-			getComponentElementById(this,"DataList").html("");
-			this.current_page_array = [];
-			this.current_list_offset = 0;
-			this.loadPage();
-		}.bind(this));
-		getComponentElementById(this,"DataListMoreButton").on("click", function() {
-			this.current_list_offset += this.list_offset_increment;
-			this.loadPage();
-		}.bind(this));
-		this.handleOnClassEvent("click","data_list_item_"+this.getUid(),"_row_item_","on_item_clicked");
-	}
-	/**
-	 * Returns the input parameters object for the dxRequestInternal function call that loads the page
-	 * @returns {Object} The object to pass to dxRequestInternal
-	 */
-	getLoadFunctionParameters() {
-		let parameters_obj = {f:"getPage",
-			CurrentOffset:this.current_list_offset,
-			ItemsPerPage:this.list_offset_increment,
-			SearchText:getComponentElementById(this,"DataListSearchInput").val(),
-			SortOptions:JSON.stringify(this.current_sort_column)};
-		if (this.constrain_by_array.length > 0) {
-			this.constrain_by_array.forEach(function(relationship) {
-				parameters_obj['Constraining'+relationship+'Id'] = getGlobalConstrainById(relationship);
-			})
-		}
-		return parameters_obj;
-	}
-	/**
-	 * Called before the server request fires in the loadPage() function, giving room for functionality that should be
-	 * executed immediately before load. Can be used to stop the loadPage() function by returning false
-	 */
-	onBeforeLoadPage() {
-		//TODO: Override this as needed;
-		return true;
-	}
-	/**
-	 * Load the data list up row by row, including pagination and search functionality
-	 */
-	loadPage() {
-		if (!this.onBeforeLoadPage()) {return;}
-		this.showPageLoadingIndicator();
-		dxRequestInternal(
-			getComponentControllerPath(this),
-			this.getLoadFunctionParameters(),
-			function(data_obj) {
-				data_obj.Page.forEach(function(item) {
-					this.addRow(item);
-				}.bind(this));
-				this.total_items = data_obj.TotalCount;
-				getComponentElementById(this,"DataListMoreButton").show();
-				if (this.total_items <= (this.current_list_offset+this.list_offset_increment)) {
-					getComponentElementById(this,"DataListMoreButton").hide();
-				}
-				if (this.current_page_array.length > 0) {
-					getComponentElementById(this,"DataListLoading").hide();
-				} else {
-					getComponentElementById(this,"DataListLoading").html("No results").show();
-					getComponentElementById(this,"DataListMoreButton").hide();
-				}
-				this.onAfterLoadPage(data_obj);
-			}.bind(this),
-			function(data_obj) {
-				getComponentElementById(this,"DataList").hide();
-				this.handleComponentError('Could not retrieve data: '+data_obj.Message);
-			}.bind(this),false,false);
-	}
-	/**
-	 * Called last in the success callback of the loadPage() function, gives room for functionality to be executed
-	 * immediately after loading the data list
-	 * @param data_obj Full data object from loadPage() function
-	 */
-	onAfterLoadPage(data_obj) {
-		//TODO: Override this as needed;
-	}
-	/**
-	 * Returns the value to be displayed for a specific attribute for the row
-	 * @param row_data_obj
-	 * @param key
-	 * @returns {string|*}
-	 */
-	getAttributeHtml(row_data_obj = {},key = "") {
-		if (typeof row_data_obj[key] === "undefined") {
-			return "";
-		}
-		let formatted_content = '';
+    /**
+     * Initializes all the further variables needed for a Divblox DOM data list component
+     * @param {Object} inputs The arguments to pass to the component
+     * @param {Boolean} supportsNative Indicate whether this component works on native projects
+     * @param {Boolean} requiresNative Indicate whether this component works ONLY on native projects
+     */
+    constructor(inputs, supportsNative, requiresNative) {
+        super(inputs, supportsNative, requiresNative);
+        this.currentListOffset = 0;
+        this.listOffsetIncrement = 10;
+        this.itemsOnCurrentPage = [];
+        this.totalItems = 0;
+        this.includedAttributes = {};
+        this.includedRelationships = {};
+        this.constrainedByEntities = [];
+        this.includedAll = {};
+        this.currentSortColumn = [];
+        this.itemDividerText = " ";
+    }
 
-		switch(key) {
-			//case '[Key]': formatted_content = 'Your own value';
-			//	break;
-			default: formatted_content = row_data_obj[key];
-		}
-		if (formatted_content === null) {
-			return "";
-		}
-		if (String(formatted_content).trim().length === 0) {
-			return "";
-		}
-		return formatted_content;
-	}
-	/**
-	 * Returns the html for a specific wrapper type for the row
-	 * @param content
-	 * @param wrapper_type
-	 * @returns {string}
-	 */
-	getAttributeWrapperHtml(content = '',wrapper_type = 'normal') {
-		if (String(content).trim().length === 0) {
-			return "";
-		}
-		switch(wrapper_type.toLowerCase()) {
-			case 'header': return '<h5 class="mb-1">'+content+'</h5>';
-			case 'subtle': return '<small>'+content+'</small>';
-			case 'normal': return '<p>'+content+'</p>';
-			case 'footer': return '<small>'+content+'</small>';
-			default: return '<p>'+content+'</p>';
-		}
-	}
-	/**
-	 * Returns an object containing the various row html components
-	 * @param row_data_obj
-	 * @returns {{subtle_components_html: string, footer_components_html: string, header_components_html: string, normal_components_html: string}}
-	 */
-	getRowHtmlObject(row_data_obj) {
-		let return_object = {"header_components_html":"","subtle_components_html":"","normal_components_html":"","footer_components_html":""};
+    /**
+     * Initializes the necessary Data List variables
+     */
+    initDataListVariables(entityName) {
+        this.entityName = entityName;
+        this.lowerCaseEntityName = entityName.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toLowerCase();
+        this.includedAll = {...this.includedAttributes, ...this.includedRelationships};
+        let includedKeys = Object.keys(this.includedAll);
+        this.currentSortColumn = [includedKeys[0], true]; // Sort on first column, desc
+    }
 
-		let included_keys = Object.keys(this.included_all_object);
-		included_keys.forEach(function(key) {
-			let wrapper_type = this.included_all_object[key].toLowerCase();
-			let item_divider_final_text = "";
-			if (String(return_object[wrapper_type+"_components_html"]).trim().length > 0) {
-				item_divider_final_text = this.item_divider_text;
-			}
-			return_object[wrapper_type+"_components_html"] += item_divider_final_text+this.getAttributeWrapperHtml(this.getAttributeHtml(row_data_obj,key),wrapper_type);
-		}.bind(this));
-		return return_object;
-	}
-	/**
-	 * Returns the complete html for the row to be added
-	 * @param row_data_obj
-	 * @returns {string}
-	 */
-	getRowHtml(row_data_obj) {
-		let row_html = '<a href="#" id="'+this.getUid()+'_row_item_'+row_data_obj["Id"]+'" class="list-group-item' +
-			' list-group-item-action flex-column align-items-start data_list_item data_list_item_'+this.getUid()+' dx-data-list-row">';
+    /**
+     * Displays the loading indicator for the list
+     */
+    showPageLoadingIndicator() {
+        getComponentElementById(this, "DataListLoading").html('<div class="dx-loading"></div>').show();
+    }
 
-		let header_wrapping_html = '<div class="d-flex w-100 justify-content-between">';
-		let row_obj = this.getRowHtmlObject(row_data_obj);
+    /**
+     * A useful function to call to reset the component state
+     * @param {Object} inputs The arguments to pass to the component
+     * @param {boolean} propagate If true, will also reset all sub components
+     */
+    reset(inputs, propagate) {
+        this.itemsOnCurrentPage = [];
+        getComponentElementById(this, "DataList").html("");
+        this.loadPage();
+        super.reset(inputs, propagate);
+    }
 
-		header_wrapping_html += row_obj["header_components_html"]+row_obj["subtle_components_html"];
-		header_wrapping_html += '</div>';
+    /**
+     * When registering DOM events it is useful to keep track of them per component if we want to offload them
+     * later. This method is a wrapper for that functionality
+     */
+    registerDomEvents() {
+        getComponentElementById(this, "DataListSearchInput").on("keyup", function () {
+            let searchText = getComponentElementById(this, "DataListSearchInput").val();
+            setTimeout(function () {
+                if (searchText == getComponentElementById(this, "DataListSearchInput").val()) {
+                    getComponentElementById(this, "DataList").html("");
+                    this.itemsOnCurrentPage = [];
+                    this.currentListOffset = 0;
+                    this.loadPage();
+                }
+            }.bind(this), 500);
+        }.bind(this));
+        getComponentElementById(this, "btnResetSearch").on("click", function () {
+            getComponentElementById(this, "DataListSearchInput").val("");
+            getComponentElementById(this, "DataList").html("");
+            this.itemsOnCurrentPage = [];
+            this.currentListOffset = 0;
+            this.loadPage();
+        }.bind(this));
+        getComponentElementById(this, "DataListMoreButton").on("click", function () {
+            this.currentListOffset += this.listOffsetIncrement;
+            this.loadPage();
+        }.bind(this));
+        this.handleOnClassEvent("click", "data_list_item_" + this.getUid(), "_row_item_", "onItemClicked");
+    }
 
-		row_html += header_wrapping_html+row_obj["normal_components_html"]+row_obj["footer_components_html"];
-		row_html += '</a>';
-		return row_html;
-	}
-	/**
-	 * Adds a row into the data table
-	 * @param row_data_obj Data object containing necessary row data
-	 */
-	addRow(row_data_obj) {
-		let current_item_keys = Object.keys(this.current_page_array);
-		let must_add_row = true;
-		current_item_keys.forEach(function(key) {
-			if (this.current_page_array[key]["Id"] === row_data_obj["Id"]) {must_add_row = false;}
-		}.bind(this));
-		if (!must_add_row) {return;}
-		this.current_page_array.push(row_data_obj);
+    /**
+     * Returns the input parameters object for the dxRequestInternal function call that loads the page
+     * @returns {Object} The object to pass to dxRequestInternal
+     */
+    getLoadFunctionParameters() {
+        let parameters = {
+            f: "getPage",
+            CurrentOffset: this.currentListOffset,
+            ItemsPerPage: this.listOffsetIncrement,
+            SearchText: getComponentElementById(this, "DataListSearchInput").val(),
+            SortOptions: JSON.stringify(this.currentSortColumn)
+        };
+        if (this.constrainedByEntities.length > 0) {
+            this.constrainedByEntities.forEach(function (relationship) {
+                parameters['Constraining' + relationship + 'Id'] = getGlobalConstrainById(relationship);
+            });
+        }
+        return parameters;
+    }
 
-		getComponentElementById(this,"DataList").append(this.getRowHtml(row_data_obj));
-	}
-	/**
-	 * Event handler for clicks on data rows
-	 * @param id The Id of the row clicked
-	 */
-	on_item_clicked(id) {
-		setGlobalConstrainById(this.entity_name,id);
-		pageEventTriggered(this.lowercase_entity_name+"_clicked",{id:id});
-	}
+    /**
+     * Called before the server request fires in the loadPage() function, giving room for functionality that should be
+     * executed immediately before load. Can be used to stop the loadPage() function by returning false
+     */
+    onBeforeLoadPage() {
+        //TODO: Override this as needed;
+        return true;
+    }
+
+    /**
+     * Load the data list up row by row, including pagination and search functionality
+     */
+    loadPage() {
+        if (!this.onBeforeLoadPage()) {
+            return;
+        }
+        this.showPageLoadingIndicator();
+        dxRequestInternal(
+            getComponentControllerPath(this),
+            this.getLoadFunctionParameters(),
+            function (data) {
+                data.Page.forEach(function (item) {
+                    this.addRow(item);
+                }.bind(this));
+                this.totalItems = data.TotalCount;
+                getComponentElementById(this, "DataListMoreButton").show();
+                if (this.totalItems <= (this.currentListOffset + this.listOffsetIncrement)) {
+                    getComponentElementById(this, "DataListMoreButton").hide();
+                }
+                if (this.itemsOnCurrentPage.length > 0) {
+                    getComponentElementById(this, "DataListLoading").hide();
+                } else {
+                    getComponentElementById(this, "DataListLoading").html("No results").show();
+                    getComponentElementById(this, "DataListMoreButton").hide();
+                }
+                this.onAfterLoadPage(data);
+            }.bind(this),
+            function (data) {
+                getComponentElementById(this, "DataList").hide();
+                this.handleComponentError('Could not retrieve data: ' + data.Message);
+            }.bind(this), false, false);
+    }
+
+    /**
+     * Called last in the success callback of the loadPage() function, gives room for functionality to be executed
+     * immediately after loading the data list
+     * @param data Full data object from loadPage() function
+     */
+    onAfterLoadPage(data) {
+        //TODO: Override this as needed;
+    }
+
+    /**
+     * Returns the value to be displayed for a specific attribute for the row
+     * @param rowData
+     * @param key
+     * @returns {string|*}
+     */
+    getAttributeHtml(rowData = {}, key = "") {
+        if (typeof rowData[key] === "undefined") {
+            return "";
+        }
+        let formattedContent = '';
+
+        switch (key) {
+            //case '[Key]': formatted_content = 'Your own value';
+            //	break;
+            default:
+                formattedContent = rowData[key];
+        }
+        if (formattedContent === null) {
+            return "";
+        }
+        if (String(formattedContent).trim().length === 0) {
+            return "";
+        }
+        return formattedContent;
+    }
+
+    /**
+     * Returns the html for a specific wrapper type for the row
+     * @param content
+     * @param wrapperType
+     * @returns {string}
+     */
+    getAttributeWrapperHtml(content = '', wrapperType = 'normal') {
+        if (String(content).trim().length === 0) {
+            return "";
+        }
+        switch (wrapperType.toLowerCase()) {
+            case 'header':
+                return '<h5 class="mb-1">' + content + '</h5>';
+            case 'subtle':
+                return '<small>' + content + '</small>';
+            case 'normal':
+                return '<p>' + content + '</p>';
+            case 'footer':
+                return '<small>' + content + '</small>';
+            default:
+                return '<p>' + content + '</p>';
+        }
+    }
+
+    /**
+     * Returns an object containing the various row html components
+     * @param rowData
+     * @returns {{subtle_components_html: string, footer_components_html: string, header_components_html: string, normal_components_html: string}}
+     */
+    getRowHtmlObject(rowData) {
+        let returnObject = {
+            "header_components_html": "",
+            "subtle_components_html": "",
+            "normal_components_html": "",
+            "footer_components_html": ""
+        };
+
+        let includedKeys = Object.keys(this.includedAll);
+        includedKeys.forEach(function (key) {
+            let wrapperType = this.includedAll[key].toLowerCase();
+            let itemDividerFinalText = "";
+            if (String(returnObject[wrapperType + "_components_html"]).trim().length > 0) {
+                itemDividerFinalText = this.itemDividerText;
+            }
+            returnObject[wrapperType + "_components_html"] += itemDividerFinalText + this.getAttributeWrapperHtml(this.getAttributeHtml(rowData, key), wrapperType);
+        }.bind(this));
+        return returnObject;
+    }
+
+    /**
+     * Returns the complete html for the row to be added
+     * @param rowData
+     * @returns {string}
+     */
+    getRowHtml(rowData) {
+        let rowHtml = '<a href="#" id="' + this.getUid() + '_row_item_' + rowData["Id"] + '" class="list-group-item' +
+            ' list-group-item-action flex-column align-items-start data_list_item data_list_item_' + this.getUid() + ' dx-data-list-row">';
+
+        let headerWrappingHtml = '<div class="d-flex w-100 justify-content-between">';
+        let rowObj = this.getRowHtmlObject(rowData);
+
+        headerWrappingHtml += rowObj["header_components_html"] + rowObj["subtle_components_html"];
+        headerWrappingHtml += '</div>';
+
+        rowHtml += headerWrappingHtml + rowObj["normal_components_html"] + rowObj["footer_components_html"];
+        rowHtml += '</a>';
+        return rowHtml;
+    }
+
+    /**
+     * Adds a row into the data table
+     * @param rowData Data object containing necessary row data
+     */
+    addRow(rowData) {
+        let currentItemKeys = Object.keys(this.itemsOnCurrentPage);
+        let mustAddRow = true;
+        currentItemKeys.forEach(function (key) {
+            if (this.itemsOnCurrentPage[key]["Id"] === rowData["Id"]) {
+                mustAddRow = false;
+            }
+        }.bind(this));
+        if (!mustAddRow) {
+            return;
+        }
+        this.itemsOnCurrentPage.push(rowData);
+
+        getComponentElementById(this, "DataList").append(this.getRowHtml(rowData));
+    }
+
+    /**
+     * Event handler for clicks on data rows
+     * @param id The Id of the row clicked
+     */
+    onItemClicked(id) {
+        setGlobalConstrainById(this.entityName, id);
+        pageEventTriggered(this.lowerCaseEntityName + "_clicked", {id: id});
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * Divblox initialization related functions
  */
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * Loads the Divblox chat widget for the setup page
  */
 function loadDxChatWidget() {
-	return; //JGL: Disabling this for now as it is available on the Divblox documentation page
-	var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-	(function(){
-		var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-		s1.async=true;
-		s1.src='https://embed.tawk.to/5e2aa42bdaaca76c6fcfa354/default';
-		s1.charset='UTF-8';
-		s1.setAttribute('crossorigin','*');
-		s0.parentNode.insertBefore(s1,s0);
-	})();
+    return; //JGL: Disabling this for now as it is available on the Divblox documentation page
+    var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+    (function () {
+        var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+        s1.async = true;
+        s1.src = 'https://embed.tawk.to/5e2aa42bdaaca76c6fcfa354/default';
+        s1.charset = 'UTF-8';
+        s1.setAttribute('crossorigin', '*');
+        s0.parentNode.insertBefore(s1, s0);
+    })();
 }
+
 /**
  * Must be called at load to ensure that Divblox loads correctly for the current environment. This function will set all
  * required paths and load Divblox dependencies
- * @param {Boolean} as_native Tells Divblox whether to initiate for a native environment or web
+ * @param {Boolean} asNative Tells Divblox whether to initiate for a native environment or web
  */
-function initDx(as_native) {
-	if (typeof as_native === "undefined") {
-		as_native = false;
-	}
-	setPaths(as_native);
-	let stored_global_vars = getValueFromAppState("global_vars");
-	if (stored_global_vars !== null) {
-		global_vars = stored_global_vars;
-	}
-	// It is important to call this before other loading functions, since we might need to load a page before all
-	// dependencies are ready
-	dx_page_manager.loadMobilePageAlternatives(function () {
-		loadDependencies();
-	});
+function initDx(asNative) {
+    if (typeof asNative === "undefined") {
+        asNative = false;
+    }
+    setPaths(asNative);
+    let storedGlobalVars = getValueFromAppState("global_vars");
+    if (storedGlobalVars !== null) {
+        globalVars = storedGlobalVars;
+    }
+    // It is important to call this before other loading functions, since we might need to load a page before all
+    // dependencies are ready
+    dxPageManager.loadMobilePageAlternatives(function () {
+        loadDependencies();
+    });
 }
+
 /**
  * Loads the Divblox dependencies, recursively. When all dependencies are loaded, checkFrameworkReady() is called.
  * @param {Number} count The index in the variable dependency_array
  */
 function loadDependencies(count) {
-	if (typeof count === "undefined") {
-		count = 0;
-	}
-	if (count < dependency_array.length) {
-		let url = getRootPath()+dependency_array[count];
-		if (typeof admin_mode !== "undefined") {
-			if (admin_mode) {
-				url = url+getRandomFilePostFix();
-			}
-		}
-		dxGetScript(url, function( data, textStatus, jqxhr ) {
-			loadDependencies(count+1);
-		});
-	} else {
-		checkFrameworkReady();
-	}
+    if (typeof count === "undefined") {
+        count = 0;
+    }
+    if (count < divbloxDependencies.length) {
+        let url = getRootPath() + divbloxDependencies[count];
+        if (typeof adminMode !== "undefined") {
+            if (adminMode) {
+                url = url + getRandomFilePostFix();
+            }
+        }
+        dxGetScript(url, function (data, textStatus, jqxhr) {
+            loadDependencies(count + 1);
+        });
+    } else {
+        menuManager.loadMenuDefinitions(
+            checkFrameworkReady,
+            function () {
+                dxLog("Failed to load Menu definitions");
+            }
+        );
+
+    }
 }
+
 /**
  * Sets the Divblox root paths
- * @param {Boolean} as_native Tells Divblox whether to initiate for a native environment or web
+ * @param {Boolean} asNative Tells Divblox whether to initiate for a native environment or web
  */
-function setPaths(as_native) {
-	if (typeof as_native === "undefined") {
-		as_native = false;
-	}
-	if (!as_native) {
-		// JGL: All app content needs to reside in one of the following folders
-		let path_array = window.location.pathname.split('/');
-		let path_array_cleaned = path_array.filter(function(el) {
-			return el !== "";
-		});
-		allowable_divblox_paths.forEach(function(allowable_path) {
-			for(i=0;i<path_array_cleaned.length;i++) {
-				if (path_array_cleaned[i] === allowable_path) {
-					if (typeof path_array_cleaned[i+1] !== "undefined") {
-						if (allowable_divblox_sub_paths.indexOf(path_array_cleaned[i+1]) > -1) {
-							// JGL: Everything before this item is the doc root
-							if (document_root.length === 0) {
-								for(j=0;j<i;j++) {
-									document_root += path_array_cleaned[j]+"/";
-								}
-								document_root = document_root.substring(0,document_root.length-1);
-							}
-						}
-					}
-				}
-			}
-		});
+function setPaths(asNative) {
+    if (typeof asNative === "undefined") {
+        asNative = false;
+    }
+    if (!asNative) {
+        // JGL: All app content needs to reside in one of the following folders
+        let paths = window.location.pathname.split('/');
+        let cleanedPaths = paths.filter(function (el) {
+            return el !== "";
+        });
+        allowableDivbloxPaths.forEach(function (allowablePath) {
+            for(i = 0; i < cleanedPaths.length; i++) {
+                if (cleanedPaths[i] === allowablePath) {
+                    if (typeof cleanedPaths[i + 1] !== "undefined") {
+                        if (allowableDivbloxSubPaths.indexOf(cleanedPaths[i + 1]) > -1) {
+                            // JGL: Everything before this item is the doc root
+                            if (documentRoot.length === 0) {
+                                for(j = 0; j < i; j++) {
+                                    documentRoot += cleanedPaths[j] + "/";
+                                }
+                                documentRoot = documentRoot.substring(0, documentRoot.length - 1);
+                            }
+                        }
+                    }
+                }
+            }
+        });
 
-		if (document_root.length === 0) {
-			for(i=0;i<path_array_cleaned.length;i++) {
-				if (path_array_cleaned[i].indexOf(".") < 0) {
-					// JGL: This is not a file
-					document_root += path_array_cleaned[i]+"/";
-				}
-			}
-			document_root = document_root.substring(0,document_root.length-1);
-			if (document_root.length === 0) {
-				//JGL: Doing a final check here to ensure it works on servers with sub directories
-				let path_name = window.location.pathname;
-				if (path_name.indexOf("index.html") > -1) {
-					document_root = path_name.substr(0,path_name.indexOf("/index.html"));
-				}
-				if (path_name.indexOf("component_builder.php") > -1) {
-					document_root = path_name.substr(0,path_name.indexOf("/component_builder.php"));
-				}
-			}
-		}
-		if (document_root.indexOf("divblox/config") > -1) {
-			document_root = "";
-		}
-	} else {
-		document_root = "";
-		setIsNative();
-	}
+        if (documentRoot.length === 0) {
+            for(i = 0; i < cleanedPaths.length; i++) {
+                if (cleanedPaths[i].indexOf(".") < 0) {
+                    // JGL: This is not a file
+                    documentRoot += cleanedPaths[i] + "/";
+                }
+            }
+            documentRoot = documentRoot.substring(0, documentRoot.length - 1);
+            if (documentRoot.length === 0) {
+                //JGL: Doing a final check here to ensure it works on servers with sub directories
+                let pathName = window.location.pathname;
+                if (pathName.indexOf("index.html") > -1) {
+                    documentRoot = pathName.substr(0, pathName.indexOf("/index.html"));
+                }
+                if (pathName.indexOf("component_builder.php") > -1) {
+                    documentRoot = pathName.substr(0, pathName.indexOf("/component_builder.php"));
+                }
+            }
+        }
+        if (documentRoot.indexOf("divblox/config") > -1) {
+            documentRoot = "";
+        }
+    } else {
+        documentRoot = "";
+        setIsNative();
+    }
 }
+
 /**
  * Placeholder function that handles the event to call the Install prompt for progressive web apps
  */
 function callInstallPrompt() {
-	// We can't fire the dialog before preventing default browser dialog
-	//TODO: Complete this for custom prompts
-	if (installPromptEvent !== undefined) {
-		installPromptEvent.prompt();
-	}
+    // We can't fire the dialog before preventing default browser dialog
+    //TODO: Complete this for custom prompts
+    if (installPromptEvent !== undefined) {
+        installPromptEvent.prompt();
+    }
 }
+
 /**
  * Checks if the framework is installed and configured. If so, sets up the offline event handlers. After
  * that we call a generic "on_divblox_ready()" function that the developer can implement
  */
 function checkFrameworkReady() {
-	if (isNative()) {
-		allow_feedback = local_config.allow_feedback;
-		doAfterInitActions();
-		on_divblox_ready();
-		return;
-	}
-	window.addEventListener('beforeinstallprompt', function(event) {
-		event.preventDefault();
-		installPromptEvent = event;
-	});
-	spa_mode = local_config.spa_mode;
-	debug_mode = local_config.debug_mode;
-	allow_feedback = local_config.allow_feedback;
-	let config_cookie = getValueFromAppState('divblox_config');
-	if (config_cookie === null) {
-		dxGetScript(getRootPath()+"divblox/config/framework/check_config.php", function( data ) {
-			if (!isJsonString(data)) {
-				window.open(getRootPath()+'divblox/config/framework/divblox_admin/initialization_wizard/');
-				return;
-			}
-			let config_data_obj = JSON.parse(data);
-			if (config_data_obj.Success) {
-				updateAppState('divblox_config','success');
-				$(document).ready(function() {
-					if (typeof on_divblox_ready !== "undefined") {
-						on_divblox_ready();
-					}
-				});
-			} else {
-				dxRequestSystem(getRootPath()+'divblox/config/framework/divblox_admin/initialization_wizard/installation_helper.php?check=1',{},
-					function() {
-						window.open(getRootPath()+'divblox/config/framework/divblox_admin/initialization_wizard/');
-					},
-					function() {
-						throw new Error("Divblox is not ready! Please visit the setup page at: "+getServerRootPath()+"divblox/");
-					});
-			}
-		}, function(data) {
-			dxRequestSystem(getRootPath()+'divblox/config/framework/divblox_admin/initialization_wizard/installation_helper.php?check=1',{},
-				function() {
-					window.open(getRootPath()+'divblox/config/framework/divblox_admin/initialization_wizard/');
-				},
-				function() {
-					throw new Error("Divblox is not ready! Please visit the setup page at: "+getServerRootPath()+"divblox/");
-				});
-		});
-	} else {
-		$(document).ready(function() {
-			window.addEventListener('offline', networkStatus);
-			window.addEventListener('online', networkStatus);
-			function networkStatus(e) {
-				if (e.type == 'offline')
-					setOffline();
-				else
-					setOnline();
-			}
-			if (debug_mode) {
-				dxLog("Divblox setup page: "+getServerRootPath()+"divblox/",false);
-			}
-			if (!isInStandaloneMode()) {
-				//TODO: Complete this. We need to add a prompt to add to homescreen here that is configurable by the
-				// developer
-			}
-			currentUserRole = getCurrentUserRoleFromAppState();
-			if (typeof on_divblox_ready !== "undefined") {
-				doAfterInitActions();
-				on_divblox_ready();
-			}
-			if ((typeof cb_active === "undefined") || (cb_active === false)) {
-				if (local_config.service_worker_enabled) {
-					registerServiceWorker();
-				} else {
-					dxLog("Service worker disabled");
-					removeServiceWorker();
-				}
-			} else {
-				removeServiceWorker();
-			}
-			$("#AppReloadButton").on("click", function() {
-				service_worker_update.postMessage({ action: 'skipWaiting' });
-				window.location.reload(true);
-			});
-			$("#AppReloadDismissButton").on("click", function() {
-				$("#AppUpdateWrapper").removeClass("show");
-			});
-			window.addEventListener('beforeunload', function(e) {
-				if((dx_queue.length > 0) && !force_logout_occurred) {
-					e.preventDefault(); //per the standard
-					e.returnValue = "You have attempted to leave this page. There are currently items waiting to be processed on the" +
-						" server. If you close this page now, those changes will be lost." +
-						"  Are you sure you want to exit this page?"; //required for Chrome
-				} else if (dx_has_uploads_waiting) {
-					e.preventDefault(); //per the standard
-					e.returnValue = "You have attempted to leave this page. There are currently items waiting to" +
-						" upload. If you close this page now, those uploads will be lost." +
-						"  Are you sure you want to exit this page?"; //required for Chrome
-				}
-			});
-			if (typeof admin_mode !== "undefined") {
-				if (admin_mode) {
-					loadDxChatWidget();
-				}
-			}
-		});
-	}
-	if (isSpa()) {
-		$(window).on("popstate", function (e) {
-			let position = Number(window.history.state); // Absolute position in stack
-			let direction = Math.sign(position - root_history_index);
-			// One for backward (-1), reload (0) or forward (1)
-			loadPageFromRootHistory(direction);
-		});
-	}
+    if (isNative()) {
+        isFeedbackAllowed = localConfig.allowFeedback;
+        doAfterInitActions();
+        on_divblox_ready();
+        return;
+    }
+    window.addEventListener('beforeinstallprompt', function (event) {
+        event.preventDefault();
+        installPromptEvent = event;
+    });
+    isSpaMode = localConfig.isSpaMode;
+    isDebugMode = localConfig.inDebugMode;
+    isFeedbackAllowed = localConfig.allowFeedback;
+    let configCookie = getValueFromAppState('divblox_config');
+    if (configCookie === null) {
+        dxGetScript(getRootPath() + "divblox/config/framework/check_config.php", function (data) {
+            if (!isJsonString(data)) {
+                window.open(getRootPath() + 'divblox/config/framework/divblox_admin/initialization_wizard/');
+                return;
+            }
+            let configData = JSON.parse(data);
+            if (configData.Success) {
+                updateAppState('divblox_config', 'success');
+                $(document).ready(function () {
+                    if (typeof on_divblox_ready !== "undefined") {
+                        on_divblox_ready();
+                    }
+                });
+            } else {
+                dxRequestSystem(getRootPath() + 'divblox/config/framework/divblox_admin/initialization_wizard/installation_helper.php?check=1', {},
+                    function () {
+                        window.open(getRootPath() + 'divblox/config/framework/divblox_admin/initialization_wizard/');
+                    },
+                    function () {
+                        throw new Error("Divblox is not ready! Please visit the setup page at: " + getServerRootPath() + "divblox/");
+                    });
+            }
+        }, function (data) {
+            dxRequestSystem(getRootPath() + 'divblox/config/framework/divblox_admin/initialization_wizard/installation_helper.php?check=1', {},
+                function () {
+                    window.open(getRootPath() + 'divblox/config/framework/divblox_admin/initialization_wizard/');
+                },
+                function () {
+                    throw new Error("Divblox is not ready! Please visit the setup page at: " + getServerRootPath() + "divblox/");
+                });
+        });
+    } else {
+        $(document).ready(function () {
+            window.addEventListener('offline', networkStatus);
+            window.addEventListener('online', networkStatus);
+
+            function networkStatus(e) {
+                if (e.type == 'offline')
+                    setOffline();
+                else
+                    setOnline();
+            }
+
+            if (isDebugMode) {
+                dxLog("Divblox setup page: " + getServerRootPath() + "divblox/", false);
+            }
+            if (!isInStandaloneMode()) {
+                //TODO: Complete this. We need to add a prompt to add to homescreen here that is configurable by the
+                // developer
+            }
+            currentUserRole = getCurrentUserRoleFromAppState();
+            if (typeof on_divblox_ready !== "undefined") {
+                doAfterInitActions();
+                on_divblox_ready();
+            }
+            if ((typeof isComponentBuilderActive === "undefined") || (isComponentBuilderActive === false)) {
+                if (localConfig.enableServiceWorker) {
+                    registerServiceWorker();
+                } else {
+                    dxLog("Service worker disabled");
+                    removeServiceWorker();
+                }
+            } else {
+                removeServiceWorker();
+            }
+            $("#AppReloadButton").on("click", function () {
+                serviceWorker.postMessage({action: 'skipWaiting'});
+                window.location.reload(true);
+            });
+            $("#AppReloadDismissButton").on("click", function () {
+                $("#AppUpdateWrapper").removeClass("show");
+            });
+            window.addEventListener('beforeunload', function (e) {
+                if ((dxQueue.length > 0) && !forceLogoutOccurred) {
+                    e.preventDefault(); //per the standard
+                    e.returnValue = "You have attempted to leave this page. There are currently items waiting to be processed on the" +
+                        " server. If you close this page now, those changes will be lost." +
+                        "  Are you sure you want to exit this page?"; //required for Chrome
+                } else if (dxHasUploadsWaiting) {
+                    e.preventDefault(); //per the standard
+                    e.returnValue = "You have attempted to leave this page. There are currently items waiting to" +
+                        " upload. If you close this page now, those uploads will be lost." +
+                        "  Are you sure you want to exit this page?"; //required for Chrome
+                }
+            });
+            if (typeof adminMode !== "undefined") {
+                if (adminMode) {
+                    loadDxChatWidget();
+                }
+            }
+        });
+    }
+    if (isSpa()) {
+        $(window).on("popstate", function (e) {
+            let position = Number(window.history.state); // Absolute position in stack
+            let direction = Math.sign(position - rootHistoryIndex);
+            // One for backward (-1), reload (0) or forward (1)
+            loadPageFromRootHistory(direction);
+        });
+    }
 }
+
 /**
  * Shows a notification that indicates an update to the app is available. Only used when the service worker is installed
  */
 function showAppUpdateBar() {
-	$("#AppUpdateWrapper").addClass("show").css("z-index",getHighestZIndex()+1);
+    $("#AppUpdateWrapper").addClass("show").css("z-index", getHighestZIndex() + 1);
 }
+
 /**
  * Removes the current service worker
  */
 function removeServiceWorker() {
-	if (!navigator.serviceWorker) {
-		return;
-	}
-	navigator.serviceWorker.getRegistrations().then(registrations => {
-		for(let registration of registrations) {
-			registration.unregister()
-		}
-	});
+    if (!navigator.serviceWorker) {
+        return;
+    }
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+        for(let registration of registrations) {
+            registration.unregister();
+        }
+    });
 }
+
 /**
  * Returns the current root path of the server.
  * @return {String} The root path which is a valid url, e.g https://divblox.com/
  */
 function getServerRootPath() {
-	let port_number_str = window.location.port;
-	if (port_number_str.length > 0) {
-		port_number_str = ":"+port_number_str;
-	}
-	let root_path = window.location.protocol+"//"+window.location.hostname+port_number_str;
-	if (document_root.length > 0) {
-		root_path += "/"+document_root+"/";
-	}
-	if (root_path[root_path.length - 1] !== '/') {
-		root_path += "/";
-	}
-	return root_path;
+    let portNumber = window.location.port;
+    if (portNumber.length > 0) {
+        portNumber = ":" + portNumber;
+    }
+    let rootPath = window.location.protocol + "//" + window.location.hostname + portNumber;
+    if (documentRoot.length > 0) {
+        rootPath += "/" + documentRoot + "/";
+    }
+    if (rootPath[rootPath.length - 1] !== '/') {
+        rootPath += "/";
+    }
+    return rootPath;
 }
+
 /**
  * Returns the current root path from index.html
  * @return {String} The root path which is a relative path
  */
 function getRootPath() {
-	if (typeof force_server_root !== "undefined") {
-		return getServerRootPath();
-	}
-	return "";
+    if (typeof force_server_root !== "undefined") {
+        return getServerRootPath();
+    }
+    return "";
 }
+
 /**
  * Sets the value of a url parameter in the app state. Useful when in SPA mode.
  * @param {String} name The name of the parameter
  * @param {String} value The value to set it to
  */
-function setUrlInputParameter(name,value) {
-	if (url_input_parameters === null) {
-		url_input_parameters = new URLSearchParams();
-	}
-	url_input_parameters.set(name,value);
-	updateAppState('page_inputs',"?"+url_input_parameters.toString());
+function setUrlInputParameter(name, value) {
+    if (urlInputParameters === null) {
+        urlInputParameters = new URLSearchParams();
+    }
+    urlInputParameters.set(name, value);
+    updateAppState('page_inputs', "?" + urlInputParameters.toString());
 }
+
 /**
  * Returns the value for a url parameter in the app state
  * @param {String} name The name of the parameter
  * @return {String|Null} The value stored in the app state
  */
 function getUrlInputParameter(name) {
-	if (url_input_parameters === null) {
-		return null;
-	}
-	return url_input_parameters.get(name);
+    if (urlInputParameters === null) {
+        return null;
+    }
+    return urlInputParameters.get(name);
 }
+
 /**
  * Updates a value in the app state and calls the function to store the app state
- * @param {String} item_key The name of the item
- * @param {String} item_value The value of the item
+ * @param {String} itemKey The name of the item
+ * @param {String} itemValue The value of the item
  */
-function updateAppState(item_key,item_value) {
-	app_state[item_key] = item_value;
-	storeAppState();
+function updateAppState(itemKey, itemValue) {
+    appState[itemKey] = itemValue;
+    storeAppState();
 }
 
 /**
  * Removes a value from dx_app_state for a given key
- * @param item_key - key to search for in dx_app_state
+ * @param itemKey - key to search for in dx_app_state
  */
-function removeFromAppState(item_key) {
-	let app_state_encoded = getItemInLocalStorage("dx_app_state");
-	if (app_state_encoded !== null) {
-		app_state = JSON.parse(atob(app_state_encoded));
-		if (app_state.hasOwnProperty(item_key)) {
-			delete app_state[item_key];
-			storeAppState();
-		} else {
-			dxLog("Trying to remove property '"+item_key+"' from dx_app_state but this property is not defined.");
-		}
-	}
+function removeFromAppState(itemKey) {
+    let appStateEncoded = getItemInLocalStorage("dx_app_state");
+    if (appStateEncoded !== null) {
+        appState = JSON.parse(atob(appStateEncoded));
+        if (appState.hasOwnProperty(itemKey)) {
+            delete appState[itemKey];
+            storeAppState();
+        } else {
+            dxLog("Trying to remove property '" + itemKey + "' from dx_app_state but this property is not defined.");
+        }
+    }
 
 }
+
 /**
  * Stores the current app state in local storage
  */
 function storeAppState() {
-	app_state['global_vars'] = global_vars;
-	setItemInLocalStorage("dx_app_state",btoa(JSON.stringify(app_state)));
+    appState['globalVars'] = globalVars;
+    setItemInLocalStorage("dx_app_state", btoa(JSON.stringify(appState)));
 }
+
 /**
  * Returns the current app state from local storage
  * @return {Object} The current app state
  */
 function getAppState() {
-	let app_state_encoded = getItemInLocalStorage("dx_app_state");
-	if (app_state_encoded !== null) {
-		app_state = JSON.parse(atob(app_state_encoded));
-	}
-	return app_state;
+    let appStateEncoded = getItemInLocalStorage("dx_app_state");
+    if (appStateEncoded !== null) {
+        appState = JSON.parse(atob(appStateEncoded));
+    }
+    return appState;
 }
+
 /**
  * Returns a specific value stored in the app state
- * @param {String} item_key The name of the item
+ * @param {String} itemKey The name of the item
  * @return {String|Null} The value of the item
  */
-function getValueFromAppState(item_key) {
-	app_state = getAppState();
-	if (typeof app_state[item_key] !== "undefined") {
-		return app_state[item_key];
-	}
-	return null;
+function getValueFromAppState(itemKey) {
+    appState = getAppState();
+    if (typeof appState[itemKey] !== "undefined") {
+        return appState[itemKey];
+    }
+    return null;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * Divblox component and DOM related helper functions
  */
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * Checks whether we are in the component builder
  * @return {boolean} true if in component builder, false if not
  */
 function checkComponentBuilderActive() {
-	if (typeof cb_active !== "undefined") {
-		return cb_active;
-	}
+    if (typeof isComponentBuilderActive !== "undefined") {
+        return isComponentBuilderActive;
+    }
 }
+
 /**
  * Loads a component by creating an instance of the component's DivbloxDomComponent class implementation and then
  * calling the relevant function to load the component HTML, CSS & JavaScript into the DOM
- * @param {String} component_name The fully qualified name of the component, e.g "data_model/account_create"
- * @param {String} parent_uid The UID of the component within which this component is being loaded as a sub
+ * @param {String} componentName The fully qualified name of the component, e.g "data_model/account_create"
+ * @param {String} parentUid The UID of the component within which this component is being loaded as a sub
  * component. This can by null if the component is loaded as the first component for this page, i.e the page component
- * @param {String} parent_element_id The DOM id of the parent component element
- * @param {Object} load_arguments The arguments to pass to the component's constructor
- * @param {Boolean} replace_parent_content If true, the parent element's html is overridden with the component that
+ * @param {String} parentElementId The DOM id of the parent component element
+ * @param {Object} loadArguments The arguments to pass to the component's constructor
+ * @param {Boolean} replaceParentContent If true, the parent element's html is overridden with the component that
  * is being loaded. If false, the component's DOM content is appended to the parent element
- * @param {Boolean} component_builder_active Flag that indicates whether the component builder is active
+ * @param {Boolean} cbActive Flag that indicates whether the component builder is active
  * @param {Function} callback Function to call once the component has been loaded completely
  */
-function loadComponent(component_name,parent_uid,parent_element_id,load_arguments,replace_parent_content,component_builder_active,callback) {
-	parent_uid = parent_uid || "";
-	if (parent_element_id != "body") {
-		let parent_uid_str = "";
-		if (parent_uid != "") {
-			parent_uid_str = parent_uid+"_";
-		}
-		parent_element_id = '#'+parent_uid_str+parent_element_id;
-	}
-	if (typeof callback !== "function") {callback = function() {}}
-	if (typeof(replace_parent_content) === "undefined") {
-		replace_parent_content = false; // JGL: By default, let's add to the content in the parent element
-	}
-	if (typeof(component_builder_active) === "undefined") {
-		component_builder_active = false;
-	}
-	if (typeof(component_name) !== null) {
-		if (typeof(load_arguments) === "undefined") {
-			load_arguments = {};
-		}
-		load_arguments["url_parameters"] = getAllUrlParams();
-		load_arguments["component_name"] = component_name.replace(/\//g,'_');
-		load_arguments["component_load_name"] = component_name;
-		load_arguments["parent_element"] = parent_element_id;
-		load_arguments["parent_uid"] = parent_uid;
-		load_arguments["component_path"] = getRootPath()+"project/components/"+component_name;
-		generateNextDOMIndex(load_arguments["component_name"]);
-		if (typeof(load_arguments["uid"]) !== "undefined") {
-			if (typeof(registered_component_array[load_arguments["uid"]]) !== "undefined") {
-				throw new Error("The component '"+registered_component_array[load_arguments["uid"]]+"' is already registered in the DOM");
-			}
-		} else {
-			load_arguments["dom_index"] = dom_component_index_map[load_arguments["component_name"]][dom_component_index_map[load_arguments["component_name"]].length-1];
-			load_arguments["uid"] = load_arguments["component_name"]+"_" + load_arguments["dom_index"];
+function loadComponent(componentName, parentUid, parentElementId, loadArguments, replaceParentContent, cbActive, callback) {
+    parentUid = parentUid || "";
+    if (parentElementId != "body") {
+        let parent_uid_str = "";
+        if (parentUid != "") {
+            parent_uid_str = parentUid + "_";
+        }
+        parentElementId = '#' + parent_uid_str + parentElementId;
+    }
+    if (typeof callback !== "function") {
+        callback = function () {
+        };
+    }
+    if (typeof (replaceParentContent) === "undefined") {
+        replaceParentContent = false; // JGL: By default, let's add to the content in the parent element
+    }
+    if (typeof (cbActive) === "undefined") {
+        cbActive = false;
+    }
+    if (typeof (componentName) !== null) {
+        if (typeof (loadArguments) === "undefined") {
+            loadArguments = {};
+        }
+        loadArguments["url_parameters"] = getAllUrlParams();
+        loadArguments["component_name"] = componentName.replace(/\//g, '_');
+        loadArguments["component_load_name"] = componentName;
+        loadArguments["parent_element"] = parentElementId;
+        loadArguments["parent_uid"] = parentUid;
+        loadArguments["component_path"] = getRootPath() + "project/components/" + componentName;
+        generateNextDOMIndex(loadArguments["component_name"]);
+        if (typeof (loadArguments["uid"]) !== "undefined") {
+            if (typeof (registeredComponents[loadArguments["uid"]]) !== "undefined") {
+                throw new Error("The component '" + registeredComponents[loadArguments["uid"]] + "' is already registered in the DOM");
+            }
+        } else {
+            loadArguments["dom_index"] = domComponentIndexMap[loadArguments["component_name"]][domComponentIndexMap[loadArguments["component_name"]].length - 1];
+            loadArguments["uid"] = loadArguments["component_name"] + "_" + loadArguments["dom_index"];
 
-		}
-		// JGL: Load the component html
-		let component_html_load_path = load_arguments["component_path"]+"/component.html";
-		if (debug_mode || checkComponentBuilderActive()) {
-			component_html_load_path = load_arguments["component_path"]+"/component.html"+getRandomFilePostFix();
-		}
-		dxGetScript(component_html_load_path, function(html) {
-			let final_html = getComponentFinalHtml(load_arguments["uid"].replace("#",""),html);
-			if (component_builder_active) {
-				final_html = final_html.replace(/col-/g,'component-builder-column col-');
-				final_html = final_html.replace(/class="row/g,'class="component-builder-row row');
-				final_html = final_html.replace(/class="container/g,'class="component-builder-container container');
-			}
-			if (typeof(parent_element_id) !== null) {
-				if (replace_parent_content) {
-					$(parent_element_id).html(final_html);
-				} else {
-					$(parent_element_id).append(final_html);
-				}
-			} else {
-				if (replace_parent_content) {
-					$('body').html(final_html);
-				} else {
-					$('body').append(final_html);
-				}
-			}
-			loadComponentCss(load_arguments["component_path"]);
-			loadComponentJs(load_arguments["component_path"],load_arguments,callback);
-		},function() {
-			handleLoadComponentError();
-		},false/*We need to return the html from the request here*/);
-	} else {
-		throw new Error("No component name provided");
-	}
+        }
+        // JGL: Load the component html
+        let componentHtmlLoadPath = loadArguments["component_path"] + "/component.html";
+        if (isDebugMode || checkComponentBuilderActive()) {
+            componentHtmlLoadPath = loadArguments["component_path"] + "/component.html" + getRandomFilePostFix();
+        }
+        dxGetScript(componentHtmlLoadPath, function (html) {
+            let finalHtml = getComponentFinalHtml(loadArguments["uid"].replace("#", ""), html);
+            if (cbActive) {
+                finalHtml = finalHtml.replace(/col-/g, 'component-builder-column col-');
+                finalHtml = finalHtml.replace(/class="row/g, 'class="component-builder-row row');
+                finalHtml = finalHtml.replace(/class="container/g, 'class="component-builder-container container');
+            }
+            if (typeof (parentElementId) !== null) {
+                if (replaceParentContent) {
+                    $(parentElementId).html(finalHtml);
+                } else {
+                    $(parentElementId).append(finalHtml);
+                }
+            } else {
+                if (replaceParentContent) {
+                    $('body').html(finalHtml);
+                } else {
+                    $('body').append(finalHtml);
+                }
+            }
+            loadComponentCss(loadArguments["component_path"]);
+            loadComponentJs(loadArguments["component_path"], loadArguments, callback);
+        }, function () {
+            handleLoadComponentError();
+        }, false/*We need to return the html from the request here*/);
+    } else {
+        throw new Error("No component name provided");
+    }
 }
+
 /**
  * Loads the component's CSS into the DOM
- * @param {String} component_path The relative path to the component's folder
+ * @param {String} componentPath The relative path to the component's folder
  */
-function loadComponentCss(component_path) {
-	let url = component_path+'/component.css';
-	if (debug_mode || checkComponentBuilderActive()) {
-		url = component_path+'/component.css'+getRandomFilePostFix();
-	}
-	if (cache_scripts_requested.indexOf(url) > -1) {
-		return;
-	} else {
-		cache_scripts_requested.push(url);
-	}
-	$('head').append('<link rel="stylesheet" href="'+url+'" type="text/css" />');
+function loadComponentCss(componentPath) {
+    let url = componentPath + '/component.css';
+    if (isDebugMode || checkComponentBuilderActive()) {
+        url = componentPath + '/component.css' + getRandomFilePostFix();
+    }
+    if (requestedCacheScripts.indexOf(url) > -1) {
+        return;
+    } else {
+        requestedCacheScripts.push(url);
+    }
+    $('head').append('<link rel="stylesheet" href="' + url + '" type="text/css" />');
 }
+
 /**
  * Loads the component's javascript file into memory
- * @param {String} component_path The relative path to the component's folder
- * @param {Object} load_arguments The arguments to pass to the component's constructor
+ * @param {String} componentPath The relative path to the component's folder
+ * @param {Object} loadArguments The arguments to pass to the component's constructor
  * @param {Function} callback The function to call once the javascript has loaded
  */
-function loadComponentJs(component_path,load_arguments,callback) {
-	let class_name = ""+load_arguments["component_name"];
-	if (typeof component_classes[class_name] !== "undefined") {
-		let component = new component_classes[class_name](load_arguments);
-		registerComponent(component,component.uid);
-		if (typeof(component.on_component_loaded) !== "undefined") {
-			component.on_component_loaded(true,function() {
-				updateAppState('page',getUrlInputParameter("view"));
-				callback(component);
-			});
-		}
-	} else {
-		let full_component_path = component_path+"/component.js";
-		if (debug_mode || checkComponentBuilderActive()) {
-			full_component_path = component_path+'/component.js'+getRandomFilePostFix();
-		}
-		dxGetScript(full_component_path, function(data) {
-			// JGL: Execute the on_[component_name]_ready function
-			if (checkComponentBuilderActive()) {
-				$('img').attr('draggable','false');
-			}
-			let component = new component_classes[class_name](load_arguments);
-			registerComponent(component,component.uid);
-			if (typeof(component.on_component_loaded) !== "undefined") {
-				component.on_component_loaded(true,function() {
-					updateAppState('page',getUrlInputParameter("view"));
-					callback(component);
-				});
-			}
-		}, function(data) {
-			handleLoadComponentError();
-		},false);
-	}
+function loadComponentJs(componentPath, loadArguments, callback) {
+    let className = "" + loadArguments["component_name"];
+    if (typeof componentClasses[className] !== "undefined") {
+        let component = new componentClasses[className](loadArguments);
+        registerComponent(component, component.uid);
+        if (typeof (component.onComponentLoaded) !== "undefined") {
+            component.onComponentLoaded(true, function () {
+                updateAppState('page', getUrlInputParameter("view"));
+                callback(component);
+            });
+        }
+    } else {
+        let fullComponentPath = componentPath + "/component.js";
+        if (isDebugMode || checkComponentBuilderActive()) {
+            fullComponentPath = componentPath + '/component.js' + getRandomFilePostFix();
+        }
+        dxGetScript(fullComponentPath, function (data) {
+            // JGL: Execute the on_[component_name]_ready function
+            if (checkComponentBuilderActive()) {
+                $('img').attr('draggable', 'false');
+            }
+            let component = new componentClasses[className](loadArguments);
+            registerComponent(component, component.uid);
+            if (typeof (component.onComponentLoaded) !== "undefined") {
+                component.onComponentLoaded(true, function () {
+                    updateAppState('page', getUrlInputParameter("view"));
+                    callback(component);
+                });
+            }
+        }, function (data) {
+            handleLoadComponentError();
+        }, false);
+    }
 }
+
 /**
  * Loads a new page based on the component provided. If in SPA mode, this does not load a new window, but refreshes
  * the DOM with the new component's content
- * @param {String} component_name The fully qualified name of the component, e.g "data_model/account_create"
- * @param {Object} load_arguments The arguments to pass to the component's constructor
+ * @param {String} componentName The fully qualified name of the component, e.g "data_model/account_create"
+ * @param {Object} loadArguments The arguments to pass to the component's constructor
  * @param {Function} callback The function to call once the component has loaded
  */
-function loadPageComponent(component_name = 'component',load_arguments = {},callback = undefined) {
-	let final_load_arguments = {"uid":page_uid};
-	let parameters_str = '';
-	if (typeof load_arguments === "object") {
-		let load_argument_keys = Object.keys(load_arguments);
-		load_argument_keys.forEach(function(key) {
-			final_load_arguments[key] = load_arguments[key];
-			parameters_str += '&'+key+"="+load_arguments[key];
-		});
-	}
-	let final_component_name = dx_page_manager.getMobilePageAlternate(component_name);
-	if (!isSpa()) {
-		redirectToInternalPath('?view='+final_component_name+parameters_str);
-		return;
-	}
-	if ((typeof cb_active !== "undefined") && (cb_active)) {
-		// JGL: In this case we should inform the user that we are opening a new page in a new component builder window
-		if (confirm("This will open a new component builder window for the page: "+final_component_name)) {
-			let load_arguments_str = '';
-			if (typeof load_arguments === "object") {
-				let load_argument_keys = Object.keys(load_arguments);
-				load_argument_keys.forEach(function(key) {
-					load_arguments_str += '&'+key+'='+load_arguments[key];
-				});
-			}
-			redirectToExternalPath(getRootPath()+'component_builder.php?component=pages/'+final_component_name+load_arguments_str);
-			return;
-		}
-		return;
-	}
-	registered_component_array = {};
-	unRegisterEventHandlers();
-	$(document).off();
-	$('body').off();
-	force_logout_occurred = false;
-	if (!root_history_processing) {
-		addPageToRootHistory(final_component_name);
-	} else {
-		root_history_processing = false;
-	}
-	setUrlInputParameter("view",final_component_name);
-	updateAppState("CurrentPage",final_component_name);
-	loadComponent("pages/"+final_component_name,null,'body',final_load_arguments,true,undefined,callback);
-	if (debug_mode) {
-		setTimeout(function() {
-			dxPostExternal(getServerRootPath()+"divblox/config/framework/check_divblox_admin_logged_in.php",{},
-				function(data) {
-					let data_obj = JSON.parse(data);
-					if (data_obj.Result == "Success") {
-						let admin_links_html = '<a target="_blank" href="'+getServerRootPath()+'divblox/" ' +
-							'style="position: fixed;bottom: 10px;right: 10px;">' +
-							'<img src="'+getRootPath()+'divblox/assets/images/divblox_logo.svg" style="max-height:30px;"/></a>' +
-							'<a target="_blank" href="'+getRootPath()+'component_builder.php?component=pages/'+component_name+'" ' +
-							'class="btn btn-outline-primary btn-sm" style="position: fixed;bottom: 10px;right: 105px;font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\',' +
-							' Roboto, \'Helvetica Neue\', Arial, \'Noto Sans\', sans-serif, \'Apple Color Emoji\', \'Segoe UI Emoji\',' +
-							' \'Segoe UI Symbol\', \'Noto Color Emoji\';    font-size:14px;"><i class="fa' +
-							' fa-wrench"' +
-							' aria-hidden="true"></i> Component Builder</a>';
-						$('body').append(admin_links_html);
-					}
-				},
-				function(data) {
-					dxLog("Error: "+data);
-				});
-		},1000)
-	}
+function loadPageComponent(componentName = 'component', loadArguments = {}, callback = undefined) {
+    let finalLoadArguments = {"uid": pageUid};
+    let parametersStr = '';
+    if (typeof loadArguments === "object") {
+        let loadArgumentKeys = Object.keys(loadArguments);
+        loadArgumentKeys.forEach(function (key) {
+            finalLoadArguments[key] = loadArguments[key];
+            parametersStr += '&' + key + "=" + loadArguments[key];
+        });
+    }
+    let finalComponentName = dxPageManager.getMobilePageAlternate(componentName);
+    if (!isSpa()) {
+        redirectToInternalPath('?view=' + finalComponentName + parametersStr);
+        return;
+    }
+    if ((typeof isComponentBuilderActive !== "undefined") && (isComponentBuilderActive)) {
+        // JGL: In this case we should inform the user that we are opening a new page in a new component builder window
+        if (confirm("This will open a new component builder window for the page: " + finalComponentName)) {
+            let loadArgumentsStr = '';
+            if (typeof loadArguments === "object") {
+                let loadArgumentKeys = Object.keys(loadArguments);
+                loadArgumentKeys.forEach(function (key) {
+                    loadArgumentsStr += '&' + key + '=' + loadArguments[key];
+                });
+            }
+            redirectToExternalPath(getRootPath() + 'component_builder.php?component=pages/' + finalComponentName + loadArgumentsStr);
+            return;
+        }
+        return;
+    }
+    registeredComponents = {};
+    unRegisterEventHandlers();
+    $(document).off();
+    $('body').off();
+    forceLogoutOccurred = false;
+    if (!isRootHistoryProcessed) {
+        addPageToRootHistory(finalComponentName);
+    } else {
+        isRootHistoryProcessed = false;
+    }
+    setUrlInputParameter("view", finalComponentName);
+    updateAppState("CurrentPage", finalComponentName);
+    loadComponent("pages/" + finalComponentName, null, 'body', finalLoadArguments, true, undefined, callback);
+    if (isDebugMode) {
+        setTimeout(function () {
+            dxPostExternal(getServerRootPath() + "divblox/config/framework/check_divblox_admin_logged_in.php", {},
+                function (data) {
+                    let data_obj = JSON.parse(data);
+                    if (data_obj.Result == "Success") {
+                        let admin_links_html = '<a target="_blank" href="' + getServerRootPath() + 'divblox/" ' +
+                            'style="position: fixed;bottom: 10px;right: 10px;">' +
+                            '<img src="' + getRootPath() + 'divblox/assets/images/divblox_logo.svg" style="max-height:30px;"/></a>' +
+                            '<a target="_blank" href="' + getRootPath() + 'component_builder.php?component=pages/' + componentName + '" ' +
+                            'class="btn btn-outline-primary btn-sm" style="position: fixed;bottom: 10px;right: 105px;font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\',' +
+                            ' Roboto, \'Helvetica Neue\', Arial, \'Noto Sans\', sans-serif, \'Apple Color Emoji\', \'Segoe UI Emoji\',' +
+                            ' \'Segoe UI Symbol\', \'Noto Color Emoji\';    font-size:14px;"><i class="fa' +
+                            ' fa-wrench"' +
+                            ' aria-hidden="true"></i> Component Builder</a>';
+                        $('body').append(admin_links_html);
+                    }
+                },
+                function (data) {
+                    dxLog("Error: " + data);
+                });
+        }, 1000);
+    }
 }
+
 /**
  * Used to handle the onpopstate event when the browser back/forward buttons are clicked in SPA mode
  * @param {Number} direction -1 For backwards, 0 for nothing or 1 for forwards
  */
 function loadPageFromRootHistory(direction) {
-	if (direction == -1) {
-		root_history_index--;
-		if (root_history_index < 0) {root_history_index = 0;}
-	} else if (direction == 1) {
-		root_history_index++;
-		if (root_history_index >= root_history.length)  {
-			root_history_index = root_history.length - 1;
-		}
-	} else {
-		return;
-	}
-	let view_to_load = root_history[root_history_index];
-	let current_view = getUrlInputParameter("view");
-	if (view_to_load !== current_view) {
-		root_history_processing = true;
-		loadPageComponent(view_to_load);
-	}
+    if (direction == -1) {
+        rootHistoryIndex--;
+        if (rootHistoryIndex < 0) {
+            rootHistoryIndex = 0;
+        }
+    } else if (direction == 1) {
+        rootHistoryIndex++;
+        if (rootHistoryIndex >= rootHistories.length) {
+            rootHistoryIndex = rootHistories.length - 1;
+        }
+    } else {
+        return;
+    }
+    let viewToLoad = rootHistories[rootHistoryIndex];
+    let currentView = getUrlInputParameter("view");
+    if (viewToLoad !== currentView) {
+        isRootHistoryProcessed = true;
+        loadPageComponent(viewToLoad);
+    }
 }
+
 /**
  * Adds the provided page view to the root history array as the current active page
- * @param {String} page_view The name of the page component to add to the root history array
+ * @param {String} pageView The name of the page component to add to the root history array
  */
-function addPageToRootHistory(page_view) {
-	if (!isSpa()) {return;}
-	if (root_history[root_history.length - 1] !== page_view) {
-		root_history.push(page_view);
-	}
-	root_history_index = root_history.length - 1;
-	updatePushStateWithCurrentView();
+function addPageToRootHistory(pageView) {
+    if (!isSpa()) {
+        return;
+    }
+    if (rootHistories[rootHistories.length - 1] !== pageView) {
+        rootHistories.push(pageView);
+    }
+    rootHistoryIndex = rootHistories.length - 1;
+    updatePushStateWithCurrentView();
 }
+
 /**
  * Updates the window history with the current view for SPA mode
  */
 function updatePushStateWithCurrentView() {
-	if (!isSpa() || isNative()) {return;}
-	let current_view = getUrlInputParameter("view");
-	if (current_view !== null) {
-		window.history.pushState(root_history_index, null, getServerRootPath()+'?view='+current_view);
-		window.history.replaceState(root_history_index, null, location.pathname);
-	}
+    if (!isSpa() || isNative()) {
+        return;
+    }
+    let currentView = getUrlInputParameter("view");
+    if (currentView !== null) {
+        window.history.pushState(rootHistoryIndex, null, getServerRootPath() + '?view=' + currentView);
+        window.history.replaceState(rootHistoryIndex, null, location.pathname);
+    }
 }
+
 /**
  * Helper function to redirect to the login page when a component load error occurs
  */
 function handleLoadComponentError() {
-	setTimeout(function() {
-		loadPageComponent('login');
-	},2000);
-	throw new Error("Invalid component: Components must be grouped in folders with all relevant scripts." +
-		" Click here to visit the setup page: "+getServerRootPath()+"divblox/" +
-		"Will redirect to login page in 2s");
+    setTimeout(function () {
+        loadPageComponent('login');
+    }, 2000);
+    throw new Error("Invalid component: Components must be grouped in folders with all relevant scripts." +
+        " Click here to visit the setup page: " + getServerRootPath() + "divblox/" +
+        "Will redirect to login page in 2s");
 }
+
 /**
  * When a component is loaded in the DOM, it's element Id's are prefixed with the component UID. This function
  * modifies the component HTML to provide the final html
  * @param {String} uid The UID of the component
- * @param {String} initial_html The html as provided by the component
+ * @param {String} initialHtml The html as provided by the component
  * @return {String} The final html with the UID's prefixed
  */
-function getComponentFinalHtml(uid,initial_html) {
-	let final_html = initial_html.replace(/id="/g,'id="'+uid+'_');
-	final_html = final_html.replace(/="#/g,'="#'+uid+'_');
-	return final_html
+function getComponentFinalHtml(uid, initialHtml) {
+    let finalHtml = initialHtml.replace(/id="/g, 'id="' + uid + '_');
+    finalHtml = finalHtml.replace(/="#/g, '="#' + uid + '_');
+    return finalHtml;
 }
+
 /**
  * When a component is loaded more than once in the DOM, it needs to have a unique DOM index. This function provides
  * that functionality
- * @param {String} component_name The name of the component
+ * @param {String} componentName The name of the component
  */
-function generateNextDOMIndex(component_name) {
-	if (typeof dom_component_index_map[component_name] !== "undefined") {
-		let LastValue = dom_component_index_map[component_name][dom_component_index_map[component_name].length-1];
-		dom_component_index_map[component_name].push(LastValue+1);
-	} else {
-		dom_component_index_map[component_name] = [1];
-	}
+function generateNextDOMIndex(componentName) {
+    if (typeof domComponentIndexMap[componentName] !== "undefined") {
+        let lastValue = domComponentIndexMap[componentName][domComponentIndexMap[componentName].length - 1];
+        domComponentIndexMap[componentName].push(lastValue + 1);
+    } else {
+        domComponentIndexMap[componentName] = [1];
+    }
 }
+
 /**
  * Registers a component in the  registered_component_array in order for it to be retrievable later.
- * @param {Object} component_dom_object The component object to register
+ * @param {Object} componentDomObject The component object to register
  * @param {String} uid The UID of the component to register
  */
-function registerComponent(component_dom_object,uid) {
-	if (typeof(registered_component_array[uid]) !== "undefined") {
-		throw new Error("The component '"+uid+"' is already registered in the DOM");
-	}
-	registered_component_array[uid] = component_dom_object;
+function registerComponent(componentDomObject, uid) {
+    if (typeof (registeredComponents[uid]) !== "undefined") {
+        throw new Error("The component '" + uid + "' is already registered in the DOM");
+    }
+    registeredComponents[uid] = componentDomObject;
 }
+
 /**
  * Deregisters a component in the  registered_component_array
  * @param {String} uid The UID of the component to deregister
+ * @param {boolean} propagate Whether or not to deregister all subcomponents
  */
-function deregisterComponent(uid) {
-	if (typeof(registered_component_array[uid]) !== "undefined") {
-		delete registered_component_array[uid];
-	}
+function deregisterComponent(uid, propagate = false) {
+    if (typeof (registeredComponents[uid]) !== "undefined") {
+        if (propagate) {
+            let subComponents = registeredComponents[uid].subComponentObjects;
+            subComponents.forEach(function (subComponent) {
+                deregisterComponent(subComponent.arguments.uid, propagate);
+            });
+        }
+        delete registeredComponents[uid];
+    }
 }
+
 /**
  * Retrieves a component, based on its UID from registered_component_array
  * @param {String} uid The UID of the component to retrieve
  * @return {Object} The component object
  */
 function getRegisteredComponent(uid) {
-	if (typeof(registered_component_array[uid]) === "undefined") {
-		throw new Error("The component '"+uid+"' is not registered in the DOM");
-	}
-	return registered_component_array[uid]
+    if (typeof (registeredComponents[uid]) === "undefined") {
+        throw new Error("The component '" + uid + "' is not registered in the DOM");
+    }
+    return registeredComponents[uid];
 }
+
 /**
  * Gets the component name for a given component
  * @param {Object} component The component objet
  * @return {String} The name of the component
  */
 function getComponentName(component) {
-	return component.getComponentName();
+    return component.getComponentName();
 }
+
 /**
  * The current page will always have a default main component. This function returns that component
  * @return {Object} The component object
  */
 function getPageMainComponent() {
-	return getRegisteredComponent(page_uid);
+    return getRegisteredComponent(pageUid);
 }
+
 /**
  * Gets an HTML element based on its id and component
  * @param {Object} component The component object
- * @param {String} element_id The original DOM id of the element
+ * @param {String} elementId The original DOM id of the element
  * @return {jQuery|HTMLElement} The element object
  */
-function getComponentElementById(component,element_id) {
-	return $("#"+component.uid+"_"+element_id);
+function getComponentElementById(component, elementId) {
+    return $("#" + component.uid + "_" + elementId);
 }
+
 /**
  * Based on the actual DOM element id, retrieves the component UID from an HTML element id
- * @param {String} component_element_id The final DOM id of the element
- * @param {String} element_id The original element id of the element
+ * @param {String} componentElementId The final DOM id of the element
+ * @param {String} elementId The original element id of the element
  * @return {String} The UID of the component where this element is defined
  */
-function getUidFromComponentElementId(component_element_id,element_id) {
-	return component_element_id.replace("_"+element_id,"");
+function getUidFromComponentElementId(componentElementId, elementId) {
+    return componentElementId.replace("_" + elementId, "");
 }
+
 /**
  * Starts the propagation of an event by triggering it on the main page component
- * @param {String} event_name The name of the event
- * @param {Object} parameters_obj The parameters to send along with the event
+ * @param {String} eventName The name of the event
+ * @param {Object} parameters The parameters to send along with the event
  */
-function pageEventTriggered(event_name,parameters_obj) {
-	getPageMainComponent().eventTriggered(event_name,parameters_obj);
+function pageEventTriggered(eventName, parameters = {}) {
+    getPageMainComponent().eventTriggered(eventName, parameters);
 }
+
 /**
  * Gets the path to the given component's php script. If in native mode, this returns the full url to the script on
  * the server. If not, it's a relative path to the script.
@@ -2645,192 +2862,206 @@ function pageEventTriggered(event_name,parameters_obj) {
  * @return {string} The path to the component's php script
  */
 function getComponentControllerPath(component) {
-	return component.arguments["component_path"]+"/component.php";
+    return component.arguments["component_path"] + "/component.php";
 }
+
 /**
  * Loads the given component's html as a jQuery DOM object and passes it to the callback function
- * @param {String} component_path The path to the component
+ * @param {String} componentPath The path to the component
  * @param {Function} callback The function to execute once the DOM object has been created
  */
-function loadComponentHtmlAsDOMObject(component_path,callback) {
-	dxGetScript(component_path+"/component.html"+getRandomFilePostFix(), function(html) {
-		let doctype = document.implementation.createDocumentType('html', '', '');
-		let component_dom = document.implementation.createDocument('', 'html', doctype);
-		let jq_dom = $(component_dom);
-		try {
-			jq_dom.find('html').html(html);
-		} catch (e) {
-			alert("A parse error occurred.\nThis happens when the html in your component is not properly formed.\n" +
-				"- Please ensure all html tags have proper closing tags.\n" +
-				"- Please ensure that you do not use strange html print characters in your content." +
-				"\n\nError Detail: \n"+e);
-		}
-		callback(jq_dom);
-	}, function() {
+function loadComponentHtmlAsDOMObject(componentPath, callback) {
+    dxGetScript(componentPath + "/component.html" + getRandomFilePostFix(), function (html) {
+        let doctype = document.implementation.createDocumentType('html', '', '');
+        let componentDom = document.implementation.createDocument('', 'html', doctype);
+        let jqDom = $(componentDom);
+        try {
+            jqDom.find('html').html(html);
+        } catch (e) {
+            alert("A parse error occurred.\nThis happens when the html in your component is not properly formed.\n" +
+                "- Please ensure all html tags have proper closing tags.\n" +
+                "- Please ensure that you do not use strange html print characters in your content." +
+                "\n\nError Detail: \n" + e);
+        }
+        callback(jqDom);
+    }, function () {
 
-	},false/*We need to return the html from the request here*/);
+    }, false/*We need to return the html from the request here*/);
 }
+
 /**
  * Gets a component by its wrapper div id
- * @param {String} wrapper_div_id The element id of the wrapper div
- * @param {String} parent_uid The UID of the component parent
+ * @param {String} wrapperDivId The element id of the wrapper div
+ * @param {String} parentUid The UID of the component parent
  * @return {Object} The component object
  */
-function getComponentByWrapperId(wrapper_div_id,parent_uid) {
-	if (typeof parent_uid === "undefined") {
-		parent_uid = page_uid;
-	}
-	let wrapper_id_str = "#"+parent_uid+"_"+wrapper_div_id;
-	let wrapper_element = $(wrapper_id_str);
-	if (wrapper_element.length < 1) {
-		return null;
-	}
+function getComponentByWrapperId(wrapperDivId, parentUid) {
+    if (typeof parentUid === "undefined") {
+        parentUid = pageUid;
+    }
+    let wrapperId = "#" + parentUid + "_" + wrapperDivId;
+    let wrapperElement = $(wrapperId);
+    if (wrapperElement.length < 1) {
+        return null;
+    }
 
-	let uids = Object.keys(registered_component_array);
-	let component_to_return = null;
-	uids.forEach(function(uid) {
-		let component = getRegisteredComponent(uid);
-		if (component.arguments['parent_element'] === wrapper_id_str) {
-			component_to_return = component;
-		}
-	});
-	return component_to_return;
+    let uids = Object.keys(registeredComponents);
+    let componentToReturn = null;
+    uids.forEach(function (uid) {
+        let component = getRegisteredComponent(uid);
+        if (component.arguments['parent_element'] === wrapperId) {
+            componentToReturn = component;
+        }
+    });
+    return componentToReturn;
 }
+
 /**
  * Generates a unique id that can be assigned to a DOM element
  * @return {string} The css id to use
  */
 function getUniqueDomCssId() {
-	let css_id_candidate = '';
-	let possible_characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-	let done = false;
-	while(!done) {
-		for (let i = 0; i < 5; i++) {
-			css_id_candidate += possible_characters.charAt(Math.floor(Math.random() * possible_characters.length));
-		}
-		if ($('body').find("#"+css_id_candidate).length > 0) {
-			// That Id exists
-		} else {
-			done = true;
-		}
-	}
-	return css_id_candidate;
+    let cssIdCandidate = '';
+    let possibleCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let done = false;
+    while (!done) {
+        for(let i = 0; i < 5; i++) {
+            cssIdCandidate += possibleCharacters.charAt(Math.floor(Math.random() * possibleCharacters.length));
+        }
+        if ($('body').find("#" + cssIdCandidate).length > 0) {
+            // That Id exists
+        } else {
+            done = true;
+        }
+    }
+    return cssIdCandidate;
 }
+
 /**
  * Scans the url input parameters and adds them to the current app state
- * @param {String} url_parameters_str The current url input parameters
+ * @param {String} urlParametersStr The current url input parameters
  */
-function preparePageInputs(url_parameters_str) {
-	if (typeof url_parameters_str !== "undefined") {
-		updateAppState('page_inputs',url_parameters_str);
-		if (url_parameters_str.length > 0) {
-			let init_url_input_parameters = new URLSearchParams(url_parameters_str);
-			if (init_url_input_parameters.get("init_native") != null) {
-				//JGL: If this is passed, an auth token must also be passed
-				setAuthenticationToken(init_url_input_parameters.get('auth_token'));
-				setIsNative();
-			}
-		}
-	}
-	if (isSpa()) {
-		redirectToInternalPath();
-	} else {
-		processPageInputs();
-	}
+function preparePageInputs(urlParametersStr) {
+    if (typeof urlParametersStr !== "undefined") {
+        updateAppState('page_inputs', urlParametersStr);
+        if (urlParametersStr.length > 0) {
+            let initUrlInputParameters = new URLSearchParams(urlParametersStr);
+            if (initUrlInputParameters.get("init_native") != null) {
+                //JGL: If this is passed, an auth token must also be passed
+                setAuthenticationToken(initUrlInputParameters.get('auth_token'));
+                setIsNative();
+            }
+        }
+    }
+    if (isSpa()) {
+        redirectToInternalPath();
+    } else {
+        processPageInputs();
+    }
 }
+
 /**
  * Handles the current page load based on the input parameters provided
  */
 function processPageInputs() {
-	let page_inputs = getValueFromAppState('page_inputs');
-	if (page_inputs === null) {
-		loadUserRoleLandingPage("anonymous");
-		return;
-	}
-	if (page_inputs.length > 0) {
-		url_input_parameters = new URLSearchParams(page_inputs);
-	} else {
-		loadUserRoleLandingPage("anonymous");
-		return;
-	}
-	let page_component = dx_page_manager.getMobilePageAlternate(url_input_parameters.get("view"));
-	let view = "pages/"+page_component;
-	updateAppState("CurrentPage",view);
-	if ((typeof url_input_parameters.get("view") === "undefined") || (url_input_parameters.get("view") == null)) {
-		throw new Error("Invalid component name provided. Click here to visit the setup page: "+getServerRootPath()+"divblox/");
-	} else {
-		addPageToRootHistory(page_component);
-		loadComponent(view,null,'body',{"uid":page_uid},false);
-	}
-	if (debug_mode) {
-		dxPostExternal(getServerRootPath()+"divblox/config/framework/check_divblox_admin_logged_in.php",{},
-			function(data) {
-				let data_obj = JSON.parse(data);
-				if (data_obj.Result == "Success") {
-					let admin_links_html = '<a target="_blank" href="'+getServerRootPath()+'divblox/" ' +
-						'style="position: fixed;bottom: 10px;right: 10px;">' +
-						'<img src="'+getRootPath()+'divblox/assets/images/divblox_logo.svg" style="max-height:30px;"/></a>' +
-						'<a target="_blank" href="'+getRootPath()+'component_builder.php?component='+view+'" ' +
-						'class="btn btn-outline-primary btn-sm" style="position: fixed;bottom: 10px;right: 105px;font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\',' +
-						' Roboto, \'Helvetica Neue\', Arial, \'Noto Sans\', sans-serif, \'Apple Color Emoji\', \'Segoe UI Emoji\',' +
-						' \'Segoe UI Symbol\', \'Noto Color Emoji\';    font-size:14px;"><i class="fa fa-wrench"' +
-						' aria-hidden="true"></i> Component Builder</a>';
-					$('body').append(admin_links_html);
-				}
-			},
-			function(data) {});
-	}
+    let pageInputs = getValueFromAppState('page_inputs');
+    if (pageInputs === null) {
+        loadUserRoleLandingPage("anonymous");
+        return;
+    }
+    if (pageInputs.length > 0) {
+        urlInputParameters = new URLSearchParams(pageInputs);
+    } else {
+        loadUserRoleLandingPage("anonymous");
+        return;
+    }
+    let pageComponent = dxPageManager.getMobilePageAlternate(urlInputParameters.get("view"));
+    let view = "pages/" + pageComponent;
+    updateAppState("CurrentPage", view);
+    if ((typeof urlInputParameters.get("view") === "undefined") || (urlInputParameters.get("view") == null)) {
+        throw new Error("Invalid component name provided. Click here to visit the setup page: " + getServerRootPath() + "divblox/");
+    } else {
+        addPageToRootHistory(pageComponent);
+        loadComponent(view, null, 'body', {"uid": pageUid}, false);
+    }
+    if (isDebugMode) {
+        dxPostExternal(getServerRootPath() + "divblox/config/framework/check_divblox_admin_logged_in.php", {},
+            function (data) {
+                let data_obj = JSON.parse(data);
+                if (data_obj.Result == "Success") {
+                    let admin_links_html = '<a target="_blank" href="' + getServerRootPath() + 'divblox/" ' +
+                        'style="position: fixed;bottom: 10px;right: 10px;">' +
+                        '<img src="' + getRootPath() + 'divblox/assets/images/divblox_logo.svg" style="max-height:30px;"/></a>' +
+                        '<a target="_blank" href="' + getRootPath() + 'component_builder.php?component=' + view + '" ' +
+                        'class="btn btn-outline-primary btn-sm" style="position: fixed;bottom: 10px;right: 105px;font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\',' +
+                        ' Roboto, \'Helvetica Neue\', Arial, \'Noto Sans\', sans-serif, \'Apple Color Emoji\', \'Segoe UI Emoji\',' +
+                        ' \'Segoe UI Symbol\', \'Noto Color Emoji\';    font-size:14px;"><i class="fa fa-wrench"' +
+                        ' aria-hidden="true"></i> Component Builder</a>';
+                    $('body').append(admin_links_html);
+                }
+            },
+            function (data) {
+            });
+    }
 }
+
 /**
  * Provides a file post fix that is used to ensure files are reloaded from the server and not cached
  * @return {string} The file post fix to append to the file name
  */
 function getRandomFilePostFix() {
-	let postfix_candidate = '';
-	let possible_characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-	for (let i = 0; i < 5; i++) {
-		postfix_candidate += possible_characters.charAt(Math.floor(Math.random() * possible_characters.length));
-	}
-	return '?v='+postfix_candidate;
+    let postfixCandidate = '';
+    let possibleCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for(let i = 0; i < 5; i++) {
+        postfixCandidate += possibleCharacters.charAt(Math.floor(Math.random() * possibleCharacters.length));
+    }
+    return '?v=' + postfixCandidate;
 }
+
 /**
  * Adds an event handler to the registered_event_handlers array to enable diblox to offload it later
- * @param {String} dom_node The string describing the dom node to which the event was attached
+ * @param {String} domNode The string describing the dom node to which the event was attached
  * @param {String} event The name of the event
- * @param {String} dom_id The id of the dom element
- * @param {String} dom_class The class of the dom element
+ * @param {String} domId The id of the dom element
+ * @param {String} domClass The class of the dom element
  */
-function registerEventHandler(dom_node,event,dom_id,dom_class) {
-	if (typeof dom_node === "undefined"){return;}
-	if (typeof event === "undefined"){return;}
-	let event_obj = {dom_node:dom_node,event:event,id:dom_id,class:dom_class};
-	if (typeof registered_event_handlers !== "object") {
-		registered_event_handlers = [];
-	}
-	registered_event_handlers.push(event_obj);
+function registerEventHandler(domNode, event, domId, domClass) {
+    if (typeof domNode === "undefined") {
+        return;
+    }
+    if (typeof event === "undefined") {
+        return;
+    }
+    let eventObj = {dom_node: domNode, event: event, id: domId, class: domClass};
+    if (typeof registeredEventHandlers !== "object") {
+        registeredEventHandlers = [];
+    }
+    registeredEventHandlers.push(eventObj);
 }
+
 /**
  * Loops through registered_event_handlers and removes the registered event handlers
  */
 function unRegisterEventHandlers() {
-	let event_keys = Object.keys(registered_event_handlers);
-	event_keys.forEach(function(key) {
-		let event_obj = registered_event_handlers[key];
-		if (typeof event_obj.id !== "undefined") {
-			$(event_obj.dom_node).off(event_obj.event,"#"+event_obj.id);
-		} else if (typeof event_obj.class !== "undefined") {
-			$(event_obj.dom_node).off(event_obj.event,"."+event_obj.class);
-		} else {
-			$(event_obj.dom_node).off(event_obj.event);
-		}
-	});
-	registered_event_handlers = [];
+    let eventKeys = Object.keys(registeredEventHandlers);
+    eventKeys.forEach(function (key) {
+        let eventObj = registeredEventHandlers[key];
+        if (typeof eventObj.id !== "undefined") {
+            $(eventObj.dom_node).off(eventObj.event, "#" + eventObj.id);
+        } else if (typeof eventObj.class !== "undefined") {
+            $(eventObj.dom_node).off(eventObj.event, "." + eventObj.class);
+        } else {
+            $(eventObj.dom_node).off(eventObj.event);
+        }
+    });
+    registeredEventHandlers = [];
 }
+
 /**
  * This function can be used to execute system-wide actions after the DivbloxDomBaseComponent class has loaded a page
  */
 function doAfterPageLoadActions() {
-	//TODO: Override this
+    //TODO: Override this
 }
 
 /**
@@ -2839,18 +3070,21 @@ function doAfterPageLoadActions() {
  * the current user's user role.
  */
 function toggleUserRoleVisibility() {
-	if (currentUserRole == null) {return;}
-	if (dx_admin_roles.includes(currentUserRole.toLowerCase())) {
-		$('.administrator-visible').removeClass("user-role-visible");
-	} else {
-		$('.'+currentUserRole.toLowerCase()+'-visible').removeClass("user-role-visible");
-	}
+    if (currentUserRole == null) {
+        return;
+    }
+    if (dxAdminRoles.includes(currentUserRole.toLowerCase())) {
+        $('.administrator-visible').removeClass("user-role-visible");
+    } else {
+        $('.' + currentUserRole.toLowerCase() + '-visible').removeClass("user-role-visible");
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * Divblox issue tracking related functions
  */
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * Sends a request to the server to log a new feedback item on basecamp. This function will automatically detect the
@@ -2859,195 +3093,206 @@ function toggleUserRoleVisibility() {
  * @param {String} type ISSUE|FEATURE
  * @param {String} title The title of the feedback
  * @param {String} description The description of the feedback
- * @param {String} component_name The name of the specifically affected sub component
- * @param {String} component_uid The UID of the specifically affected sub component
- * @param {Function} on_success The function to call when the feedback was captured successfully
- * @param {Function} on_fail The function to call when something went wrong
+ * @param {String} componentName The name of the specifically affected sub component
+ * @param {String} componentUid The UID of the specifically affected sub component
+ * @param {Function} onSuccess The function to call when the feedback was captured successfully
+ * @param {Function} onFail The function to call when something went wrong
  */
-function logNewComponentFeedback(type,title,description,component_name,component_uid,on_success,on_fail) {
-	if (typeof on_success !== "function") {
-		on_success = function(){}
-	}
-	if (typeof on_fail !== "function") {
-		on_fail = function(message){}
-	}
-	let capture_page = getValueFromAppState('CurrentPage');
-	if (capture_page.indexOf("pages") === -1) {
-		capture_page = "pages/"+capture_page;
-	}
-	dxRequestSystem(getRootPath()+'divblox/config/framework/issue_tracking/issue_request_handler.php?f=newIssue',
-		{type:type,
-			title:title,
-			description:description,
-			component_name:component_name,
-			component_uid:component_uid,
-			capture_page:capture_page},
-		function(data_str) {
-			on_success(data_str);
-		},
-		function(data_obj) {
-			on_fail(data_obj.Message);
-		});
+function logNewComponentFeedback(type, title, description, componentName, componentUid, onSuccess, onFail) {
+    if (typeof onSuccess !== "function") {
+        onSuccess = function () {
+        };
+    }
+    if (typeof onFail !== "function") {
+        onFail = function (message) {
+        };
+    }
+    let capturePage = getValueFromAppState('CurrentPage');
+    if (capturePage.indexOf("pages") === -1) {
+        capturePage = "pages/" + capturePage;
+    }
+    dxRequestSystem(getRootPath() + 'divblox/config/framework/issue_tracking/issue_request_handler.php?f=newIssue',
+        {
+            type: type,
+            title: title,
+            description: description,
+            component_name: componentName,
+            component_uid: componentUid,
+            capture_page: capturePage
+        },
+        function (data_str) {
+            onSuccess(data_str);
+        },
+        function (data) {
+            onFail(data.Message);
+        });
 }
+
 /**
  * Appends the feedback button and modal to the current page
  */
 function initFeedbackCapture() {
-	if (!allow_feedback) {return;}
-	let button_html = '<button id="dxGlobalFeedbackButton" type="button" class="btn btn-dark" data-toggle="modal"' +
-		' data-target="#dxGlobalFeedbackModal">Feedback</button>';
-	let modal_html = '<div class="modal fade" id="dxGlobalFeedbackModal" tabindex="-1" role="dialog"' +
-		' aria-labelledby="FeedbackModal" aria-hidden="true">\n' +
-		'    <div class="modal-dialog" role="document">\n' +
-		'        <div class="modal-content" style="font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\',' +
-		' Roboto, \'Helvetica Neue\', Arial, \'Noto Sans\', sans-serif, \'Apple Color Emoji\', \'Segoe UI Emoji\',' +
-		' \'Segoe' +
-		' UI Symbol\', \'Noto Color Emoji\';    font-size:1rem;">\n' +
-		'            <div class="modal-header">\n' +
-		'                <h5 class="modal-title">Provide feedback for this page</h5>\n' +
-		'                <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n' +
-		'                    <span aria-hidden="true"><i class="fa fa-times" aria-hidden="true"> </i></span>\n' +
-		'                </button>\n' +
-		'            </div>\n' +
-		'            <div class="modal-body">\n' +
-		'                <div class="row">\n' +
-		'                    <div class="col-12">\n' +
-		'<label class="small">Feedback Type</label>' +
-		'                        <select id="dxGlobalFeedbackType" class="form-control">' +
-		'<option value="ISSUE">Bug</option>' +
-		'<option value="FEATURE">Feature Request</option>' +
-		'                       </select>'+
-		'<label class="mt-2 small">Feedback Title</label>' +
-		'                        <input type="text" id="dxGlobalFeedbackTitle" class="form-control"' +
-		' placeholder="Title"/>' +
-		'<label class="mt-2 small">Feedback Description (Optional)</label>' +
-		'                        <textarea id="dxGlobalFeedbackDescription" class="form-control"' +
-		' placeholder="Describe your issue or feature here..." rows="5"/>' +
-		'<div id="dxGlobalFeedbackTechnicalWrapper">'+
-		'<label class="mt-2 small">Component (Optional)</label>' +
-		'                        <select id="dxGlobalFeedbackComponent" class="form-control">' +
-		'<option value="-1">-Select Component-</option>' +
-		'                       </select>' +
-		'</div>'+
-		'                    </div>\n' +
-		'                </div>\n' +
-		'            </div>\n' +
-		'            <div class="modal-footer">\n' +
-		'                <button type="button" id="dxGlobalFeedbackSubmitButton" class="btn btn-primary">Submit' +
-		' Feedback</button>\n' +
-		'            </div>\n' +
-		'        </div>\n' +
-		'    </div>\n' +
-		'</div>';
-	$('body').append(button_html).append(modal_html);
-	$("#dxGlobalFeedbackSubmitButton").on("click", function() {
-		if ($("#dxGlobalFeedbackTitle").val() === "") {
-			showAlert("Title is required...","error","OK",false);
-			return;
-		}
-		logNewComponentFeedback($("#dxGlobalFeedbackType").val(),$("#dxGlobalFeedbackTitle").val(),$("#dxGlobalFeedbackDescription").val(),$("#dxGlobalFeedbackComponent").val(),undefined,
-			function() {
-				showAlert("Feedback captured!","success");
-				if (checkComponentBuilderActive()) {
-					setTimeout(function() {
-						window.location.reload(true);
-					},1000)
-				}
-				$("#dxGlobalFeedbackModal").modal('hide');
-			},
-			function(message) {
-				showAlert("Error saving feedback: "+message,"warning","OK");
-			})
-	});
-	if (!checkComponentBuilderActive()) {
-		$("#dxGlobalFeedbackTechnicalWrapper").hide();
-		return; //JGL: We only want to give the following options when the user is working on the component builder
-	}
-	$("#dxGlobalFeedbackTechnicalWrapper").show();
-	let current_component = getRegisteredComponent(page_uid);
-	let sub_components = current_component.getSubComponents();
-	let sub_component_names = [];
-	sub_components.forEach(function(sub_component) {
-		if (sub_component_names.indexOf(sub_component.arguments.component_name) === -1) {
-			sub_component_names.push(sub_component.arguments.component_name);
-		}
-	});
-	sub_component_names.forEach(function(sub_component_name) {
-		$("#dxGlobalFeedbackComponent").append('<option value="'+sub_component_name+'">'+sub_component_name+'</option>');
-	})
+    if (!isFeedbackAllowed) {
+        return;
+    }
+    let buttonHtml = '<button id="dxGlobalFeedbackButton" type="button" class="btn btn-dark" data-toggle="modal"' +
+        ' data-target="#dxGlobalFeedbackModal">Feedback</button>';
+    let modalHtml = '<div class="modal fade" id="dxGlobalFeedbackModal" tabindex="-1" role="dialog"' +
+        ' aria-labelledby="FeedbackModal" aria-hidden="true">\n' +
+        '    <div class="modal-dialog" role="document">\n' +
+        '        <div class="modal-content" style="font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\',' +
+        ' Roboto, \'Helvetica Neue\', Arial, \'Noto Sans\', sans-serif, \'Apple Color Emoji\', \'Segoe UI Emoji\',' +
+        ' \'Segoe' +
+        ' UI Symbol\', \'Noto Color Emoji\';    font-size:1rem;">\n' +
+        '            <div class="modal-header">\n' +
+        '                <h5 class="modal-title">Provide feedback for this page</h5>\n' +
+        '                <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n' +
+        '                    <span aria-hidden="true"><i class="fa fa-times" aria-hidden="true"> </i></span>\n' +
+        '                </button>\n' +
+        '            </div>\n' +
+        '            <div class="modal-body">\n' +
+        '                <div class="row">\n' +
+        '                    <div class="col-12">\n' +
+        '<label class="small">Feedback Type</label>' +
+        '                        <select id="dxGlobalFeedbackType" class="form-control">' +
+        '<option value="ISSUE">Bug</option>' +
+        '<option value="FEATURE">Feature Request</option>' +
+        '                       </select>' +
+        '<label class="mt-2 small">Feedback Title</label>' +
+        '                        <input type="text" id="dxGlobalFeedbackTitle" class="form-control"' +
+        ' placeholder="Title"/>' +
+        '<label class="mt-2 small">Feedback Description (Optional)</label>' +
+        '                        <textarea id="dxGlobalFeedbackDescription" class="form-control"' +
+        ' placeholder="Describe your issue or feature here..." rows="5"/>' +
+        '<div id="dxGlobalFeedbackTechnicalWrapper">' +
+        '<label class="mt-2 small">Component (Optional)</label>' +
+        '                        <select id="dxGlobalFeedbackComponent" class="form-control">' +
+        '<option value="-1">-Select Component-</option>' +
+        '                       </select>' +
+        '</div>' +
+        '                    </div>\n' +
+        '                </div>\n' +
+        '            </div>\n' +
+        '            <div class="modal-footer">\n' +
+        '                <button type="button" id="dxGlobalFeedbackSubmitButton" class="btn btn-primary">Submit' +
+        ' Feedback</button>\n' +
+        '            </div>\n' +
+        '        </div>\n' +
+        '    </div>\n' +
+        '</div>';
+    $('body').append(buttonHtml).append(modalHtml);
+    $("#dxGlobalFeedbackSubmitButton").on("click", function () {
+        if ($("#dxGlobalFeedbackTitle").val() === "") {
+            showAlert("Title is required...", "error", "OK", false);
+            return;
+        }
+        logNewComponentFeedback($("#dxGlobalFeedbackType").val(), $("#dxGlobalFeedbackTitle").val(), $("#dxGlobalFeedbackDescription").val(), $("#dxGlobalFeedbackComponent").val(), undefined,
+            function () {
+                showAlert("Feedback captured!", "success");
+                if (checkComponentBuilderActive()) {
+                    setTimeout(function () {
+                        window.location.reload(true);
+                    }, 1000);
+                }
+                $("#dxGlobalFeedbackModal").modal('hide');
+            },
+            function (message) {
+                showAlert("Error saving feedback: " + message, "warning", "OK");
+            });
+    });
+    if (!checkComponentBuilderActive()) {
+        $("#dxGlobalFeedbackTechnicalWrapper").hide();
+        return; //JGL: We only want to give the following options when the user is working on the component builder
+    }
+    $("#dxGlobalFeedbackTechnicalWrapper").show();
+    let thisComponent = getRegisteredComponent(pageUid);
+    let subComponents = thisComponent.getSubComponents();
+    let subcomponentNames = [];
+    subComponents.forEach(function (subComponent) {
+        if (subcomponentNames.indexOf(subComponent.arguments.component_name) === -1) {
+            subcomponentNames.push(subComponent.arguments.component_name);
+        }
+    });
+    subcomponentNames.forEach(function (subComponentName) {
+        $("#dxGlobalFeedbackComponent").append('<option value="' + subComponentName + '">' + subComponentName + '</option>');
+    });
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * Divblox general helper functions
  */
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * Provides a more detailed implementation of console.log that honours the "debug_mode" flag
- * @param {String} Message The message to log to console
- * @param {Boolean} show_stack_trace If true, includes the current stack trace
+ * @param {String} message The message to log to console
+ * @param {Boolean} showStackTrace If true, includes the current stack trace
  */
-function dxLog(Message = "No message provded",show_stack_trace = true) {
-	if (debug_mode || checkComponentBuilderActive()) {
-		if (show_stack_trace) {
-			let stack = new Error().stack;
-			let stack_array = stack.split("\n");
-			console.log(Message+" "+stack_array[2].trim());
-		} else {
-			console.log(Message);
-		}
-	}
+function dxLog(message = "No message provided", showStackTrace = true) {
+    if (isDebugMode || checkComponentBuilderActive()) {
+        if (showStackTrace) {
+            let stackData = new Error().stack;
+            let stacks = stackData.split("\n");
+            console.log(message + " " + stacks[2].trim());
+        } else {
+            console.log(message);
+        }
+    }
 }
+
 /**
  * Divblox keeps an array of elements that are currently disabled because a request is currently happening. This
  * function adds a specific element to that array, disables it and sets its text to the provided text
  * @param {jQuery|HTMLElement} element The element to add to the loading array
- * @param {String} loading_text The text to display while loading (Optional)
+ * @param {String} loadingText The text to display while loading (Optional)
  * @return {String} The id of the element that was added to the array
  */
-function addTriggerElementToLoadingElementArray(element,loading_text) {
-	let trigger_element_id = -1;
-	if ((element === false) || (typeof element === "undefined")) {
-		// This means the developer intentionally does not want an element to be disabled
-		return trigger_element_id;
-	} else {
-		if (typeof loading_text === "undefined") {
-			loading_text = "Loading...";
-		} else {
-			loading_text = loading_text + '...';
-		}
-		trigger_element_id = element.attr("id");
-		if (typeof element_loading_state_obj[trigger_element_id] !== "undefined") {
-			if (element_loading_state_obj[trigger_element_id] === true) {
-				return trigger_element_id;
-			}
-		}
-		element_loading_obj[trigger_element_id] = element.html();
-		element_loading_state_obj[trigger_element_id] = true;
-		let loading_html = '<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"' +
-			' style="vertical-align: initial;""></span> '+loading_text;
-		element.html(loading_html);
-		element.attr("disabled","true");
-		element.addClass("disabled");
-	}
-	return trigger_element_id;
+function addTriggerElementToLoadingElementArray(element, loadingText) {
+    let triggerElementId = -1;
+    if ((element === false) || (typeof element === "undefined")) {
+        // This means the developer intentionally does not want an element to be disabled
+        return triggerElementId;
+    } else {
+        if (typeof loadingText === "undefined") {
+            loadingText = "Loading...";
+        } else {
+            loadingText = loadingText + '...';
+        }
+        triggerElementId = element.attr("id");
+        if (typeof elementLoadingStates[triggerElementId] !== "undefined") {
+            if (elementLoadingStates[triggerElementId] === true) {
+                return triggerElementId;
+            }
+        }
+        elementLoadingTexts[triggerElementId] = element.html();
+        elementLoadingStates[triggerElementId] = true;
+        let loadingHtml = '<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"' +
+            ' style="vertical-align: initial;""></span> ' + loadingText;
+        element.html(loadingHtml);
+        element.attr("disabled", "true");
+        element.addClass("disabled");
+    }
+    return triggerElementId;
 }
+
 /**
  * Should be called once a request has completed to restore the trigger element to its original state
- * @param {String} trigger_element_id The dom id of the element to restore
+ * @param {String} triggerElementId The dom id of the element to restore
  */
-function removeTriggerElementFromLoadingElementArray(trigger_element_id) {
-	if (typeof trigger_element_id !== "undefined") {
-		if (typeof element_loading_obj[trigger_element_id] !== "undefined") {
-			$("#"+trigger_element_id).html(element_loading_obj[trigger_element_id]).attr("disabled",false).prop("disabled",false).removeClass("disabled");
-			if (typeof element_loading_state_obj[trigger_element_id] !== "undefined") {
-				if (element_loading_state_obj[trigger_element_id] === true) {
-					element_loading_state_obj[trigger_element_id] = false;
-				}
-			}
-		}
-	}
+function removeTriggerElementFromLoadingElementArray(triggerElementId) {
+    if (typeof triggerElementId !== "undefined") {
+        if (typeof elementLoadingTexts[triggerElementId] !== "undefined") {
+            $("#" + triggerElementId).html(elementLoadingTexts[triggerElementId]).attr("disabled", false).prop("disabled", false).removeClass("disabled");
+            if (typeof elementLoadingStates[triggerElementId] !== "undefined") {
+                if (elementLoadingStates[triggerElementId] === true) {
+                    elementLoadingStates[triggerElementId] = false;
+                }
+            }
+        }
+    }
 }
+
 /**
  * This function is the default function to send a request to the server from the Divblox frontend. This function
  * does some heavy lifting with regards to sending a request to the server:
@@ -3056,437 +3301,463 @@ function removeTriggerElementFromLoadingElementArray(trigger_element_id) {
  * - Adds the request to the dx_queue to be processed.
  * @param {String} url The url on the server to which the request must be sent
  * @param {Object} parameters The input parameters to send in the POST body
- * @param {Function} on_success A callback function to call when the request is successfully processed. This
+ * @param {Function} onSuccess A callback function to call when the request is successfully processed. This
  * callback will ALWAYS be populated with an object containing a property "Result: Success"
- * @param {Function} on_fail A callback function to call when the request is NOT successfully processed. This
+ * @param {Function} onFail A callback function to call when the request is NOT successfully processed. This
  * callback will ALWAYS be populated with an object containing a property "Result: Failed"
- * @param {Boolean} queue_on_offline Tells the function to either queue or deny the request, based on the offline state
+ * @param {Boolean} queueOnOffline Tells the function to either queue or deny the request, based on the offline state
  * @param {jQuery|HTMLElement} element The element to add to the loading array
- * @param {String} loading_text The text to display while loading (Optional)
+ * @param {String} loadingText The text to display while loading (Optional)
  */
-function dxRequestInternal(url = '',parameters = {},on_success = undefined,on_fail = undefined,queue_on_offline = false,element = undefined,loading_text = 'Loading') {
-	if (typeof queue_on_offline === "undefined") {
-		queue_on_offline = false;
-	}
-	if(!checkOnlineStatus() && !dx_offline) {
-		setOffline();
-	}
-	if(!checkOnlineStatus() && (!queue_on_offline)) {
-		on_fail({Message:presentOfflineRequestBlockedMessage(),FailureReason:"OFFLINE"});
-		return;
-	} else {
-		if (dx_offline) {
-			setOnline();
-		}
-	}
-	let trigger_element_id = addTriggerElementToLoadingElementArray(element,loading_text);
-	dxAddToRequestQueue({"url":url,"parameters":parameters,"on_success":on_success,"on_fail":on_fail,"trigger_element_id":trigger_element_id});
+function dxRequestInternal(url = '', parameters = {}, onSuccess = undefined, onFail = undefined, queueOnOffline = false, element = undefined, loadingText = 'Loading') {
+    if (typeof queueOnOffline === "undefined") {
+        queueOnOffline = false;
+    }
+    if (!checkOnlineStatus() && !isDxOffline) {
+        setOffline();
+    }
+    if (!checkOnlineStatus() && (!queueOnOffline)) {
+        onFail({Message: presentOfflineRequestBlockedMessage(), FailureReason: "OFFLINE"});
+        return;
+    } else {
+        if (isDxOffline) {
+            setOnline();
+        }
+    }
+    let triggerElementId = addTriggerElementToLoadingElementArray(element, loadingText);
+    dxAddToRequestQueue({
+        "url": url,
+        "parameters": parameters,
+        "on_success": onSuccess,
+        "on_fail": onFail,
+        "trigger_element_id": triggerElementId
+    });
 }
+
 /**
  * This function processes the next request in the dx_queue
  * @param {String} url The url on the server to which the request must be sent
  * @param {Object} parameters The input parameters to send in the POST body
- * @param {Function} on_success A callback function to call when the request is successfully processed. This
+ * @param {Function} onSuccess A callback function to call when the request is successfully processed. This
  * callback will ALWAYS be populated with an object containing a property "Result: Success"
- * @param {Function} on_fail A callback function to call when the request is NOT successfully processed. This
+ * @param {Function} onFail A callback function to call when the request is NOT successfully processed. This
  * callback will ALWAYS be populated with an object containing a property "Result: Failed
- * @param {String} trigger_element_id The dom id of the element that triggered the request
+ * @param {String} triggerElementId The dom id of the element that triggered the request
  * @return {dxRequestInternalQueued} Unused
  */
-function dxRequestInternalQueued(url,parameters,on_success,on_fail,trigger_element_id) {
-	dx_processing_queue = true;
-	if (typeof parameters !== "object") {
-		parameters = {};
-	}
-	if (authentication_token == "") {
-		authentication_token = getValueFromAppState('dxAuthenticationToken');
-	}
-	if (typeof authentication_token === "undefined") {
-		authentication_token = "";
-	}
-	parameters["AuthenticationToken"] = authentication_token;
-	if (isNative()) {
-		parameters["is_native"] = 1;
-	}
-	$.post(url,parameters)
-		.done(function(data) {
-			dx_processing_queue = false;
-			dxProcessRequestQueue();
-			let data_obj = getJsonObject(data);
-			if (typeof data_obj.AuthenticationToken !== "undefined") {
-				updateAppState('dxAuthenticationToken',data_obj.AuthenticationToken);
-			}
-			if (typeof data_obj.isMaintenanceModeActive !== "undefined") {
-				if (data_obj.isMaintenanceModeActive) {
-					if (!maintenanceModeTriggered) {
-						dxLog("A maintenance mode trigger was received. Full return: "+data);
-						maintenanceModeTriggered = true;
-						loadPageComponent("maintenance");
-					}
-					return;
-				}
-			}
-			if (typeof data_obj.ForceLogout !== "undefined") {
-				if (data_obj.ForceLogout) {
-					if (!force_logout_occurred) {
-						dxLog("A force logout was received. Full return: "+data);
-						force_logout_occurred = true;
-						logout();
-					}
-					return;
-				}
-			}
-			if (data_obj.Result != "Success") {
-				on_fail(data_obj);
-			} else {
-				on_success(data_obj);
-			}
-			removeTriggerElementFromLoadingElementArray(trigger_element_id);
-		})
-		.fail(function(data) {
-			dx_processing_queue = false;
-			dxProcessRequestQueue();
-			let data_obj = getJsonObject(data);
-			on_fail(data_obj);
-			removeTriggerElementFromLoadingElementArray(trigger_element_id);
-		});
-	return this;
+function dxRequestInternalQueued(url, parameters, onSuccess, onFail, triggerElementId) {
+    dxProcessingQueue = true;
+    if (typeof parameters !== "object") {
+        parameters = {};
+    }
+    if (authenticationToken == "") {
+        authenticationToken = getValueFromAppState('dxAuthenticationToken');
+    }
+    if (typeof authenticationToken === "undefined") {
+        authenticationToken = "";
+    }
+    parameters["AuthenticationToken"] = authenticationToken;
+    if (isNative()) {
+        parameters["is_native"] = 1;
+    }
+    $.post(url, parameters)
+        .done(function (data) {
+            dxProcessingQueue = false;
+            dxProcessRequestQueue();
+            data = getJsonObject(data);
+            if (typeof data.AuthenticationToken !== "undefined") {
+                updateAppState('dxAuthenticationToken', data.AuthenticationToken);
+            }
+            if (typeof data.isMaintenanceModeActive !== "undefined") {
+                if (data.isMaintenanceModeActive) {
+                    if (!maintenanceModeTriggered) {
+                        dxLog("A maintenance mode trigger was received. Full return: " + data);
+                        maintenanceModeTriggered = true;
+                        loadPageComponent("maintenance");
+                    }
+                    return;
+                }
+            }
+            if (typeof data.ForceLogout !== "undefined") {
+                if (data.ForceLogout) {
+                    if (!forceLogoutOccurred) {
+                        dxLog("A force logout was received. Full return: " + data);
+                        forceLogoutOccurred = true;
+                        logout();
+                    }
+                    return;
+                }
+            }
+            if (data.Result != "Success") {
+                onFail(data);
+            } else {
+                onSuccess(data);
+            }
+            removeTriggerElementFromLoadingElementArray(triggerElementId);
+        })
+        .fail(function (data) {
+            dxProcessingQueue = false;
+            dxProcessRequestQueue();
+            data = getJsonObject(data);
+            onFail(data);
+            removeTriggerElementFromLoadingElementArray(triggerElementId);
+        });
+    return this;
 }
+
 /**
  * Sets the given authentication token in the app state
- * @param authentication_token_to_set
+ * @param authTokenToSet
  */
-function setAuthenticationToken(authentication_token_to_set) {
-	authentication_token = authentication_token_to_set;
-	updateAppState('dxAuthenticationToken',authentication_token);
+function setAuthenticationToken(authTokenToSet) {
+    authenticationToken = authTokenToSet;
+    updateAppState('dxAuthenticationToken', authenticationToken);
 }
+
 /**
  * Retrieves the current authentication token in the app state
  * @return {String|Null}
  */
 function getAuthenticationToken() {
-	return getValueFromAppState('dxAuthenticationToken');
+    return getValueFromAppState('dxAuthenticationToken');
 }
+
 /**
  * Adds the given request to dx_queue and calls dxProcessRequestQueue()
  * @param {Object} request The request to add to dx_queue
  */
 function dxAddToRequestQueue(request) {
-	dx_queue.push(request);
-	dxProcessRequestQueue();
+    dxQueue.push(request);
+    dxProcessRequestQueue();
 }
+
 /**
  *Triggers the processing of the next request in dx_queue
  */
 function dxProcessRequestQueue() {
-	if (dx_processing_queue) {return;}
-	if (!navigator.onLine) {
-		setItemInLocalStorage("dx_queue",JSON.stringify(dx_queue),2);
-		showAlert(presentOfflineRequestQueuedMessage(),"info","OK",false);
-		return;
-	}
-	if (dx_queue.length > 0) {
-		let next_post = dx_queue.shift();
-		dxRequestInternalQueued(next_post.url,next_post.parameters,next_post.on_success,next_post.on_fail,next_post.trigger_element_id);
-	} else {
-		dx_processing_queue = false;
-	}
+    if (dxProcessingQueue) {
+        return;
+    }
+    if (!navigator.onLine) {
+        setItemInLocalStorage("dx_queue", JSON.stringify(dxQueue), 2);
+        showAlert(presentOfflineRequestQueuedMessage(), "info", "OK", false);
+        return;
+    }
+    if (dxQueue.length > 0) {
+        let nextPost = dxQueue.shift();
+        dxRequestInternalQueued(nextPost.url, nextPost.parameters, nextPost.on_success, nextPost.on_fail, nextPost.trigger_element_id);
+    } else {
+        dxProcessingQueue = false;
+    }
 }
+
 /**
  * Wrapper for jQuery's $.get function that is used to load component scripts. This function will first attempt to
  * check if the script was already loaded before doing an additional request to the server.
  * @param {String} url The url of the script on the server that should be loaded
- * @param {Function} on_success The function to call when the script was loaded
- * @param {Function} on_fail The function to call when the script could not be loaded
- * @param {Boolean} force_cache If true, the function first checks if the script is flagged as already loaded. If
+ * @param {Function} onSuccess The function to call when the script was loaded
+ * @param {Function} onFail The function to call when the script could not be loaded
+ * @param {Boolean} forceCache If true, the function first checks if the script is flagged as already loaded. If
  * false, the function will ALWAYS load the script from the server
  * @return {*} Used to force the function to exit
  */
-function dxGetScript(url,on_success,on_fail,force_cache) {
-	if (typeof on_success !== "function") {
-		on_success = function() {}
-	}
-	if (typeof on_fail !== "function") {
-		on_fail = function() {}
-	}
-	if (typeof force_cache === "undefined") {
-		force_cache = true;
-	}
-	if (force_cache) {
-		if (cache_scripts_requested.indexOf(url) > -1) {
-			dxLog("Loaded from cache: "+url);
-			return on_success('Loaded from cache');
-		} else {
-			cache_scripts_requested.push(url);
-		}
-	}
-	$.get(url, function(data, status) {
-		if (status != "success") {
-			on_fail();
-		} else {
-			if (force_cache) {
-				cache_scripts_loaded.push(url);
-			}
-			on_success(data);
-		}
-	}).done(function() {}).fail(function() {
-		on_fail();
-	});
+function dxGetScript(url, onSuccess, onFail, forceCache) {
+    if (typeof onSuccess !== "function") {
+        onSuccess = function () {
+        };
+    }
+    if (typeof onFail !== "function") {
+        onFail = function () {
+        };
+    }
+    if (typeof forceCache === "undefined") {
+        forceCache = true;
+    }
+    if (forceCache) {
+        if (requestedCacheScripts.indexOf(url) > -1) {
+            dxLog("Loaded from cache: " + url);
+            return onSuccess('Loaded from cache');
+        } else {
+            requestedCacheScripts.push(url);
+        }
+    }
+    $.get(url, function (data, status) {
+        if (status != "success") {
+            onFail();
+        } else {
+            if (forceCache) {
+                loadedCacheScripts.push(url);
+            }
+            onSuccess(data);
+        }
+    }).done(function () {
+    }).fail(function () {
+        onFail();
+    });
 }
+
 /**
  * Used by the component builder and setup scripts to do server requests
  * @param {String} url The url on the server to which the request must be sent
  * @param {Object} parameters The input parameters to send in the POST body
- * @param {Function} on_success A callback function to call when the request is successfully processed. This
+ * @param {Function} onSuccess A callback function to call when the request is successfully processed. This
  * callback will ALWAYS be populated with a string containing the request result
- * @param {Function} on_fail A callback function to call when the request is NOT successfully processed. This
+ * @param {Function} onFail A callback function to call when the request is NOT successfully processed. This
  * callback will ALWAYS be populated with a string containing the request result
  */
-function dxRequestSystem(url,parameters,on_success,on_fail) {
-	if (typeof parameters !== "object") {
-		parameters = {};
-	}
-	if (authentication_token == "") {
-		authentication_token = getValueFromAppState('dxAuthenticationToken');
-	}
-	if (typeof authentication_token === "undefined") {
-		authentication_token = "";
-	}
-	parameters["AuthenticationToken"] = authentication_token;
-	if (isNative()) {
-		parameters["is_native"] = 1;
-	}
-	dxPostExternal(url,parameters,on_success,on_fail);
+function dxRequestSystem(url, parameters, onSuccess, onFail) {
+    if (typeof parameters !== "object") {
+        parameters = {};
+    }
+    if (authenticationToken == "") {
+        authenticationToken = getValueFromAppState('dxAuthenticationToken');
+    }
+    if (typeof authenticationToken === "undefined") {
+        authenticationToken = "";
+    }
+    parameters["AuthenticationToken"] = authenticationToken;
+    if (isNative()) {
+        parameters["is_native"] = 1;
+    }
+    dxPostExternal(url, parameters, onSuccess, onFail);
 }
+
 /**
  * Used by the component builder and setup scripts to do server requests
  * @param {String} url The url on the server to which the request must be sent
  * @param {Object} parameters The input parameters to send in the POST body
- * @param {Function} on_success A callback function to call when the request is successfully processed. This
+ * @param {Function} onSuccess A callback function to call when the request is successfully processed. This
  * callback will ALWAYS be populated with a string containing the request result
- * @param {Function} on_fail A callback function to call when the request is NOT successfully processed. This
+ * @param {Function} onFail A callback function to call when the request is NOT successfully processed. This
  * callback will ALWAYS be populated with a string containing the request result
  */
-function dxRequestAdmin(url,parameters,on_success,on_fail) {
-	if (typeof on_success !== "function") {
-		on_success = function() {
+function dxRequestAdmin(url, parameters, onSuccess, onFail) {
+    if (typeof onSuccess !== "function") {
+        onSuccess = function () {
 
-		}
-	}
-	if (typeof on_fail !== "function") {
-		on_fail = function() {
+        };
+    }
+    if (typeof onFail !== "function") {
+        onFail = function () {
 
-		}
-	}
-	$.post(url,parameters)
-		.done(function(data) {
-			on_success(data)
-		})
-		.fail(function(data) {
-			on_fail(data)
-		});
+        };
+    }
+    $.post(url, parameters)
+        .done(function (data) {
+            onSuccess(data);
+        })
+        .fail(function (data) {
+            onFail(data);
+        });
 }
+
 /**
  * Used by the component builder and setup scripts to do server requests
  * @param {String} url The url on the server to which the request must be sent
  * @param {Object} parameters The input parameters to send in the POST body
- * @param {Function} on_success A callback function to call when the request is successfully processed. This
+ * @param {Function} onSuccess A callback function to call when the request is successfully processed. This
  * callback will ALWAYS be populated with a string containing the request result
- * @param {Function} on_fail A callback function to call when the request is NOT successfully processed. This
+ * @param {Function} onFail A callback function to call when the request is NOT successfully processed. This
  * callback will ALWAYS be populated with a string containing the request result
  */
-function dxPostExternal(url,parameters,on_success,on_fail) {
-	if (typeof on_success !== "function") {
-		on_success = function() {
+function dxPostExternal(url, parameters, onSuccess, onFail) {
+    if (typeof onSuccess !== "function") {
+        onSuccess = function () {
 
-		}
-	}
-	if (typeof on_fail !== "function") {
-		on_fail = function() {
+        };
+    }
+    if (typeof onFail !== "function") {
+        onFail = function () {
 
-		}
-	}
-	$.post(url,parameters)
-		.done(function(data) {
-			if (!isJsonString(data)) {
-				on_fail(data);
-				return;
-			}
-			let data_obj = JSON.parse(data);
-			if (typeof data_obj.AuthenticationToken !== "undefined") {
-				authentication_token = data_obj.AuthenticationToken;
-				updateAppState('dxAuthenticationToken',authentication_token);
-			}
-			on_success(data)
-		})
-	// Removing this since it is causing issues on firefox
-	/*.fail(function(data) {
+        };
+    }
+    $.post(url, parameters)
+        .done(function (data) {
+            if (!isJsonString(data)) {
+                onFail(data);
+                return;
+            }
+            let data_obj = JSON.parse(data);
+            if (typeof data_obj.AuthenticationToken !== "undefined") {
+                authenticationToken = data_obj.AuthenticationToken;
+                updateAppState('dxAuthenticationToken', authenticationToken);
+            }
+            onSuccess(data);
+        })
+    // Removing this since it is causing issues on firefox
+    /*.fail(function(data) {
 			on_fail(data)
 		})*/;
 }
+
 /**
  * Determines whether a string is a valid JSON string
- * @param {String} input_string The string to check
+ * @param {String} input The string to check
  * @return {boolean} true if valid JSON, false if not
  */
-function isJsonString(input_string) {
-	try {
-		JSON.parse(input_string);
-	} catch (e) {
-		return false;
-	}
-	return true;
+function isJsonString(input) {
+    try {
+        JSON.parse(input);
+    } catch (e) {
+        return false;
+    }
+    return true;
 }
+
 /**
  * Returns either a valid JSON object from the input or an empty object
- * @param mixed_input: Can be json string or object
+ * @param mixedInput: Can be json string or object
  * @return {any}
  */
-function getJsonObject(mixed_input) {
-	if (isJsonString(mixed_input)) {
-		return JSON.parse(mixed_input);
-	}
-	let return_obj = {};
-	try {
-		let encoded_string = JSON.stringify(mixed_input);
-		if (isJsonString(encoded_string)) {
-			return_obj = JSON.parse(encoded_string);
-		}
-	} catch (e) {
-		return return_obj;
-	}
-	return return_obj;
+function getJsonObject(mixedInput) {
+    if (isJsonString(mixedInput)) {
+        return JSON.parse(mixedInput);
+    }
+    let returnObj = {};
+    try {
+        let encodedString = JSON.stringify(mixedInput);
+        if (isJsonString(encodedString)) {
+            returnObj = JSON.parse(encodedString);
+        }
+    } catch (e) {
+        return returnObj;
+    }
+    return returnObj;
 }
+
 /**
  * Assumes that the file at the specified path contains valid JSON and then loads it and returns it via the callback
  * function
- * @param file_path the path to the file containing JSON from project root
+ * @param filePath the path to the file containing JSON from project root
  * @param callback the function that will be called with the JSON received
  */
-function loadJsonFromFile(file_path,callback) {
-	if (typeof callback !== "function") {
-		callback = function () {
-			dxLog("No callback function was specified for loadJsonFromFile")
-		}
-	}
-	$.ajax({
-		'async': true,
-		'global': false,
-		'url': file_path,
-		'dataType': "json",
-		'success': function(data) {
-			callback(data);
-		},
-		'error': function(e) {
-			dxLog("Error loading json from file: "+e);
-			callback({});
-		}
-	});
+function loadJsonFromFile(filePath, callback) {
+    if (typeof callback !== "function") {
+        callback = function () {
+            dxLog("No callback function was specified for loadJsonFromFile");
+        };
+    }
+    $.ajax({
+        'async': true,
+        'global': false,
+        'url': filePath,
+        'dataType': "json",
+        'success': function (data) {
+            callback(data);
+        },
+        'error': function (e) {
+            dxLog("Error loading json from file: " + e);
+            callback({});
+        }
+    });
 }
+
 /**
  * Gets the current url input parameters
  * @param {String} url The url to parse
  * @return {Object} A key:value pairing object that represents the current url input parameters
  */
 function getAllUrlParams(url) {
-	// get query string from url (optional) or window
-	let queryString = url ? url.split('?')[1] : window.location.search.slice(1);
-	// we'll store the parameters here
-	let obj = {};
-	// if query string exists
-	if (queryString) {
-		// stuff after # is not part of query string, so get rid of it
-		queryString = queryString.split('#')[0];
-		// split our query string into its component parts
-		let arr = queryString.split('&');
-		for (let i=0; i<arr.length; i++) {
-			// separate the keys and the values
-			let a = arr[i].split('=');
-			// in case params look like: list[]=thing1&list[]=thing2
-			let paramNum = undefined;
-			let paramName = a[0].replace(/\[\d*\]/, function(v) {
-				paramNum = v.slice(1,-1);
-				return '';
-			});
-			// set parameter value (use 'true' if empty)
-			let paramValue = typeof(a[1])==='undefined' ? true : a[1];
-			// (optional) keep case consistent
-			paramName = paramName.toLowerCase();
-			paramValue = paramValue.toLowerCase();
-			// if parameter name already exists
-			if (obj[paramName]) {
-				// convert value to array (if still string)
-				if (typeof obj[paramName] === 'string') {
-					obj[paramName] = [obj[paramName]];
-				}
-				// if no array index number specified...
-				if (typeof paramNum === 'undefined') {
-					// put the value on the end of the array
-					obj[paramName].push(paramValue);
-				}
-				// if array index number specified...
-				else {
-					// put the value at that index number
-					obj[paramName][paramNum] = paramValue;
-				}
-			}
-			// if param name doesn't exist yet, set it
-			else {
-				obj[paramName] = paramValue;
-			}
-		}
-	}
-	return obj;
+    // get query string from url (optional) or window
+    let queryString = url ? url.split('?')[1] : window.location.search.slice(1);
+    // we'll store the parameters here
+    let obj = {};
+    // if query string exists
+    if (queryString) {
+        // stuff after # is not part of query string, so get rid of it
+        queryString = queryString.split('#')[0];
+        // split our query string into its component parts
+        let arr = queryString.split('&');
+        for(let i = 0; i < arr.length; i++) {
+            // separate the keys and the values
+            let a = arr[i].split('=');
+            // in case params look like: list[]=thing1&list[]=thing2
+            let paramNum = undefined;
+            let paramName = a[0].replace(/\[\d*\]/, function (v) {
+                paramNum = v.slice(1, -1);
+                return '';
+            });
+            // set parameter value (use 'true' if empty)
+            let paramValue = typeof (a[1]) === 'undefined' ? true : a[1];
+            // (optional) keep case consistent
+            paramName = paramName.toLowerCase();
+            paramValue = paramValue.toLowerCase();
+            // if parameter name already exists
+            if (obj[paramName]) {
+                // convert value to array (if still string)
+                if (typeof obj[paramName] === 'string') {
+                    obj[paramName] = [obj[paramName]];
+                }
+                // if no array index number specified...
+                if (typeof paramNum === 'undefined') {
+                    // put the value on the end of the array
+                    obj[paramName].push(paramValue);
+                }
+                // if array index number specified...
+                else {
+                    // put the value at that index number
+                    obj[paramName][paramNum] = paramValue;
+                }
+            }
+            // if param name doesn't exist yet, set it
+            else {
+                obj[paramName] = paramValue;
+            }
+        }
+    }
+    return obj;
 }
+
 /**
  * Wrapper function for the SweetAlert library to show informational popups with different statuses and potential
  * call backs
- * @param {String} alert_str The message to alert
+ * @param {String} alertMessage The message to alert
  * @param {String} icon The type of icon to show with the message: "success|error|warning|info"
- * @param {String|Array} button_array Can be either a string to display on a single button or an array of strings to
+ * @param {String|Array} buttons Can be either a string to display on a single button or an array of strings to
  * display on multiple buttons
- * @param {Boolean} auto_hide If true, the sweet alert will auto hide. If false, it needs to be dismissed
- * @param {Number} milliseconds_until_auto_hide If auto_hide is true, this value determines how long to wait before
+ * @param {Boolean} autoHide If true, the sweet alert will auto hide. If false, it needs to be dismissed
+ * @param {Number} millisecondsUntilAutoHide If auto_hide is true, this value determines how long to wait before
  * hiding
- * @param {Function} confirm_function Optional to pass a confirm function that is executed when the confirm button
+ * @param {Function} confirmFunction Optional to pass a confirm function that is executed when the confirm button
  * is clicked
- * @param {Function} cancel_function  Optional to pass a cancel function that is executed when the cancel button
+ * @param {Function} cancelFunction  Optional to pass a cancel function that is executed when the cancel button
  * is clicked
  */
-function showAlert(alert_str = 'Alert',icon = 'info',button_array = [],auto_hide = true,milliseconds_until_auto_hide = 1500,confirm_function = undefined,cancel_function = undefined) {
-	if (typeof swal !== "undefined") {
-		if ((typeof confirm_function !== "undefined") &&
-			(typeof cancel_function !== "undefined")) {
-			swal({
-				title: null,
-				text: alert_str,
-				icon: icon,
-				buttons: button_array,
-				dangerMode: true,
-			}).then((confirmed) => {
-				if (confirmed) {
-					confirm_function();
-				} else {
-					cancel_function();
-				}
-			});
-		} else {
-			swal({
-				title: null,
-				text: alert_str,
-				icon: icon,
-				button: button_array,
-			});
-			if (auto_hide) {
-				setTimeout(function() {
-					swal.close();
-				},milliseconds_until_auto_hide)
-			}
-		}
-	} else {
-		alert(alert_str);
-	}
+function showAlert(alertMessage = 'Alert', icon = 'info', buttons = [], autoHide = true, millisecondsUntilAutoHide = 1500, confirmFunction = undefined, cancelFunction = undefined) {
+    if (typeof swal !== "undefined") {
+        if ((typeof confirmFunction !== "undefined") &&
+            (typeof cancelFunction !== "undefined")) {
+            swal({
+                title: null,
+                text: alertMessage,
+                icon: icon,
+                buttons: buttons,
+                dangerMode: true,
+            }).then((confirmed) => {
+                if (confirmed) {
+                    confirmFunction();
+                } else {
+                    cancelFunction();
+                }
+            });
+        } else {
+            swal({
+                title: null,
+                text: alertMessage,
+                icon: icon,
+                button: buttons,
+            });
+            if (autoHide) {
+                setTimeout(function () {
+                    swal.close();
+                }, millisecondsUntilAutoHide);
+            }
+        }
+    } else {
+        alert(alertMessage);
+    }
 }
+
 /**
  * Adds a cookie in the browser for the current path
  * @param {String} name The name of the cookie
@@ -3494,847 +3765,885 @@ function showAlert(alert_str = 'Alert',icon = 'info',button_array = [],auto_hide
  * @param {Number} days How many days until the cookie should expire
  */
 function createCookie(name, value, days) {
-	let Expires;
-	if (days) {
-		let CurrentDate = new Date();
-		CurrentDate.setTime(CurrentDate.getTime() + (days * 24 * 60 * 60 * 1000));
-		Expires = "; expires=" + CurrentDate.toGMTString();
-	} else {
-		Expires = "";
-	}
-	document.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) + Expires + "; path=/";
+    let expires;
+    if (days) {
+        let currentDate = new Date();
+        currentDate.setTime(currentDate.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + currentDate.toGMTString();
+    } else {
+        expires = "";
+    }
+    document.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) + expires + "; path=/";
 }
+
 /**
  * Returns the value of a cookie from the browser
  * @param {String} name The name of the cookie to return
  * @return {String|Null} The value of the cookie or null
  */
 function readCookie(name) {
-	let NameEQ = encodeURIComponent(name) + "=";
-	let ca = document.cookie.split(';');
-	for (let i = 0; i < ca.length; i++) {
-		let c = ca[i];
-		while (c.charAt(0) === ' ')
-			c = c.substring(1, c.length);
-		if (c.indexOf(NameEQ) === 0)
-			return decodeURIComponent(c.substring(NameEQ.length, c.length));
-	}
-	return null;
+    let nameEq = encodeURIComponent(name) + "=";
+    let ca = document.cookie.split(';');
+    for(let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ')
+            c = c.substring(1, c.length);
+        if (c.indexOf(nameEq) === 0)
+            return decodeURIComponent(c.substring(nameEq.length, c.length));
+    }
+    return null;
 }
+
 /**
  * Removes a cookie from the browser
  * @param {String} name The name of the cookie to remove
  */
 function eraseCookie(name) {
-	createCookie(name, "", -1);
+    createCookie(name, "", -1);
 }
+
 /**
  * Toggles the (Bootstrap) validation state for an attribute that is contained within a component
  * @param {Object} component The containing component object
  * @param {String} attribute The original element id of the attribute
- * @param {String} validation_message The validation message to display
- * @param {Boolean} is_valid If true, toggles the "is-valid" class, if false, toggles "is-invalid"
- * @param {Boolean} is_reset If false applies the class specified by is_valid
+ * @param {String} validationMessage The validation message to display
+ * @param {Boolean} isValid If true, toggles the "is-valid" class, if false, toggles "is-invalid"
+ * @param {Boolean} isReset If false applies the class specified by is_valid
  */
-function toggleValidationState(component,attribute,validation_message,is_valid,is_reset) {
-	is_valid = is_valid || false;
-	is_reset = is_reset || false;
-	let valid_class = "is-valid";
-	if (!is_valid) {
-		valid_class = "is-invalid";
-	}
-	getComponentElementById(component,attribute).removeClass("is-invalid").removeClass("is-valid");
-	if (!is_reset) {
-		getComponentElementById(component,attribute).addClass(valid_class);
-	}
-	if (validation_message.length > 0) {
-		getComponentElementById(component,attribute+"InvalidFeedback").text(validation_message);
-	}
+function toggleValidationState(component, attribute, validationMessage, isValid = false, isReset = false) {
+    let valid_class = "is-valid";
+    if (!isValid) {
+        valid_class = "is-invalid";
+    }
+    getComponentElementById(component, attribute).removeClass("is-invalid").removeClass("is-valid");
+    if (!isReset) {
+        getComponentElementById(component, attribute).addClass(valid_class);
+    }
+    if (validationMessage.length > 0) {
+        getComponentElementById(component, attribute + "InvalidFeedback").text(validationMessage);
+    }
 }
+
 /**
  * Returns true if an attribute that is contained within a component's validation state is valid
  * @param {Object} component The containing component object
  * @param {String} attribute The original element id of the attribute
  * @return {boolean} true if valid, false if not
  */
-function checkValidationState(component,attribute) {
-	// JGL: returns true if valid
-	return !getComponentElementById(component,attribute).hasClass("is-invalid");
+function checkValidationState(component, attribute) {
+    // JGL: returns true if valid
+    return !getComponentElementById(component, attribute).hasClass("is-invalid");
 }
+
 /**
  * A Quick regex to valid email addresses
  * @param {String} email The email address to validate
  * @return {boolean} true if a valid email, false if not
  */
 function validateEmail(email) {
-	var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-	return re.test(String(email).toLowerCase());
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
 }
+
 /**
  * Gets the string value for a specified data model attribute
  * @param {String|Object|Null} attribute The attribute to interrogate
- * @param {String|Null} display_type The display type to interrogate
+ * @param {String|Null} displayType The display type to interrogate
  * @return {String} The string value for the attribute
  */
-function getDataModelAttributeValue(attribute,display_type) {
-	if (typeof display_type === "undefined") {
-		display_type = 'text';
-	}
-	if (typeof attribute === "object") {
-		if (attribute === null) {
-			return '';
-		}
-		if (typeof attribute['date'] !== "undefined") {
-			let js_date_str = attribute["date"];
-			let js_date = js_date_str.slice(0,10);
-			let js_time = js_date_str.slice(11,16);
+function getDataModelAttributeValue(attribute, displayType = "text") {
+    if (typeof attribute === "object") {
+        if (attribute === null) {
+            return '';
+        }
+        if (typeof attribute['date'] !== "undefined") {
+            let fullJsDateTime = attribute["date"];
+            let jsDate = fullJsDateTime.slice(0, 10);
+            let jsTime = fullJsDateTime.slice(11, 16);
 
-			if (display_type === "datetime-local") {
-				if (js_time !== "00:00") {
-					return js_date+"T"+js_time;
-				}
-				return js_date+"T00:00";
-			} else {
-				return js_date;
-			}
-		}
-	}
-	return attribute;
+            if (displayType === "datetime-local") {
+                if (jsTime !== "00:00") {
+                    return jsDate + "T" + jsTime;
+                }
+                return jsDate + "T00:00";
+            } else {
+                return jsDate;
+            }
+        }
+    }
+    return attribute;
 }
+
 /**
  * Helper function to return the current highest z-index in die DOM
  * @return {number} The z-index
  */
 function getHighestZIndex() {
-	var index_highest = 0;
-	$('div').each(function(){
-		var index_current = parseInt($(this).css("z-index"), 10);
-		if(index_current > index_highest) {
-			index_highest = index_current;
-		}
-	});
-	return index_highest;
+    var indexHighest = 0;
+    $('div').each(function () {
+        var indexCurrent = parseInt($(this).css("z-index"), 10);
+        if (indexCurrent > indexHighest) {
+            indexHighest = indexCurrent;
+        }
+    });
+    return indexHighest;
 }
+
 /**
  * Returns the path to the App's main logo
  * @return {string} The path to the logo file
  */
 function getAppLogoUrl() {
-	return getRootPath()+'project/assets/images/app_logo.png';
+    return getRootPath() + 'project/assets/images/app_logo.png';
 }
+
 /**
- * 	Renders the app's logo within any div with class "app_logo"
+ *    Renders the app's logo within any div with class "app_logo"
  */
 function renderAppLogo() {
-	$(".app_logo").html('<a href="'+getRootPath()+'"><img alt="App Logo" src="'+getAppLogoUrl()+'"' +
-		' class="img-fluid"/></a>');
+    $(".app_logo").html('<a href="' + getRootPath() + '"><img alt="App Logo" src="' + getAppLogoUrl() + '"' +
+        ' class="img-fluid"/></a>');
 }
+
 /**
  * Adds a wrapper for the offline notification message to the html body
  */
 function addOfflineWrapper() {
-	let offline_notification = $(".OfflineNotificationWrapper");
-	if (offline_notification.length == 0) {
-		$("body").append('<div class="OfflineNotificationWrapper"><p id="OfflineMessage"></p></div>');
-	}
+    let offlineNotification = $(".OfflineNotificationWrapper");
+    if (offlineNotification.length == 0) {
+        $("body").append('<div class="OfflineNotificationWrapper"><p id="OfflineMessage"></p></div>');
+    }
 }
+
 /**
  * Wrapper function to serve both native and web needs with regards to online status
  * @return {boolean} true if online, false if not
  */
 function checkOnlineStatus() {
-	return navigator.onLine;
+    return navigator.onLine;
 }
+
 /**
  * Triggers the required user feedback when offline
  */
 function setOffline() {
-	addOfflineWrapper();
-	$(".OfflineNotificationWrapper").removeClass("BackOnlineNotificationWrapper")
-	$(".OfflineNotificationWrapper").fadeIn(500);
-	$("#OfflineMessage").html('<i class="fa fa-chain-broken" aria-hidden="true" style="margin-right:10px;"></i>You\'re Offline');
-	$(".OfflineNotificationWrapper").css("zIndex", getHighestZIndex()+1);
-	dx_offline = true;
+    addOfflineWrapper();
+    $(".OfflineNotificationWrapper").removeClass("BackOnlineNotificationWrapper");
+    $(".OfflineNotificationWrapper").fadeIn(500);
+    $("#OfflineMessage").html('<i class="fa fa-chain-broken" aria-hidden="true" style="margin-right:10px;"></i>You\'re Offline');
+    $(".OfflineNotificationWrapper").css("zIndex", getHighestZIndex() + 1);
+    isDxOffline = true;
 }
+
 /**
  * Triggers the required user feedback when back online
  */
 function setOnline() {
-	addOfflineWrapper();
-	$("#OfflineMessage").html('<i class="fa fa-plug" aria-hidden="true" style="margin-right:10px;"></i>Back Online');
-	$(".OfflineNotificationWrapper").addClass("BackOnlineNotificationWrapper").fadeOut(3500);
-	if (!dx_offline) {
-		$(".OfflineNotificationWrapper").css("zIndex", getHighestZIndex()+1);
-	}
-	dx_offline = false;
-	dxProcessRequestQueue();
+    addOfflineWrapper();
+    $("#OfflineMessage").html('<i class="fa fa-plug" aria-hidden="true" style="margin-right:10px;"></i>Back Online');
+    $(".OfflineNotificationWrapper").addClass("BackOnlineNotificationWrapper").fadeOut(3500);
+    if (!isDxOffline) {
+        $(".OfflineNotificationWrapper").css("zIndex", getHighestZIndex() + 1);
+    }
+    isDxOffline = false;
+    dxProcessRequestQueue();
 }
+
 /**
  * Checks whether the current logged in user's role is in allowable_role_array.
- * @param {Array} allowable_role_array The array of roles that are allowed
- * @param {Function} on_not_allowed The function that is executed when the role is not allowed
- * @param {Function} on_allowed The function that is executed when the role is allowed
+ * @param {Array} allowableRoles The array of roles that are allowed
+ * @param {Function} onNotAllowed The function that is executed when the role is not allowed
+ * @param {Function} onAllowed The function that is executed when the role is allowed
  */
-function dxCheckCurrentUserRole(allowable_role_array,on_not_allowed,on_allowed) {
-	if (allowable_role_array.length === 0) {
-		on_allowed();
-		return;
-	}
-	if (allowable_role_array.indexOf("anonymous") > -1){
-		on_allowed();
-		return;
-	}
-	let current_role_local = getValueFromAppState('dx_role');
-	if (current_role_local !== null) {
-		if (current_role_local.toLowerCase() === "dxadmin") {
-			on_allowed();
-			return;
-		}
-	}
-	let found_local = false;
-	allowable_role_array.forEach(function(element) {
-		if (element.toLowerCase() === current_role_local) {
-			found_local = true;
-		}
-	});
-	if (found_local) {
-		on_allowed();
-		return;
-	}
-	getCurrentUserRole(function(role) {
-		if (typeof role === "undefined") {
-			on_not_allowed();
-			return;
-		}
-		if (role === "dxadmin") {
-			on_allowed();
-			return;
-		}
-		let found = false;
-		allowable_role_array.forEach(function(element) {
-			if (element.toLowerCase() === role.toLowerCase()) {
-				found = true;
-			}
-		});
-		if (!found) {
-			on_not_allowed();
-		} else {
-			on_allowed();
-		}
-	});
+function dxCheckCurrentUserRole(allowableRoles, onNotAllowed, onAllowed) {
+    if (allowableRoles.length === 0) {
+        onAllowed();
+        return;
+    }
+    if (allowableRoles.indexOf("anonymous") > -1) {
+        onAllowed();
+        return;
+    }
+    let currentRoleLocal = getValueFromAppState('dx_role');
+    if (currentRoleLocal !== null) {
+        if (currentRoleLocal.toLowerCase() === "dxadmin") {
+            onAllowed();
+            return;
+        }
+    }
+    let foundLocal = false;
+    allowableRoles.forEach(function (element) {
+        if (element.toLowerCase() === currentRoleLocal) {
+            foundLocal = true;
+        }
+    });
+    if (foundLocal) {
+        onAllowed();
+        return;
+    }
+    getCurrentUserRole(function (role) {
+        if (typeof role === "undefined") {
+            onNotAllowed();
+            return;
+        }
+        if (role === "dxadmin") {
+            onAllowed();
+            return;
+        }
+        let found = false;
+        allowableRoles.forEach(function (element) {
+            if (element.toLowerCase() === role.toLowerCase()) {
+                found = true;
+            }
+        });
+        if (!found) {
+            onNotAllowed();
+        } else {
+            onAllowed();
+        }
+    });
 }
+
 /**
  * Gets the current user's user role from the server
  * @param {Function} callback The function that is executed once the current user's role is retrieved from the
  * server. This function receives the current role
  */
 function getCurrentUserRole(callback) {
-	dxRequestInternal(getServerRootPath()+'api/global_functions/getUserRole',
-		{AuthenticationToken:getAuthenticationToken()},
-		function(data_obj) {
-			if (typeof data_obj.CurrentRole !== "undefined") {
-				updateAppState('dx_role',data_obj.CurrentRole.toLowerCase());
-				callback(data_obj.CurrentRole);
-			} else {
-				callback(undefined);
-			}
-		},
-		function(data_obj) {
-			callback(undefined);
-		},false,false,'');
+    dxRequestInternal(getServerRootPath() + 'api/global_functions/getUserRole',
+        {AuthenticationToken: getAuthenticationToken()},
+        function (data) {
+            if (typeof data.CurrentRole !== "undefined") {
+                updateAppState('dx_role', data.CurrentRole.toLowerCase());
+                callback(data.CurrentRole);
+            } else {
+                callback(undefined);
+            }
+        },
+        function (data) {
+            callback(undefined);
+        }, false, false, '');
 }
+
 /**
  * Gets the current user's user role from the local app state. Useful when no need for a server call
  * @return {String|Null} The current user role
  */
 function getCurrentUserRoleFromAppState() {
-	currentUserRole = getValueFromAppState("dx_role");
-	return currentUserRole;
+    currentUserRole = getValueFromAppState("dx_role");
+    return currentUserRole;
 }
+
 /**
  * Registers the the current user role in the app state
- * @param {String} user_role The user role to register
+ * @param {String} userRole The user role to register
  */
-function registerUserRole(user_role) {
-	updateAppState("dx_role",user_role);
-	currentUserRole = user_role;
-	doAfterAuthenticationActions();
+function registerUserRole(userRole) {
+    updateAppState("dx_role", userRole);
+    currentUserRole = userRole;
+    doAfterAuthenticationActions();
 }
+
 /**
  * Checks whether the current client's OS is mobile
  * @return {boolean} true if mobile, false if not
  */
 function isMobile() {
-	if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
-		return true;
-	}
-	return false;
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        return true;
+    }
+    return false;
 }
+
 /**
  * Checks whether the current client's screen width is a typical mobile width
  * @return {boolean} true if mobile, false if not
  */
 function isScreenWidthMobile() {
-	return screen.width < 769;
+    return screen.width < 769;
 }
+
 /**
  * Checks whether the current OS is iOS
  * @return {Boolean} true if is iOS, false if not
  */
 function isIos() {
-	let user_agent = window.navigator.userAgent.toLowerCase();
-	return /iphone|ipad|ipod/.test(user_agent);
+    let userAgent = window.navigator.userAgent.toLowerCase();
+    return /iphone|ipad|ipod/.test(userAgent);
 }
+
 /**
  * Checks whether we are in standalone mode and not in the browser
  * @return {Boolean} true if standalone, false if not
  */
 function isInStandaloneMode() {
-	// replace standalone with fullscreen or minimal-ui according to your manifest
-	if (matchMedia('(display-mode: standalone)').matches) {
-		// Android and iOS 11.3+
-		return true;
-	}
-	if (isIos()) {
-		return ('standalone' in window.navigator) && (window.navigator.standalone);
-	} else {
-		return false;
-	}
+    // replace standalone with fullscreen or minimal-ui according to your manifest
+    if (matchMedia('(display-mode: standalone)').matches) {
+        // Android and iOS 11.3+
+        return true;
+    }
+    if (isIos()) {
+        return ('standalone' in window.navigator) && (window.navigator.standalone);
+    } else {
+        return false;
+    }
 }
+
 /**
  * Triggers the intialization function when in native mode
  */
 function setIsNative() {
-	is_native = true;
-	initNative();
+    is_native = true;
+    initNative();
 }
+
 /**
  * Checks whether we are in native mode and not in the browser
  * @return {Boolean} true if native, false if not
  */
 function isNative() {
-	let is_native_stored = getValueFromAppState("is_native");
-	if (is_native_stored == null) {
-		return is_native;
-	}
-	return is_native_stored == '1';
+    let isNativeStored = getValueFromAppState("is_native");
+    if (isNativeStored == null) {
+        return is_native;
+    }
+    return isNativeStored == '1';
 }
+
 /**
  * Checks whether we are in Single Page Application mode
  * @return {Boolean} true if SPA or native, false if not
  */
 function isSpa() {
-	return spa_mode;
+    return isSpaMode;
 }
+
 /**
  * Updates the navigation class for the active page to highlight the menu item that relates to the page
- * @param {String} page_name The name of the page component
- * @param {String} page_title The title to display in the browser
+ * @param {String} pageName The name of the page component
+ * @param {String} pageTitle The title to display in the browser
  */
-function setActivePage(page_name,page_title) {
-	if (typeof page_name === "undefined") {
-		page_name = "page";
-	}
-	if (typeof page_title === "undefined") {
-		page_title = "divblox - page";
-	}
-	setTimeout(function() {
-		// JGL: Let's just give the page component enough time to finish loading...
-		$(".navigation-activate-on-"+page_name).addClass("active");
-		if ((typeof cb_active === "undefined") || (cb_active === false)) {
-			$("title").text(page_title);
-		}
-	},500);
+function setActivePage(pageName = "page", pageTitle = "divblox - page") {
+    setTimeout(function () {
+        // JGL: Let's just give the page component enough time to finish loading...
+        $(".navigation-activate-on-" + dxPageManager.getMobilePageAlternate(pageName)).addClass("active");
+        if ((typeof isComponentBuilderActive === "undefined") || (isComponentBuilderActive === false)) {
+            $("title").text(pageTitle);
+        }
+    }, 500);
 }
+
 /**
  * Wrapper function for window.open() that ensures that we are loading a relative path in the same window
- * @param {String} path_from_root The path to load
+ * @param {String} pathFromRoot The path to load
  */
-function redirectToInternalPath(path_from_root) {
-	if (typeof path_from_root === "undefined") {
-		path_from_root = './';
-	}
-	window.open(getRootPath()+path_from_root,"_self");
+function redirectToInternalPath(pathFromRoot = "./") {
+    window.open(getRootPath() + pathFromRoot, "_self");
 }
+
 /**
  * Wrapper function for window.open() that confirms to the user that they will be redirected to a webpage when in
  * native mode. When not in native mode, it opens the provided url in a new window.
  * @param {String} url The url to navigate to
  */
 function redirectToExternalPath(url) {
-	if (typeof url === "undefined") {
-		throw new Error("Path url not provided");
-	}
-	if (isNative()) {
-		window.ReactNativeWebView.postMessage(JSON.stringify({function_to_execute:"redirectToExternalPath",redirect_url:url}));
-	} else {
-		window.open(url,"_blank");
-	}
+    if (typeof url === "undefined") {
+        throw new Error("Path url not provided");
+    }
+    if (isNative()) {
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+            function_to_execute: "redirectToExternalPath",
+            redirect_url: url
+        }));
+    } else {
+        window.open(url, "_blank");
+    }
 }
+
 /**
  * A helper function that displays and manages a bootstrap toast message
  * @param {String} title The title of the toast
- * @param {String} toast_message The message to be displayed in the toast
+ * @param {String} toastMessage The message to be displayed in the toast
  * @param {Object} position The position of the toast on the page: {x:"left|middle|right",y:"top|middle|bottom"}
- * @param {String} icon_path The path to the icon file that must be displayed on the toast
- * @param {moment} toast_time_stamp OPTIONAL An instance of a moment object that is used to keep track of when the
+ * @param {String} iconPath The path to the icon file that must be displayed on the toast
+ * @param {moment} toastTimeStamp OPTIONAL An instance of a moment object that is used to keep track of when the
  * toast was
  * created
- * @param {Number} auto_hide If not provided, the toast will not auto hide. Otherwise, it will hide in "auto_hide" ms
+ * @param {Number} autoHide If not provided, the toast will not auto hide. Otherwise, it will hide in "auto_hide" ms
  */
-function showToast(title,toast_message,position,icon_path,toast_time_stamp,auto_hide) {
-	if (typeof title === "undefined") {
-		title = local_config.app_name;
-	}
-	if (typeof toast_message === "undefined") {
-		toast_message = 'No message';
-	}
-	if (typeof position === "undefined") {
-		position = {y:"top",x:"right"};
-		// JGL: y can be top,middle or bottom. x can be left, right or middle
-	}
-	if (position.y === "middle") {
-		position.x = "middle";
-	}
-	if (position.x === "middle") {
-		position.y = "middle";
-	}
-	if (typeof icon_path === "undefined") {
-		icon_path = getRootPath()+'project/assets/images/favicon.ico';
-	}
-	if (typeof toast_time_stamp === "undefined") {
-		toast_time_stamp = moment();
-	}
-	let toast_id = getUniqueDomCssId();
-	if (typeof auto_hide === "undefined") {
-		auto_hide = 'data-autohide="false"';
-	} else {
-		auto_hide = 'data-delay="'+auto_hide+'"';
-	}
-	registered_toasts.push({id:toast_id,toast_time_stamp:toast_time_stamp});
-	if (!updating_toasts) {
-		setTimeout(function() {
-			updating_toasts = true;
-			updateToasts();
-		},3000);
-	}
-	let position_y = position.y+':0px';
-	let additional_styles = '';
-	if (position.y === "middle") {
-		additional_styles = ' style="width:348px;max-width:90%;margin: auto;"';
-	}
-	// JGL: Let's find the correct toasts wrapper div and add the toast, otherwise create the wrapper div first
-	let toast_html = '<div id="'+toast_id+'" class="toast" role="alert" aria-live="assertive" aria-atomic="true"' +
-		' '+auto_hide+additional_styles+'>' +
-		'<div class="toast-header">' +
-		'   <img src="'+icon_path+'" class="rounded mr-2" alt="image" style="max-height: 20px;"/>' +
-		'   <strong class="mr-auto">'+title+'</strong>' +
-		'   <small id="'+toast_id+'_time_stamp">'+toast_time_stamp.fromNow()+'</small>' +
-		'   <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close" style="z-index: 1051;">' +
-		'       <span aria-hidden="true"><i class="fa fa-times" aria-hidden="true"> </i></span>' +
-		'   </button>' +
-		'</div>' +
-		'<div class="toast-body">' +
-		'   '+toast_message+
-		'</div>' +
-		'</div>';
+function showToast(title, toastMessage, position, iconPath, toastTimeStamp, autoHide) {
+    if (typeof title === "undefined") {
+        title = localConfig.appName;
+    }
+    if (typeof toastMessage === "undefined") {
+        toastMessage = 'No message';
+    }
+    if (typeof position === "undefined") {
+        position = {y: "top", x: "right"};
+        // JGL: y can be top,middle or bottom. x can be left, right or middle
+    }
+    if (position.y === "middle") {
+        position.x = "middle";
+    }
+    if (position.x === "middle") {
+        position.y = "middle";
+    }
+    if (typeof iconPath === "undefined") {
+        iconPath = getRootPath() + 'project/assets/images/favicon.ico';
+    }
+    if (typeof toastTimeStamp === "undefined") {
+        toastTimeStamp = moment();
+    }
+    let toastId = getUniqueDomCssId();
+    if (typeof autoHide === "undefined") {
+        autoHide = 'data-autohide="false"';
+    } else {
+        autoHide = 'data-delay="' + autoHide + '"';
+    }
+    registeredToasts.push({id: toastId, toast_time_stamp: toastTimeStamp});
+    if (!isUpdatingToasts) {
+        setTimeout(function () {
+            isUpdatingToasts = true;
+            updateToasts();
+        }, 3000);
+    }
+    let posY = position.y + ':0px';
+    let additionalStyles = '';
+    if (position.y === "middle") {
+        additionalStyles = ' style="width:348px;max-width:90%;margin: auto;"';
+    }
+    // JGL: Let's find the correct toasts wrapper div and add the toast, otherwise create the wrapper div first
+    let toastHtml = '<div id="' + toastId + '" class="toast" role="alert" aria-live="assertive" aria-atomic="true"' +
+        ' ' + autoHide + additionalStyles + '>' +
+        '<div class="toast-header">' +
+        '   <img src="' + iconPath + '" class="rounded mr-2" alt="image" style="max-height: 20px;"/>' +
+        '   <strong class="mr-auto">' + title + '</strong>' +
+        '   <small id="' + toastId + '_time_stamp">' + toastTimeStamp.fromNow() + '</small>' +
+        '   <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close" style="z-index: 1051;">' +
+        '       <span aria-hidden="true"><i class="fa fa-times" aria-hidden="true"> </i></span>' +
+        '   </button>' +
+        '</div>' +
+        '<div class="toast-body">' +
+        '   ' + toastMessage +
+        '</div>' +
+        '</div>';
 
-	if (position.x === 'right') {
-		if (position.y === 'top') {
-			if ($('body').find("#top_right_toast_wrapper").length < 1) {
-				$('body').append('<div class="toast-aria" aria-live="polite" aria-atomic="true" ' +
-					'style="position: fixed;'+position_y+';left:0;width:100%;z-index:999999;">' +
-					'<div id="top_right_toast_wrapper" style="position: absolute; top: 0; right: 0;width:348px;max-width:90%;padding: 5px;"/>');
-			}
-			$("#top_right_toast_wrapper").append(toast_html);
-		}
-		if (position.y === 'bottom') {
-			if ($('body').find("#bottom_right_toast_wrapper").length < 1) {
-				$('body').append('<div class="toast-aria" aria-live="polite" aria-atomic="true" ' +
-					'style="position: fixed;'+position_y+';left:0;width:100%;z-index:999999;">' +
-					'<div id="bottom_right_toast_wrapper" style="position: absolute; bottom:0px; right:' +
-					' 0;width:348px;max-width:90%;padding: 5px;"/>');
-			}
-			$("#bottom_right_toast_wrapper").append(toast_html);
-		}
-	}
-	if (position.x === 'left') {
-		if (position.y === 'top') {
-			if ($('body').find("#top_left_toast_wrapper").length < 1) {
-				$('body').append('<div class="toast-aria" aria-live="polite" aria-atomic="true" ' +
-					'style="position: fixed;'+position_y+';left:0;width:100%;z-index:999999;">' +
-					'<div id="top_left_toast_wrapper" style="position: absolute; top: 0; left:' +
-					' 0;width:348px;max-width:90%;padding: 5px;"/>');
-			}
-			$("#top_left_toast_wrapper").append(toast_html);
-		}
-		if (position.y === 'bottom') {
-			if ($('body').find("#bottom_left_toast_wrapper").length < 1) {
-				$('body').append('<div class="toast-aria" aria-live="polite" aria-atomic="true" ' +
-					'style="position: fixed;'+position_y+';left:0;width:100%;z-index:999999;">' +
-					'<div id="bottom_left_toast_wrapper" style="position: absolute; bottom:0px; left:' +
-					' 0;width:348px;max-width:90%;padding: 5px;"/>');
-			}
-			$("#bottom_left_toast_wrapper").append(toast_html);
-		}
-	}
-	if (position.x === 'middle') {
-		if ($('body').find("#middle_toast_wrapper").length < 1) {
-			$('body').append('<div class="toast-aria" id="middle_toast_wrapper" aria-live="polite" aria-atomic="true" class="d-flex' +
-				' justify-content-center align-items-center"' +
-				' style="position:fixed;top:40%;left:0;width:100%;z-index:999999;"/>');
-		}
-		$("#middle_toast_wrapper").append(toast_html);
-	}
-	$("#"+toast_id).toast("show");
+    if (position.x === 'right') {
+        if (position.y === 'top') {
+            if ($('body').find("#top_right_toast_wrapper").length < 1) {
+                $('body').append('<div class="toast-aria" aria-live="polite" aria-atomic="true" ' +
+                    'style="position: fixed;' + posY + ';left:0;width:100%;z-index:999999;">' +
+                    '<div id="top_right_toast_wrapper" style="position: absolute; top: 0; right: 0;width:348px;max-width:90%;padding: 5px;"/>');
+            }
+            $("#top_right_toast_wrapper").append(toastHtml);
+        }
+        if (position.y === 'bottom') {
+            if ($('body').find("#bottom_right_toast_wrapper").length < 1) {
+                $('body').append('<div class="toast-aria" aria-live="polite" aria-atomic="true" ' +
+                    'style="position: fixed;' + posY + ';left:0;width:100%;z-index:999999;">' +
+                    '<div id="bottom_right_toast_wrapper" style="position: absolute; bottom:0px; right:' +
+                    ' 0;width:348px;max-width:90%;padding: 5px;"/>');
+            }
+            $("#bottom_right_toast_wrapper").append(toastHtml);
+        }
+    }
+    if (position.x === 'left') {
+        if (position.y === 'top') {
+            if ($('body').find("#top_left_toast_wrapper").length < 1) {
+                $('body').append('<div class="toast-aria" aria-live="polite" aria-atomic="true" ' +
+                    'style="position: fixed;' + posY + ';left:0;width:100%;z-index:999999;">' +
+                    '<div id="top_left_toast_wrapper" style="position: absolute; top: 0; left:' +
+                    ' 0;width:348px;max-width:90%;padding: 5px;"/>');
+            }
+            $("#top_left_toast_wrapper").append(toastHtml);
+        }
+        if (position.y === 'bottom') {
+            if ($('body').find("#bottom_left_toast_wrapper").length < 1) {
+                $('body').append('<div class="toast-aria" aria-live="polite" aria-atomic="true" ' +
+                    'style="position: fixed;' + posY + ';left:0;width:100%;z-index:999999;">' +
+                    '<div id="bottom_left_toast_wrapper" style="position: absolute; bottom:0px; left:' +
+                    ' 0;width:348px;max-width:90%;padding: 5px;"/>');
+            }
+            $("#bottom_left_toast_wrapper").append(toastHtml);
+        }
+    }
+    if (position.x === 'middle') {
+        if ($('body').find("#middle_toast_wrapper").length < 1) {
+            $('body').append('<div class="toast-aria" id="middle_toast_wrapper" aria-live="polite" aria-atomic="true" class="d-flex' +
+                ' justify-content-center align-items-center"' +
+                ' style="position:fixed;top:40%;left:0;width:100%;z-index:999999;"/>');
+        }
+        $("#middle_toast_wrapper").append(toastHtml);
+    }
+    $("#" + toastId).toast("show");
 }
+
 /**
  * Used to update the time value on a toast
  */
 function updateToasts() {
-	let toasts_left_to_update = 0;
-	if ((registered_toasts.length > 0) && (updating_toasts)) {
-		registered_toasts.forEach(function(toast_obj) {
-			if ($('body').find("#"+toast_obj.id).length < 1) {
-				// Already removed
-			} else {
-				if ($("#"+toast_obj.id).hasClass("hide")) {
-					// Must remove
-				} else {
-					toasts_left_to_update++;
-					$("#"+toast_obj.id+"_time_stamp").text(toast_obj.toast_time_stamp.fromNow());
-				}
-			}
-		});
-		if (toasts_left_to_update === 0) {
-			updating_toasts = false;
-			registered_toasts = [];
-			$(".toast-aria").remove();
-		} else {
-			setTimeout(function() {
-				updateToasts();
-			},3000);
-		}
-	}
+    let toastsLeftToUpdate = 0;
+    if ((registeredToasts.length > 0) && (isUpdatingToasts)) {
+        registeredToasts.forEach(function (toast) {
+            if ($('body').find("#" + toast.id).length < 1) {
+                // Already removed
+            } else {
+                if ($("#" + toast.id).hasClass("hide")) {
+                    // Must remove
+                } else {
+                    toastsLeftToUpdate++;
+                    $("#" + toast.id + "_time_stamp").text(toast.toast_time_stamp.fromNow());
+                }
+            }
+        });
+        if (toastsLeftToUpdate === 0) {
+            isUpdatingToasts = false;
+            registeredToasts = [];
+            $(".toast-aria").remove();
+        } else {
+            setTimeout(function () {
+                updateToasts();
+            }, 3000);
+        }
+    }
 }
+
 /**
  * Adds a key:value pairing to the global_vars array and stores it in the app state
  * @param {String} name The name of the variable to store
  * @param {String} value The value to store
  * @return {Boolean|*} false if a name was not specified.
  */
-function setGlobalVariable(name,value) {
-	if (typeof name === "undefined") {
-		return false;
-	}
-	if (typeof value === "undefined") {
-		value = '';
-	}
-	global_vars[name] = value;
-	storeAppState();
+function setGlobalVariable(name, value) {
+    if (typeof name === "undefined") {
+        return false;
+    }
+    if (typeof value === "undefined") {
+        value = '';
+    }
+    globalVars[name] = value;
+    storeAppState();
 }
+
 /**
  * Returns a global variable from the global_vars array by name
  * @param {String} name The name of the variable to return
  * @return {String} The value to return
  */
 function getGlobalVariable(name) {
-	if (typeof global_vars[name] === "undefined") {
-		return '';
-	}
-	return global_vars[name];
+    if (typeof globalVars[name] === "undefined") {
+        return '';
+    }
+    return globalVars[name];
 }
+
 /**
  * Sets a global id that is used to constrain for a specified entity
  * @param {String} entity The name of the entity to which this constrain id applies
- * @param {Number} constraining_id The id to constain by
+ * @param {Number} constrainingId The id to constain by
  * @return {Boolean|*} false if a name was not specified.
  */
-function setGlobalConstrainById(entity,constraining_id) {
-	if (typeof entity === "undefined") {
-		return false
-	}
-	if (typeof constraining_id === "undefined") {
-		constraining_id = -1;
-	}
-	setGlobalVariable('Constraining'+entity+'Id',constraining_id);
+function setGlobalConstrainById(entity, constrainingId) {
+    if (typeof entity === "undefined") {
+        return false;
+    }
+    if (typeof constrainingId === "undefined") {
+        constrainingId = -1;
+    }
+    setGlobalVariable('Constraining' + entity + 'Id', constrainingId);
 }
+
 /**
  * Returns a global id that is used to constrain for a specified entity
  * @param {String} entity The name of the entity to which this constrain id applies
  * @return {Number} The id to constain by. -1 If not set
  */
 function getGlobalConstrainById(entity) {
-	if (typeof entity === "undefined") {
-		return -1
-	}
-	let return_value = getGlobalVariable('Constraining'+entity+'Id');
-	if (return_value === '') {
-		return -1;
-	}
-	if (typeof return_value === "undefined") {
-		return -1
-	}
-	if (return_value === null) {
-		return -1;
-	}
-	return return_value;
+    if (typeof entity === "undefined") {
+        return -1;
+    }
+    let returnValue = getGlobalVariable('Constraining' + entity + 'Id');
+    if (returnValue === '') {
+        return -1;
+    }
+    if (typeof returnValue === "undefined") {
+        return -1;
+    }
+    if (returnValue === null) {
+        return -1;
+    }
+    return returnValue;
 }
+
 /**
  * Initiates the required functionality for native mode
  */
 function initNative() {
-	updateAppState('divblox_config','success');
-	updateAppState('is_native','1');
+    updateAppState('divblox_config', 'success');
+    updateAppState('is_native', '1');
 }
+
 /**
  * Stores a key:value pairing in local storage
- * @param {String} item_key The key to store
- * @param {String} item_value The value to store
+ * @param {String} itemKey The key to store
+ * @param {String} itemValue The value to store
  */
-function setItemInLocalStorage(item_key,item_value) {
-	if (typeof(Storage) === "undefined") {
-		// JGL: This is a fallback for when local storage is not available.
-		createCookie(item_key,item_key);
-		return;
-	}
-	localStorage.setItem(item_key, item_value);
+function setItemInLocalStorage(itemKey, itemValue) {
+    if (typeof (Storage) === "undefined") {
+        // JGL: This is a fallback for when local storage is not available.
+        createCookie(itemKey, itemKey);
+        return;
+    }
+    localStorage.setItem(itemKey, itemValue);
 }
+
 /**
  * Removes a value from local storage by key
- * @param {String} item_key The key to find
+ * @param {String} itemKey The key to find
  */
-function removeItemFromLocalStorage(item_key) {
-	if (typeof(Storage) === "undefined") {
-		// JGL: This is a fallback for when local storage is not available.
-		eraseCookie(item_key);
-		return;
-	}
-	if (typeof localStorage[item_key] !== "undefined") {
-		localStorage.removeItem(item_key);
-	}
+function removeItemFromLocalStorage(itemKey) {
+    if (typeof (Storage) === "undefined") {
+        // JGL: This is a fallback for when local storage is not available.
+        eraseCookie(itemKey);
+        return;
+    }
+    if (typeof localStorage[itemKey] !== "undefined") {
+        localStorage.removeItem(itemKey);
+    }
 }
 
 /**
  * Retrieves a value from local storage by key
- * @param {String} item_key The key to find
+ * @param {String} itemKey The key to find
  * @return {String|Null} The value returned from local storage
  */
-function getItemInLocalStorage(item_key) {
-	if (typeof(Storage) === "undefined") {
-		// JGL: This is a fallback for when local storage is not available.
-		return readCookie(item_key);
-	}
-	if (typeof localStorage[item_key] !== "undefined") {
-		return localStorage[item_key];
-	}
-	return null;
+function getItemInLocalStorage(itemKey) {
+    if (typeof (Storage) === "undefined") {
+        // JGL: This is a fallback for when local storage is not available.
+        return readCookie(itemKey);
+    }
+    if (typeof localStorage[itemKey] !== "undefined") {
+        return localStorage[itemKey];
+    }
+    return null;
 }
+
 /**
  * Fires when the native app is paused
  */
 function onNativePause() {
-	getRegisteredComponent(page_uid).onNativePause();
+    getRegisteredComponent(pageUid).onNativePause();
 }
+
 /**
  * Fires when the native app is resumed
  */
 function onNativeResume() {
-	getRegisteredComponent(page_uid).onNativeResume();
+    getRegisteredComponent(pageUid).onNativeResume();
 }
+
 /**
  * The function that registers the Divblox service worker in the browser
  */
 function registerServiceWorker() {
-	if ('serviceWorker' in navigator) {
-		navigator.serviceWorker.register(getRootPath()+'dx.sw.js').then(reg => {
-			reg.addEventListener('updatefound', () => {
-				// A wild service worker has appeared in reg.installing!
-				service_worker_update = reg.installing;
-				service_worker_update.addEventListener('statechange', () => {
-					// Has network.state changed?
-					switch (service_worker_update.state) {
-						case 'installed':
-							if (navigator.serviceWorker.controller) {
-								// new update available
-								showAppUpdateBar();
-							}
-							// No update available
-							break;
-					}
-				});
-			});
-		});
-	} else {
-		dxLog("Service worker not available");
-	}
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register(getRootPath() + 'dx.sw.js').then(reg => {
+            reg.addEventListener('updatefound', () => {
+                // A wild service worker has appeared in reg.installing!
+                serviceWorker = reg.installing;
+                serviceWorker.addEventListener('statechange', () => {
+                    // Has network.state changed?
+                    switch (serviceWorker.state) {
+                        case 'installed':
+                            if (navigator.serviceWorker.controller) {
+                                // new update available
+                                showAppUpdateBar();
+                            }
+                            // No update available
+                            break;
+                    }
+                });
+            });
+        });
+    } else {
+        dxLog("Service worker not available");
+    }
 }
+
 /**
  * Provides the message that the system presents when a request is kicked off while offline and the request is to be
  * queued
  * @return {string} The message to be presented
  */
 function presentOfflineRequestQueuedMessage() {
-	return "You are offline. Your request has been queued and will be processed as soon as you are connected again.";
+    return "You are offline. Your request has been queued and will be processed as soon as you are connected again.";
 }
+
 /**
  * Provides the message that the system presents when a request is kicked off while offline and the request is NOT to be
  * queued
  * @return {string} The message to be presented
  */
 function presentOfflineRequestBlockedMessage() {
-	return "This request cannot be processed at this time because you are offline.";
+    return "This request cannot be processed at this time because you are offline.";
 }
+
 /**
  * Logs out the current user by calling api/global_functions/logoutCurrentAccount to clear the current session and
  * authentication token credentials
  */
 function logout() {
-	current_user_profile_picture_path = "";
-	registerUserRole("anonymous");
-	dxRequestInternal(getServerRootPath()+"api/global_functions/logoutCurrentAccount",
-		{AuthenticationToken:getAuthenticationToken()},
-		function(data_obj) {
-			if (data_obj.LogoutResult === true) {
-				if (!isNative()) {
-					loadUserRoleLandingPage("anonymous");
-				} else {
-					loadUserRoleLandingPage("native_landing");
-				}
-			} else {
-				throw new Error("Could not logout user: "+JSON.stringify(data_obj));
-			}
-		},
-		function(data_obj) {
-			throw new Error("Could not logout user: "+JSON.stringify(data_obj));
-		})
+    currentUserProfilePicturePath = "";
+    registerUserRole("anonymous");
+    dxRequestInternal(getServerRootPath() + "api/global_functions/logoutCurrentAccount",
+        {AuthenticationToken: getAuthenticationToken()},
+        function (data) {
+            if (data.LogoutResult === true) {
+                if (!isNative()) {
+                    loadUserRoleLandingPage("anonymous");
+                } else {
+                    loadUserRoleLandingPage("native_landing");
+                }
+            } else {
+                throw new Error("Could not logout user: " + JSON.stringify(data));
+            }
+        },
+        function (data) {
+            throw new Error("Could not logout user: " + JSON.stringify(data));
+        });
 }
+
 /**
  * Loads the page that is defined in user_role_landing_pages for the provided role
- * @param {String} user_role The role to load a page for
+ * @param {String} userRole The role to load a page for
  */
-function loadUserRoleLandingPage(user_role) {
-	if ((typeof user_role === "undefined") || (user_role === null)) {
-		loadPageComponent('anonymous_landing_page');
-		return;
-	}
-	let user_role_prepared = user_role.toLowerCase();
-	if (typeof user_role_landing_pages[user_role_prepared] === "undefined") {
-		loadPageComponent('my_profile');
-		return;
-	}
-	if (user_role_prepared === 'anonymous') {
-		if (!isNative()) {
-			loadPageComponent(user_role_landing_pages[user_role_prepared]);
-		} else {
-			loadPageComponent('native_landing');
-		}
-		return;
-	}
-	loadPageComponent(user_role_landing_pages[user_role_prepared]);
+function loadUserRoleLandingPage(userRole) {
+    if ((typeof userRole === "undefined") || (userRole === null)) {
+        loadPageComponent('anonymous_landing_page');
+        return;
+    }
+    let userRolePrepared = userRole.toLowerCase();
+    if (typeof userRoleLandingPages[userRolePrepared] === "undefined") {
+        loadPageComponent('my_profile');
+        return;
+    }
+    if (userRolePrepared === 'anonymous') {
+        if (!isNative()) {
+            loadPageComponent(userRoleLandingPages[userRolePrepared]);
+        } else {
+            loadPageComponent('native_landing');
+        }
+        return;
+    }
+    loadPageComponent(userRoleLandingPages[userRolePrepared]);
 }
+
 /**
  * Updates the system-wide profile picture class "navigation-activate-on-profile" with the current user's profile
  * picture by calling the server to get the picture file path
  * @param {Function} callback A function that is called with the file path when done
  */
 function loadCurrentUserProfilePicture(callback) {
-	getCurrentUserAttribute('ProfilePicturePath',function(profile_picture_path) {
-		if (typeof profile_picture_path === "undefined") {
-			$(".navigation-activate-on-profile").html('<img src="'+current_user_profile_picture_path+'" class="img rounded-circle nav-profile-picture"/>');
-			return;
-		}
-		if (typeof profile_picture_path === null) {
-			$(".navigation-activate-on-profile").html('<img src="'+current_user_profile_picture_path+'" class="img rounded-circle nav-profile-picture"/>');
-			return;
-		}
-		current_user_profile_picture_path = profile_picture_path;
-		$(".navigation-activate-on-profile").html('<img src="'+profile_picture_path+'" class="img rounded-circle nav-profile-picture"/>');
-		if (typeof callback === "function") {
-			callback(profile_picture_path);
-		}
-	});
+    getCurrentUserAttribute('ProfilePicturePath', function (profilePicturePath) {
+        if (typeof profilePicturePath === "undefined") {
+            $(".navigation-activate-on-profile").html('<img src="' + currentUserProfilePicturePath + '" class="img rounded-circle nav-profile-picture"/>');
+            return;
+        }
+        if (typeof profilePicturePath === null) {
+            $(".navigation-activate-on-profile").html('<img src="' + currentUserProfilePicturePath + '" class="img rounded-circle nav-profile-picture"/>');
+            return;
+        }
+        currentUserProfilePicturePath = profilePicturePath;
+        $(".navigation-activate-on-profile").html('<img src="' + profilePicturePath + '" class="img rounded-circle nav-profile-picture"/>');
+        if (typeof callback === "function") {
+            callback(profilePicturePath);
+        }
+    });
 }
+
 /**
  * Queries the server for an attribute that describes the current logged in user
  * @param {String} attribute The attribute to find
  * @param {Function} callback The function that is populated with the value for the given attribute once returned
  * from the server
  */
-function getCurrentUserAttribute(attribute,callback) {
-	let attribute_to_return = undefined;
-	if (attribute === "ProfilePicturePath") {
-		attribute_to_return = getRootPath()+"project/assets/images/divblox_profile_picture_placeholder.svg";
-	}
-	dxRequestInternal(getServerRootPath()+'api/global_functions/getCurrentAccountAttribute',
-		{attribute:attribute,AuthenticationToken:getAuthenticationToken()},
-		function(data_obj) {
-			if (typeof data_obj.Result === "undefined") {
-				callback(attribute_to_return);
-				return;
-			}
-			if (data_obj.Result !== 'Success') {
-				callback(attribute_to_return);
-				return;
-			}
-			if (attribute === "ProfilePicturePath") {
-				if (data_obj.Attribute === null) {
-					callback(attribute_to_return);
-					return;
-				}
-				callback(getServerRootPath()+data_obj.Attribute);
-			} else {
-				callback(data_obj.Attribute);
-			}
-		},
-		function(data) {
-			callback(attribute_to_return);
-		},true);
+function getCurrentUserAttribute(attribute, callback) {
+    let attributeToReturn = undefined;
+    if (attribute === "ProfilePicturePath") {
+        attributeToReturn = getRootPath() + "project/assets/images/divblox_profile_picture_placeholder.svg";
+    }
+    dxRequestInternal(getServerRootPath() + 'api/global_functions/getCurrentAccountAttribute',
+        {attribute: attribute, AuthenticationToken: getAuthenticationToken()},
+        function (data) {
+            if (typeof data.Result === "undefined") {
+                callback(attributeToReturn);
+                return;
+            }
+            if (data.Result !== 'Success') {
+                callback(attributeToReturn);
+                return;
+            }
+            if (attribute === "ProfilePicturePath") {
+                if (data.Attribute === null) {
+                    callback(attributeToReturn);
+                    return;
+                }
+                callback(getServerRootPath() + data.Attribute);
+            } else {
+                callback(data.Attribute);
+            }
+        },
+        function (data) {
+            callback(attributeToReturn);
+        }, true);
 }
+
 /**
  * @todo Any actions that should happen once the document is ready and all dx dependencies have been loaded can be placed
  * here.
  */
 function doAfterInitActions() {
-	//TODO: Override this as needed
+    //TODO: Override this as needed
 }
+
 /**
  * @todo Any actions that should happen after authentication should be placed here
  */
 function doAfterAuthenticationActions() {
-	//TODO: Override this as needed
+    //TODO: Override this as needed
 }
+
 /**
  * Checks the current user's connection speed/performance and shows a toast with a message if the connection quality
  * is poor
  */
-function checkConnectionPerformance(poor_connection_title,poor_connection_message) {
-	if (typeof poor_connection_title === "undefined") {
-		poor_connection_title = 'Connection Problem';
-	}
-	if (typeof poor_connection_message === "undefined") {
-		poor_connection_message = 'Your connection seems to be poor. Please reload the app and try again.';
-	}
-	let start_time = new Date();
-	let performance = 1;
-	let performance_threshold = 0.4;
-	//JGL: this is tested to start notifying the user when the connection drops to around the "Slow 3G" mark
-	dxRequestInternal(getServerRootPath()+"api/global_functions/getConnectionPerformanceResult",
-		{},
-		function(data_obj) {
-			let end_time = new Date();
-			let duration = end_time.getTime() - start_time.getTime();
-			if (typeof data_obj.ConnectionPerformanceResult !== "undefined") {
-				performance = parseInt(data_obj.ConnectionPerformanceResult) / duration;
-			}
-			if (performance < performance_threshold) {
-				showToast(poor_connection_title,poor_connection_message,{y:"top",x:"right"});
-			}
-		},
-		function(data_obj) {
-			//JGL: We won't do anything here... Let this fail silently
-			dxLog("Function checkConnectionPerformance() failed with result: "+JSON.stringify(data_obj));
-		},false,false);
+function checkConnectionPerformance(title, message) {
+    if (typeof title === "undefined") {
+        title = 'Connection Problem';
+    }
+    if (typeof message === "undefined") {
+        message = 'Your connection seems to be poor. Please reload the app and try again.';
+    }
+    let startTime = new Date();
+    let performance = 1;
+    let performanceThreshold = 0.4;
+    //JGL: this is tested to start notifying the user when the connection drops to around the "Slow 3G" mark
+    dxRequestInternal(getServerRootPath() + "api/global_functions/getConnectionPerformanceResult",
+        {},
+        function (data) {
+            let endTime = new Date();
+            let duration = endTime.getTime() - startTime.getTime();
+            if (typeof data.ConnectionPerformanceResult !== "undefined") {
+                performance = parseInt(data.ConnectionPerformanceResult) / duration;
+            }
+            if (performance < performanceThreshold) {
+                showToast(title, message, {y: "top", x: "right"});
+            }
+        },
+        function (data) {
+            //JGL: We won't do anything here... Let this fail silently
+            dxLog("Function checkConnectionPerformance() failed with result: " + JSON.stringify(data));
+        }, false, false);
 
 }
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

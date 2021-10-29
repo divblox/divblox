@@ -1,11 +1,13 @@
 .navbar {
-    height:40px;
+    height: 40px;
     padding: .1rem 1rem !important;
 }
+
 .component-wrapper-instance-top-navbar {
-    padding-top:45px;
+    padding-top: 45px;
 }
+
 .instance-navbar-back-icon {
-    font-size:16px !important;
-    padding-right:3px;
+    font-size: 16px !important;
+    padding-right: 3px;
 }

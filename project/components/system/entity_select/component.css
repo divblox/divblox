@@ -1,9 +1,11 @@
 .input-group-text-transparent {
-    background:transparent !important;
+    background: transparent !important;
 }
+
 .input-group-text-transparent:hover {
     cursor: pointer;
 }
+
 .appended-input {
-    border-right:none;
+    border-right: none;
 }

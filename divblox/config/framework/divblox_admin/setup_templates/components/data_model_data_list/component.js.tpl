@@ -1,17 +1,18 @@
-if (typeof component_classes['[component_full_name]'] === "undefined") {
+if (typeof componentClasses['[component_full_name]'] === "undefined") {
 	class [component_class_name] extends DivbloxDomEntityDataListComponent {
-		constructor(inputs,supports_native,requires_native) {
-			super(inputs,supports_native,requires_native);
+		constructor(inputs, supportsNative, requiresNative) {
+			super(inputs, supportsNative, requiresNative);
 			// Sub component config start
-			this.sub_component_definitions = [];
+			this.subComponentDefinitions = [];
 			// Sub component config end
-			this.included_attributes_object =
+			this.includedAttributes =
 				[Included-Attributes-Object];
-			this.included_relationships_object =
+			this.includedRelationships =
 				[Included-Relationships-Object];
-			this.constrain_by_array = [ConstrainBy-Array];
+			this.constrainedByEntities = [ConstrainBy-Array];
 			this.initDataListVariables("[EntityName]");
 		}
 	}
-	component_classes['[component_full_name]'] = [component_class_name];
+
+	componentClasses['[component_full_name]'] = [component_class_name];
 }

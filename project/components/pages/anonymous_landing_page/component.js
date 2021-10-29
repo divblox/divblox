@@ -1,36 +1,48 @@
-if (typeof component_classes['pages_anonymous_landing_page'] === "undefined") {
-	class pages_anonymous_landing_page extends DivbloxDomBaseComponent {
-		constructor(inputs,supports_native,requires_native) {
-			super(inputs,supports_native,requires_native);
-			// Sub component config start
-			this.sub_component_definitions = [{"component_load_path":"ungrouped/imageviewer","parent_element":"PqCTk","arguments":{"image_path":getRootPath()+"project/assets/images/divblox_logo.svg"}}];
-			// Sub component config end
-		}
-		registerDomEvents() {
-			getComponentElementById(this,"RURmz_btn").on("click", function() {
-				loadPageComponent("login");
-			});
-		}
-		reset(inputs,propagate) {
-			setActivePage("","dx Home");
-			super.reset(inputs,propagate);
+if (typeof componentClasses['pages_anonymous_landing_page'] === "undefined") {
+    class AnonymousLandingPage extends DivbloxDomBaseComponent {
+        constructor(inputs, supportsNative, requiresNative) {
+            super(inputs, supportsNative, requiresNative);
+            // Sub component config start
+            this.subComponentDefinitions =
+                [{
+                    "component_load_path": "ungrouped/imageviewer",
+                    "parent_element": "PqCTk",
+                    "arguments": {
+                        "image_path": "project/assets/images/divblox_logo.svg",
+                        "uid": "ungrouped_imageviewer_1"
+                    }
+                }];
+            // Sub component config end
+        }
 
-			dxRequestInternal(getComponentControllerPath(this),
-				{
-					f: "loadAnonymous",
-				}, function (data) {
+        registerDomEvents() {
+            getComponentElementById(this, "RURmz_btn").on("click", function () {
+                loadPageComponent("login");
+            });
+        }
 
-				}, function (data) {
-					dxLog("Error occurred: " + data.Message);
-				}
-			);
-		}
-		subComponentLoadedCallBack(component) {
+        reset(inputs, propagate) {
+            setActivePage("", "dx Home");
+            super.reset(inputs, propagate);
+
+            dxRequestInternal(getComponentControllerPath(this),
+                {
+                    f: "loadAnonymous",
+                }, function (data) {
+
+                }, function (data) {
+                    dxLog("Error occurred: " + data.Message);
+                }
+            );
+        }
+
+        subComponentLoadedCallBack(component) {
             super.subComponentLoadedCallBack(component);
             if (component.getComponentName() === "ungrouped_imageviewer") {
-	            component.updateImage("project/assets/images/divblox_logo.svg");
+                component.updateImage("project/assets/images/divblox_logo.svg");
             }
         }
-   	}
-	component_classes['pages_anonymous_landing_page'] = pages_anonymous_landing_page;
+    }
+
+    componentClasses['pages_anonymous_landing_page'] = AnonymousLandingPage;
 }
